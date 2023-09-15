@@ -1,0 +1,58 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "cppbuild",
+			"label": "C/C++: clang++.exe build active program file",
+			"command": "C:/mingw64/bin/clang++.exe",
+			"args": [
+				"-fcolor-diagnostics",
+				"-fansi-escape-codes",
+				"-g",
+				"${file}",
+				"-o",
+				"bin/${fileBasenameNoExtension}.exe",
+				"bin/*.dll",
+				"-Iinc"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: C:/mingw64/bin/clang++.exe"
+		},
+		{
+			"type": "cppbuild",
+			"label": "C/C++: clang++.exe build active library file",
+			"command": "C:/mingw64/bin/clang++.exe",
+			"args": [
+				"-shared",
+				"-fcolor-diagnostics",
+				"-fansi-escape-codes",
+				"-g",
+				"${file}",
+				"-o",
+				"bin/${fileBasenameNoExtension}.exe",
+				"bin/*.dll",
+				"-Iinc"
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"detail": "compiler: C:/mingw64/bin/clang++.exe"
+		}
+	]
+}
