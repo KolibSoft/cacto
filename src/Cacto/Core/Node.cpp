@@ -68,4 +68,8 @@ namespace cacto
         return handled;
     }
 
+    Node::Node() = default;
+
+    Node::~Node() = default;
+
 }

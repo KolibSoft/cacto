@@ -31,8 +31,8 @@ namespace cacto
         virtual bool dispatchSignal(Node *const target, const Signal &signal);
         virtual bool bubbleSignal(Node *const target, const Signal &signal);
 
-        Node() = default;
-        virtual ~Node() = default;
+        Node();
+        virtual ~Node();
     };
 
 }

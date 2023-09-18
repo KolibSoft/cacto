@@ -1,0 +1,12 @@
+#ifndef CACTO_WINDOW_EXPORT_HPP
+#define CACTO_WINDOW_EXPORT_HPP
+
+#include <Cacto/Config.hpp>
+
+#ifdef CACTO_WINDOW_EXPORTS
+#define CACTO_WINDOW_API CACTO_API_EXPORT
+#else
+#define CACTO_WINDOW_API CACTO_API_IMPORT
+#endif
+
+#endif

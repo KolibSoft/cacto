@@ -6,10 +6,8 @@
 
 namespace sf
 {
-
     class RenderTarget;
     class RenderStates;
-
 }
 
 namespace cacto
