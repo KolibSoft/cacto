@@ -29,4 +29,8 @@ namespace cacto
         auto handled = bubbleSignal(this, signal);
     }
 
+    EventNode::EventNode() = default;
+
+    EventNode::~EventNode() = default;
+
 }

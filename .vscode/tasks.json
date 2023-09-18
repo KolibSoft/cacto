@@ -38,7 +38,7 @@
 				"-g",
 				"${file}",
 				"-o",
-				"bin/${fileBasenameNoExtension}.exe",
+				"bin/${fileBasenameNoExtension}.dll",
 				"bin/*.dll",
 				"-Iinc"
 			],
