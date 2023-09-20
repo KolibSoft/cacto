@@ -1,5 +1,5 @@
 #include <algorithm>
-#include <Cacto/Core/GenericNode.hpp>
+#include <Cacto/Common/GenericNode.hpp>
 
 namespace cacto
 {
@@ -49,6 +49,18 @@ namespace cacto
         Node::remove(child);
         child->detach(this);
         std::remove(m_children.begin(), m_children.end(), child);
+    }
+
+    bool GenericNode::dispatchSignal(Node *const target, const cacto::Signal &signal)
+    {
+        auto handled = UpdateNode::handleSignal(target, signal) || DrawNode::handleSignal(target, signal) || Node::dispatchSignal(target, signal) || EventNode::handleSignal(target, signal);
+        return handled;
+    }
+
+    bool GenericNode::bubbleSignal(Node *const target, const cacto::Signal &signal)
+    {
+        auto handled = UpdateNode::handleSignal(target, signal) || DrawNode::handleSignal(target, signal) || EventNode::handleSignal(target, signal) || Node::bubbleSignal(target, signal);
+        return handled;
     }
 
     GenericNode::GenericNode()

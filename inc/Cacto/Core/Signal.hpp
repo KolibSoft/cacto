@@ -1,16 +1,16 @@
 #ifndef CACTO_SIGNAL_HPP
 #define CACTO_SIGNAL_HPP
 
-#include <Cacto/Config.hpp>
+#include <Cacto/Core/Export.hpp>
 
 namespace cacto
 {
 
-    class Signal
+    class CACTO_CORE_API Signal
     {
     public:
-        Signal() = default;
-        virtual ~Signal() = default;
+        Signal();
+        virtual ~Signal();
     };
 
 }

@@ -19,7 +19,7 @@ namespace cacto
 
     bool UpdateNode::onUpdate(Node *const target, const UpdateSignal &signal)
     {
-        auto handled = bubbleSignal(target, signal);
+        auto handled = target ? bubbleSignal(target, signal) : dispatchSignal(target, signal);
         return handled;
     }
 

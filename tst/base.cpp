@@ -7,19 +7,12 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Core/GenericNode.hpp>
-#include <Cacto/Animations/UpdateSignal.hpp>
-#include <Cacto/Animations/UpdateNode.hpp>
+#include <Cacto/Common/GenericNode.hpp>
 #include <Cacto/Graphics/DrawSignal.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Window/EventSignal.hpp>
-#include <Cacto/Window/EventNode.hpp>
+#include <Cacto/Animations/UpdateSignal.hpp>
 
-class Square
-    : public cacto::GenericNode,
-      public virtual cacto::UpdateNode,
-      public virtual cacto::DrawNode,
-      public virtual cacto::EventNode
+class Square : public cacto::GenericNode
 {
 
 public:
@@ -27,18 +20,6 @@ public:
     sf::RectangleShape shape;
     std::function<bool(Node *const target, const cacto::EventSignal &)> onEventListener;
     sf::Vector2f velocity;
-
-    bool dispatchSignal(Node *const target, const cacto::Signal &signal) override
-    {
-        auto handled = UpdateNode::handleSignal(target, signal) || DrawNode::handleSignal(target, signal) || Node::dispatchSignal(target, signal) || EventNode::handleSignal(target, signal);
-        return handled;
-    }
-
-    bool bubbleSignal(Node *const target, const cacto::Signal &signal) override
-    {
-        auto handled = UpdateNode::handleSignal(target, signal) || DrawNode::handleSignal(target, signal) || EventNode::handleSignal(target, signal) || Node::bubbleSignal(target, signal);
-        return handled;
-    }
 
 protected:
     bool onUpdate(Node *const target, const cacto::UpdateSignal &signal) override
@@ -114,12 +95,12 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     auto root = std::make_shared<cacto::GenericNode>();
-    root->append(makeEntity({0, 0}));
-    root->append(makeEntity({-10, 10}));
-    root->append(makeEntity({-20, 20}));
-    root->append(makeEntity({-30, 30}));
-    root->append(makeEntity({-40, 40}));
-    root->append(makeEntity({-50, 50}));
+    // root->append(makeEntity({0, 0}));
+    // root->append(makeEntity({-10, 10}));
+    // root->append(makeEntity({-20, 20}));
+    // root->append(makeEntity({-30, 30}));
+    // root->append(makeEntity({-40, 40}));
+    // root->append(makeEntity({-50, 50}));
 
     sf::Clock clock;
     clock.start();

@@ -3,12 +3,18 @@
 
 #include <vector>
 #include <Cacto/Core/Node.hpp>
+#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/Window/EventNode.hpp>
+#include <Cacto/Animations/UpdateNode.hpp>
+#include <Cacto/Common/Export.hpp>
 
 namespace cacto
 {
 
-    class CACTO_CORE_API GenericNode
-        : public virtual Node
+    class CACTO_COMMON_API GenericNode
+        : public virtual DrawNode,
+          public virtual EventNode,
+          public virtual UpdateNode
     {
 
     public:
@@ -22,6 +28,9 @@ namespace cacto
 
         void append(const SharedNode &child) override;
         void remove(const SharedNode &child) override;
+
+        bool dispatchSignal(Node *const target, const cacto::Signal &signal) override;
+        bool bubbleSignal(Node *const target, const cacto::Signal &signal) override;
 
         GenericNode();
         virtual ~GenericNode();
