@@ -8,10 +8,36 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/FrameLayout.hpp>
 
 auto _ = false;
+
+class Square
+    : public cacto::Block,
+      public virtual cacto::EventNode
+{
+
+public:
+    Square()
+    {
+        setBackground(cacto::makeColorSurface(sf::Color::Cyan));
+        setFixedWidth(100);
+        setFixedHeight(100);
+    }
+
+protected:
+    bool onEvent(const sf::Event &event) override
+    {
+        if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        {
+            std::cout << "Clicked!\n";
+            return true;
+        }
+        return false;
+    }
+};
 
 auto makeBlock(const sf::Color &color)
 {
@@ -39,7 +65,7 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto target = makeBlock(sf::Color::Yellow);
+    auto target = std::make_shared<Square>();
     auto root = makeFrame(
         sf::Color::Red,
         makeFrame(
@@ -59,14 +85,13 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::Resized)
-                window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
-        }
-        if (target->contains(sf::Vector2f{sf::Mouse::getPosition(window)}))
-        {
-            std::cout << "It Works\n";
+            if (!cacto::EventNode::event(*root, event))
+            {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+                if (event.type == sf::Event::Resized)
+                    window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            }
         }
         root->compact();
         root->inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
