@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    bool DrawNode::handleSignal(Node *const target, const Signal &signal)
+    bool DrawNode::handleSignal(Node &target, const Signal &signal)
     {
         auto drawSignal = dynamic_cast<const DrawSignal *>(&signal);
         auto handled = drawSignal && onDraw(target, *drawSignal);
@@ -14,12 +14,12 @@ namespace cacto
     void DrawNode::draw(sf::RenderTarget &target, const sf::RenderStates &states)
     {
         DrawSignal signal{target, states};
-        onDraw(this, signal);
+        onDraw(*this, signal);
     }
 
-    bool DrawNode::onDraw(Node *const target, const DrawSignal &signal)
+    bool DrawNode::onDraw(Node &target, const DrawSignal &signal)
     {
-        auto handled = target ? Node::bubbleSignal(*target, signal) : Node::dispatchSignal(signal);
+        auto handled = &target == this ? Node::dispatchSignal(signal) : Node::bubbleSignal(target, signal);
         return handled;
     }
 

@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    bool UpdateNode::handleSignal(Node *const target, const Signal &signal)
+    bool UpdateNode::handleSignal(Node &target, const Signal &signal)
     {
         auto *updateSignal = dynamic_cast<const UpdateSignal *>(&signal);
         auto handled = updateSignal && onUpdate(target, *updateSignal);
@@ -14,12 +14,12 @@ namespace cacto
     void UpdateNode::update(const sf::Time &time)
     {
         UpdateSignal signal{time};
-        onUpdate(this, signal);
+        onUpdate(*this, signal);
     }
 
-    bool UpdateNode::onUpdate(Node *const target, const UpdateSignal &signal)
+    bool UpdateNode::onUpdate(Node &target, const UpdateSignal &signal)
     {
-        auto handled = target ? Node::bubbleSignal(*target, signal) : Node::dispatchSignal(signal);
+        auto handled = &target == this ? Node::dispatchSignal(signal) : Node::bubbleSignal(target, signal);
         return handled;
     }
 

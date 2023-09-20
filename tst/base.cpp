@@ -18,13 +18,13 @@ class Square : public cacto::GenericNode
 public:
     std::string tag;
     sf::RectangleShape shape;
-    std::function<bool(Node *const target, const cacto::EventSignal &)> onEventListener;
+    std::function<bool(Node &target, const cacto::EventSignal &)> onEventListener;
     sf::Vector2f velocity;
 
 protected:
-    bool onUpdate(Node *const target, const cacto::UpdateSignal &signal) override
+    bool onUpdate(Node &target, const cacto::UpdateSignal &signal) override
     {
-        if (target == nullptr || target == this)
+        if (&target == this)
         {
             shape.move({velocity.x * signal.time.asSeconds(),
                         velocity.y * signal.time.asSeconds()});
@@ -32,9 +32,9 @@ protected:
         return false;
     }
 
-    bool onDraw(Node *const target, const cacto::DrawSignal &signal) override
+    bool onDraw(Node &target, const cacto::DrawSignal &signal) override
     {
-        if (target == nullptr || target == this)
+        if (&target == this)
         {
             auto states = signal.states;
             signal.target.draw(shape, states);
@@ -45,9 +45,9 @@ protected:
         return false;
     }
 
-    bool onEvent(Node *const target, const cacto::EventSignal &signal) override
+    bool onEvent(Node &target, const cacto::EventSignal &signal) override
     {
-        auto handled = onEventListener && onEventListener(target ? target : this, signal);
+        auto handled = onEventListener && onEventListener(target, signal);
         return handled;
     }
 };
@@ -61,11 +61,11 @@ auto makeSquare(const sf::Color &color, const sf::FloatRect &rect, const std::st
     square->shape.setFillColor(color);
     square->velocity = velocity;
     auto toggle = true;
-    square->onEventListener = [=](auto *target, auto &signal) mutable
+    square->onEventListener = [=](auto &target, auto &signal) mutable
     {
         if (signal.event.type == sf::Event::MouseButtonReleased)
         {
-            auto *node = dynamic_cast<Square *>(target);
+            auto *node = dynamic_cast<Square *>(&target);
             if (node && toggle)
             {
                 toggle = false;
