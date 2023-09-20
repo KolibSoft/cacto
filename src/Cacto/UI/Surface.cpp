@@ -137,4 +137,24 @@ namespace cacto
         m_invalid = true;
     }
 
+    SharedSurface makeColorSurface(const sf::Color &color, const SharedGeometry &geometry, szt precision)
+    {
+        auto surface = std::make_shared<Surface>();
+        surface->setColor(color);
+        if (geometry)
+            surface->setGeometry(geometry);
+        surface->setPrecision(precision);
+        return surface;
+    }
+
+    SharedSurface makeTextureSurface(const SharedTexture &texture, const SharedGeometry &geometry, szt precision)
+    {
+        auto surface = std::make_shared<Surface>();
+        surface->setTexture(texture);
+        if (geometry)
+            surface->setGeometry(geometry);
+        surface->setPrecision(precision);
+        return surface;
+    }
+
 }

@@ -20,11 +20,7 @@ int main()
 
     auto geometry = std::make_shared<cacto::Ellipse>(sf::Vector2f{0, 0}, sf::Vector2f{1, 1});
 
-    auto root = std::make_shared<cacto::Surface>();
-    // root->setColor(sf::Color::Red);
-    root->setTexture(texure);
-    root->setGeometry(geometry);
-    root->setPrecision(5);
+    auto root = cacto::makeTextureSurface(texure, geometry, 5);
 
     while (window.isOpen())
     {

@@ -21,6 +21,9 @@ namespace cacto
     class Geometry;
     using SharedGeometry = std::shared_ptr<Geometry>;
 
+    class Surface;
+    using SharedSurface = std::shared_ptr<Surface>;
+
     class CACTO_UI_API Surface
         : public Box,
           public virtual LeafNode,
@@ -70,6 +73,9 @@ namespace cacto
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
+
+    SharedSurface CACTO_UI_API makeColorSurface(const sf::Color &color, const SharedGeometry &geometry = nullptr, szt precision = 1);
+    SharedSurface CACTO_UI_API makeTextureSurface(const SharedTexture &texture, const SharedGeometry &geometry = nullptr, szt precision = 1);
 
 }
 
