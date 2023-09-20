@@ -58,9 +58,9 @@ namespace cacto
         virtual void onUpdate() const;
         bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
-        sf::Vector2f onCompact(const sf::Vector2f &contentSize) override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize) override;
-        void onPlace(const sf::Vector2f &position) override;
+        sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
+        sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
         Node *m_parent;

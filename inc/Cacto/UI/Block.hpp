@@ -1,0 +1,82 @@
+#ifndef CACTO_BLOCK_HPP
+#define CACTO_BLOCK_HPP
+
+#include <memory>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/LeafNode.hpp>
+#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/UI/Thickness.hpp>
+#include <Cacto/UI/Box.hpp>
+#include <Cacto/UI/InflatableNode.hpp>
+
+namespace sf
+{
+    class Texture;
+}
+
+namespace cacto
+{
+
+    using SharedTexture = std::shared_ptr<sf::Texture>;
+
+    class Geometry;
+    using SharedGeometry = std::shared_ptr<Geometry>;
+
+    class CACTO_UI_API Block
+        : public Box,
+          public virtual LeafNode,
+          public virtual DrawNode,
+          public virtual InflatableNode
+    {
+
+    public:
+        Node *const getParent() const override;
+
+        void attach(Node *const parent) override;
+        void detach(Node *const parent) override;
+
+        const SharedNode &getBackground() const;
+        void setBackground(const SharedNode &value);
+
+        const Thickness &getMargin() const;
+        void setMargin(const Thickness &value);
+
+        const Thickness &getPadding() const;
+        void setPadding(const Thickness &value);
+
+        f32t getMinWidth() const;
+        void setMinWidth(f32t value);
+
+        f32t getMaxWidth() const;
+        void setMaxWidth(f32t value);
+
+        f32t getMinHeight() const;
+        void setMinHeight(f32t value);
+
+        f32t getMaxHeight() const;
+        void setMaxHeight(f32t value);
+
+        Block();
+        virtual ~Block();
+
+    protected:
+        bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        
+        sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
+        sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void onPlace(const sf::Vector2f &position = {0, 0}) override;
+
+    private:
+        Node *m_parent;
+        SharedNode m_background;
+        Thickness m_margin;
+        Thickness m_padding;
+        f32t m_minWidth;
+        f32t m_maxWidth;
+        f32t m_minHeight;
+        f32t m_maxHeight;
+    };
+
+}
+
+#endif
