@@ -11,6 +11,8 @@
 #define CACTO_API_EXPORT SFML_API_EXPORT
 #define CACTO_API_IMPORT SFML_API_IMPORT
 
+#define nameof(symbol) #symbol
+
 namespace cacto
 {
 
