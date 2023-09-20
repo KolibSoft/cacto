@@ -2,7 +2,7 @@
 #define CACTO_UPDATE_SIGNAL_HPP
 
 #include <Cacto/Core/Signal.hpp>
-#include <Cacto/Core/Export.hpp>
+#include <Cacto/Animations/Export.hpp>
 
 namespace sf
 {
@@ -12,7 +12,7 @@ namespace sf
 namespace cacto
 {
 
-    class CACTO_CORE_API UpdateSignal
+    class CACTO_ANIMATIONS_API UpdateSignal
         : public virtual Signal
     {
 

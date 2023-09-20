@@ -1,4 +1,4 @@
-#include <Cacto/Core/UpdateSignal.hpp>
+#include <Cacto/Animations/UpdateSignal.hpp>
 
 namespace cacto
 {

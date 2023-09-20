@@ -8,8 +8,8 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Core/GenericNode.hpp>
-#include <Cacto/Core/UpdateSignal.hpp>
-#include <Cacto/Core/UpdateNode.hpp>
+#include <Cacto/Animations/UpdateSignal.hpp>
+#include <Cacto/Animations/UpdateNode.hpp>
 #include <Cacto/Graphics/DrawSignal.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Window/EventSignal.hpp>
@@ -43,14 +43,17 @@ public:
 protected:
     bool onUpdate(Node *const target, const cacto::UpdateSignal &signal) override
     {
-        shape.move({velocity.x * signal.time.asSeconds(),
-                    velocity.y * signal.time.asSeconds()});
+        if (target == nullptr || target == this)
+        {
+            shape.move({velocity.x * signal.time.asSeconds(),
+                        velocity.y * signal.time.asSeconds()});
+        }
         return false;
     }
 
     bool onDraw(Node *const target, const cacto::DrawSignal &signal) override
     {
-        if (target == nullptr)
+        if (target == nullptr || target == this)
         {
             auto states = signal.states;
             signal.target.draw(shape, states);

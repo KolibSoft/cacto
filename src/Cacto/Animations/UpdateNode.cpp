@@ -1,5 +1,5 @@
-#include <Cacto/Core/UpdateSignal.hpp>
-#include <Cacto/Core/UpdateNode.hpp>
+#include <Cacto/Animations/UpdateSignal.hpp>
+#include <Cacto/Animations/UpdateNode.hpp>
 
 namespace cacto
 {

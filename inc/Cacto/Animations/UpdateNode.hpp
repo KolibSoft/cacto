@@ -2,6 +2,7 @@
 #define CACTO_UPDATE_NODE_HPP
 
 #include <Cacto/Core/Node.hpp>
+#include <Cacto/Animations/Export.hpp>
 
 namespace sf
 {
@@ -13,7 +14,7 @@ namespace cacto
 
     class UpdateSignal;
 
-    class CACTO_CORE_API UpdateNode
+    class CACTO_ANIMATIONS_API UpdateNode
         : public virtual Node
     {
 
