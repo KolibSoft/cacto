@@ -39,7 +39,7 @@ protected:
             auto states = signal.states;
             signal.target.draw(shape, states);
             states.transform *= shape.getTransform();
-            Node::dispatchSignal(nullptr, cacto::DrawSignal{signal.target, states});
+            Node::dispatchSignal(cacto::DrawSignal{signal.target, states});
             return true;
         }
         return false;
@@ -95,12 +95,12 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     auto root = std::make_shared<cacto::GenericNode>();
-    // root->append(makeEntity({0, 0}));
-    // root->append(makeEntity({-10, 10}));
-    // root->append(makeEntity({-20, 20}));
-    // root->append(makeEntity({-30, 30}));
-    // root->append(makeEntity({-40, 40}));
-    // root->append(makeEntity({-50, 50}));
+    root->append(makeEntity({0, 0}));
+    root->append(makeEntity({-10, 10}));
+    root->append(makeEntity({-20, 20}));
+    root->append(makeEntity({-30, 30}));
+    root->append(makeEntity({-40, 40}));
+    root->append(makeEntity({-50, 50}));
 
     sf::Clock clock;
     clock.start();
@@ -110,14 +110,14 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            root->dispatchSignal(nullptr, cacto::EventSignal{event});
+            root->dispatchSignal(cacto::EventSignal{event});
             if (event.type == sf::Event::Closed)
                 window.close();
         }
         window.clear(sf::Color::Black);
         auto dt = clock.restart();
-        root->dispatchSignal(nullptr, cacto::UpdateSignal{dt});
-        root->dispatchSignal(nullptr, cacto::DrawSignal{window, sf::RenderStates::Default});
+        root->dispatchSignal(cacto::UpdateSignal{dt});
+        root->dispatchSignal(cacto::DrawSignal{window, sf::RenderStates::Default});
         window.display();
         if ((frames += 1) % 100 == 0)
         {
