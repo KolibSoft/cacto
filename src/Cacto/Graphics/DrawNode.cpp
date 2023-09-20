@@ -3,18 +3,18 @@
 namespace cacto
 {
 
-    void DrawNode::draw(sf::RenderTarget &target, const sf::RenderStates &states)
+    void DrawNode::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        onDraw(target, states);
+        DrawNode::draw(*this, target, states);
     }
 
     DrawNode::DrawNode() = default;
 
     DrawNode::~DrawNode() = default;
 
-    void DrawNode::draw(Node &node, sf::RenderTarget &target, const sf::RenderStates &states)
+    void DrawNode::draw(const Node &node, sf::RenderTarget &target, const sf::RenderStates &states)
     {
-        auto drawNode = dynamic_cast<DrawNode *>(&node);
+        auto drawNode = dynamic_cast<const DrawNode *>(&node);
         auto handled = drawNode && drawNode->onDraw(target, states);
         if (!handled)
         {
@@ -27,7 +27,7 @@ namespace cacto
         }
     }
 
-    bool DrawNode::onDraw(sf::RenderTarget &target, const sf::RenderStates &states)
+    bool DrawNode::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         return false;
     }

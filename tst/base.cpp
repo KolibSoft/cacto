@@ -25,7 +25,7 @@ protected:
                     velocity.y * time.asSeconds()});
     }
 
-    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) override
+    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
     {
         target.draw(shape, states);
         auto childCount = getChildCount();
@@ -113,14 +113,14 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            cacto::EventNode::event(*root, event);
+            root->event(event);
             if (event.type == sf::Event::Closed)
                 window.close();
         }
         window.clear(sf::Color::Black);
         auto dt = clock.restart();
-        cacto::UpdateNode::update(*root, dt);
-        cacto::DrawNode::draw(*root, window, sf::RenderStates::Default);
+        root->update(dt);
+        window.draw(*root);
         window.display();
         if ((frames += 1) % 100 == 0)
         {

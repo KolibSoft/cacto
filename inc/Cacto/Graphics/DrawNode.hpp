@@ -1,6 +1,7 @@
 #ifndef CACTO_DRAW_NODE_HPP
 #define CACTO_DRAW_NODE_HPP
 
+#include <SFML/Graphics/Drawable.hpp>
 #include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
@@ -14,19 +15,20 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API DrawNode
-        : public virtual Node
+        : public virtual sf::Drawable,
+          public virtual Node
     {
 
     public:
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states);
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override final;
 
         DrawNode();
         virtual ~DrawNode();
 
-        static void draw(Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
+        static void draw(const Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
 
     protected:
-        virtual bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states);
+        virtual bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const;
     };
 
 }

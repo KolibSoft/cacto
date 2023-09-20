@@ -5,7 +5,7 @@ namespace cacto
 
     void UpdateNode::update(const sf::Time &time)
     {
-        onUpdate(time);
+        UpdateNode::update(*this, time);
     }
 
     UpdateNode::UpdateNode() = default;

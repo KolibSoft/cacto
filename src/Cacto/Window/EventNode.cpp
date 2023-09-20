@@ -5,7 +5,7 @@ namespace cacto
 
     void EventNode::event(const sf::Event &event)
     {
-        onEvent(event);
+        EventNode::event(*this, event);
     }
 
     EventNode::EventNode() = default;
