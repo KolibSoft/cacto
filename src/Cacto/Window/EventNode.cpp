@@ -1,29 +1,35 @@
-#include <Cacto/Window/EventSignal.hpp>
 #include <Cacto/Window/EventNode.hpp>
 
 namespace cacto
 {
 
-    bool EventNode::handleSignal(Node &target, const Signal &signal)
-    {
-        auto *eventSignal = dynamic_cast<const EventSignal *>(&signal);
-        auto handled = eventSignal && onEvent(target, *eventSignal);
-        return handled;
-    }
-
     void EventNode::event(const sf::Event &event)
     {
-        EventSignal signal{event};
-        onEvent(*this, signal);
-    }
-
-    bool EventNode::onEvent(Node &target, const EventSignal &signal)
-    {
-        return false;
+        onEvent(event);
     }
 
     EventNode::EventNode() = default;
 
     EventNode::~EventNode() = default;
+
+    bool EventNode::event(Node &node, const sf::Event &event)
+    {
+        auto childCount = node.getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = node.getChild(i);
+            auto handled = EventNode::event(*child, event);
+            if (handled)
+                return true;
+        }
+        auto eventNode = dynamic_cast<EventNode *>(&node);
+        auto handled = eventNode && eventNode->onEvent(event);
+        return handled;
+    }
+
+    bool EventNode::onEvent(const sf::Event &event)
+    {
+        return false;
+    }
 
 }

@@ -1,29 +1,32 @@
-#include <Cacto/Animations/UpdateSignal.hpp>
 #include <Cacto/Animations/UpdateNode.hpp>
 
 namespace cacto
 {
 
-    bool UpdateNode::handleSignal(Node &target, const Signal &signal)
-    {
-        auto *updateSignal = dynamic_cast<const UpdateSignal *>(&signal);
-        auto handled = updateSignal && onUpdate(target, *updateSignal);
-        return handled;
-    }
-
     void UpdateNode::update(const sf::Time &time)
     {
-        UpdateSignal signal{time};
-        onUpdate(*this, signal);
-    }
-
-    bool UpdateNode::onUpdate(Node &target, const UpdateSignal &signal)
-    {
-        return false;
+        onUpdate(time);
     }
 
     UpdateNode::UpdateNode() = default;
 
     UpdateNode::~UpdateNode() = default;
+
+    void UpdateNode::update(Node &node, const sf::Time &time)
+    {
+        auto updateNode = dynamic_cast<UpdateNode *>(&node);
+        if (updateNode)
+            updateNode->onUpdate(time);
+        auto childCount = node.getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = node.getChild(i);
+            UpdateNode::update(*child, time);
+        }
+    }
+
+    void UpdateNode::onUpdate(const sf::Time &time)
+    {
+    }
 
 }

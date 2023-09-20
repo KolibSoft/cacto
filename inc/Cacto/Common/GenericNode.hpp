@@ -29,9 +29,6 @@ namespace cacto
         void append(const SharedNode &child) override;
         void remove(const SharedNode &child) override;
 
-        bool dispatchSignal(const cacto::Signal &signal) override;
-        bool bubbleSignal(Node &target, const cacto::Signal &signal) override;
-
         GenericNode();
         virtual ~GenericNode();
 

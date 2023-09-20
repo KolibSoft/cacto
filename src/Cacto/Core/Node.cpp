@@ -43,26 +43,6 @@ namespace cacto
             throw std::runtime_error("The node is already attached to another parent");
     }
 
-    bool Node::dispatchSignal(const Signal &signal)
-    {
-        auto handled = false;
-        auto childCount = getChildCount();
-        for (szt i = 0; i < childCount; i++)
-        {
-            auto child = getChild(i);
-            handled |= child && child->dispatchSignal(signal);
-        }
-        return handled;
-    }
-
-    bool Node::bubbleSignal(Node &target, const Signal &signal)
-    {
-        auto handled = false;
-        auto *parent = getParent();
-        handled |= parent && parent->bubbleSignal(target, signal);
-        return handled;
-    }
-
     Node::Node() = default;
 
     Node::~Node() = default;

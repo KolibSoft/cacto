@@ -12,21 +12,20 @@ namespace sf
 namespace cacto
 {
 
-    class EventSignal;
-
     class CACTO_WINDOW_API EventNode
         : public virtual Node
     {
 
     public:
-        bool handleSignal(Node &target, const Signal &signal);
         void event(const sf::Event &event);
 
         EventNode();
         virtual ~EventNode();
 
+        static bool event(Node &node, const sf::Event &event);
+
     protected:
-        virtual bool onEvent(Node &target, const EventSignal &signal);
+        virtual bool onEvent(const sf::Event &event);
     };
 
 }

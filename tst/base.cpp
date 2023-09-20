@@ -8,9 +8,6 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Common/GenericNode.hpp>
-#include <Cacto/Graphics/DrawSignal.hpp>
-#include <Cacto/Window/EventSignal.hpp>
-#include <Cacto/Animations/UpdateSignal.hpp>
 
 class Square : public cacto::GenericNode
 {
@@ -18,36 +15,36 @@ class Square : public cacto::GenericNode
 public:
     std::string tag;
     sf::RectangleShape shape;
-    std::function<bool(Node &target, const cacto::EventSignal &)> onEventListener;
+    std::function<bool(Node &target, const sf::Event &event)> onEventListener;
     sf::Vector2f velocity;
 
 protected:
-    bool onUpdate(Node &target, const cacto::UpdateSignal &signal) override
+    void onUpdate(const sf::Time &time) override
     {
-        if (&target == this)
-        {
-            shape.move({velocity.x * signal.time.asSeconds(),
-                        velocity.y * signal.time.asSeconds()});
-        }
-        return false;
+        shape.move({velocity.x * time.asSeconds(),
+                    velocity.y * time.asSeconds()});
     }
 
-    bool onDraw(Node &target, const cacto::DrawSignal &signal) override
+    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) override
     {
-        if (&target == this)
+        target.draw(shape, states);
+        auto childCount = getChildCount();
+        if (childCount > 0)
         {
-            auto states = signal.states;
-            signal.target.draw(shape, states);
-            states.transform *= shape.getTransform();
-            Node::dispatchSignal(cacto::DrawSignal{signal.target, states});
-            return true;
+            auto _states = states;
+            _states.transform *= shape.getTransform();
+            for (std::size_t i = 0; i < childCount; i++)
+            {
+                auto child = getChild(i);
+                DrawNode::draw(*child, target, _states);
+            }
         }
-        return false;
+        return true;
     }
 
-    bool onEvent(Node &target, const cacto::EventSignal &signal) override
+    bool onEvent(const sf::Event &event) override
     {
-        auto handled = onEventListener && onEventListener(target, signal);
+        auto handled = onEventListener && onEventListener(*this, event);
         return handled;
     }
 };
@@ -61,9 +58,9 @@ auto makeSquare(const sf::Color &color, const sf::FloatRect &rect, const std::st
     square->shape.setFillColor(color);
     square->velocity = velocity;
     auto toggle = true;
-    square->onEventListener = [=](auto &target, auto &signal) mutable
+    square->onEventListener = [=](auto &target, auto &event) mutable
     {
-        if (signal.event.type == sf::Event::MouseButtonReleased)
+        if (event.type == sf::Event::MouseButtonReleased)
         {
             auto *node = dynamic_cast<Square *>(&target);
             if (node && toggle)
@@ -116,14 +113,14 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            root->dispatchSignal(cacto::EventSignal{event});
+            cacto::EventNode::event(*root, event);
             if (event.type == sf::Event::Closed)
                 window.close();
         }
         window.clear(sf::Color::Black);
         auto dt = clock.restart();
-        root->dispatchSignal(cacto::UpdateSignal{dt});
-        root->dispatchSignal(cacto::DrawSignal{window, sf::RenderStates::Default});
+        cacto::UpdateNode::update(*root, dt);
+        cacto::DrawNode::draw(*root, window, sf::RenderStates::Default);
         window.display();
         if ((frames += 1) % 100 == 0)
         {

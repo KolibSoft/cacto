@@ -13,21 +13,20 @@ namespace sf
 namespace cacto
 {
 
-    class DrawSignal;
-
     class CACTO_GRAPHICS_API DrawNode
         : public virtual Node
     {
 
     public:
-        bool handleSignal(Node &target, const Signal &signal);
         void draw(sf::RenderTarget &target, const sf::RenderStates &states);
 
         DrawNode();
         virtual ~DrawNode();
 
+        static void draw(Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
+
     protected:
-        virtual bool onDraw(Node &target, const DrawSignal &signal);
+        virtual bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states);
     };
 
 }

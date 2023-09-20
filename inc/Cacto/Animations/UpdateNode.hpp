@@ -12,21 +12,20 @@ namespace sf
 namespace cacto
 {
 
-    class UpdateSignal;
-
     class CACTO_ANIMATIONS_API UpdateNode
         : public virtual Node
     {
 
     public:
-        bool handleSignal(Node &target, const Signal &signal);
         void update(const sf::Time &time);
 
         UpdateNode();
         virtual ~UpdateNode();
 
+        static void update(Node &node, const sf::Time &time);
+
     protected:
-        virtual bool onUpdate(Node &target, const UpdateSignal &signal);
+        virtual void onUpdate(const sf::Time &time);
     };
 
 }

@@ -51,18 +51,6 @@ namespace cacto
         std::remove(m_children.begin(), m_children.end(), child);
     }
 
-    bool GenericNode::dispatchSignal(const cacto::Signal &signal)
-    {
-        auto handled = UpdateNode::handleSignal(*this, signal) || DrawNode::handleSignal(*this, signal) || Node::dispatchSignal(signal) || EventNode::handleSignal(*this, signal);
-        return handled;
-    }
-
-    bool GenericNode::bubbleSignal(Node &target, const cacto::Signal &signal)
-    {
-        auto handled = UpdateNode::handleSignal(target, signal) || DrawNode::handleSignal(target, signal) || EventNode::handleSignal(target, signal) || Node::bubbleSignal(target, signal);
-        return handled;
-    }
-
     GenericNode::GenericNode()
         : m_parent(nullptr), m_children()
     {
