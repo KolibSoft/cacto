@@ -5,6 +5,25 @@
 namespace cacto
 {
 
+    bool Geometry::intersects(const Geometry &other) const
+    {
+        auto pointCount = other.getPointCount();
+        for (szt i = 0; i < pointCount; i++)
+        {
+            auto point = other.getPoint(i);
+            if (containsPoint(point))
+                return true;
+        }
+        pointCount = getPointCount();
+        for (szt i = 0; i < pointCount; i++)
+        {
+            auto point = getPoint(i);
+            if (other.containsPoint(point))
+                return true;
+        }
+        return false;
+    }
+
     void setPoints(sf::Vertex *const vertexes, const Geometry &geometry, szt count, szt precision)
     {
         for (szt i = 0; i < count; i++)
