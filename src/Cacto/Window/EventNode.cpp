@@ -19,8 +19,7 @@ namespace cacto
 
     bool EventNode::onEvent(Node &target, const EventSignal &signal)
     {
-        auto handled = &target == this ? Node::dispatchSignal(signal) : Node::bubbleSignal(target, signal);
-        return handled;
+        return false;
     }
 
     EventNode::EventNode() = default;

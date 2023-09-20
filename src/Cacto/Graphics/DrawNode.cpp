@@ -19,8 +19,7 @@ namespace cacto
 
     bool DrawNode::onDraw(Node &target, const DrawSignal &signal)
     {
-        auto handled = &target == this ? Node::dispatchSignal(signal) : Node::bubbleSignal(target, signal);
-        return handled;
+        return false;
     }
 
     DrawNode::DrawNode() = default;

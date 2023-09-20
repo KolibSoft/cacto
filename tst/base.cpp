@@ -94,6 +94,7 @@ int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+    window.setFramerateLimit(30);
     auto root = std::make_shared<cacto::GenericNode>();
     root->append(makeEntity({0, 0}));
     root->append(makeEntity({-10, 10}));
@@ -101,6 +102,11 @@ int main()
     root->append(makeEntity({-30, 30}));
     root->append(makeEntity({-40, 40}));
     root->append(makeEntity({-50, 50}));
+    root->append(makeEntity({-60, 60}));
+    root->append(makeEntity({-70, 70}));
+    root->append(makeEntity({-80, 80}));
+    root->append(makeEntity({-90, 90}));
+    root->append(makeEntity({-100, 100}));
 
     sf::Clock clock;
     clock.start();
