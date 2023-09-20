@@ -6,58 +6,25 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Common/GenericNode.hpp>
-#include <Cacto/UI/InflatableNode.hpp>
-
-class Surface
-    : public cacto::GenericNode,
-      public virtual cacto::InflatableNode
-{
-
-public:
-    sf::RectangleShape shape{};
-    float minWidth = 0;
-    float minHeight = 0;
-    float maxWidth = std::numeric_limits<float>::infinity();
-    float maxHeight = std::numeric_limits<float>::infinity();
-
-protected:
-    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
-    {
-        target.draw(shape, states);
-        return false;
-    }
-
-    sf::Vector2f onCompact(const sf::Vector2f &contentSize) override
-    {
-        shape.setSize({std::min(contentSize.x, minWidth),
-                       std::min(contentSize.y, minHeight)});
-        auto size = shape.getSize();
-        return size;
-    }
-
-    sf::Vector2f onInflate(const sf::Vector2f &containerSize) override
-    {
-        shape.setSize({std::max(minWidth, std::min(containerSize.x, maxWidth)),
-                       std::max(minHeight, std::min(containerSize.y, maxHeight))});
-        auto size = shape.getSize();
-        return size;
-    }
-
-    void onPlace(const sf::Vector2f &position) override
-    {
-        shape.setPosition(position);
-    }
-};
+#include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/UI/Surface.hpp>
+auto _ = false;
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    auto root = std::make_shared<Surface>();
-    root->shape.setFillColor(sf::Color::Red);
-    root->minWidth = 100;
-    root->maxHeight = 100;
+
+    auto texure = std::make_shared<sf::Texture>();
+    _ = texure->loadFromFile("res/fondo.png");
+
+    auto geometry = std::make_shared<cacto::Ellipse>(sf::Vector2f{0, 0}, sf::Vector2f{1, 1});
+
+    auto root = std::make_shared<cacto::Surface>();
+    // root->setColor(sf::Color::Red);
+    root->setTexture(texure);
+    root->setGeometry(geometry);
+    root->setPrecision(5);
 
     while (window.isOpen())
     {
@@ -70,7 +37,7 @@ int main()
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
         root->compact();
-        root->inflate(sf::Vector2f(sf::Mouse::getPosition(window)));
+        root->inflate(sf::Vector2f(window.getSize()));
         root->place();
         window.clear(sf::Color::Black);
         window.draw(*root);

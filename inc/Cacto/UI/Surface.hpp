@@ -1,0 +1,76 @@
+#ifndef CACTO_SURFACE_HPP
+#define CACTO_SURFACE_HPP
+
+#include <memory>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/LeafNode.hpp>
+#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/UI/Box.hpp>
+#include <Cacto/UI/InflatableNode.hpp>
+
+namespace sf
+{
+    class Texture;
+}
+
+namespace cacto
+{
+
+    using SharedTexture = std::shared_ptr<sf::Texture>;
+
+    class Geometry;
+    using SharedGeometry = std::shared_ptr<Geometry>;
+
+    class CACTO_UI_API Surface
+        : public Box,
+          public virtual LeafNode,
+          public virtual DrawNode,
+          public virtual InflatableNode
+    {
+
+    public:
+        Node *const getParent() const override;
+
+        void attach(Node *const parent) override;
+        void detach(Node *const parent) override;
+
+        const SharedGeometry &getGeometry() const;
+        void setGeometry(const SharedGeometry &value);
+
+        szt getPrecision() const;
+        void setPrecision(szt value);
+
+        const sf::Color &getColor() const;
+        void setColor(const sf::Color &value);
+
+        const SharedTexture &getTexture() const;
+        void setTexture(const SharedTexture &value);
+
+        void update(bool force = false) const;
+
+        Surface();
+        virtual ~Surface();
+
+    protected:
+        virtual void onUpdate() const;
+        bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
+        sf::Vector2f onCompact(const sf::Vector2f &contentSize) override;
+        sf::Vector2f onInflate(const sf::Vector2f &containerSize) override;
+        void onPlace(const sf::Vector2f &position) override;
+
+    private:
+        Node *m_parent;
+
+        SharedGeometry m_geometry;
+        szt m_precision;
+        sf::Color m_color;
+        SharedTexture m_texutre;
+
+        mutable bool m_invalid;
+        mutable sf::VertexArray m_array;
+    };
+
+}
+
+#endif

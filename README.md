@@ -1,1 +1,1 @@
-# Kolib Software - Cacto Library #
+# Cacto Software - Cacto Library #
