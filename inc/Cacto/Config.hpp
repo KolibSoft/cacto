@@ -12,6 +12,7 @@
 #define CACTO_API_IMPORT SFML_API_IMPORT
 
 #define nameof(symbol) #symbol
+#define M_PI 3.14159265358979323846
 
 namespace cacto
 {
