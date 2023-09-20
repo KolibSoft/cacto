@@ -95,6 +95,18 @@ namespace cacto
         m_maxHeight = value;
     }
 
+    void Block::setFixedWidth(f32t value)
+    {
+        m_minWidth = value;
+        m_maxWidth = value;
+    }
+
+    void Block::setFixedHeight(f32t value)
+    {
+        m_minHeight = value;
+        m_maxHeight = value;
+    }
+
     Block::Block()
         : m_parent(nullptr),
           m_background(nullptr),
@@ -116,25 +128,27 @@ namespace cacto
 
     sf::Vector2f Block::onCompact(const sf::Vector2f &contentSize)
     {
-        sf::Vector2f _size{
-            std::max(m_padding.getHorizontal(), std::max(m_minWidth, contentSize.x)) + m_margin.getHorizontal(),
-            std::max(m_padding.getVertical(), std::max(m_minHeight, contentSize.y)) + m_margin.getVertical()};
+        sf::Vector2f boxSize{
+            std::max(m_padding.getHorizontal(), std::max(m_minWidth, contentSize.x + m_padding.getHorizontal())) + m_margin.getHorizontal(),
+            std::max(m_padding.getVertical(), std::max(m_minHeight, contentSize.y + m_padding.getVertical())) + m_margin.getVertical()};
         if (m_background)
-            InflatableNode::compact(*m_background, _size);
-        setWidth(_size.x);
-        setHeight(_size.y);
-        return _size;
+            InflatableNode::compact(*m_background);
+        setWidth(boxSize.x);
+        setHeight(boxSize.y);
+        return boxSize;
     }
 
     sf::Vector2f Block::onInflate(const sf::Vector2f &containerSize)
     {
-        sf::Vector2f _size{std::max(getWidth(), std::min(containerSize.x, m_maxWidth)),
-                           std::max(getHeight(), std::min(containerSize.y, m_maxHeight))};
-        setWidth(_size.x - m_margin.getHorizontal());
-        setHeight(_size.y - m_margin.getVertical());
+        auto minWidth = getWidth();
+        auto minHeight = getHeight();
+        sf::Vector2f boxSize{std::max(minWidth, std::min(containerSize.x, m_maxWidth + m_margin.getHorizontal())),
+                             std::max(minHeight, std::min(containerSize.y, m_maxHeight + m_margin.getVertical()))};
+        setWidth(boxSize.x - m_margin.getHorizontal());
+        setHeight(boxSize.y - m_margin.getVertical());
         if (m_background)
             InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
-        return _size;
+        return boxSize;
     }
 
     void Block::onPlace(const sf::Vector2f &position)

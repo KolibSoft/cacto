@@ -56,6 +56,9 @@ namespace cacto
         f32t getMaxHeight() const;
         void setMaxHeight(f32t value);
 
+        void setFixedWidth(f32t value);
+        void setFixedHeight(f32t value);
+
         Block();
         virtual ~Block();
 

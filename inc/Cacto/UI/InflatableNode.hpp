@@ -20,9 +20,9 @@ namespace cacto
         InflatableNode();
         virtual ~InflatableNode();
 
-        static sf::Vector2f compact(Node &node, const sf::Vector2f &contentSize);
-        static sf::Vector2f inflate(Node &node, const sf::Vector2f &containerSize);
-        static void place(Node &node, const sf::Vector2f &position);
+        static sf::Vector2f compact(Node &node, const sf::Vector2f &contentSize = {0, 0});
+        static sf::Vector2f inflate(Node &node, const sf::Vector2f &containerSize = {0, 0});
+        static void place(Node &node, const sf::Vector2f &position = {0, 0});
 
     protected:
         virtual sf::Vector2f onCompact(const sf::Vector2f &contentSize) = 0;
