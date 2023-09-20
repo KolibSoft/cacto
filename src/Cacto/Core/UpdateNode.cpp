@@ -6,27 +6,21 @@ namespace cacto
 
     bool UpdateNode::handleSignal(Node *const target, const Signal &signal)
     {
-        if (!target)
-        {
-            auto *updateSignal = dynamic_cast<const UpdateSignal *>(&signal);
-            if (updateSignal)
-            {
-                onUpdate(*updateSignal);
-                return true;
-            }
-        }
-        return false;
+        auto *updateSignal = dynamic_cast<const UpdateSignal *>(&signal);
+        auto handled = updateSignal && onUpdate(target, *updateSignal);
+        return handled;
     }
 
     void UpdateNode::update(const sf::Time &time)
     {
         UpdateSignal signal{time};
-        onUpdate(signal);
+        onUpdate(this, signal);
     }
 
-    void UpdateNode::onUpdate(const UpdateSignal &signal)
+    bool UpdateNode::onUpdate(Node *const target, const UpdateSignal &signal)
     {
-        auto handled = bubbleSignal(this, signal);
+        auto handled = bubbleSignal(target, signal);
+        return handled;
     }
 
     UpdateNode::UpdateNode() = default;

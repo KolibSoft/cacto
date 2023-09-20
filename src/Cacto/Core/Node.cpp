@@ -43,11 +43,6 @@ namespace cacto
             throw std::runtime_error("The node is already attached to another parent");
     }
 
-    bool Node::handleSignal(Node *const target, const Signal &signal)
-    {
-        return false;
-    }
-
     bool Node::dispatchSignal(Node *const target, const Signal &signal)
     {
         auto handled = false;

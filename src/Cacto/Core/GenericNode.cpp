@@ -40,12 +40,14 @@ namespace cacto
     void GenericNode::append(const SharedNode &child)
     {
         Node::append(child);
+        child->attach(this);
         m_children.push_back(child);
     }
 
     void GenericNode::remove(const SharedNode &child)
     {
         Node::remove(child);
+        child->detach(this);
         std::remove(m_children.begin(), m_children.end(), child);
     }
 

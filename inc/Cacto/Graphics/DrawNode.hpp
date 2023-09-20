@@ -20,14 +20,14 @@ namespace cacto
     {
 
     public:
-        bool handleSignal(Node *const target, const Signal &signal) override;
+        virtual bool handleSignal(Node *const target, const Signal &signal);
         void draw(sf::RenderTarget &target, const sf::RenderStates &states);
 
         DrawNode();
         virtual ~DrawNode();
 
     protected:
-        virtual void onDraw(const DrawSignal &signal);
+        virtual bool onDraw(Node *const target, const DrawSignal &signal);
     };
 
 }

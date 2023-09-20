@@ -7,10 +7,25 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Launch",
+            "name": "(lldb) Launch",
             "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
             "args": [],
             "cwd": "${workspaceFolder}/bin",
+            "console": "integratedTerminal",
+            "preLaunchTask": "C/C++: clang++.exe build active program file"
+        },
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/bin",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "C:/mingw64/bin/gdb.exe",
             "preLaunchTask": "C/C++: clang++.exe build active program file"
         }
     ]

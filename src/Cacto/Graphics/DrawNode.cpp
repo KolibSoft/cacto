@@ -6,27 +6,21 @@ namespace cacto
 
     bool DrawNode::handleSignal(Node *const target, const Signal &signal)
     {
-        if (!target)
-        {
-            auto drawSignal = dynamic_cast<const DrawSignal *>(&signal);
-            if (drawSignal)
-            {
-                onDraw(*drawSignal);
-                return true;
-            }
-        }
-        return false;
+        auto drawSignal = dynamic_cast<const DrawSignal *>(&signal);
+        auto handled = drawSignal && onDraw(target, *drawSignal);
+        return handled;
     }
 
     void DrawNode::draw(sf::RenderTarget &target, const sf::RenderStates &states)
     {
         DrawSignal signal{target, states};
-        onDraw(signal);
+        onDraw(this, signal);
     }
 
-    void DrawNode::onDraw(const DrawSignal &signal)
+    bool DrawNode::onDraw(Node *const target, const DrawSignal &signal)
     {
-        auto handled = bubbleSignal(this, signal);
+        auto handled = bubbleSignal(target, signal);
+        return handled;
     }
 
     DrawNode::DrawNode() = default;

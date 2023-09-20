@@ -27,7 +27,6 @@ namespace cacto
         virtual void append(const SharedNode &child);
         virtual void remove(const SharedNode &child);
 
-        virtual bool handleSignal(Node *const target, const Signal &signal);
         virtual bool dispatchSignal(Node *const target, const Signal &signal);
         virtual bool bubbleSignal(Node *const target, const Signal &signal);
 

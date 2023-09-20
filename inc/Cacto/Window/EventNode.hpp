@@ -19,14 +19,14 @@ namespace cacto
     {
 
     public:
-        bool handleSignal(Node *const target, const Signal &signal) override;
+        virtual bool handleSignal(Node *const target, const Signal &signal);
         void event(const sf::Event &event);
 
         EventNode();
         virtual ~EventNode();
 
     protected:
-        virtual void onEvent(const EventSignal &signal);
+        virtual bool onEvent(Node *const target, const EventSignal &signal);
     };
 
 }
