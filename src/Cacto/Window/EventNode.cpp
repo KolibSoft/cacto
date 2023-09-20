@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    bool EventNode::handleSignal(Node *const target, const Signal &signal)
+    bool EventNode::handleSignal(Node &target, const Signal &signal)
     {
         auto *eventSignal = dynamic_cast<const EventSignal *>(&signal);
         auto handled = eventSignal && onEvent(target, *eventSignal);
@@ -14,12 +14,12 @@ namespace cacto
     void EventNode::event(const sf::Event &event)
     {
         EventSignal signal{event};
-        onEvent(this, signal);
+        onEvent(*this, signal);
     }
 
-    bool EventNode::onEvent(Node *const target, const EventSignal &signal)
+    bool EventNode::onEvent(Node &target, const EventSignal &signal)
     {
-        auto handled = target ? bubbleSignal(target, signal) : dispatchSignal(target, signal);
+        auto handled = &target == this ? Node::dispatchSignal(signal) : Node::bubbleSignal(target, signal);
         return handled;
     }
 

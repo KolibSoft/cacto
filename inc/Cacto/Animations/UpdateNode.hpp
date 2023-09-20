@@ -19,14 +19,14 @@ namespace cacto
     {
 
     public:
-        virtual bool handleSignal(Node *const target, const Signal &signal);
+        bool handleSignal(Node &target, const Signal &signal);
         void update(const sf::Time &time);
 
         UpdateNode();
         virtual ~UpdateNode();
 
     protected:
-        virtual bool onUpdate(Node *const target, const UpdateSignal &signal);
+        virtual bool onUpdate(Node &target, const UpdateSignal &signal);
     };
 
 }
