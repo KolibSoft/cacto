@@ -74,4 +74,36 @@ namespace cacto
         mapPositions(vertexes, bounds, surface, count);
     }
 
+    bool zoneIn(const sf::FloatRect &rect, const sf::FloatRect &zone)
+    {
+        auto rectLeft = std::min(rect.left, rect.left + rect.width);
+        auto rectTop = std::min(rect.top, rect.top + rect.height);
+        auto rectRight = std::max(rect.left, rect.left + rect.width);
+        auto rectBottom = std::max(rect.top, rect.top + rect.height);
+
+        auto zoneLeft = std::min(zone.left, zone.left + zone.width);
+        auto zoneTop = std::min(zone.top, zone.top + zone.height);
+        auto zoneRight = std::max(zone.left, zone.left + zone.width);
+        auto zoneBottom = std::max(zone.top, zone.top + zone.height);
+
+        auto result = rectLeft <= zoneLeft && rectTop <= zoneTop && rectRight >= zoneRight && rectBottom >= zoneBottom;
+        return result;
+    }
+
+    bool zoneWith(const sf::FloatRect &rect, const sf::FloatRect &zone)
+    {
+        auto rectLeft = std::min(rect.left, rect.left + rect.width);
+        auto rectTop = std::min(rect.top, rect.top + rect.height);
+        auto rectRight = std::max(rect.left, rect.left + rect.width);
+        auto rectBottom = std::max(rect.top, rect.top + rect.height);
+
+        auto zoneLeft = std::min(zone.left, zone.left + zone.width);
+        auto zoneTop = std::min(zone.top, zone.top + zone.height);
+        auto zoneRight = std::max(zone.left, zone.left + zone.width);
+        auto zoneBottom = std::max(zone.top, zone.top + zone.height);
+
+        auto result = rectLeft <= zoneRight && rectTop <= zoneBottom && rectRight >= zoneLeft && rectBottom >= zoneTop;
+        return result;
+    }
+
 }

@@ -38,6 +38,9 @@ namespace cacto
     void CACTO_GRAPHICS_API mapPositions(sf::Vertex *const vertexes, const sf::FloatRect bounds, const sf::FloatRect surface, szt count);
     void CACTO_GRAPHICS_API mapPositions(sf::VertexArray &array, const sf::FloatRect surface);
 
+    bool CACTO_GRAPHICS_API zoneIn(const sf::FloatRect &rect, const sf::FloatRect &zone);
+    bool CACTO_GRAPHICS_API zoneWith(const sf::FloatRect &rect, const sf::FloatRect &zone);
+
 }
 
 #endif
