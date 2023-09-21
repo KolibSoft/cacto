@@ -11,30 +11,20 @@ namespace cacto
 
     sf::Vector2f Rectangle::getPoint(std::size_t index, std::size_t precision) const
     {
-        if (precision == 0)
-        {
+        if (precision < 1)
             precision = 1;
-        }
         index %= 4 * precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_left + (m_width / precision) * index, m_top);
-        }
         index -= precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_right, m_top + (m_height / precision) * index);
-        }
         index -= precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_right - (m_width / precision) * index, m_bottom);
-        }
         index -= precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_left, m_bottom - (m_height / precision) * index);
-        }
         throw std::runtime_error("Broken code");
     }
 

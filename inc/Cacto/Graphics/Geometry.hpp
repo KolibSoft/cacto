@@ -18,7 +18,7 @@ namespace cacto
 
     public:
         virtual szt getPointCount() const = 0;
-        virtual sf::Vector2f getPoint(szt index, szt precision = 0) const = 0;
+        virtual sf::Vector2f getPoint(szt index, szt precision = 1) const = 0;
 
         virtual sf::FloatRect getBounds() const = 0;
         virtual bool containsPoint(const sf::Vector2f &point) const = 0;

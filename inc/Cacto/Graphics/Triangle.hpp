@@ -13,7 +13,7 @@ namespace cacto
 
     public:
         szt getPointCount() const override final;
-        sf::Vector2f getPoint(szt index, szt precision = 0) const override final;
+        sf::Vector2f getPoint(szt index, szt precision = 1) const override final;
 
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;

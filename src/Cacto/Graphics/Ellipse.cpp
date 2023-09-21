@@ -11,6 +11,8 @@ namespace cacto
 
     sf::Vector2f Ellipse::getPoint(std::size_t index, std::size_t precision) const
     {
+        if (precision < 1)
+            precision = 1;
         auto count = 12 * precision;
         auto point = sf::Vector2f(
             m_centerX + m_radiusX * cosf((index * 2 * M_PI) / count),

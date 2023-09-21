@@ -28,7 +28,7 @@ namespace cacto
 
     bool Body::checkCollisionPart(const Body &other) const
     {
-        auto tranform = other.getTransform() * getInverseTransform();
+        auto tranform = getInverseTransform() * other.getTransform();
         auto geometry = other.getGeometry();
         auto pointCount = geometry->getPointCount();
         for (szt i = 0; i < pointCount; i++)

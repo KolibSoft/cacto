@@ -17,25 +17,17 @@ namespace cacto
 
     sf::Vector2f Triangle::getPoint(std::size_t index, std::size_t precision) const
     {
-        if (precision == 0)
-        {
+        if (precision < 1)
             precision = 1;
-        }
         index %= 3 * precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_pointA + float(index) * (m_pointB - m_pointA) / float(precision));
-        }
         index -= precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_pointB + float(index) * (m_pointC - m_pointB) / float(precision));
-        }
         index -= precision;
         if (index < precision)
-        {
             return sf::Vector2f(m_pointC + float(index) * (m_pointA - m_pointC) / float(precision));
-        }
         throw std::runtime_error("Broken code");
     }
 
