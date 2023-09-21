@@ -34,9 +34,6 @@ namespace cacto
     public:
         Node *const getParent() const override;
 
-        void attach(Node *const parent) override;
-        void detach(Node *const parent) override;
-
         const SharedGeometry &getGeometry() const;
         void setGeometry(const SharedGeometry &value);
 
@@ -55,6 +52,9 @@ namespace cacto
         virtual ~Surface();
 
     protected:
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
+
         virtual void onUpdate() const;
         bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 

@@ -32,9 +32,6 @@ namespace cacto
     public:
         Node *const getParent() const override;
 
-        void attach(Node *const parent) override;
-        void detach(Node *const parent) override;
-
         const SharedNode &getBackground() const;
         void setBackground(const SharedNode &value);
 
@@ -63,8 +60,11 @@ namespace cacto
         virtual ~Block();
 
     protected:
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
+
         bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-        
+
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;

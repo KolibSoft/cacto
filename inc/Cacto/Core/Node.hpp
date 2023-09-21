@@ -19,14 +19,15 @@ namespace cacto
         virtual szt getChildCount() const;
         virtual SharedNode getChild(szt index = 0) const;
 
-        virtual void attach(Node *const parent);
-        virtual void detach(Node *const parent);
-
         virtual void append(const SharedNode &child);
         virtual void remove(const SharedNode &child);
 
         Node();
         virtual ~Node();
+
+    protected:
+        virtual void onAttach(Node& parent);
+        virtual void onDetach(Node& parent);
     };
 
 }

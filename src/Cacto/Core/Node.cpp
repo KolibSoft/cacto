@@ -19,32 +19,37 @@ namespace cacto
         return nullptr;
     }
 
-    void Node::attach(Node *const parent)
-    {
-        if (getParent())
-            throw std::runtime_error("The node is already attached to another parent");
-    }
-
-    void Node::detach(Node *const parent)
-    {
-        if (getParent() != parent)
-            throw std::runtime_error("The node is already attached to another parent");
-    }
-
     void Node::append(const SharedNode &child)
     {
-        if (child->getParent())
-            throw std::runtime_error("The node is already attached to another parent");
+        child->onAttach(*this);
     }
 
     void Node::remove(const SharedNode &child)
     {
-        if (child->getParent() != this)
-            throw std::runtime_error("The node is already attached to another parent");
+        child->onDetach(*this);
     }
 
     Node::Node() = default;
 
     Node::~Node() = default;
+
+    void Node::onAttach(Node &parent)
+    {
+        if (getParent())
+            throw std::runtime_error("The node is already attached to another parent");
+        auto current = &parent;
+        while (current)
+        {
+            if (current == this)
+                throw std::runtime_error("The node its own ancestor");
+            current = current->getParent();
+        }
+    }
+
+    void Node::onDetach(Node &parent)
+    {
+        if (getParent() != &parent)
+            throw std::runtime_error("The node is already attached to another parent");
+    }
 
 }
