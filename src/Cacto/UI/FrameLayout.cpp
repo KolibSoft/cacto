@@ -20,7 +20,6 @@ namespace cacto
         if (getChild())
             throw std::runtime_error("This node can not has more child nodes");
         Node::append(child);
-        child->attach(this);
         m_holder.reset(new Holder());
         m_holder->child = child;
         m_holder->hAnchor = Start;
@@ -31,9 +30,8 @@ namespace cacto
     {
         if (getChild() != child)
             throw std::runtime_error("The node is not a child node");
-        m_holder.reset();
         Node::remove(child);
-        child->detach(this);
+        m_holder.reset();
     }
 
     Box::Anchor FrameLayout::getHorizontalAnchor(const SharedNode &child) const

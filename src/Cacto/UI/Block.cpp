@@ -13,18 +13,6 @@ namespace cacto
         return m_parent;
     }
 
-    void Block::attach(Node *const parent)
-    {
-        Node::attach(parent);
-        m_parent = parent;
-    }
-
-    void Block::detach(Node *const parent)
-    {
-        Node::detach(parent);
-        m_parent = nullptr;
-    }
-
     const SharedNode &Block::getBackground() const
     {
         return m_background;
@@ -118,6 +106,18 @@ namespace cacto
     }
 
     Block::~Block() = default;
+
+    void Block::onAttach(Node &parent)
+    {
+        Node::onAttach(parent);
+        m_parent = &parent;
+    }
+
+    void Block::onDetach(Node &parent)
+    {
+        Node::onDetach(parent);
+        m_parent = nullptr;
+    }
 
     bool Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {

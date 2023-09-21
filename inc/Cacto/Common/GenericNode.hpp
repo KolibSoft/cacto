@@ -23,14 +23,15 @@ namespace cacto
         szt getChildCount() const override;
         SharedNode getChild(szt index = 0) const override;
 
-        void attach(Node *const parent) override;
-        void detach(Node *const parent) override;
-
         void append(const SharedNode &child) override;
         void remove(const SharedNode &child) override;
 
         GenericNode();
         virtual ~GenericNode();
+
+    protected:
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
 
     private:
         Node *m_parent;

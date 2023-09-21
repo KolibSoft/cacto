@@ -12,18 +12,6 @@ namespace cacto
         return m_parent;
     }
 
-    void Surface::attach(Node *const parent)
-    {
-        Node::attach(parent);
-        m_parent = parent;
-    }
-
-    void Surface::detach(Node *const parent)
-    {
-        Node::detach(parent);
-        m_parent = nullptr;
-    }
-
     const SharedGeometry &Surface::getGeometry() const
     {
         return m_geometry;
@@ -91,6 +79,18 @@ namespace cacto
     }
 
     Surface::~Surface() = default;
+
+    void Surface::onAttach(Node &parent)
+    {
+        Node::onAttach(parent);
+        m_parent = &parent;
+    }
+
+    void Surface::onDetach(Node &parent)
+    {
+        Node::onDetach(parent);
+        m_parent = nullptr;
+    }
 
     void Surface::onUpdate() const
     {
