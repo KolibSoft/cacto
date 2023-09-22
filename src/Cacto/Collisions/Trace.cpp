@@ -1,15 +1,10 @@
 #include <stdexcept>
 #include <Cacto/Graphics/Geometry.hpp>
-#include <Cacto/Collisions/Body.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Collisions/Trace.hpp>
 
 namespace cacto
 {
-
-    Body &Trace::getBody() const
-    {
-        return *m_body;
-    }
 
     const SharedGeometry &Trace::getGeometry() const
     {
@@ -34,6 +29,7 @@ namespace cacto
     szt Trace::getPointCount() const
     {
         auto pCount = m_geometry->getPointCount() * m_precision;
+        return pCount;
     }
 
     const sf::Vector2f &Trace::getPoint(szt index) const
@@ -42,20 +38,23 @@ namespace cacto
             throw std::runtime_error("This trace do not has a geometry");
         if (m_points.size() <= index)
         {
-            auto point = m_geometry->getPoint(index, m_precision);
+            auto point = m_transform.transformPoint(m_geometry->getPoint(index, m_precision));
             m_points.push_back(point);
         }
         return m_points[index];
     }
 
-    bool Trace::checkCollision(const Trace &other) const {}
+    bool Trace::checkCollision(const Trace &other) const
+    {
+        auto result = zoneWith(m_bounds, other.m_bounds) && checkCollisionPart(other) || other.checkCollisionPart(*this);
+        return result;
+    }
 
-    Trace::Trace(Body &body, const sf::Transform &transform, const SharedGeometry &geometry, szt precision)
-        : m_body(&body),
+    Trace::Trace(const SharedGeometry &geometry, const sf::Transform &transform, szt precision)
+        : m_geometry(geometry),
           m_transform(transform),
-          m_iTransform(transform.getInverse()),
-          m_geometry(geometry),
           m_precision(precision),
+          m_iTransform(transform.getInverse()),
           m_bounds(),
           m_points()
     {
@@ -67,9 +66,8 @@ namespace cacto
 
     bool Trace::checkCollisionPart(const Trace &other) const
     {
-        if (!m_geometry || other.m_geometry)
+        if (!m_geometry || !other.m_geometry)
             throw std::runtime_error("One fo the traces do not have a geometry");
-
         auto pointCount = other.getPointCount();
         for (szt i = 0; i < pointCount; i++)
         {

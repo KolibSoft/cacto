@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -7,22 +9,26 @@
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Utils.hpp>
-#include <Cacto/Collisions/Body.hpp>
+#include <Cacto/Collisions/Trace.hpp>
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Body body;
-    body.setGeometry(std::make_shared<cacto::Rectangle>(sf::Vector2f{0, 0}, sf::Vector2f{50, 50}));
-    body.setOrigin({25, 25});
-    body.setScale({2, 1});
-    body.setRotation(sf::degrees(30));
-    body.setPosition({100, 100});
+    sf::Transformable transformable;
+    transformable.setOrigin({25, 25});
+    transformable.setScale({2, 1});
+    transformable.setRotation(sf::degrees(30));
+    transformable.setPosition({100, 100});
+    auto geometry = std::make_shared<cacto::Rectangle>(sf::Vector2f{0, 0}, sf::Vector2f{50, 50});
 
-    cacto::Body dynamic{body};
-    dynamic.setGeometry(std::make_shared<cacto::Ellipse>(sf::Vector2f{0, 0}, sf::Vector2f{25, 25}));
+    cacto::Trace trace{geometry, transformable.getTransform()};
+
+    std::cout << "Trace size: " << sizeof(cacto::Trace) << "\n";
+
+    auto geometry2 = std::make_shared<cacto::Ellipse>(sf::Vector2f{0, 0}, sf::Vector2f{25, 25});
+    auto transformable2 = transformable;
 
     sf::VertexArray array(sf::PrimitiveType::LineStrip);
 
@@ -35,29 +41,29 @@ int main()
                 window.close();
         }
 
-        dynamic.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+        transformable2.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+        cacto::Trace dynamic{geometry2, transformable2.getTransform()};
 
-        // if (body.getGeometry()->containsPoint(body.getInverseTransform().transformPoint(sf::Vector2f(sf::Mouse::getPosition(window)))))
-        if (cacto::zoneWith(body.getBounds(), dynamic.getBounds()))
+        if (cacto::zoneWith(trace.getBounds(), dynamic.getBounds()))
         {
             window.clear(sf::Color::Magenta);
-            if (body.checkCollision(dynamic))
+            if (trace.checkCollision(dynamic))
                 window.clear(sf::Color::White);
         }
         else
             window.clear(sf::Color::Black);
 
-        cacto::setPoints(array, *body.getGeometry());
+        cacto::setPoints(array, *geometry);
         cacto::setColor(array, sf::Color::Red);
         array.append(array[0]);
-        window.draw(array, body.getTransform());
+        window.draw(array, transformable.getTransform());
 
         cacto::setPoints(array, *dynamic.getGeometry());
         cacto::setColor(array, sf::Color::Red);
         array.append(array[0]);
         window.draw(array, dynamic.getTransform());
 
-        auto bBounds = body.getBounds();
+        auto bBounds = trace.getBounds();
         cacto::setPoints(array, cacto::Rectangle({bBounds.left, bBounds.top}, {bBounds.width, bBounds.height}));
         cacto::setColor(array, sf::Color::Blue);
         array.append(array[0]);

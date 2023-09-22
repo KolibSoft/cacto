@@ -12,13 +12,10 @@ namespace cacto
     class Geometry;
     using SharedGeometry = std::shared_ptr<Geometry>;
 
-    class Body;
-
     class CACTO_COLLISIONS_API Trace
     {
 
     public:
-        Body &getBody() const;
         const SharedGeometry &getGeometry() const;
         szt getPrecision() const;
         const sf::Transform &getTransform() const;
@@ -29,17 +26,17 @@ namespace cacto
 
         bool checkCollision(const Trace &other) const;
 
-        Trace(Body &body, const sf::Transform &transform, const SharedGeometry &geometry, szt precision = 1);
+        Trace(const SharedGeometry &geometry, const sf::Transform &transform, szt precision = 1);
         virtual ~Trace();
 
     private:
         bool checkCollisionPart(const Trace &other) const;
 
-        Body *m_body;
-        sf::Transform m_transform;
-        sf::Transform m_iTransform;
         SharedGeometry m_geometry;
+        sf::Transform m_transform;
         szt m_precision;
+        
+        sf::Transform m_iTransform;
         sf::FloatRect m_bounds;
 
         mutable std::vector<sf::Vector2f> m_points;
