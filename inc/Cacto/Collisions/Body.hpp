@@ -2,18 +2,9 @@
 #define CACTO_BODY_HPP
 
 #include <memory>
+#include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <Cacto/Collisions/Export.hpp>
-
-namespace sf
-{
-
-    template <typename T>
-    class Vector2;
-
-    using Vector2f = Vector2<cacto::f32t>;
-
-}
 
 namespace cacto
 {
@@ -29,7 +20,10 @@ namespace cacto
         const SharedGeometry &getGeometry() const;
         void setGeometry(const SharedGeometry &value);
 
+        sf::FloatRect getBounds() const;
         bool checkCollision(const Body &other) const;
+
+        virtual void collision(Body &other);
 
         Body();
         virtual ~Body();
