@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Collisions/Body.hpp>
 
@@ -16,12 +17,16 @@ namespace cacto
 
     sf::FloatRect Body::getBounds() const
     {
+        if (!m_geometry)
+            throw std::runtime_error("The body has not a geomtry");
         auto bounds = getTransform().transformRect(m_geometry->getBounds());
         return bounds;
     }
 
     bool Body::checkCollision(const Body &other) const
     {
+        if (!m_geometry || other.getGeometry())
+            throw std::runtime_error("One of the bodies has not a geomtry");
         auto collision = checkCollisionPart(other) || other.checkCollisionPart(*this);
         return collision;
     }
@@ -37,6 +42,8 @@ namespace cacto
 
     bool Body::checkCollisionPart(const Body &other) const
     {
+        if (!m_geometry || other.getGeometry())
+            throw std::runtime_error("One of the bodies has not a geomtry");
         auto tranform = getInverseTransform() * other.getTransform();
         auto geometry = other.m_geometry;
         auto pointCount = geometry->getPointCount();

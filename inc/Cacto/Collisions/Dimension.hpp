@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/Drawable.hpp>
 #include <Cacto/Collisions/Export.hpp>
 
 namespace cacto
@@ -12,6 +13,7 @@ namespace cacto
     class Body;
 
     class CACTO_COLLISIONS_API Dimension
+        : public virtual sf::Drawable
     {
 
     public:
@@ -23,12 +25,12 @@ namespace cacto
         Dimension *const locate(const sf::FloatRect &zone) const;
 
         void append(const Trace &trace);
-        Dimension &collisions(Body &body);
+        void collisions(Body &body);
 
         Dimension(const sf::FloatRect &zone);
         virtual ~Dimension();
 
-        static Dimension &collisions(Dimension &dimension, Body &body);
+        static Dimension &collisions(Dimension &dimension, const Trace &trace);
 
         struct Trace
         {
@@ -39,6 +41,9 @@ namespace cacto
             Body *const body;
             const sf::FloatRect zone;
         };
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         void split();

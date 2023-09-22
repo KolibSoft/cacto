@@ -1,4 +1,7 @@
+#include <SFML/Graphics/VertexArray.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Collisions/Body.hpp>
 #include <Cacto/Collisions/Dimension.hpp>
 
@@ -39,10 +42,11 @@ namespace cacto
             split();
     }
 
-    Dimension &Dimension::collisions(Body &body)
+    void Dimension::collisions(Body &body)
     {
-        auto &target = Dimension::collisions(*this, body);
-        return target;
+        Trace trace{&body, body.getBounds()};
+        auto &target = Dimension::collisions(*this, trace);
+        target.append(trace);
     }
 
     Dimension::Dimension(const sf::FloatRect &zone)
@@ -54,25 +58,39 @@ namespace cacto
 
     Dimension::~Dimension() = default;
 
-    Dimension &Dimension::collisions(Dimension &dimension, Body &body)
+    Dimension &Dimension::collisions(Dimension &dimension, const Trace &trace)
     {
-        auto zone = body.getBounds();
         auto *_dimension = &dimension;
         auto *targetDimension = &dimension;
         while (_dimension)
         {
             targetDimension = _dimension;
-            for (auto &trace : _dimension->getTraces())
+            for (auto &_trace : _dimension->getTraces())
             {
-                if (zoneWith(zone, trace.zone))
+                if (zoneWith(trace.zone, _trace.zone))
                 {
-                    body.collision(*trace.body);
-                    trace.body->collision(body);
+                    trace.body->collision(*_trace.body);
+                    _trace.body->collision(*trace.body);
                 }
             }
-            _dimension = _dimension->locate(zone);
+            _dimension = _dimension->locate(trace.zone);
         }
         return *targetDimension;
+    }
+
+    void Dimension::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        sf::VertexArray array(sf::PrimitiveType::LineStrip);
+        setPoints(array, Rectangle({m_zone.left, m_zone.top}, {m_zone.width, m_zone.height}));
+        array.append(array[0]);
+        target.draw(array, states);
+        if (m_subdimensions)
+        {
+            m_topLeft->draw(target, states);
+            m_topRight->draw(target, states);
+            m_bottomLeft->draw(target, states);
+            m_bottomRight->draw(target, states);
+        }
     }
 
     void Dimension::split()
