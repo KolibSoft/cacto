@@ -79,7 +79,6 @@ auto makeEntity(const sf::Vector2f &position)
 {
     auto square = makeSquare(sf::Color::Red, {{10, 10}, {100, 100}}, "RED", {10, 0});
     square->append(makeSquare(sf::Color::Blue, {{10, 10}, {50, 50}}, "BLUE", {10, 0}));
-    square->getChild()->append(makeSquare(sf::Color::Green, {{10, 10}, {25, 25}}, "GREEN", {10, 0}));
     square->shape.setPosition(position);
     square->shape.setOrigin({50, 50});
     square->shape.setRotation(sf::degrees(45));

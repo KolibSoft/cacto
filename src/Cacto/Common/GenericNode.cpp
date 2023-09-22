@@ -27,14 +27,12 @@ namespace cacto
 
     void GenericNode::append(const SharedNode &child)
     {
-        Node::append(child);
-        m_children.push_back(child);
+        onAppend(child);
     }
 
     void GenericNode::remove(const SharedNode &child)
     {
-        Node::remove(child);
-        std::remove(m_children.begin(), m_children.end(), child);
+        onRemove(child);
     }
 
     GenericNode::GenericNode()
@@ -43,6 +41,18 @@ namespace cacto
     }
 
     GenericNode::~GenericNode() = default;
+
+    void GenericNode::onAppend(const SharedNode &child)
+    {
+        Node::onAppend(child);
+        m_children.push_back(child);
+    }
+
+    void GenericNode::onRemove(const SharedNode &child)
+    {
+        Node::onRemove(child);
+        std::remove(m_children.begin(), m_children.end(), child);
+    }
 
     void GenericNode::onAttach(Node &parent)
     {

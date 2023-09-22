@@ -11,11 +11,12 @@ namespace cacto
     {
 
     public:
-        void append(const SharedNode &child) override;
-        void remove(const SharedNode &child) override;
-
         LeafNode();
         virtual ~LeafNode();
+
+    protected:
+        void onAppend(const SharedNode &child) override;
+        void onRemove(const SharedNode &child) override;
     };
 
 }

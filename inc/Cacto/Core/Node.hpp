@@ -23,8 +23,8 @@ namespace cacto
         virtual ~Node();
 
     protected:
-        void onAppend(const SharedNode &child);
-        void onRemove(const SharedNode &child);
+        virtual void onAppend(const SharedNode &child);
+        virtual void onRemove(const SharedNode &child);
 
         virtual void onAttach(Node &parent);
         virtual void onDetach(Node &parent);
