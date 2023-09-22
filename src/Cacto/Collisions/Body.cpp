@@ -26,6 +26,8 @@ namespace cacto
         return collision;
     }
 
+    void Body::collision(Body &other) {}
+
     Body::Body()
         : m_geometry(nullptr)
     {

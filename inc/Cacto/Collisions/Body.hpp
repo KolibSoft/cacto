@@ -23,6 +23,8 @@ namespace cacto
         sf::FloatRect getBounds() const;
         bool checkCollision(const Body &other) const;
 
+        virtual void collision(Body &other);
+
         Body();
         virtual ~Body();
 
