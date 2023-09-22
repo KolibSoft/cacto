@@ -25,7 +25,7 @@ namespace cacto
 
     bool Body::checkCollision(const Body &other) const
     {
-        if (!m_geometry || other.getGeometry())
+        if (!m_geometry || !other.getGeometry())
             throw std::runtime_error("One of the bodies has not a geomtry");
         auto collision = checkCollisionPart(other) || other.checkCollisionPart(*this);
         return collision;
@@ -42,7 +42,7 @@ namespace cacto
 
     bool Body::checkCollisionPart(const Body &other) const
     {
-        if (!m_geometry || other.getGeometry())
+        if (!m_geometry || !other.getGeometry())
             throw std::runtime_error("One of the bodies has not a geomtry");
         auto tranform = getInverseTransform() * other.getTransform();
         auto geometry = other.m_geometry;

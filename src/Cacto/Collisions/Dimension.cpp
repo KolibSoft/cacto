@@ -42,6 +42,25 @@ namespace cacto
             split();
     }
 
+    void Dimension::collisions(const Trace &trace, bool subdimensions)
+    {
+        for (auto &_trace : m_traces)
+        {
+            if (zoneWith(trace.zone, _trace.zone) && trace.body->checkCollision(*_trace.body))
+            {
+                trace.body->collision(*_trace.body);
+                _trace.body->collision(*trace.body);
+            }
+        }
+        if (subdimensions && m_subdimensions)
+        {
+            m_topLeft->collisions(trace, true);
+            m_topRight->collisions(trace, true);
+            m_bottomLeft->collisions(trace, true);
+            m_bottomRight->collisions(trace, true);
+        }
+    }
+
     void Dimension::collisions(Body &body)
     {
         Trace trace{&body, body.getBounds()};
@@ -65,16 +84,10 @@ namespace cacto
         while (_dimension)
         {
             targetDimension = _dimension;
-            for (auto &_trace : _dimension->getTraces())
-            {
-                if (zoneWith(trace.zone, _trace.zone))
-                {
-                    trace.body->collision(*_trace.body);
-                    _trace.body->collision(*trace.body);
-                }
-            }
+            _dimension->collisions(trace, false);
             _dimension = _dimension->locate(trace.zone);
         }
+        targetDimension->collisions(trace, true);
         return *targetDimension;
     }
 
@@ -82,6 +95,7 @@ namespace cacto
     {
         sf::VertexArray array(sf::PrimitiveType::LineStrip);
         setPoints(array, Rectangle({m_zone.left, m_zone.top}, {m_zone.width, m_zone.height}));
+        setColor(array, sf::Color::Magenta);
         array.append(array[0]);
         target.draw(array, states);
         if (m_subdimensions)
@@ -90,6 +104,20 @@ namespace cacto
             m_topRight->draw(target, states);
             m_bottomLeft->draw(target, states);
             m_bottomRight->draw(target, states);
+        }
+        for (auto &trace : m_traces)
+        {
+            setPoints(array, Rectangle({trace.zone.left, trace.zone.top}, {trace.zone.width, trace.zone.height}));
+            setColor(array, sf::Color::Blue);
+            array.append(array[0]);
+            target.draw(array, states);
+
+            auto _states = states;
+            setPoints(array, *trace.body->getGeometry());
+            setColor(array, sf::Color::Red);
+            array.append(array[0]);
+            _states.transform *= trace.body->getTransform();
+            target.draw(array, _states);
         }
     }
 
@@ -130,7 +158,7 @@ namespace cacto
                     m_bottomRight->append(trace);
                     continue;
                 }
-                m_traces.push_back(trace);
+                traces.push_back(trace);
             }
             m_traces = std::move(traces);
             m_subdimensions = true;

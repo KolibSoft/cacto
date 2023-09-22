@@ -8,11 +8,13 @@
 
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Utils.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Collisions/Body.hpp>
 #include <Cacto/Collisions/CollisionNode.hpp>
 #include <Cacto/Collisions/Dimension.hpp>
 #include <Cacto/Common/GenericNode.hpp>
+
+auto color = sf::Color::Black;
 
 class Buddy
     : public cacto::Body,
@@ -42,13 +44,15 @@ public:
 
     void collision(Body &body) override
     {
-        std::cout << "Collision detected\n";
+        color = sf::Color::White;
     }
 
     Buddy()
     {
-        setGeometry(std::make_shared<cacto::Rectangle>(cacto::Rectangle({0, 0}, {50, 50})));
+        setGeometry(std::make_shared<cacto::Ellipse>(cacto::Ellipse({0, 0}, {25, 25})));
         setOrigin({25, 25});
+        setScale({2, 1});
+        setRotation(sf::degrees(30));
     }
 };
 
@@ -63,16 +67,20 @@ int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+    window.setFramerateLimit(60);
 
     cacto::GenericNode root;
     root.append(makeSolid({100, 100}));
-    root.append(makeSolid({200, 100}));
-    root.append(makeSolid({200, 200}));
-    root.append(makeSolid({100, 200}));
+    root.append(makeSolid({300, 100}));
+    root.append(makeSolid({300, 300}));
+    root.append(makeSolid({100, 300}));
 
     auto dynamic = std::make_shared<Buddy>();
     root.append(dynamic);
 
+    sf::Clock clock;
+    clock.start();
+    auto frames = 0;
     while (window.isOpen())
     {
         sf::Event event{};
@@ -84,14 +92,20 @@ int main()
                 window.setView(sf::View(sf::FloatRect({0, 0}, sf::Vector2f{float(event.size.width), float(event.size.height)})));
         }
 
+        color = sf::Color::Black;
         cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}};
         cacto::CollisionNode::collision(root, dimension);
 
         dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
-        window.clear(sf::Color::Black);
+        window.clear(color);
         window.draw(dimension);
-        window.draw(root);
         window.display();
+        auto dt = clock.restart();
+        if ((frames += 1) % 100 == 0)
+        {
+            frames = 0;
+            std::cout << "FPS: " << (1 / dt.asSeconds()) << "\n";
+        }
     }
 
     return 0;

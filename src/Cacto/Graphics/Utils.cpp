@@ -106,7 +106,7 @@ namespace cacto
 
         auto rectLeft = std::min(rect.left, _rectRight);
         auto rectTop = std::min(rect.top, _rectBottom);
-        auto rectRight = std::max(rect.left, _rectBottom);
+        auto rectRight = std::max(rect.left, _rectRight);
         auto rectBottom = std::max(rect.top, _rectBottom);
 
         auto zoneLeft = std::min(zone.left, _zoneRight);

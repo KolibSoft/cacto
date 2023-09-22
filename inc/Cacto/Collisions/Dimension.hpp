@@ -25,6 +25,7 @@ namespace cacto
         Dimension *const locate(const sf::FloatRect &zone) const;
 
         void append(const Trace &trace);
+        void collisions(const Trace &trace, bool subdimensions);
         void collisions(Body &body);
 
         Dimension(const sf::FloatRect &zone);
