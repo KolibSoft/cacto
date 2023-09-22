@@ -10,37 +10,42 @@
 namespace cacto
 {
 
+    class Trace;
     class Body;
+    class Dimension;
+    using SharedDimension = std::shared_ptr<Dimension>;
 
     class CACTO_COLLISIONS_API Dimension
         : public virtual sf::Drawable
     {
 
     public:
-        struct Trace;
+        struct Holder;
 
-        const std::vector<Trace> &getTraces() const;
+        const std::vector<Holder> &getHolders() const;
 
         bool hasZone(const sf::FloatRect &zone) const;
         Dimension *const locate(const sf::FloatRect &zone) const;
 
-        void append(const Trace &trace);
-        void collisions(const Trace &trace, bool subdimensions);
-        void collisions(Body &body);
+        void append(const Holder &holder);
+        void append(Body &body, const Trace &trace);
+
+        void collisions(const Holder &holder, bool subdimensions);
+        void collisions(Body &body, const Trace &trace);
 
         Dimension(const sf::FloatRect &zone);
         virtual ~Dimension();
 
-        static Dimension &collisions(Dimension &dimension, const Trace &trace);
+        static Dimension &collisions(Dimension &dimension, const Holder &holder);
 
-        struct Trace
+        struct Holder
         {
         public:
-            Trace(Body *const _body, const sf::FloatRect _bounds) : body(_body), zone(_bounds) {}
-            virtual ~Trace() = default;
+            Holder(Body *const _body, const Trace *const _trace) : body(_body), trace(_trace) {}
+            virtual ~Holder() = default;
 
             Body *const body;
-            const sf::FloatRect zone;
+            Trace *const trace;
         };
 
     protected:
@@ -50,12 +55,12 @@ namespace cacto
         void split();
 
         sf::FloatRect m_zone;
-        std::vector<Trace> m_traces;
+        std::vector<Holder> m_holders;
         bool m_subdimensions;
-        std::unique_ptr<Dimension> m_topLeft;
-        std::unique_ptr<Dimension> m_topRight;
-        std::unique_ptr<Dimension> m_bottomLeft;
-        std::unique_ptr<Dimension> m_bottomRight;
+        SharedDimension m_topLeft;
+        SharedDimension m_topRight;
+        SharedDimension m_bottomLeft;
+        SharedDimension m_bottomRight;
     };
 
 }

@@ -8,9 +8,9 @@
 namespace cacto
 {
 
-    const std::vector<Dimension::Trace> &Dimension::getTraces() const
+    const std::vector<Dimension::Holder> &Dimension::getHolders() const
     {
-        return m_traces;
+        return m_holders;
     }
 
     bool Dimension::hasZone(const sf::FloatRect &zone) const
@@ -35,41 +35,46 @@ namespace cacto
         return nullptr;
     }
 
-    void Dimension::append(const Trace &trace)
+    void Dimension::append(const Holder &holder)
     {
-        m_traces.push_back(trace);
-        if (m_traces.size() > 2)
+        m_holders.push_back(holder);
+        if (m_holders.size() > 2)
             split();
     }
 
-    void Dimension::collisions(const Trace &trace, bool subdimensions)
+    void Dimension::append(Body &body, const Trace &trace)
     {
-        for (auto &_trace : m_traces)
+        append(Holder{&body, &trace});
+    }
+
+    void Dimension::collisions(const Holder &holder, bool subdimensions)
+    {
+        for (auto &_holder : m_holders)
         {
-            if (zoneWith(trace.zone, _trace.zone) && trace.body->checkCollision(*_trace.body))
+            if (holder.trace->checkCollision(*_holder.trace))
             {
-                trace.body->collision(*_trace.body);
-                _trace.body->collision(*trace.body);
+                holder.body->collision(*_holder.body);
+                _holder.body->collision(*holder.body);
             }
         }
         if (subdimensions && m_subdimensions)
         {
-            m_topLeft->collisions(trace, true);
-            m_topRight->collisions(trace, true);
-            m_bottomLeft->collisions(trace, true);
-            m_bottomRight->collisions(trace, true);
+            m_topLeft->collisions(holder, true);
+            m_topRight->collisions(holder, true);
+            m_bottomLeft->collisions(holder, true);
+            m_bottomRight->collisions(holder, true);
         }
     }
 
-    void Dimension::collisions(Body &body)
+    void Dimension::collisions(Body &body, const Trace& trace)
     {
-        Trace trace{&body, body.getBounds()};
-        auto &target = Dimension::collisions(*this, trace);
-        target.append(trace);
+        Holder holder{&body, &trace};
+        auto &target = Dimension::collisions(*this, holder);
+        target.append(holder);
     }
 
     Dimension::Dimension(const sf::FloatRect &zone)
-        : m_zone(zone), m_traces(), m_subdimensions(false),
+        : m_zone(zone), m_holders(), m_subdimensions(false),
           m_topLeft(nullptr), m_topRight(nullptr),
           m_bottomLeft(nullptr), m_bottomRight(nullptr)
     {
@@ -77,17 +82,17 @@ namespace cacto
 
     Dimension::~Dimension() = default;
 
-    Dimension &Dimension::collisions(Dimension &dimension, const Trace &trace)
+    Dimension &Dimension::collisions(Dimension &dimension, const Holder &holder)
     {
         auto *_dimension = &dimension;
         auto *targetDimension = &dimension;
         while (_dimension)
         {
             targetDimension = _dimension;
-            _dimension->collisions(trace, false);
-            _dimension = _dimension->locate(trace.zone);
+            _dimension->collisions(holder, false);
+            _dimension = _dimension->locate(holder.trace->getBounds());
         }
-        targetDimension->collisions(trace, true);
+        targetDimension->collisions(holder, true);
         return *targetDimension;
     }
 
@@ -105,18 +110,18 @@ namespace cacto
             m_bottomLeft->draw(target, states);
             m_bottomRight->draw(target, states);
         }
-        for (auto &trace : m_traces)
+        for (auto &holder : m_holders)
         {
-            setPoints(array, Rectangle({trace.zone.left, trace.zone.top}, {trace.zone.width, trace.zone.height}));
+            setPoints(array, Rectangle({holder.trace->getBounds().left, holder.trace->getBounds().top}, {holder.trace->getBounds().width, holder.trace->getBounds().height}));
             setColor(array, sf::Color::Blue);
             array.append(array[0]);
             target.draw(array, states);
 
             auto _states = states;
-            setPoints(array, *trace.body->getGeometry());
+            setPoints(array, *holder.trace->getGeometry());
             setColor(array, sf::Color::Red);
             array.append(array[0]);
-            _states.transform *= trace.body->getTransform();
+            _states.transform *= holder.trace->getTransform();
             target.draw(array, _states);
         }
     }
@@ -135,32 +140,32 @@ namespace cacto
                                                            {width, height}}));
             m_bottomRight.reset(new Dimension(sf::FloatRect{{m_zone.left + width, m_zone.top + height},
                                                             {width, height}}));
-            std::vector<Trace> traces;
-            for (auto &trace : m_traces)
+            std::vector<Holder> holders;
+            for (auto &holder : m_holders)
             {
-                if (m_topLeft->hasZone(trace.zone))
+                if (m_topLeft->hasZone(holder.trace->getBounds()))
                 {
-                    m_topLeft->append(trace);
+                    m_topLeft->append(holder);
                     continue;
                 }
-                if (m_topRight->hasZone(trace.zone))
+                if (m_topRight->hasZone(holder.trace->getBounds()))
                 {
-                    m_topRight->append(trace);
+                    m_topRight->append(holder);
                     continue;
                 }
-                if (m_bottomLeft->hasZone(trace.zone))
+                if (m_bottomLeft->hasZone(holder.trace->getBounds()))
                 {
-                    m_bottomLeft->append(trace);
+                    m_bottomLeft->append(holder);
                     continue;
                 }
-                if (m_bottomRight->hasZone(trace.zone))
+                if (m_bottomRight->hasZone(holder.trace->getBounds()))
                 {
-                    m_bottomRight->append(trace);
+                    m_bottomRight->append(holder);
                     continue;
                 }
-                traces.push_back(trace);
+                holders.push_back(holder);
             }
-            m_traces = std::move(traces);
+            m_holders = std::move(holders);
             m_subdimensions = true;
         }
     }
