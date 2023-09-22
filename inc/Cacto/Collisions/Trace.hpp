@@ -26,7 +26,7 @@ namespace cacto
 
         bool checkCollision(const Trace &other) const;
 
-        Trace(const SharedGeometry &geometry, const sf::Transform &transform, szt precision = 1);
+        Trace(const SharedGeometry &geometry, const sf::Transform &transform = sf::Transform::Identity, szt precision = 1);
         virtual ~Trace();
 
     private:
@@ -35,7 +35,7 @@ namespace cacto
         SharedGeometry m_geometry;
         sf::Transform m_transform;
         szt m_precision;
-        
+
         sf::Transform m_iTransform;
         sf::FloatRect m_bounds;
 

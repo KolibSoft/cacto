@@ -22,15 +22,10 @@ namespace cacto
     public:
         struct Holder;
 
-        const std::vector<Holder> &getHolders() const;
-
         bool hasZone(const sf::FloatRect &zone) const;
         Dimension *const locate(const sf::FloatRect &zone) const;
 
-        void append(const Holder &holder);
         void append(Body &body, const Trace &trace);
-
-        void collisions(const Holder &holder, bool subdimensions);
         void collisions(Body &body, const Trace &trace);
 
         Dimension(const sf::FloatRect &zone);
@@ -45,10 +40,13 @@ namespace cacto
             virtual ~Holder() = default;
 
             Body *const body;
-            Trace *const trace;
+            const Trace *const trace;
         };
 
     protected:
+        void append(const Holder &holder);
+        void collisions(const Holder &holder, bool subdimensions);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

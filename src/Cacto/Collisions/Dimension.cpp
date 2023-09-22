@@ -8,11 +8,6 @@
 namespace cacto
 {
 
-    const std::vector<Dimension::Holder> &Dimension::getHolders() const
-    {
-        return m_holders;
-    }
-
     bool Dimension::hasZone(const sf::FloatRect &zone) const
     {
         auto result = zoneIn(m_zone, zone);
@@ -35,38 +30,12 @@ namespace cacto
         return nullptr;
     }
 
-    void Dimension::append(const Holder &holder)
-    {
-        m_holders.push_back(holder);
-        if (m_holders.size() > 2)
-            split();
-    }
-
     void Dimension::append(Body &body, const Trace &trace)
     {
         append(Holder{&body, &trace});
     }
 
-    void Dimension::collisions(const Holder &holder, bool subdimensions)
-    {
-        for (auto &_holder : m_holders)
-        {
-            if (holder.trace->checkCollision(*_holder.trace))
-            {
-                holder.body->collision(*_holder.body);
-                _holder.body->collision(*holder.body);
-            }
-        }
-        if (subdimensions && m_subdimensions)
-        {
-            m_topLeft->collisions(holder, true);
-            m_topRight->collisions(holder, true);
-            m_bottomLeft->collisions(holder, true);
-            m_bottomRight->collisions(holder, true);
-        }
-    }
-
-    void Dimension::collisions(Body &body, const Trace& trace)
+    void Dimension::collisions(Body &body, const Trace &trace)
     {
         Holder holder{&body, &trace};
         auto &target = Dimension::collisions(*this, holder);
@@ -94,6 +63,32 @@ namespace cacto
         }
         targetDimension->collisions(holder, true);
         return *targetDimension;
+    }
+
+    void Dimension::append(const Holder &holder)
+    {
+        m_holders.push_back(holder);
+        if (m_holders.size() > 2)
+            split();
+    }
+
+    void Dimension::collisions(const Holder &holder, bool subdimensions)
+    {
+        for (auto &_holder : m_holders)
+        {
+            if (holder.trace->checkCollision(*_holder.trace))
+            {
+                holder.body->collision(*_holder.body);
+                _holder.body->collision(*holder.body);
+            }
+        }
+        if (subdimensions && m_subdimensions)
+        {
+            m_topLeft->collisions(holder, true);
+            m_topRight->collisions(holder, true);
+            m_bottomLeft->collisions(holder, true);
+            m_bottomRight->collisions(holder, true);
+        }
     }
 
     void Dimension::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
