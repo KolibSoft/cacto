@@ -17,21 +17,12 @@ namespace cacto
 
     void FrameLayout::append(const SharedNode &child)
     {
-        if (getChild())
-            throw std::runtime_error("This node can not has more child nodes");
-        Node::append(child);
-        m_holder.reset(new Holder());
-        m_holder->child = child;
-        m_holder->hAnchor = Start;
-        m_holder->vAnchor = Start;
+        onAppend(child);
     }
 
     void FrameLayout::remove(const SharedNode &child)
     {
-        if (getChild() != child)
-            throw std::runtime_error("The node is not a child node");
-        Node::remove(child);
-        m_holder.reset();
+        onRemove(child);
     }
 
     Box::Anchor FrameLayout::getHorizontalAnchor(const SharedNode &child) const
@@ -68,6 +59,25 @@ namespace cacto
     }
 
     FrameLayout::~FrameLayout() = default;
+
+    void FrameLayout::onAppend(const SharedNode &child)
+    {
+        if (getChild())
+            throw std::runtime_error("This node can not has more child nodes");
+        Node::onAppend(child);
+        m_holder.reset(new Holder());
+        m_holder->child = child;
+        m_holder->hAnchor = Start;
+        m_holder->vAnchor = Start;
+    }
+
+    void FrameLayout::onRemove(const SharedNode &child)
+    {
+        if (getChild() != child)
+            throw std::runtime_error("The node is not a child node");
+        Node::onRemove(child);
+        m_holder.reset();
+    }
 
     bool FrameLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {

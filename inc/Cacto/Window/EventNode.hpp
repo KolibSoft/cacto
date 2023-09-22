@@ -1,6 +1,7 @@
 #ifndef CACTO_EVENT_NODE_HPP
 #define CACTO_EVENT_NODE_HPP
 
+#include <functional>
 #include <Cacto/Core/Node.hpp>
 #include <Cacto/Window/Export.hpp>
 
@@ -17,6 +18,8 @@ namespace cacto
     {
 
     public:
+        using Listener = std::function<void(Node &target, const sf::Event &event)>;
+
         void dispatch(const sf::Event &event);
         void event(const sf::Event &event);
         void bubble(Node &target, const sf::Event &event);

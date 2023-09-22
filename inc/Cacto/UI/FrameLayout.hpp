@@ -15,8 +15,8 @@ namespace cacto
         szt getChildCount() const override;
         SharedNode getChild(szt index = 0) const override;
 
-        void append(const SharedNode &child) override;
-        void remove(const SharedNode &child) override;
+        void append(const SharedNode &child);
+        void remove(const SharedNode &child);
 
         Anchor getHorizontalAnchor(const SharedNode &child) const;
         void setHorizontalAnchor(const SharedNode &child, Anchor value);
@@ -30,6 +30,9 @@ namespace cacto
     protected:
         struct Holder;
         using SharedHolder = std::shared_ptr<Holder>;
+
+        void onAppend(const SharedNode &child) override;
+        void onRemove(const SharedNode &child) override;
 
         bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 

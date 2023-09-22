@@ -36,7 +36,8 @@ namespace cacto
                 if (handled)
                     break;
             }
-            // Capture Event Here
+            if (!handled)
+                handled = nodeEvent && nodeEvent->onEvent(event);
         }
         return handled;
     }

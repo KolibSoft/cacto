@@ -14,12 +14,33 @@
 
 auto _ = false;
 
+class Frame
+    : public cacto::FrameLayout,
+      public virtual cacto::EventNode
+{
+
+public:
+    Listener onClickListener;
+
+    bool onBubble(Node &target, const sf::Event &event)
+    {
+        if (event.type == sf::Event::MouseButtonReleased && onClickListener)
+        {
+            onClickListener(target, event);
+            return true;
+        }
+        return false;
+    }
+};
+
 class Square
     : public cacto::Block,
       public virtual cacto::EventNode
 {
 
 public:
+    Listener onClickListener;
+
     Square()
     {
         setBackground(cacto::makeColorSurface(sf::Color::Cyan));
@@ -32,7 +53,10 @@ protected:
     {
         if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
-            std::cout << "Clicked!\n";
+            if (onClickListener)
+                onClickListener(*this, event);
+            else
+                bubble(*this, event);
             return true;
         }
         return false;
@@ -50,7 +74,7 @@ auto makeBlock(const sf::Color &color)
 
 auto makeFrame(const sf::Color &color, const cacto::SharedNode &node, cacto::Box::Anchor hAnchor, cacto::Box::Anchor vAnchor)
 {
-    auto frame = std::make_shared<cacto::FrameLayout>();
+    auto frame = std::make_shared<Frame>();
     frame->setBackground(cacto::makeColorSurface(color));
     frame->append(node);
     frame->setHorizontalAnchor(node, hAnchor);
@@ -80,12 +104,17 @@ int main()
         cacto::Box::Start,
         cacto::Box::Start);
 
+    root->onClickListener = [](auto &target, auto &event)
+    {
+        std::cout << "Clicked Bubbled!!!\n";
+    };
+
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (!cacto::EventNode::event(*root, event))
+            if (!cacto::EventNode::dispatch(*root, event))
             {
                 if (event.type == sf::Event::Closed)
                     window.close();
