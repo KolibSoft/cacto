@@ -19,19 +19,27 @@ namespace cacto
         return nullptr;
     }
 
-    void Node::append(const SharedNode &child)
+    Node::Node() = default;
+
+    Node::~Node()
+    {
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = getChild(i);
+            onRemove(child);
+        }
+    }
+
+    void Node::onAppend(const SharedNode &child)
     {
         child->onAttach(*this);
     }
 
-    void Node::remove(const SharedNode &child)
+    void Node::onRemove(const SharedNode &child)
     {
         child->onDetach(*this);
     }
-
-    Node::Node() = default;
-
-    Node::~Node() = default;
 
     void Node::onAttach(Node &parent)
     {
