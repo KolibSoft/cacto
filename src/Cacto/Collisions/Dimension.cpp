@@ -89,7 +89,7 @@ namespace cacto
     void Dimension::append(const Holder &holder)
     {
         m_holders.push_back(holder);
-        if (m_holders.size() > 2)
+        if (m_holders.size() > 1)
             split();
     }
 
@@ -128,7 +128,8 @@ namespace cacto
         }
         for (auto &holder : m_holders)
         {
-            setPoints(array, Rectangle({holder.trace->getBounds().left, holder.trace->getBounds().top}, {holder.trace->getBounds().width, holder.trace->getBounds().height}));
+            auto bounds = holder.trace->getBounds();
+            setPoints(array, Rectangle({bounds.left, bounds.top}, {bounds.width, bounds.height}));
             setColor(array, sf::Color::Blue);
             array.append(array[0]);
             target.draw(array, states);

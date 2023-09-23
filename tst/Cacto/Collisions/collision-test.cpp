@@ -59,7 +59,6 @@ public:
 
     Buddy()
     {
-        setOrigin({25, 25});
         setScale({2, 1});
         setRotation(sf::degrees(30));
     }
@@ -79,10 +78,10 @@ int main()
     window.setFramerateLimit(60);
 
     cacto::GenericNode root;
-    root.append(makeSolid({100, 100}));
-    root.append(makeSolid({200, 100}));
-    root.append(makeSolid({300, 300}));
-    root.append(makeSolid({100, 300}));
+    root.append(makeSolid({100, 50}));
+    root.append(makeSolid({250, 100}));
+    root.append(makeSolid({475, 325}));
+    root.append(makeSolid({100, 225}));
 
     auto dynamic = std::make_shared<Buddy>();
     root.append(dynamic);
