@@ -80,13 +80,13 @@ int main()
     cacto::GenericNode root;
     root.append(makeSolid({100, 50}));
     root.append(makeSolid({250, 100}));
-    root.append(makeSolid({475, 325}));
+    root.append(makeSolid({475, 225}));
     root.append(makeSolid({100, 225}));
 
     auto dynamic = std::make_shared<Buddy>();
     root.append(dynamic);
 
-    cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}};
+    cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
 
     sf::Clock clock;
     clock.start();
@@ -99,7 +99,11 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::Resized)
-                window.setView(sf::View(sf::FloatRect({0, 0}, sf::Vector2f{float(event.size.width), float(event.size.height)})));
+            {
+                sf::FloatRect rect{sf::FloatRect{{0, 0}, sf::Vector2f{float(event.size.width), float(event.size.height)}}};
+                window.setView(sf::View(rect));
+                dimension = {rect, 4};
+            }
         }
 
         color = sf::Color::Black;

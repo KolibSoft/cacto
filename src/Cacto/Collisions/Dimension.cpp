@@ -77,40 +77,16 @@ namespace cacto
         }
     }
 
-    Dimension::Dimension(const sf::FloatRect &zone)
-        : m_zone(zone), m_holders(), m_subdimensions(false),
+    Dimension::Dimension(const sf::FloatRect &zone, szt capacity)
+        : m_zone(zone), m_capacity(capacity), m_holders(), m_subdimensions(false),
           m_topLeft(nullptr), m_topRight(nullptr),
           m_bottomLeft(nullptr), m_bottomRight(nullptr)
     {
+        if (capacity < 1)
+            capacity = 1;
     }
 
     Dimension::~Dimension() = default;
-
-    void Dimension::append(const Holder &holder)
-    {
-        m_holders.push_back(holder);
-        if (m_holders.size() > 1)
-            split();
-    }
-
-    void Dimension::collisions(const Holder &holder, bool subdimensions)
-    {
-        for (auto &_holder : m_holders)
-        {
-            if (holder.trace->checkCollision(*_holder.trace))
-            {
-                holder.body->collision(*_holder.body);
-                _holder.body->collision(*holder.body);
-            }
-        }
-        if (subdimensions && m_subdimensions)
-        {
-            m_topLeft->collisions(holder, true);
-            m_topRight->collisions(holder, true);
-            m_bottomLeft->collisions(holder, true);
-            m_bottomRight->collisions(holder, true);
-        }
-    }
 
     void Dimension::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
@@ -143,6 +119,32 @@ namespace cacto
         }
     }
 
+    void Dimension::append(const Holder &holder)
+    {
+        m_holders.push_back(holder);
+        if (m_holders.size() > m_capacity)
+            split();
+    }
+
+    void Dimension::collisions(const Holder &holder, bool subdimensions)
+    {
+        for (auto &_holder : m_holders)
+        {
+            if (holder.trace->checkCollision(*_holder.trace))
+            {
+                holder.body->collision(*_holder.body);
+                _holder.body->collision(*holder.body);
+            }
+        }
+        if (subdimensions && m_subdimensions)
+        {
+            m_topLeft->collisions(holder, true);
+            m_topRight->collisions(holder, true);
+            m_bottomLeft->collisions(holder, true);
+            m_bottomRight->collisions(holder, true);
+        }
+    }
+
     void Dimension::split()
     {
         if (!m_subdimensions)
@@ -150,13 +152,17 @@ namespace cacto
             auto width = m_zone.width / 2;
             auto height = m_zone.height / 2;
             m_topLeft.reset(new Dimension(sf::FloatRect{{m_zone.left, m_zone.top},
-                                                        {width, height}}));
+                                                        {width, height}},
+                                          m_capacity));
             m_topRight.reset(new Dimension(sf::FloatRect{{m_zone.left + width, m_zone.top},
-                                                         {width, height}}));
+                                                         {width, height}},
+                                           m_capacity));
             m_bottomLeft.reset(new Dimension(sf::FloatRect{{m_zone.left, m_zone.top + height},
-                                                           {width, height}}));
+                                                           {width, height}},
+                                             m_capacity));
             m_bottomRight.reset(new Dimension(sf::FloatRect{{m_zone.left + width, m_zone.top + height},
-                                                            {width, height}}));
+                                                            {width, height}},
+                                              m_capacity));
             std::vector<Holder> holders;
             for (auto &holder : m_holders)
             {
