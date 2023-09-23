@@ -17,28 +17,38 @@
 auto color = sf::Color::Black;
 
 class Buddy
-    : public cacto::Body,
+    : public sf::Transformable,
+      public virtual cacto::Body,
       public virtual cacto::CollisionNode,
       public virtual cacto::DrawNode
 {
 
 public:
     mutable sf::VertexArray visual{sf::PrimitiveType::LineStrip};
+    mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
+    mutable cacto::Trace trace{geometry, getInverseTransform()};
+
+    cacto::Trace getTrace() const override
+    {
+        return {geometry, getTransform()};
+    }
+
+    bool onCollision(cacto::Dimension &dimension) override
+    {
+        trace = getTrace();
+        auto &target = dimension.locateCollisions(*this, trace);
+        target.append(*this, trace);
+        return false;
+    }
 
     bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
     {
-        cacto::setPoints(visual, *getGeometry());
+        cacto::setPoints(visual, *geometry);
         cacto::setColor(visual, sf::Color::Red);
         visual.append(visual[0]);
         auto _states = states;
         _states.transform *= getTransform();
         target.draw(visual, _states);
-        return false;
-    }
-
-    bool onCollision(cacto::Dimension &dimension) override
-    {
-        dimension.collisions(*this);
         return false;
     }
 
@@ -49,8 +59,6 @@ public:
 
     Buddy()
     {
-        setGeometry(std::make_shared<cacto::Ellipse>(cacto::Ellipse({0, 0}, {25, 25})));
-        setOrigin({25, 25});
         setScale({2, 1});
         setRotation(sf::degrees(30));
     }
@@ -70,13 +78,15 @@ int main()
     window.setFramerateLimit(60);
 
     cacto::GenericNode root;
-    root.append(makeSolid({100, 100}));
-    root.append(makeSolid({300, 100}));
-    root.append(makeSolid({300, 300}));
-    root.append(makeSolid({100, 300}));
+    root.append(makeSolid({100, 50}));
+    root.append(makeSolid({250, 100}));
+    root.append(makeSolid({475, 225}));
+    root.append(makeSolid({100, 225}));
 
     auto dynamic = std::make_shared<Buddy>();
     root.append(dynamic);
+
+    cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
 
     sf::Clock clock;
     clock.start();
@@ -89,11 +99,15 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::Resized)
-                window.setView(sf::View(sf::FloatRect({0, 0}, sf::Vector2f{float(event.size.width), float(event.size.height)})));
+            {
+                sf::FloatRect rect{sf::FloatRect{{0, 0}, sf::Vector2f{float(event.size.width), float(event.size.height)}}};
+                window.setView(sf::View(rect));
+                dimension = {rect, 4};
+            }
         }
 
         color = sf::Color::Black;
-        cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}};
+        dimension.clean();
         cacto::CollisionNode::collision(root, dimension);
 
         dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));

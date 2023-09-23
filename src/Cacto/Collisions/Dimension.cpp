@@ -8,11 +8,6 @@
 namespace cacto
 {
 
-    const std::vector<Dimension::Trace> &Dimension::getTraces() const
-    {
-        return m_traces;
-    }
-
     bool Dimension::hasZone(const sf::FloatRect &zone) const
     {
         auto result = zoneIn(m_zone, zone);
@@ -35,61 +30,63 @@ namespace cacto
         return nullptr;
     }
 
-    void Dimension::append(const Trace &trace)
+    void Dimension::append(Body &body, const Trace &trace)
     {
-        m_traces.push_back(trace);
-        if (m_traces.size() > 2)
-            split();
+        append(Holder{&body, &trace});
     }
 
-    void Dimension::collisions(const Trace &trace, bool subdimensions)
+    void Dimension::collisions(Body &body, const Trace &trace, bool dispatch)
     {
-        for (auto &_trace : m_traces)
+        collisions(Holder{&body, &trace}, dispatch);
+    }
+
+    Dimension &Dimension::locateCollisions(Body &body, const Trace &trace)
+    {
+        auto &target = Dimension::locateCollisions(*this, Holder{&body, &trace});
+        return target;
+    }
+
+    bool Dimension::isEmpty() const
+    {
+        auto empty = m_holders.size() == 0 && !m_subdimensions ||
+                     m_topLeft->isEmpty() && m_topRight->isEmpty() &&
+                         m_bottomLeft->isEmpty() && m_bottomRight->isEmpty();
+        return empty;
+    }
+
+    void Dimension::clean()
+    {
+        m_holders.clear();
+        if (m_subdimensions)
         {
-            if (zoneWith(trace.zone, _trace.zone) && trace.body->checkCollision(*_trace.body))
+            m_topLeft->clean();
+            m_topRight->clean();
+            m_bottomLeft->clean();
+            m_bottomRight->clean();
+
+            if (m_subdimensions &&
+                m_topLeft->isEmpty() && m_topRight->isEmpty() &&
+                m_bottomLeft->isEmpty() && m_bottomRight->isEmpty())
             {
-                trace.body->collision(*_trace.body);
-                _trace.body->collision(*trace.body);
+                m_topLeft.reset();
+                m_topRight.reset();
+                m_bottomLeft.reset();
+                m_bottomRight.reset();
+                m_subdimensions = false;
             }
         }
-        if (subdimensions && m_subdimensions)
-        {
-            m_topLeft->collisions(trace, true);
-            m_topRight->collisions(trace, true);
-            m_bottomLeft->collisions(trace, true);
-            m_bottomRight->collisions(trace, true);
-        }
     }
 
-    void Dimension::collisions(Body &body)
-    {
-        Trace trace{&body, body.getBounds()};
-        auto &target = Dimension::collisions(*this, trace);
-        target.append(trace);
-    }
-
-    Dimension::Dimension(const sf::FloatRect &zone)
-        : m_zone(zone), m_traces(), m_subdimensions(false),
+    Dimension::Dimension(const sf::FloatRect &zone, szt capacity)
+        : m_zone(zone), m_capacity(capacity), m_holders(), m_subdimensions(false),
           m_topLeft(nullptr), m_topRight(nullptr),
           m_bottomLeft(nullptr), m_bottomRight(nullptr)
     {
+        if (capacity < 1)
+            capacity = 1;
     }
 
     Dimension::~Dimension() = default;
-
-    Dimension &Dimension::collisions(Dimension &dimension, const Trace &trace)
-    {
-        auto *_dimension = &dimension;
-        auto *targetDimension = &dimension;
-        while (_dimension)
-        {
-            targetDimension = _dimension;
-            _dimension->collisions(trace, false);
-            _dimension = _dimension->locate(trace.zone);
-        }
-        targetDimension->collisions(trace, true);
-        return *targetDimension;
-    }
 
     void Dimension::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
@@ -105,19 +102,46 @@ namespace cacto
             m_bottomLeft->draw(target, states);
             m_bottomRight->draw(target, states);
         }
-        for (auto &trace : m_traces)
+        for (auto &holder : m_holders)
         {
-            setPoints(array, Rectangle({trace.zone.left, trace.zone.top}, {trace.zone.width, trace.zone.height}));
+            auto bounds = holder.trace->getBounds();
+            setPoints(array, Rectangle({bounds.left, bounds.top}, {bounds.width, bounds.height}));
             setColor(array, sf::Color::Blue);
             array.append(array[0]);
             target.draw(array, states);
 
             auto _states = states;
-            setPoints(array, *trace.body->getGeometry());
+            setPoints(array, *holder.trace->getGeometry());
             setColor(array, sf::Color::Red);
             array.append(array[0]);
-            _states.transform *= trace.body->getTransform();
+            _states.transform *= holder.trace->getTransform();
             target.draw(array, _states);
+        }
+    }
+
+    void Dimension::append(const Holder &holder)
+    {
+        m_holders.push_back(holder);
+        if (m_holders.size() > m_capacity)
+            split();
+    }
+
+    void Dimension::collisions(const Holder &holder, bool subdimensions)
+    {
+        for (auto &_holder : m_holders)
+        {
+            if (holder.trace->checkCollision(*_holder.trace))
+            {
+                holder.body->collision(*_holder.body);
+                _holder.body->collision(*holder.body);
+            }
+        }
+        if (subdimensions && m_subdimensions)
+        {
+            m_topLeft->collisions(holder, true);
+            m_topRight->collisions(holder, true);
+            m_bottomLeft->collisions(holder, true);
+            m_bottomRight->collisions(holder, true);
         }
     }
 
@@ -128,41 +152,59 @@ namespace cacto
             auto width = m_zone.width / 2;
             auto height = m_zone.height / 2;
             m_topLeft.reset(new Dimension(sf::FloatRect{{m_zone.left, m_zone.top},
-                                                        {width, height}}));
+                                                        {width, height}},
+                                          m_capacity));
             m_topRight.reset(new Dimension(sf::FloatRect{{m_zone.left + width, m_zone.top},
-                                                         {width, height}}));
+                                                         {width, height}},
+                                           m_capacity));
             m_bottomLeft.reset(new Dimension(sf::FloatRect{{m_zone.left, m_zone.top + height},
-                                                           {width, height}}));
+                                                           {width, height}},
+                                             m_capacity));
             m_bottomRight.reset(new Dimension(sf::FloatRect{{m_zone.left + width, m_zone.top + height},
-                                                            {width, height}}));
-            std::vector<Trace> traces;
-            for (auto &trace : m_traces)
+                                                            {width, height}},
+                                              m_capacity));
+            std::vector<Holder> holders;
+            for (auto &holder : m_holders)
             {
-                if (m_topLeft->hasZone(trace.zone))
+                if (m_topLeft->hasZone(holder.trace->getBounds()))
                 {
-                    m_topLeft->append(trace);
+                    m_topLeft->append(holder);
                     continue;
                 }
-                if (m_topRight->hasZone(trace.zone))
+                if (m_topRight->hasZone(holder.trace->getBounds()))
                 {
-                    m_topRight->append(trace);
+                    m_topRight->append(holder);
                     continue;
                 }
-                if (m_bottomLeft->hasZone(trace.zone))
+                if (m_bottomLeft->hasZone(holder.trace->getBounds()))
                 {
-                    m_bottomLeft->append(trace);
+                    m_bottomLeft->append(holder);
                     continue;
                 }
-                if (m_bottomRight->hasZone(trace.zone))
+                if (m_bottomRight->hasZone(holder.trace->getBounds()))
                 {
-                    m_bottomRight->append(trace);
+                    m_bottomRight->append(holder);
                     continue;
                 }
-                traces.push_back(trace);
+                holders.push_back(holder);
             }
-            m_traces = std::move(traces);
+            m_holders = std::move(holders);
             m_subdimensions = true;
         }
+    }
+
+    Dimension &Dimension::locateCollisions(Dimension &dimension, const Holder &holder)
+    {
+        auto *_dimension = &dimension;
+        auto *targetDimension = &dimension;
+        while (_dimension)
+        {
+            targetDimension = _dimension;
+            _dimension->collisions(holder, false);
+            _dimension = _dimension->locate(holder.trace->getBounds());
+        }
+        targetDimension->collisions(holder, true);
+        return *targetDimension;
     }
 
 }
