@@ -26,12 +26,14 @@ namespace cacto
         Dimension *const locate(const sf::FloatRect &zone) const;
 
         void append(Body &body, const Trace &trace);
-        void collisions(Body &body, const Trace &trace);
+        void collisions(Body &body, const Trace &trace, bool dispatch);
+        Dimension &locateCollisions(Body &body, const Trace &trace);
+
+        bool isEmpty() const;
+        void clean();
 
         Dimension(const sf::FloatRect &zone);
         virtual ~Dimension();
-
-        static Dimension &collisions(Dimension &dimension, const Holder &holder);
 
         struct Holder
         {
@@ -45,9 +47,11 @@ namespace cacto
 
     protected:
         void append(const Holder &holder);
-        void collisions(const Holder &holder, bool subdimensions);
+        void collisions(const Holder &holder, bool dispatch);
 
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
+        static Dimension &locateCollisions(Dimension &dimension, const Holder &holder);
 
     private:
         void split();

@@ -36,7 +36,8 @@ public:
     bool onCollision(cacto::Dimension &dimension) override
     {
         trace = getTrace();
-        dimension.collisions(*this, trace);
+        auto &target = dimension.locateCollisions(*this, trace);
+        target.append(*this, trace);
         return false;
     }
 
@@ -79,12 +80,14 @@ int main()
 
     cacto::GenericNode root;
     root.append(makeSolid({100, 100}));
-    root.append(makeSolid({300, 100}));
+    root.append(makeSolid({200, 100}));
     root.append(makeSolid({300, 300}));
     root.append(makeSolid({100, 300}));
 
     auto dynamic = std::make_shared<Buddy>();
     root.append(dynamic);
+
+    cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}};
 
     sf::Clock clock;
     clock.start();
@@ -101,7 +104,7 @@ int main()
         }
 
         color = sf::Color::Black;
-        cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}};
+        dimension.clean();
         cacto::CollisionNode::collision(root, dimension);
 
         dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));

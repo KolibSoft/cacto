@@ -35,11 +35,46 @@ namespace cacto
         append(Holder{&body, &trace});
     }
 
-    void Dimension::collisions(Body &body, const Trace &trace)
+    void Dimension::collisions(Body &body, const Trace &trace, bool dispatch)
     {
-        Holder holder{&body, &trace};
-        auto &target = Dimension::collisions(*this, holder);
-        target.append(holder);
+        collisions(Holder{&body, &trace}, dispatch);
+    }
+
+    Dimension &Dimension::locateCollisions(Body &body, const Trace &trace)
+    {
+        auto &target = Dimension::locateCollisions(*this, Holder{&body, &trace});
+        return target;
+    }
+
+    bool Dimension::isEmpty() const
+    {
+        auto empty = m_holders.size() == 0 && !m_subdimensions ||
+                     m_topLeft->isEmpty() && m_topRight->isEmpty() &&
+                         m_bottomLeft->isEmpty() && m_bottomRight->isEmpty();
+        return empty;
+    }
+
+    void Dimension::clean()
+    {
+        m_holders.clear();
+        if (m_subdimensions)
+        {
+            m_topLeft->clean();
+            m_topRight->clean();
+            m_bottomLeft->clean();
+            m_bottomRight->clean();
+
+            if (m_subdimensions &&
+                m_topLeft->isEmpty() && m_topRight->isEmpty() &&
+                m_bottomLeft->isEmpty() && m_bottomRight->isEmpty())
+            {
+                m_topLeft.reset();
+                m_topRight.reset();
+                m_bottomLeft.reset();
+                m_bottomRight.reset();
+                m_subdimensions = false;
+            }
+        }
     }
 
     Dimension::Dimension(const sf::FloatRect &zone)
@@ -50,20 +85,6 @@ namespace cacto
     }
 
     Dimension::~Dimension() = default;
-
-    Dimension &Dimension::collisions(Dimension &dimension, const Holder &holder)
-    {
-        auto *_dimension = &dimension;
-        auto *targetDimension = &dimension;
-        while (_dimension)
-        {
-            targetDimension = _dimension;
-            _dimension->collisions(holder, false);
-            _dimension = _dimension->locate(holder.trace->getBounds());
-        }
-        targetDimension->collisions(holder, true);
-        return *targetDimension;
-    }
 
     void Dimension::append(const Holder &holder)
     {
@@ -163,6 +184,20 @@ namespace cacto
             m_holders = std::move(holders);
             m_subdimensions = true;
         }
+    }
+
+    Dimension &Dimension::locateCollisions(Dimension &dimension, const Holder &holder)
+    {
+        auto *_dimension = &dimension;
+        auto *targetDimension = &dimension;
+        while (_dimension)
+        {
+            targetDimension = _dimension;
+            _dimension->collisions(holder, false);
+            _dimension = _dimension->locate(holder.trace->getBounds());
+        }
+        targetDimension->collisions(holder, true);
+        return *targetDimension;
     }
 
 }
