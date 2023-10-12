@@ -68,6 +68,18 @@ namespace cacto
         }
     }
 
+    void Surface::attach(const SharedNode &parent)
+    {
+        auto self = as<Node>();
+        Node::link(parent, self);
+    }
+
+    void Surface::detach(const SharedNode &parent)
+    {
+        auto self = as<Node>();
+        Node::unlink(parent, self);
+    }
+
     Surface::Surface()
         : m_parent(),
           m_geometry(new Rectangle({0, 0}, {1, 1})),

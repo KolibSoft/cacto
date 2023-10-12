@@ -22,6 +22,9 @@ namespace cacto
         Node() = default;
         virtual ~Node() = default;
 
+        static void link(const SharedNode &parent, const SharedNode &child);
+        static void unlink(const SharedNode &parent, const SharedNode &child);
+
     protected:
         virtual void onAppend(const SharedNode &child) = 0;
         virtual void onRemove(const SharedNode &child) = 0;

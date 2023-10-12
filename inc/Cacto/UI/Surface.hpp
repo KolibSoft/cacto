@@ -1,7 +1,6 @@
 #ifndef CACTO_SURFACE_HPP
 #define CACTO_SURFACE_HPP
 
-#include <memory>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
@@ -26,8 +25,7 @@ namespace cacto
     using SharedSurface = std::shared_ptr<Surface>;
 
     class CACTO_UI_API Surface
-        : public std::enable_shared_from_this<Surface>,
-          public Box,
+        : public Box,
           public virtual LeafNode,
           public virtual DrawNode,
           public virtual InflatableNode
@@ -49,6 +47,9 @@ namespace cacto
         void setTexture(const SharedTexture &value);
 
         void update(bool force = false) const;
+
+        void attach(const SharedNode& parent);
+        void detach(const SharedNode& parent);
 
         Surface();
         virtual ~Surface();

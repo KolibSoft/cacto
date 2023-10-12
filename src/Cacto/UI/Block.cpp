@@ -96,6 +96,18 @@ namespace cacto
         m_maxHeight = value;
     }
 
+    void Block::attach(const SharedNode &parent)
+    {
+        auto self = as<Node>();
+        Node::link(parent, self);
+    }
+
+    void Block::detach(const SharedNode &parent)
+    {
+        auto self = as<Node>();
+        Node::unlink(parent, self);
+    }
+
     Block::Block()
         : m_parent(),
           m_background(nullptr),

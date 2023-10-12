@@ -24,8 +24,7 @@ namespace cacto
     using SharedGeometry = std::shared_ptr<Geometry>;
 
     class CACTO_UI_API Block
-        : public std::enable_shared_from_this<Block>,
-          public Box,
+        : public Box,
           public virtual LeafNode,
           public virtual DrawNode,
           public virtual InflatableNode
@@ -57,6 +56,9 @@ namespace cacto
 
         void setFixedWidth(f32t value);
         void setFixedHeight(f32t value);
+
+        void attach(const SharedNode& parent);
+        void detach(const SharedNode& parent);
 
         Block();
         virtual ~Block();

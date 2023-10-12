@@ -15,18 +15,6 @@ namespace cacto
         return child;
     }
 
-    void FrameLayout::append(const SharedNode &child)
-    {
-        onAppend(child);
-        // child->onAttach(shared_from_this());
-    }
-
-    void FrameLayout::remove(const SharedNode &child)
-    {
-        // child->onDetach(shared_from_this());
-        onRemove(child);
-    }
-
     Box::Anchor FrameLayout::getHorizontalAnchor(const SharedNode &child) const
     {
         if (getChild() != child)
@@ -53,6 +41,18 @@ namespace cacto
         if (getChild() != child)
             throw std::runtime_error("The node is not a child");
         m_holder->vAnchor = value;
+    }
+
+    void FrameLayout::append(const SharedNode &child)
+    {
+        auto self = as<Node>();
+        Node::link(self, child);
+    }
+
+    void FrameLayout::remove(const SharedNode &child)
+    {
+        auto self = as<Node>();
+        Node::unlink(self, child);
     }
 
     FrameLayout::FrameLayout()
