@@ -4,6 +4,16 @@
 namespace cacto
 {
 
+    szt LeafNode::getChildCount() const
+    {
+        return 0;
+    }
+
+    SharedNode LeafNode::getChild(szt index) const
+    {
+        return nullptr;
+    }
+
     LeafNode::LeafNode() = default;
 
     LeafNode::~LeafNode() = default;
