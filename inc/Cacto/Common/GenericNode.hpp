@@ -2,6 +2,7 @@
 #define CACTO_GENERIC_NODE_HPP
 
 #include <vector>
+#include <Cacto/Core/Object.hpp>
 #include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Window/EventNode.hpp>
@@ -14,7 +15,8 @@ namespace cacto
     using WeakNode = std::weak_ptr<Node>;
 
     class CACTO_COMMON_API GenericNode
-        : public virtual DrawNode,
+        : public Object,
+          public virtual DrawNode,
           public virtual EventNode,
           public virtual UpdateNode
     {
@@ -27,6 +29,9 @@ namespace cacto
 
         void append(const SharedNode &child);
         void remove(const SharedNode &child);
+
+        void attach(const SharedNode &parent);
+        void detach(const SharedNode &parent);
 
         GenericNode();
         virtual ~GenericNode();

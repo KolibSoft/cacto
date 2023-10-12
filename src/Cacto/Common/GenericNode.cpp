@@ -29,14 +29,26 @@ namespace cacto
 
     void GenericNode::append(const SharedNode &child)
     {
-        onAppend(child);
-        // child->onAttach(shared_from_this());
+        auto self = as<Node>();
+        Node::link(self, child);
     }
 
     void GenericNode::remove(const SharedNode &child)
     {
-        // child->onDetach(shared_from_this());
-        onRemove(child);
+        auto self = as<Node>();
+        Node::unlink(self, child);
+    }
+
+    void GenericNode::attach(const SharedNode &parent)
+    {
+        auto self = as<Node>();
+        Node::link(parent, self);
+    }
+
+    void GenericNode::detach(const SharedNode &parent)
+    {
+        auto self = as<Node>();
+        Node::unlink(parent, self);
     }
 
     GenericNode::GenericNode()
