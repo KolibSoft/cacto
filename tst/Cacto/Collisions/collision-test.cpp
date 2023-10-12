@@ -28,7 +28,7 @@ class Buddy
 public:
     mutable sf::VertexArray visual{sf::PrimitiveType::LineStrip};
     mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
-    mutable cacto::Trace trace{geometry, getInverseTransform()};
+    mutable cacto::Trace trace{};
 
     cacto::SharedNode getParent() const override
     {
@@ -36,14 +36,9 @@ public:
         return parent;
     }
 
-    cacto::Trace getTrace() const override
+    bool onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
     {
-        return {geometry, getTransform()};
-    }
-
-    bool onCollision(cacto::Dimension &dimension) override
-    {
-        trace = getTrace();
+        trace = {geometry, transform * getTransform()};
         auto &target = dimension.locateCollisions(*this, trace);
         target.append(*this, trace);
         return false;

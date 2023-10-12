@@ -7,6 +7,7 @@
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Window/EventNode.hpp>
 #include <Cacto/Animations/UpdateNode.hpp>
+#include <Cacto/Collisions/CollisionNode.hpp>
 #include <Cacto/Common/Export.hpp>
 
 namespace cacto
@@ -18,7 +19,8 @@ namespace cacto
         : public Object,
           public virtual DrawNode,
           public virtual EventNode,
-          public virtual UpdateNode
+          public virtual UpdateNode,
+          public virtual CollisionNode
     {
 
     public:
