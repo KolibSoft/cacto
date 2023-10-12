@@ -7,9 +7,10 @@
 namespace cacto
 {
 
-    Node *const Surface::getParent() const
+    SharedNode Surface::getParent() const
     {
-        return m_parent;
+        auto parent = m_parent.lock();
+        return parent;
     }
 
     const SharedGeometry &Surface::getGeometry() const
@@ -68,7 +69,7 @@ namespace cacto
     }
 
     Surface::Surface()
-        : m_parent(nullptr),
+        : m_parent(),
           m_geometry(new Rectangle({0, 0}, {1, 1})),
           m_precision(1),
           m_color(sf::Color::White),
@@ -80,16 +81,18 @@ namespace cacto
 
     Surface::~Surface() = default;
 
-    void Surface::onAttach(Node &parent)
+    void Surface::onAttach(const SharedNode &parent)
     {
-        Node::onAttach(parent);
-        m_parent = &parent;
+        if (getParent() != nullptr)
+            throw std::runtime_error("Node attached to another parent");
+        m_parent = parent;
     }
 
-    void Surface::onDetach(Node &parent)
+    void Surface::onDetach(const SharedNode &parent)
     {
-        Node::onDetach(parent);
-        m_parent = nullptr;
+        if (getParent() != parent)
+            throw std::runtime_error("Node attached to another parent");
+        m_parent.reset();
     }
 
     void Surface::onUpdate() const

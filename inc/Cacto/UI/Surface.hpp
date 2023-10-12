@@ -17,6 +17,7 @@ namespace cacto
 {
 
     using SharedTexture = std::shared_ptr<sf::Texture>;
+    using WeakNode = std::weak_ptr<Node>;
 
     class Geometry;
     using SharedGeometry = std::shared_ptr<Geometry>;
@@ -25,14 +26,15 @@ namespace cacto
     using SharedSurface = std::shared_ptr<Surface>;
 
     class CACTO_UI_API Surface
-        : public Box,
+        : public std::enable_shared_from_this<Surface>,
+          public Box,
           public virtual LeafNode,
           public virtual DrawNode,
           public virtual InflatableNode
     {
 
     public:
-        Node *const getParent() const override;
+        SharedNode getParent() const override;
 
         const SharedGeometry &getGeometry() const;
         void setGeometry(const SharedGeometry &value);
@@ -52,8 +54,8 @@ namespace cacto
         virtual ~Surface();
 
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const SharedNode &parent) override;
+        void onDetach(const SharedNode &parent) override;
 
         virtual void onUpdate() const;
         bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
@@ -63,7 +65,7 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        Node *m_parent;
+        WeakNode m_parent;
 
         SharedGeometry m_geometry;
         szt m_precision;

@@ -18,19 +18,21 @@ namespace cacto
 {
 
     using SharedTexture = std::shared_ptr<sf::Texture>;
+    using WeakNode = std::weak_ptr<Node>;
 
     class Geometry;
     using SharedGeometry = std::shared_ptr<Geometry>;
 
     class CACTO_UI_API Block
-        : public Box,
+        : public std::enable_shared_from_this<Block>,
+          public Box,
           public virtual LeafNode,
           public virtual DrawNode,
           public virtual InflatableNode
     {
 
     public:
-        Node *const getParent() const override;
+        SharedNode getParent() const override;
 
         const SharedNode &getBackground() const;
         void setBackground(const SharedNode &value);
@@ -60,8 +62,8 @@ namespace cacto
         virtual ~Block();
 
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const SharedNode &parent) override;
+        void onDetach(const SharedNode &parent) override;
 
         bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
@@ -70,7 +72,7 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        Node *m_parent;
+        WeakNode m_parent;
         SharedNode m_background;
         Thickness m_margin;
         Thickness m_padding;

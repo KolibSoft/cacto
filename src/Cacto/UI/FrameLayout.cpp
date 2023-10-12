@@ -18,10 +18,12 @@ namespace cacto
     void FrameLayout::append(const SharedNode &child)
     {
         onAppend(child);
+        // child->onAttach(shared_from_this());
     }
 
     void FrameLayout::remove(const SharedNode &child)
     {
+        // child->onDetach(shared_from_this());
         onRemove(child);
     }
 
@@ -64,7 +66,6 @@ namespace cacto
     {
         if (getChild())
             throw std::runtime_error("This node can not has more child nodes");
-        Node::onAppend(child);
         m_holder.reset(new Holder());
         m_holder->child = child;
         m_holder->hAnchor = Start;
@@ -75,7 +76,6 @@ namespace cacto
     {
         if (getChild() != child)
             throw std::runtime_error("The node is not a child node");
-        Node::onRemove(child);
         m_holder.reset();
     }
 

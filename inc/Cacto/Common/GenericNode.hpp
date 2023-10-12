@@ -11,6 +11,8 @@
 namespace cacto
 {
 
+    using WeakNode = std::weak_ptr<Node>;
+
     class CACTO_COMMON_API GenericNode
         : public virtual DrawNode,
           public virtual EventNode,
@@ -18,7 +20,7 @@ namespace cacto
     {
 
     public:
-        Node *const getParent() const override;
+        SharedNode getParent() const override;
 
         szt getChildCount() const override;
         SharedNode getChild(szt index = 0) const override;
@@ -33,11 +35,11 @@ namespace cacto
         void onAppend(const SharedNode &child) override;
         void onRemove(const SharedNode &child) override;
 
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const SharedNode &parent) override;
+        void onDetach(const SharedNode &parent) override;
 
     private:
-        Node *m_parent;
+        WeakNode m_parent;
         std::vector<SharedNode> m_children;
     };
 

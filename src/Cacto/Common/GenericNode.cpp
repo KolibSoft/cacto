@@ -1,12 +1,14 @@
+#include <stdexcept>
 #include <algorithm>
 #include <Cacto/Common/GenericNode.hpp>
 
 namespace cacto
 {
 
-    Node *const GenericNode::getParent() const
+    SharedNode GenericNode::getParent() const
     {
-        return m_parent;
+        auto parent = m_parent.lock();
+        return parent;
     }
 
     szt GenericNode::getChildCount() const
@@ -28,15 +30,17 @@ namespace cacto
     void GenericNode::append(const SharedNode &child)
     {
         onAppend(child);
+        // child->onAttach(shared_from_this());
     }
 
     void GenericNode::remove(const SharedNode &child)
     {
+        // child->onDetach(shared_from_this());
         onRemove(child);
     }
 
     GenericNode::GenericNode()
-        : m_parent(nullptr), m_children()
+        : m_parent(), m_children()
     {
     }
 
@@ -44,26 +48,26 @@ namespace cacto
 
     void GenericNode::onAppend(const SharedNode &child)
     {
-        Node::onAppend(child);
         m_children.push_back(child);
     }
 
     void GenericNode::onRemove(const SharedNode &child)
     {
-        Node::onRemove(child);
         std::remove(m_children.begin(), m_children.end(), child);
     }
 
-    void GenericNode::onAttach(Node &parent)
+    void GenericNode::onAttach(const SharedNode &parent)
     {
-        Node::onAttach(parent);
-        m_parent = &parent;
+        if (getParent() != nullptr)
+            throw std::runtime_error("Node attached to another parent");
+        m_parent = parent;
     }
 
-    void GenericNode::onDetach(Node &parent)
+    void GenericNode::onDetach(const SharedNode &parent)
     {
-        Node::onDetach(parent);
-        m_parent = nullptr;
+        if (getParent() != parent)
+            throw std::runtime_error("Node attached to another parent");
+        m_parent.reset();
     }
 
 }
