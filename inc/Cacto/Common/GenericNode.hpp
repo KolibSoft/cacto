@@ -6,6 +6,7 @@
 #include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Window/EventNode.hpp>
+#include <Cacto/UI/InflatableNode.hpp>
 #include <Cacto/Animations/UpdateNode.hpp>
 #include <Cacto/Collisions/CollisionNode.hpp>
 #include <Cacto/Common/Export.hpp>
@@ -19,6 +20,7 @@ namespace cacto
         : public Object,
           public virtual DrawNode,
           public virtual EventNode,
+          public virtual InflatableNode,
           public virtual UpdateNode,
           public virtual CollisionNode
     {

@@ -64,7 +64,7 @@ namespace cacto
     bool EventNode::bubbleParent(Node &node, Node &target, const sf::Event &event)
     {
         auto parent = node.getParent();
-        auto handled = parent && EventNode::bubble(node, target, event);
+        auto handled = parent && EventNode::bubble(*parent, target, event);
         return handled;
     }
 

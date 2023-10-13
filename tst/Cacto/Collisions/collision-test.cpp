@@ -36,15 +36,15 @@ public:
         return parent;
     }
 
-    bool onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
+    void onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
     {
         trace = {geometry, transform * getTransform()};
         auto &target = dimension.locateCollisions(*this, trace);
         target.append(*this, trace);
-        return false;
+        collisionChildren(dimension, transform);
     }
 
-    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
+    void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
     {
         cacto::setPoints(visual, *geometry);
         cacto::setColor(visual, sf::Color::Red);
@@ -52,7 +52,7 @@ public:
         auto _states = states;
         _states.transform *= getTransform();
         target.draw(visual, _states);
-        return false;
+        drawChildren(target, _states);
     }
 
     void collision(Body &body) override
@@ -92,7 +92,7 @@ int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(120);
 
     auto root = std::make_shared<cacto::GenericNode>();
     root->append(makeSolid({100, 50}));
