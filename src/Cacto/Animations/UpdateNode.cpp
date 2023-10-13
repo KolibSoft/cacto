@@ -17,6 +17,12 @@ namespace cacto
         auto updateNode = dynamic_cast<UpdateNode *>(&node);
         if (updateNode)
             updateNode->onUpdate(time);
+        else
+            UpdateNode::updateChildren(node, time);
+    }
+
+    void UpdateNode::updateChildren(Node &node, const sf::Time &time)
+    {
         auto childCount = node.getChildCount();
         for (szt i = 0; i < childCount; i++)
         {
@@ -25,8 +31,14 @@ namespace cacto
         }
     }
 
+    void UpdateNode::updateChildren(const sf::Time &time)
+    {
+        UpdateNode::updateChildren(*this, time);
+    }
+
     void UpdateNode::onUpdate(const sf::Time &time)
     {
+        updateChildren(time);
     }
 
 }

@@ -29,7 +29,11 @@ public:
             onClickListener(target, event);
             return true;
         }
-        return false;
+        else
+        {
+            auto handled = bubbleParent(target, event);
+            return handled;
+        }
     }
 };
 
@@ -51,12 +55,14 @@ public:
 protected:
     bool onEvent(const sf::Event &event) override
     {
-        if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        if (eventChildren(event))
+            return true;
+        else if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
             if (onClickListener)
                 onClickListener(*this, event);
             else
-                bubble(*this, event);
+                bubbleParent(*this, event);
             return true;
         }
         return false;
@@ -114,7 +120,7 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (!cacto::EventNode::dispatch(*root, event))
+            if (!cacto::EventNode::event(*root, event))
             {
                 if (event.type == sf::Event::Closed)
                     window.close();

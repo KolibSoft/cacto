@@ -3,11 +3,6 @@
 namespace cacto
 {
 
-    void EventNode::dispatch(const sf::Event &event)
-    {
-        EventNode::dispatch(*this, event);
-    }
-
     void EventNode::event(const sf::Event &event)
     {
         EventNode::event(*this, event);
@@ -22,58 +17,79 @@ namespace cacto
 
     EventNode::~EventNode() = default;
 
-    bool EventNode::dispatch(Node &node, const sf::Event &event)
-    {
-        auto nodeEvent = dynamic_cast<EventNode *>(&node);
-        auto handled = nodeEvent && nodeEvent->onDispatch(event);
-        if (!handled)
-        {
-            auto childCount = node.getChildCount();
-            for (szt i = 0; i < childCount; i++)
-            {
-                auto child = node.getChild(i);
-                handled = EventNode::dispatch(*child, event);
-                if (handled)
-                    break;
-            }
-            if (!handled)
-                handled = nodeEvent && nodeEvent->onEvent(event);
-        }
-        return handled;
-    }
-
     bool EventNode::event(Node &node, const sf::Event &event)
     {
-        auto nodeEvent = dynamic_cast<EventNode *>(&node);
-        auto handled = nodeEvent && nodeEvent->onEvent(event);
+        auto eventNode = dynamic_cast<EventNode *>(&node);
+        if (eventNode)
+        {
+            auto handled = eventNode->onEvent(event);
+            return handled;
+        }
+        else
+        {
+            auto handled = EventNode::eventChildren(node, event);
+            return handled;
+        }
+    }
+
+    bool EventNode::eventChildren(Node &node, const sf::Event &event)
+    {
+        auto handled = false;
+        auto childCount = node.getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = node.getChild(i);
+            auto handled = child && EventNode::event(*child, event);
+            if (handled)
+                break;
+        }
         return handled;
     }
 
     bool EventNode::bubble(Node &node, Node &target, const sf::Event &event)
     {
-        auto nodeEvent = dynamic_cast<EventNode *>(&node);
-        auto handled = nodeEvent && nodeEvent->onBubble(target, event);
-        if (!handled)
+        auto eventNode = dynamic_cast<EventNode *>(&node);
+        if (eventNode)
         {
-            auto parent = node.getParent();
-            handled = parent && EventNode::bubble(*parent, target, event);
+            auto handled = eventNode->onBubble(target, event);
+            return handled;
         }
+        else
+        {
+            auto handled = EventNode::bubbleParent(node, target, event);
+            return handled;
+        }
+    }
+
+    bool EventNode::bubbleParent(Node &node, Node &target, const sf::Event &event)
+    {
+        auto parent = node.getParent();
+        auto handled = parent && EventNode::bubble(*parent, target, event);
         return handled;
     }
 
-    bool EventNode::onDispatch(const sf::Event &event)
+    bool EventNode::eventChildren(const sf::Event &event)
     {
-        return false;
+        auto handled = EventNode::eventChildren(*this, event);
+        return handled;
+    }
+
+    bool EventNode::bubbleParent(Node &target, const sf::Event &event)
+    {
+        auto handled = EventNode::bubbleParent(*this, target, event);
+        return handled;
     }
 
     bool EventNode::onEvent(const sf::Event &event)
     {
-        return false;
+        auto handled = eventChildren(event);
+        return handled;
     }
 
     bool EventNode::onBubble(Node &target, const sf::Event &event)
     {
-        return false;
+        auto handled = bubbleParent(target, event);
+        return handled;
     }
 
 }

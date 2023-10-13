@@ -11,7 +11,6 @@ namespace cacto
     {
 
     public:
-        virtual Trace getTrace() const = 0;
         virtual void collision(Body &other) = 0;
 
         Body();

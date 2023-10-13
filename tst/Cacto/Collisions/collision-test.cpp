@@ -6,6 +6,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
@@ -18,6 +19,7 @@ auto color = sf::Color::Black;
 
 class Buddy
     : public sf::Transformable,
+      public virtual cacto::LeafNode,
       public virtual cacto::Body,
       public virtual cacto::CollisionNode,
       public virtual cacto::DrawNode
@@ -26,22 +28,23 @@ class Buddy
 public:
     mutable sf::VertexArray visual{sf::PrimitiveType::LineStrip};
     mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
-    mutable cacto::Trace trace{geometry, getInverseTransform()};
+    mutable cacto::Trace trace{};
 
-    cacto::Trace getTrace() const override
+    cacto::SharedNode getParent() const override
     {
-        return {geometry, getTransform()};
+        auto parent = m_parent.lock();
+        return parent;
     }
 
-    bool onCollision(cacto::Dimension &dimension) override
+    void onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
     {
-        trace = getTrace();
+        trace = {geometry, transform * getTransform()};
         auto &target = dimension.locateCollisions(*this, trace);
         target.append(*this, trace);
-        return false;
+        collisionChildren(dimension, transform);
     }
 
-    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
+    void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
     {
         cacto::setPoints(visual, *geometry);
         cacto::setColor(visual, sf::Color::Red);
@@ -49,7 +52,7 @@ public:
         auto _states = states;
         _states.transform *= getTransform();
         target.draw(visual, _states);
-        return false;
+        drawChildren(target, _states);
     }
 
     void collision(Body &body) override
@@ -62,6 +65,20 @@ public:
         setScale({2, 1});
         setRotation(sf::degrees(30));
     }
+
+protected:
+    void onAttach(const cacto::SharedNode &parent) override
+    {
+        m_parent = parent;
+    }
+
+    void onDetach(const cacto::SharedNode &parent) override
+    {
+        m_parent.reset();
+    }
+
+private:
+    cacto::WeakNode m_parent;
 };
 
 auto makeSolid(const sf::Vector2f &position)
@@ -75,16 +92,16 @@ int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    window.setFramerateLimit(60);
+    window.setFramerateLimit(120);
 
-    cacto::GenericNode root;
-    root.append(makeSolid({100, 50}));
-    root.append(makeSolid({250, 100}));
-    root.append(makeSolid({475, 225}));
-    root.append(makeSolid({100, 225}));
+    auto root = std::make_shared<cacto::GenericNode>();
+    root->append(makeSolid({100, 50}));
+    root->append(makeSolid({250, 100}));
+    root->append(makeSolid({475, 225}));
+    root->append(makeSolid({100, 225}));
 
     auto dynamic = std::make_shared<Buddy>();
-    root.append(dynamic);
+    root->append(dynamic);
 
     cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
 
@@ -108,7 +125,7 @@ int main()
 
         color = sf::Color::Black;
         dimension.clean();
-        cacto::CollisionNode::collision(root, dimension);
+        cacto::CollisionNode::collision(*root, dimension);
 
         dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
         window.clear(color);

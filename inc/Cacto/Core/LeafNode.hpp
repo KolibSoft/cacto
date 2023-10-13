@@ -1,5 +1,5 @@
-#ifndef CACTO_LEAFT_NODE_HPP
-#define CACTO_LEAFT_NODE_HPP
+#ifndef CACTO_LEAF_NODE_HPP
+#define CACTO_LEAF_NODE_HPP
 
 #include <Cacto/Core/Node.hpp>
 
@@ -11,6 +11,9 @@ namespace cacto
     {
 
     public:
+        szt getChildCount() const override;
+        SharedNode getChild(szt index = 0) const override;
+
         LeafNode();
         virtual ~LeafNode();
 

@@ -18,6 +18,7 @@ namespace cacto
 {
 
     using SharedTexture = std::shared_ptr<sf::Texture>;
+    using WeakNode = std::weak_ptr<Node>;
 
     class Geometry;
     using SharedGeometry = std::shared_ptr<Geometry>;
@@ -30,7 +31,7 @@ namespace cacto
     {
 
     public:
-        Node *const getParent() const override;
+        SharedNode getParent() const override;
 
         const SharedNode &getBackground() const;
         void setBackground(const SharedNode &value);
@@ -56,21 +57,24 @@ namespace cacto
         void setFixedWidth(f32t value);
         void setFixedHeight(f32t value);
 
+        void attach(const SharedNode& parent);
+        void detach(const SharedNode& parent);
+
         Block();
         virtual ~Block();
 
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const SharedNode &parent) override;
+        void onDetach(const SharedNode &parent) override;
 
-        bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        Node *m_parent;
+        WeakNode m_parent;
         SharedNode m_background;
         Thickness m_margin;
         Thickness m_padding;

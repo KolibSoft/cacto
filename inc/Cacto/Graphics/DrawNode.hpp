@@ -26,9 +26,11 @@ namespace cacto
         virtual ~DrawNode();
 
         static void draw(const Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
+        static void drawChildren(const Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
 
     protected:
-        virtual bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const;
+        void drawChildren(sf::RenderTarget &target, const sf::RenderStates &states) const;
+        virtual void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const;
     };
 
 }

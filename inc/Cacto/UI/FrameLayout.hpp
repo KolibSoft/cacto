@@ -15,14 +15,14 @@ namespace cacto
         szt getChildCount() const override;
         SharedNode getChild(szt index = 0) const override;
 
-        void append(const SharedNode &child);
-        void remove(const SharedNode &child);
-
         Anchor getHorizontalAnchor(const SharedNode &child) const;
         void setHorizontalAnchor(const SharedNode &child, Anchor value);
 
         Anchor getVerticalAnchor(const SharedNode &child) const;
         void setVerticalAnchor(const SharedNode &child, Anchor value);
+
+        void append(const SharedNode &child);
+        void remove(const SharedNode &child);
 
         FrameLayout();
         virtual ~FrameLayout();
@@ -33,8 +33,6 @@ namespace cacto
 
         void onAppend(const SharedNode &child) override;
         void onRemove(const SharedNode &child) override;
-
-        bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;

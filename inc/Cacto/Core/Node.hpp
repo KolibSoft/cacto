@@ -14,20 +14,23 @@ namespace cacto
     {
 
     public:
-        virtual Node *const getParent() const;
+        virtual SharedNode getParent() const = 0;
 
-        virtual szt getChildCount() const;
-        virtual SharedNode getChild(szt index = 0) const;
+        virtual szt getChildCount() const = 0;
+        virtual SharedNode getChild(szt index = 0) const = 0;
 
-        Node();
-        virtual ~Node();
+        Node() = default;
+        virtual ~Node() = default;
+
+        static void link(const SharedNode &parent, const SharedNode &child);
+        static void unlink(const SharedNode &parent, const SharedNode &child);
 
     protected:
-        virtual void onAppend(const SharedNode &child);
-        virtual void onRemove(const SharedNode &child);
+        virtual void onAppend(const SharedNode &child) = 0;
+        virtual void onRemove(const SharedNode &child) = 0;
 
-        virtual void onAttach(Node &parent);
-        virtual void onDetach(Node &parent);
+        virtual void onAttach(const SharedNode &parent) = 0;
+        virtual void onDetach(const SharedNode &parent) = 0;
     };
 
 }

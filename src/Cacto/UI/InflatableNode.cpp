@@ -34,17 +34,23 @@ namespace cacto
         }
         else
         {
-            sf::Vector2f size{0, 0};
-            auto childCount = node.getChildCount();
-            for (szt i = 0; i < childCount; i++)
-            {
-                auto child = node.getChild(i);
-                auto childSize = InflatableNode::compact(*child, contentSize);
-                size.x = std::max(size.x, childSize.x);
-                size.y = std::max(size.y, childSize.y);
-            }
+            auto size = InflatableNode::compactChildren(node, contentSize);
             return size;
         }
+    }
+
+    sf::Vector2f InflatableNode::compactChildren(Node &node, const sf::Vector2f &contentSize)
+    {
+        sf::Vector2f size{0, 0};
+        auto childCount = node.getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = node.getChild(i);
+            auto childSize = InflatableNode::compact(*child, contentSize);
+            size.x = std::max(size.x, childSize.x);
+            size.y = std::max(size.y, childSize.y);
+        }
+        return size;
     }
 
     sf::Vector2f InflatableNode::inflate(Node &node, const sf::Vector2f &containerSize)
@@ -57,35 +63,59 @@ namespace cacto
         }
         else
         {
-            sf::Vector2f size{0, 0};
-            auto childCount = node.getChildCount();
-            for (szt i = 0; i < childCount; i++)
-            {
-                auto child = node.getChild(i);
-                auto childSize = InflatableNode::inflate(*child, containerSize);
-                size.x = std::max(size.x, childSize.x);
-                size.y = std::max(size.y, childSize.y);
-            }
+            auto size = InflatableNode::inflateChildren(node, containerSize);
             return size;
         }
+    }
+
+    sf::Vector2f InflatableNode::inflateChildren(Node &node, const sf::Vector2f &containerSize)
+    {
+        sf::Vector2f size{0, 0};
+        auto childCount = node.getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = node.getChild(i);
+            auto childSize = InflatableNode::inflate(*child, containerSize);
+            size.x = std::max(size.x, childSize.x);
+            size.y = std::max(size.y, childSize.y);
+        }
+        return size;
     }
 
     void InflatableNode::place(Node &node, const sf::Vector2f &position)
     {
         auto inflatableNode = dynamic_cast<InflatableNode *>(&node);
         if (inflatableNode)
-        {
             inflatableNode->onPlace(position);
-        }
         else
+            InflatableNode::placeChildren(node, position);
+    }
+
+    void InflatableNode::placeChildren(Node &node, const sf::Vector2f &position)
+    {
+        auto childCount = node.getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
-            auto childCount = node.getChildCount();
-            for (szt i = 0; i < childCount; i++)
-            {
-                auto child = node.getChild(i);
-                InflatableNode::place(*child, position);
-            }
+            auto child = node.getChild(i);
+            InflatableNode::place(*child, position);
         }
+    }
+
+    sf::Vector2f InflatableNode::onCompact(const sf::Vector2f &contentSize)
+    {
+        auto size = InflatableNode::compactChildren(*this, contentSize);
+        return size;
+    }
+
+    sf::Vector2f InflatableNode::onInflate(const sf::Vector2f &containerSize)
+    {
+        auto size = InflatableNode::compactChildren(*this, containerSize);
+        return size;
+    }
+
+    void InflatableNode::onPlace(const sf::Vector2f &position)
+    {
+        InflatableNode::placeChildren(*this, position);
     }
 
 }

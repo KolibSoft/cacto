@@ -25,7 +25,7 @@ protected:
                     velocity.y * time.asSeconds()});
     }
 
-    bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
+    void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
     {
         target.draw(shape, states);
         auto childCount = getChildCount();
@@ -33,18 +33,13 @@ protected:
         {
             auto _states = states;
             _states.transform *= shape.getTransform();
-            for (std::size_t i = 0; i < childCount; i++)
-            {
-                auto child = getChild(i);
-                DrawNode::draw(*child, target, _states);
-            }
+            drawChildren(target, _states);
         }
-        return true;
     }
 
     bool onEvent(const sf::Event &event) override
     {
-        auto handled = onEventListener && onEventListener(*this, event);
+        auto handled = eventChildren(event) || onEventListener && onEventListener(*this, event);
         return handled;
     }
 };
