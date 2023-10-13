@@ -117,7 +117,7 @@ namespace cacto
         cacto::mapPositions(m_array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
     }
 
-    bool Surface::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void Surface::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         update();
         if (getWidth() > 0 && getHeight() > 0)
@@ -126,7 +126,7 @@ namespace cacto
             _states.texture = m_texutre.get();
             target.draw(m_array, _states);
         }
-        return false;
+        DrawNode::onDraw(target, states);
     }
 
     sf::Vector2f Surface::onCompact(const sf::Vector2f &contentSize)

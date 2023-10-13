@@ -20,19 +20,22 @@ namespace cacto
     public:
         using Listener = std::function<void(Node &target, const sf::Event &event)>;
 
-        void dispatch(const sf::Event &event);
         void event(const sf::Event &event);
         void bubble(Node &target, const sf::Event &event);
 
         EventNode();
         virtual ~EventNode();
 
-        static bool dispatch(Node &node, const sf::Event &event);
         static bool event(Node &node, const sf::Event &event);
+        static bool eventChildren(Node &node, const sf::Event &event);
+
         static bool bubble(Node &node, Node &target, const sf::Event &event);
+        static bool bubbleParent(Node &node, Node &target, const sf::Event &event);
 
     protected:
-        virtual bool onDispatch(const sf::Event &event);
+        bool eventChildren(const sf::Event &event);
+        bool bubbleParent(Node &target, const sf::Event &event);
+
         virtual bool onEvent(const sf::Event &event);
         virtual bool onBubble(Node &target, const sf::Event &event);
     };

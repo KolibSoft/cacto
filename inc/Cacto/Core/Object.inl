@@ -9,9 +9,16 @@ namespace cacto
     template <typename T>
     inline std::shared_ptr<T> Object::as()
     {
-        auto shared = shared_from_this();
-        auto self = std::dynamic_pointer_cast<T>(shared);
-        return self;
+        try
+        {
+            auto shared = shared_from_this();
+            auto self = std::dynamic_pointer_cast<T>(shared);
+            return self;
+        }
+        catch (...)
+        {
+            return nullptr;
+        }
     }
 
 }

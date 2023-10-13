@@ -21,9 +21,12 @@ namespace cacto
         virtual ~CollisionNode();
 
         static void collision(Node &node, Dimension &dimension, const sf::Transform &transform = sf::Transform::Identity);
+        static void collisionChildren(Node &node, Dimension &dimension, const sf::Transform &transform = sf::Transform::Identity);
 
     protected:
-        virtual bool onCollision(Dimension &dimension, const sf::Transform &transform = sf::Transform::Identity);
+        void collisionChildren(Dimension &dimension, const sf::Transform &transform = sf::Transform::Identity);
+
+        virtual void onCollision(Dimension &dimension, const sf::Transform &transform = sf::Transform::Identity);
     };
 
 }

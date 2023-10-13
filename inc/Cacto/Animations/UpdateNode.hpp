@@ -23,8 +23,11 @@ namespace cacto
         virtual ~UpdateNode();
 
         static void update(Node &node, const sf::Time &time);
+        static void updateChildren(Node &node, const sf::Time &time);
 
     protected:
+        void updateChildren(const sf::Time &time);
+
         virtual void onUpdate(const sf::Time &time);
     };
 

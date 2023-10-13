@@ -134,11 +134,11 @@ namespace cacto
         m_parent.reset();
     }
 
-    bool Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_background)
             DrawNode::draw(*m_background, target, states);
-        return false;
+        DrawNode::onDraw(target, states);
     }
 
     sf::Vector2f Block::onCompact(const sf::Vector2f &contentSize)

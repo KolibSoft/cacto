@@ -79,15 +79,6 @@ namespace cacto
         m_holder.reset();
     }
 
-    bool FrameLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        Block::onDraw(target, states);
-        auto child = getChild();
-        if (child)
-            DrawNode::draw(*child, target, states);
-        return false;
-    }
-
     sf::Vector2f FrameLayout::onCompact(const sf::Vector2f &contentSize)
     {
         auto _contentSize = contentSize;

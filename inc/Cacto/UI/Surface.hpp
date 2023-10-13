@@ -59,7 +59,7 @@ namespace cacto
         void onDetach(const SharedNode &parent) override;
 
         virtual void onUpdate() const;
-        bool onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
