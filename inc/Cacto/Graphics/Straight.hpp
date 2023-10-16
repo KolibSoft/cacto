@@ -12,7 +12,7 @@ namespace cacto
     {
 
     public:
-        szt getPointCount() const override final;
+        szt getSideCount() const override final;
         sf::Vector2f getPoint(szt index, szt precision = 1) const override final;
 
         Straight(const sf::Vector2f &begin, const sf::Vector2f &end);

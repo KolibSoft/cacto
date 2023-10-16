@@ -15,7 +15,7 @@ namespace cacto
     {
         if (precision < 1)
             precision = 1;
-        auto count = line.getPointCount() * precision;
+        auto count = line.getSideCount() * precision;
         array.resize(count);
         auto *vertexes = &(array[0]);
         setPoints(vertexes, line, count, precision);

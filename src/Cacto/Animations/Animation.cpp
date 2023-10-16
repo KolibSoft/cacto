@@ -39,7 +39,7 @@ namespace cacto
     szt Animation::getIndex(const sf::Time &lifetime, szt frameCount) const
     {
         auto ratio = getRatio(lifetime);
-        auto index = szt(frameCount * ratio);
+        auto index = szt(frameCount * ratio) - 1;
         return index;
     }
 

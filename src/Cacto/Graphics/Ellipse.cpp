@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    std::size_t Ellipse::getPointCount() const
+    std::size_t Ellipse::getSideCount() const
     {
         return 12;
     }
