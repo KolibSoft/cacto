@@ -28,7 +28,7 @@ namespace cacto
 
     szt Trace::getPointCount() const
     {
-        auto pCount = m_geometry->getPointCount() * m_precision;
+        auto pCount = m_geometry->getSideCount() * m_precision;
         return pCount;
     }
 

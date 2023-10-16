@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    std::size_t Rectangle::getPointCount() const
+    std::size_t Rectangle::getSideCount() const
     {
         return 4;
     }

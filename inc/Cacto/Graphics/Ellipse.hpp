@@ -12,7 +12,7 @@ namespace cacto
     {
 
     public:
-        szt getPointCount() const override final;
+        szt getSideCount() const override final;
         sf::Vector2f getPoint(szt index, szt precision = 1) const override final;
 
         sf::FloatRect getBounds() const override final;
@@ -20,7 +20,7 @@ namespace cacto
 
         Ellipse(const sf::Vector2f &center, const sf::Vector2f &radius);
         Ellipse();
-        ~Ellipse();
+        virtual ~Ellipse();
 
     private:
         f32t m_centerX;
