@@ -4,6 +4,11 @@
 namespace cacto
 {
 
+    szt Bezier::getPointCount() const
+    {
+        return 2;
+    }
+
     sf::Vector2f Bezier::getPoint(szt index, szt precision) const
     {
         if (precision < 1)
@@ -22,17 +27,6 @@ namespace cacto
             point += binomial * factorA * factorB * m_points[i];
         }
         return point;
-    }
-
-    sf::Vector2f Bezier::getDirection(szt index, szt precision) const
-    {
-        if (precision < 1)
-            precision = 1;
-        index %= precision;
-        auto begin = getPoint(index, precision);
-        auto end = getPoint(index + 1, precision);
-        auto direction = (end - begin).normalized();
-        return direction;
     }
 
     Bezier::Bezier(const std::vector<sf::Vector2f> &points)

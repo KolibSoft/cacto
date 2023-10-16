@@ -9,12 +9,12 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Bezier final
-        : public Line
+        : public virtual Line
     {
 
     public:
+        szt getPointCount() const override final;
         sf::Vector2f getPoint(szt index, szt precision = 1) const override final;
-        sf::Vector2f getDirection(szt index, szt precision = 1) const override final;
 
         Bezier(const std::vector<sf::Vector2f> &points);
         virtual ~Bezier();

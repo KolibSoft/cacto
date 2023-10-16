@@ -3,6 +3,11 @@
 namespace cacto
 {
 
+    szt Straight::getPointCount() const
+    {
+        return 2;
+    }
+
     sf::Vector2f Straight::getPoint(szt index, szt precision) const
     {
         if (precision < 1)
@@ -11,17 +16,6 @@ namespace cacto
         auto step = (m_end - m_begin) / f32t(precision);
         auto point = m_begin + step * f32t(index);
         return point;
-    }
-
-    sf::Vector2f Straight::getDirection(szt index, szt precision) const
-    {
-        if (precision < 1)
-            precision = 1;
-        index %= precision;
-        auto begin = getPoint(index, precision);
-        auto end = getPoint(index + 1, precision);
-        auto direction = (end - begin).normalized();
-        return direction;
     }
 
     Straight::Straight(const sf::Vector2f &begin, const sf::Vector2f &end)

@@ -287,6 +287,8 @@ int main()
 
     cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
 
+    sf::VertexArray path(sf::PrimitiveType::LineStrip);
+
     sf::Clock clock;
     clock.start();
     auto frames = 0;
@@ -314,7 +316,21 @@ int main()
 
         // dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
         window.clear(color);
+
+        // cacto::setPoints(path, straight, precision);
+        // cacto::setColor(path, sf::Color::Green);
+        window.draw(path);
+
+        // cacto::setPoints(path, geometry, precision);
+        // cacto::setColor(path, sf::Color::Green);
+        window.draw(path);
+
+        cacto::setPoints(path, bezier, precision);
+        cacto::setColor(path, sf::Color::Green);
+        window.draw(path);
+
         window.draw(dimension);
+
         window.display();
 
         if ((frames += 1) % 100 == 0)
