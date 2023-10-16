@@ -20,7 +20,7 @@ namespace cacto
 
         Ellipse(const sf::Vector2f &center, const sf::Vector2f &radius);
         Ellipse();
-        ~Ellipse();
+        virtual ~Ellipse();
 
     private:
         f32t m_centerX;

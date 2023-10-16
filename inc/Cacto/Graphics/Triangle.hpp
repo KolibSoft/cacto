@@ -20,7 +20,7 @@ namespace cacto
 
         Triangle(const sf::Vector2f &pointA, const sf::Vector2f &pointB, const sf::Vector2f &pointC);
         Triangle();
-        ~Triangle();
+        virtual ~Triangle();
 
     private:
         sf::Vector2f m_pointA;

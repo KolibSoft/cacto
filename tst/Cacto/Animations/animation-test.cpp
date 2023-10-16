@@ -17,6 +17,9 @@
 #include <Cacto/Collisions/Dimension.hpp>
 #include <Cacto/Common/GenericNode.hpp>
 
+#include <Cacto/Graphics/Straight.hpp>
+#include <Cacto/Graphics/Rectangle.hpp>
+
 auto color = sf::Color::Black;
 
 class Buddy
@@ -118,6 +121,7 @@ int main()
     root->append(makeSolid({100, 225}));
 
     auto dynamic = std::make_shared<Buddy>();
+    /*
     // Linear
     dynamic->movement = [](const sf::Time &time) -> sf::Vector2f
     {
@@ -195,6 +199,59 @@ int main()
 
         return {0, 0};
     };
+    */
+
+    cacto::Straight straight{{0, 0}, {300, 300}};
+    auto precision = 1200;
+
+    // Straight
+    dynamic->movement = [&](const sf::Time &time) -> sf::Vector2f
+    {
+        auto beginAt = sf::seconds(5);
+        auto endAt = sf::seconds(15);
+        auto index = 0;
+        if (time < beginAt)
+        {
+            index = 0;
+        }
+        else if (time > endAt)
+        {
+            index = 1200 - 1;
+        }
+        else
+        {
+            auto duration = endAt - beginAt;
+            index = int((time - beginAt) / duration * precision);
+        }
+        auto point = straight.getPoint(index, precision);
+        return point;
+    };
+
+    cacto::Rectangle geometry{{100, 100}, {300, 300}};
+
+    // Geometric
+    dynamic->movement = [&](const sf::Time &time) -> sf::Vector2f
+    {
+        auto beginAt = sf::seconds(5);
+        auto endAt = sf::seconds(15);
+        auto index = 0;
+        if (time < beginAt)
+        {
+            index = 0;
+        }
+        else if (time > endAt)
+        {
+            index = 1200 - 1;
+        }
+        else
+        {
+            auto duration = endAt - beginAt;
+            index = int((time - beginAt) / duration * precision);
+        }
+        auto point = geometry.getPoint(index, precision / 4);
+        return point;
+    };
+
     root->append(dynamic);
 
     cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
