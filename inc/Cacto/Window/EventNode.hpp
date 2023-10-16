@@ -12,14 +12,14 @@ namespace sf
 
 namespace cacto
 {
+    
+    using EventListener = std::function<void(Node &target, const sf::Event &event)>;
 
     class CACTO_WINDOW_API EventNode
         : public virtual Node
     {
 
     public:
-        using Listener = std::function<void(Node &target, const sf::Event &event)>;
-
         void event(const sf::Event &event);
         void bubble(Node &target, const sf::Event &event);
 

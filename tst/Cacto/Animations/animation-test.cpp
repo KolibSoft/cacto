@@ -20,6 +20,7 @@
 #include <Cacto/Graphics/Straight.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Animations/Animation.hpp>
 
 auto color = sf::Color::Black;
 
@@ -33,12 +34,15 @@ class Buddy
 {
 
 public:
-    mutable sf::VertexArray visual{sf::PrimitiveType::LineStrip};
+    mutable sf::VertexArray visual{sf::PrimitiveType::TriangleFan};
     mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
     mutable cacto::Trace trace{};
+    mutable sf::Color color{};
 
     sf::Time lifetime;
     std::function<sf::Vector2f(const sf::Time &time)> movement;
+    cacto::Animation<sf::Vector2f> scaleAnimation;
+    cacto::Animation<sf::Color> colorAnimation;
 
     cacto::SharedNode getParent() const override
     {
@@ -55,6 +59,11 @@ public:
             setPosition(position);
             updateChildren(time);
         }
+        auto scale = scaleAnimation.getValue(lifetime);
+        setScale(scale);
+        color = colorAnimation.getValue(lifetime);
+        if (lifetime > sf::seconds(15))
+            lifetime = sf::Time::Zero;
     }
 
     void onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
@@ -68,8 +77,8 @@ public:
     void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
     {
         cacto::setPoints(visual, *geometry);
-        cacto::setColor(visual, sf::Color::Red);
-        visual.append(visual[0]);
+        cacto::setColor(visual, color);
+        // visual.append(visual[0]);
         auto _states = states;
         _states.transform *= getTransform();
         target.draw(visual, _states);
@@ -85,6 +94,12 @@ public:
     {
         setScale({2, 1});
         setRotation(sf::degrees(30));
+        scaleAnimation.setFrom({1, 2});
+        scaleAnimation.setTo({2, 1});
+        scaleAnimation.setDuration(sf::seconds(10));
+        colorAnimation.setFrom(sf::Color::Red);
+        colorAnimation.setTo(sf::Color::Green);
+        colorAnimation.setDuration(sf::seconds(10));
     }
 
 protected:
@@ -329,6 +344,7 @@ int main()
         cacto::setColor(path, sf::Color::Green);
         window.draw(path);
 
+        window.draw(*root);
         window.draw(dimension);
 
         window.display();

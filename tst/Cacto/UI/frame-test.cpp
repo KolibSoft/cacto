@@ -20,7 +20,7 @@ class Frame
 {
 
 public:
-    Listener onClickListener;
+    EventListener onClickListener;
 
     bool onBubble(Node &target, const sf::Event &event)
     {
@@ -43,7 +43,7 @@ class Square
 {
 
 public:
-    Listener onClickListener;
+    EventListener onClickListener;
 
     Square()
     {
