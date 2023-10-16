@@ -6,3 +6,4 @@
 #include "Cacto/Graphics/Ellipse.cpp"
 #include "Cacto/Graphics/Triangle.cpp"
 #include "Cacto/Graphics/Straight.cpp"
+#include "Cacto/Graphics/Bezier.cpp"

@@ -17,6 +17,7 @@ namespace cacto
     {
         if (precision < 1)
             precision = 1;
+        index %= precision;
         auto begin = getPoint(index, precision);
         auto end = getPoint(index + 1, precision);
         auto direction = (end - begin).normalized();

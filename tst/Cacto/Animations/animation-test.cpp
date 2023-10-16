@@ -18,6 +18,7 @@
 #include <Cacto/Common/GenericNode.hpp>
 
 #include <Cacto/Graphics/Straight.hpp>
+#include <Cacto/Graphics/Bezier.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
 auto color = sf::Color::Black;
@@ -249,6 +250,36 @@ int main()
             index = int((time - beginAt) / duration * precision);
         }
         auto point = geometry.getPoint(index, precision / 4);
+        return point;
+    };
+
+    cacto::Bezier bezier{{
+        {100, 300},
+        {300, 100},
+        {500, 500},
+        {700, 300},
+    }};
+
+    // Bezier
+    dynamic->movement = [&](const sf::Time &time) -> sf::Vector2f
+    {
+        auto beginAt = sf::seconds(5);
+        auto endAt = sf::seconds(15);
+        auto index = 0;
+        if (time < beginAt)
+        {
+            index = 0;
+        }
+        else if (time > endAt)
+        {
+            index = 1200 - 1;
+        }
+        else
+        {
+            auto duration = endAt - beginAt;
+            index = int((time - beginAt) / duration * precision);
+        }
+        auto point = bezier.getPoint(index, precision);
         return point;
     };
 
