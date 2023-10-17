@@ -27,7 +27,10 @@ namespace cacto
         Dimension *const locate(const sf::FloatRect &zone) const;
 
         void append(Body &body, const Trace &trace);
-        void collisions(Body &body, const Trace &trace, bool dispatch);
+
+        void collisions(Body &body, const Trace &trace);
+        void collisionsChildren(Body &body, const Trace &trace);
+
         Dimension &locateCollisions(Body &body, const Trace &trace);
 
         bool isEmpty() const;
@@ -43,8 +46,10 @@ namespace cacto
         struct Holder;
 
         void append(const Holder &holder);
-        void collisions(const Holder &holder, bool dispatch);
         void split();
+
+        void collisions(const Holder &holder);
+        void collisionsChildren(const Holder &holder);
 
         sf::FloatRect m_zone;
         szt m_capacity;

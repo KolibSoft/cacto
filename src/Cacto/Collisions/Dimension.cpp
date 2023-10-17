@@ -35,9 +35,14 @@ namespace cacto
         append(Holder{&body, &trace});
     }
 
-    void Dimension::collisions(Body &body, const Trace &trace, bool dispatch)
+    void Dimension::collisions(Body &body, const Trace &trace)
     {
-        collisions(Holder{&body, &trace}, dispatch);
+        collisions(Holder{&body, &trace});
+    }
+
+    void Dimension::collisionsChildren(Body &body, const Trace &trace)
+    {
+        collisionsChildren(Holder{&body, &trace});
     }
 
     Dimension &Dimension::locateCollisions(Body &body, const Trace &trace)
@@ -126,25 +131,6 @@ namespace cacto
             split();
     }
 
-    void Dimension::collisions(const Holder &holder, bool subdimensions)
-    {
-        for (auto &_holder : m_holders)
-        {
-            if (holder.trace->checkCollision(*_holder.trace))
-            {
-                holder.body->collision(*_holder.body);
-                _holder.body->collision(*holder.body);
-            }
-        }
-        if (subdimensions && m_subdimensions)
-        {
-            m_topLeft->collisions(holder, true);
-            m_topRight->collisions(holder, true);
-            m_bottomLeft->collisions(holder, true);
-            m_bottomRight->collisions(holder, true);
-        }
-    }
-
     void Dimension::split()
     {
         if (!m_subdimensions)
@@ -193,6 +179,36 @@ namespace cacto
         }
     }
 
+    void Dimension::collisions(const Holder &holder)
+    {
+        for (auto &_holder : m_holders)
+        {
+            if (holder.trace->checkCollision(*_holder.trace))
+            {
+                holder.body->collision(*_holder.body);
+                _holder.body->collision(*holder.body);
+            }
+        }
+    }
+
+    void Dimension::collisionsChildren(const Holder &holder)
+    {
+        if (m_subdimensions)
+        {
+            m_topLeft->collisions(holder);
+            m_topLeft->collisionsChildren(holder);
+
+            m_topRight->collisions(holder);
+            m_topRight->collisionsChildren(holder);
+            
+            m_bottomLeft->collisions(holder);
+            m_bottomLeft->collisionsChildren(holder);
+            
+            m_bottomRight->collisions(holder);
+            m_bottomRight->collisionsChildren(holder);
+        }
+    }
+
     Dimension &Dimension::locateCollisions(Dimension &dimension, const Holder &holder)
     {
         auto *_dimension = &dimension;
@@ -200,10 +216,10 @@ namespace cacto
         while (_dimension)
         {
             targetDimension = _dimension;
-            _dimension->collisions(holder, false);
+            _dimension->collisions(holder);
             _dimension = _dimension->locate(holder.trace->getBounds());
         }
-        targetDimension->collisions(holder, true);
+        targetDimension->collisionsChildren(holder);
         return *targetDimension;
     }
 
