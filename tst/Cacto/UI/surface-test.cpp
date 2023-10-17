@@ -6,21 +6,29 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/UI/Surface.hpp>
 auto _ = false;
+
+enum Textures
+{
+    SurfaceTexture
+};
+
+cacto::Loader<sf::Texture> textures;
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto texure = std::make_shared<sf::Texture>();
-    _ = texure->loadFromFile("res/fondo.png");
+    textures.setLoadFromFile(SurfaceTexture, "res/fondo.png");
 
     auto geometry = std::make_shared<cacto::Ellipse>(sf::Vector2f{0, 0}, sf::Vector2f{1, 1});
+    auto texture = textures.get(SurfaceTexture);
 
-    auto root = cacto::makeTextureSurface(texure, geometry, 5);
+    auto root = cacto::makeTextureSurface(texture, geometry, 5);
 
     while (window.isOpen())
     {
