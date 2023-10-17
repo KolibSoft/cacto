@@ -8,10 +8,9 @@
 namespace cacto
 {
 
-    SharedNode Block::getParent() const
+    Node *const Block::getParent() const
     {
-        auto parent = m_parent.lock();
-        return parent;
+        return m_parent;
     }
 
     const SharedNode &Block::getBackground() const
@@ -96,18 +95,6 @@ namespace cacto
         m_maxHeight = value;
     }
 
-    void Block::attach(const SharedNode &parent)
-    {
-        auto self = as<Node>();
-        Node::link(parent, self);
-    }
-
-    void Block::detach(const SharedNode &parent)
-    {
-        auto self = as<Node>();
-        Node::unlink(parent, self);
-    }
-
     Block::Block()
         : m_parent(),
           m_background(nullptr),
@@ -120,18 +107,14 @@ namespace cacto
 
     Block::~Block() = default;
 
-    void Block::onAttach(const SharedNode &parent)
+    void Block::onAttach(Node &parent)
     {
-        if (getParent() != nullptr)
-            throw std::runtime_error("Node attached to another parent");
-        m_parent = parent;
+        m_parent = &parent;
     }
 
-    void Block::onDetach(const SharedNode &parent)
+    void Block::onDetach(Node &parent)
     {
-        if (getParent() != parent)
-            throw std::runtime_error("Node attached to another parent");
-        m_parent.reset();
+        m_parent = nullptr;
     }
 
     void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const

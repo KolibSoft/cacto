@@ -20,12 +20,12 @@ namespace cacto
 
     void LeafNode::onAppend(const SharedNode &child)
     {
-        throw std::runtime_error("Leaf nodes can not hold childs");
+        throw std::runtime_error("Leaf nodes can not hold children");
     }
 
     void LeafNode::onRemove(const SharedNode &child)
     {
-        throw std::runtime_error("Leaf nodes can not hold childs");
+        throw std::runtime_error("Leaf nodes can not hold children");
     }
 
 }

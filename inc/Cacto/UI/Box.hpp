@@ -2,7 +2,6 @@
 #define CACTO_BOX_HPP
 
 #include <SFML/Graphics/Rect.hpp>
-#include <Cacto/Core/Object.hpp>
 #include <Cacto/UI/Export.hpp>
 
 namespace cacto
@@ -11,7 +10,6 @@ namespace cacto
     class Thickness;
 
     class CACTO_UI_API Box
-        : public Object
     {
 
     public:

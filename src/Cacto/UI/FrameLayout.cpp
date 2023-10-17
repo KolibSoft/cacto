@@ -45,14 +45,12 @@ namespace cacto
 
     void FrameLayout::append(const SharedNode &child)
     {
-        auto self = as<Node>();
-        Node::link(self, child);
+        Node::link(*this, child);
     }
 
     void FrameLayout::remove(const SharedNode &child)
     {
-        auto self = as<Node>();
-        Node::unlink(self, child);
+        Node::unlink(*this, child);
     }
 
     FrameLayout::FrameLayout()
