@@ -42,8 +42,11 @@ namespace cacto
         Surface(Geometry &geometry, szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
         virtual ~Surface();
 
-        static Surface Rectangle;
-        static Surface Ellipse;
+        Surface(const Surface& other);
+        Surface& operator=(const Surface& other);
+
+        static const Surface Rectangle;
+        static const Surface Ellipse;
 
     protected:
         void onAttach(Node &parent) override;

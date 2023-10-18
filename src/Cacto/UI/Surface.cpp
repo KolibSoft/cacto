@@ -80,11 +80,38 @@ namespace cacto
     {
     }
 
-    Surface::~Surface() = default;
+    Surface::~Surface()
+    {
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
+    }
 
-    Surface Surface::Rectangle{Rectangle::Identity};
+    Surface::Surface(const Surface &other)
+        : m_parent(),
+          m_geometry(other.m_geometry),
+          m_precision(other.m_precision),
+          m_color(other.m_color),
+          m_texutre(other.m_texutre),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::TriangleFan)
+    {
+    }
 
-    Surface Surface::Ellipse{Ellipse::Identity};
+    Surface &Surface::operator=(const Surface &other)
+    {
+        m_parent = nullptr;
+        m_geometry = other.m_geometry;
+        m_precision = other.m_precision;
+        m_color = other.m_color;
+        m_texutre = other.m_texutre;
+        m_invalid = true;
+        m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
+        return *this;
+    }
+
+    const Surface Surface::Rectangle{Rectangle::Identity};
+
+    const Surface Surface::Ellipse{Ellipse::Identity};
 
     void Surface::onAttach(Node &parent)
     {
