@@ -17,7 +17,7 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto background= cacto::Surface::Rectangle;
+    auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
 
     cacto::Block root{};

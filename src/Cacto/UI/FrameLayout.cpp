@@ -58,11 +58,27 @@ namespace cacto
     {
     }
 
-    FrameLayout::~FrameLayout() = default;
+    FrameLayout::~FrameLayout()
+    {
+        if (m_holder.child)
+            Node::unlink(*this, *m_holder.child);
+    }
+
+    FrameLayout::FrameLayout(const FrameLayout &other)
+        : Block(other),
+          m_holder()
+    {
+    }
+
+    FrameLayout &FrameLayout::operator=(const FrameLayout &other)
+    {
+        Block::operator=(other);
+        return *this;
+    }
 
     void FrameLayout::onAppend(Node &child)
     {
-        if (m_holder.child)
+        if (m_holder.child != nullptr)
             throw std::runtime_error("This node can not has more child nodes");
         m_holder = {};
         m_holder.child = &child;
@@ -72,7 +88,7 @@ namespace cacto
 
     void FrameLayout::onRemove(Node &child)
     {
-        if (m_holder.child)
+        if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child node");
         m_holder.child = nullptr;
     }

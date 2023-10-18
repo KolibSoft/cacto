@@ -21,6 +21,7 @@ class Frame
 
 public:
     cacto::EventListener onClickListener;
+    cacto::Surface background{cacto::Surface::Rectangle};
 
     bool onBubble(Node &target, const sf::Event &event)
     {
@@ -35,6 +36,11 @@ public:
             return handled;
         }
     }
+
+    Frame()
+    {
+        setBackground(&background);
+    }
 };
 
 class Square
@@ -44,10 +50,12 @@ class Square
 
 public:
     cacto::EventListener onClickListener;
+    cacto::Surface background{cacto::Surface::Rectangle};
 
     Square()
     {
-        setBackground(cacto::makeColorSurface(sf::Color::Cyan));
+        background.setColor(sf::Color::Cyan);
+        setBackground(&background);
         setFixedWidth(100);
         setFixedHeight(100);
     }
@@ -69,24 +77,15 @@ protected:
     }
 };
 
-auto makeBlock(const sf::Color &color)
+auto makeFrame(const sf::Color &color, cacto::Node &node, cacto::Box::Anchor hAnchor, cacto::Box::Anchor vAnchor)
 {
-    auto block = std::make_shared<cacto::Block>();
-    block->setBackground(cacto::makeColorSurface(color));
-    block->setFixedWidth(100);
-    block->setFixedHeight(100);
-    return block;
-}
-
-auto makeFrame(const sf::Color &color, const cacto::SharedNode &node, cacto::Box::Anchor hAnchor, cacto::Box::Anchor vAnchor)
-{
-    auto frame = std::make_shared<Frame>();
-    frame->setBackground(cacto::makeColorSurface(color));
-    frame->append(node);
-    frame->setHorizontalAnchor(node, hAnchor);
-    frame->setVerticalAnchor(node, vAnchor);
-    frame->setMargin(10);
-    frame->setPadding(10);
+    Frame frame{};
+    frame.background.setColor(color);
+    frame.append(node);
+    frame.setHorizontalAnchor(node, hAnchor);
+    frame.setVerticalAnchor(node, vAnchor);
+    frame.setMargin(10);
+    frame.setPadding(10);
     return frame;
 }
 
@@ -95,22 +94,12 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto target = std::make_shared<Square>();
-    auto root = makeFrame(
-        sf::Color::Red,
-        makeFrame(
-            sf::Color::Blue,
-            makeFrame(
-                sf::Color::Green,
-                target,
-                cacto::Box::Center,
-                cacto::Box::Center),
-            cacto::Box::Start,
-            cacto::Box::Start),
-        cacto::Box::Start,
-        cacto::Box::Start);
+    Square target{};
+    auto level1 = makeFrame(sf::Color::Green, target, cacto::Box::Center, cacto::Box::Center);
+    auto level2 = makeFrame(sf::Color::Blue, level1, cacto::Box::Center, cacto::Box::Center);
+    auto root = makeFrame(sf::Color::Red, level2, cacto::Box::Center, cacto::Box::Center);
 
-    root->onClickListener = [](auto &target, auto &event)
+    root.onClickListener = [](auto &target, auto &event)
     {
         std::cout << "Clicked Bubbled!!!\n";
     };
@@ -120,7 +109,7 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (!cacto::EventNode::event(*root, event))
+            if (!cacto::EventNode::event(root, event))
             {
                 if (event.type == sf::Event::Closed)
                     window.close();
@@ -128,11 +117,11 @@ int main()
                     window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             }
         }
-        root->compact();
-        root->inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
-        root->place();
+        root.compact();
+        root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
+        root.place();
         window.clear(sf::Color::Black);
-        window.draw(*root);
+        window.draw(root);
         window.display();
     }
 

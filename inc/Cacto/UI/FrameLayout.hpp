@@ -27,6 +27,9 @@ namespace cacto
         FrameLayout();
         virtual ~FrameLayout();
 
+        FrameLayout(const FrameLayout &other);
+        FrameLayout &operator=(const FrameLayout &other);
+
     protected:
         struct Holder;
         using SharedHolder = std::shared_ptr<Holder>;
