@@ -49,12 +49,12 @@ namespace cacto
         m_invalid = true;
     }
 
-    sf::Texture *const Surface::getTexture() const
+    const sf::Texture *const Surface::getTexture() const
     {
         return m_texutre;
     }
 
-    void Surface::setTexture(sf::Texture *const value)
+    void Surface::setTexture(const sf::Texture *const value)
     {
         m_texutre = value;
         m_invalid = true;
@@ -99,7 +99,6 @@ namespace cacto
 
     Surface &Surface::operator=(const Surface &other)
     {
-        m_parent = nullptr;
         m_geometry = other.m_geometry;
         m_precision = other.m_precision;
         m_color = other.m_color;

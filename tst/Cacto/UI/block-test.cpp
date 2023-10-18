@@ -17,12 +17,15 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto root = std::make_shared<cacto::Block>();
-    root->setBackground(cacto::makeColorSurface(sf::Color::Red));
-    root->setMargin(10);
-    root->setMinWidth(100);
-    root->setMaxHeight(100);
-    root->setPadding(10);
+    auto background= cacto::Surface::Rectangle;
+    background.setColor(sf::Color::Red);
+
+    cacto::Block root{};
+    root.setBackground(&background);
+    root.setMargin(10);
+    root.setMinWidth(100);
+    root.setMaxHeight(100);
+    root.setPadding(10);
 
     while (window.isOpen())
     {
@@ -34,11 +37,11 @@ int main()
             if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
-        root->compact();
-        root->inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
-        root->place();
+        root.compact();
+        root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
+        root.place();
         window.clear(sf::Color::Black);
-        window.draw(*root);
+        window.draw(root);
         window.display();
     }
 

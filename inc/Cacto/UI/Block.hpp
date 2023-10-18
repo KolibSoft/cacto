@@ -53,6 +53,9 @@ namespace cacto
         Block();
         virtual ~Block();
 
+        Block(const Block &other);
+        Block &operator=(const Block &other);
+
     protected:
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;

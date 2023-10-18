@@ -105,7 +105,32 @@ namespace cacto
     {
     }
 
-    Block::~Block() = default;
+    Block::~Block()
+    {
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
+    }
+
+    Block::Block(const Block &other)
+        : m_parent(),
+          m_background(nullptr),
+          m_margin(other.m_margin),
+          m_padding(other.m_padding),
+          m_minWidth(other.m_minWidth), m_maxWidth(other.m_maxWidth),
+          m_minHeight(other.m_minHeight), m_maxHeight(other.m_maxHeight)
+    {
+    }
+
+    Block &Block::operator=(const Block &other)
+    {
+        m_margin = other.m_margin;
+        m_padding = other.m_padding;
+        m_minWidth = other.m_minWidth;
+        m_maxWidth = other.m_maxWidth;
+        m_minHeight = other.m_minHeight;
+        m_maxHeight = other.m_maxHeight;
+        return *this;
+    }
 
     void Block::onAttach(Node &parent)
     {

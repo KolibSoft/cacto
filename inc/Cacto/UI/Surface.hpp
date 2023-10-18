@@ -34,8 +34,8 @@ namespace cacto
         const sf::Color &getColor() const;
         void setColor(const sf::Color &value);
 
-        sf::Texture *const getTexture() const;
-        void setTexture(sf::Texture *const value);
+        const sf::Texture *const getTexture() const;
+        void setTexture(const sf::Texture *const value);
 
         void update(bool force = false) const;
 
@@ -65,7 +65,7 @@ namespace cacto
         Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
-        sf::Texture *m_texutre;
+        const sf::Texture *m_texutre;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
