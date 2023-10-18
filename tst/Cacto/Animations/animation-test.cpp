@@ -15,7 +15,7 @@
 #include <Cacto/Collisions/Body.hpp>
 #include <Cacto/Collisions/CollisionNode.hpp>
 #include <Cacto/Collisions/Dimension.hpp>
-#include <Cacto/Common/GenericNode.hpp>
+#include <Cacto/Game/GameNode.hpp>
 
 #include <Cacto/Graphics/Straight.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
@@ -48,10 +48,9 @@ public:
     cacto::Linear<sf::Vector2f> scaleAnimation;
     cacto::Coloring colorAnimation;
 
-    cacto::SharedNode getParent() const override
+    Node *const getParent() const override
     {
-        auto parent = m_parent.lock();
-        return parent;
+        return m_parent;
     }
 
     void onUpdate(const sf::Time &time) override
@@ -107,25 +106,24 @@ public:
     }
 
 protected:
-    void onAttach(const cacto::SharedNode &parent) override
+    void onAttach(Node &parent) override
     {
-        m_parent = parent;
+        m_parent = &parent;
     }
 
-    void onDetach(const cacto::SharedNode &parent) override
+    void onDetach(Node &parent) override
     {
-        m_parent.reset();
+        m_parent = nullptr;
     }
 
 private:
-    cacto::WeakNode m_parent;
+    Node *m_parent{};
 };
 
-auto makeSolid(const sf::Vector2f &position, const Movement &movement)
+auto makeSolid(const sf::Vector2f &position)
 {
-    auto solid = std::make_shared<Buddy>();
-    solid->setPosition(position);
-    solid->movement = movement;
+    Buddy solid{};
+    solid.setPosition(position);
     return solid;
 }
 
@@ -168,14 +166,25 @@ int main()
         return position;
     };
 
-    auto root = std::make_shared<cacto::GenericNode>();
-    root->append(makeSolid({100, 50}, nullptr));
-    root->append(makeSolid({250, 100}, straightMovement));
-    root->append(makeSolid({475, 225}, geometryMovement));
-    root->append(makeSolid({100, 225}, bezierMovement));
+    cacto::GameNode root{};
+    auto buddy1 = makeSolid({100, 50});
+    buddy1.movement = straightMovement;
 
-    auto dynamic = std::make_shared<Buddy>();
-    root->append(dynamic);
+    auto buddy2 = makeSolid({250, 100});
+    buddy2.movement = geometryMovement;
+
+    auto buddy3 = makeSolid({475, 225});
+    buddy3.movement = bezierMovement;
+
+    auto buddy4 = makeSolid({100, 225});
+
+    root.append(buddy1);
+    root.append(buddy2);
+    root.append(buddy3);
+    root.append(buddy4);
+
+    Buddy dynamic{};
+    root.append(dynamic);
 
     cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
 
@@ -200,13 +209,13 @@ int main()
         }
 
         auto dt = clock.restart();
-        cacto::UpdateNode::update(*root, dt);
+        cacto::UpdateNode::update(root, dt);
 
         color = sf::Color::Black;
         dimension.clean();
-        cacto::CollisionNode::collision(*root, dimension);
+        cacto::CollisionNode::collision(root, dimension);
 
-        dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+        dynamic.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
         window.clear(color);
 
         cacto::setPoints(path, straight, precision);
@@ -221,7 +230,7 @@ int main()
         cacto::setColor(path, sf::Color::Green);
         window.draw(path);
 
-        window.draw(*root);
+        window.draw(root);
         window.draw(dimension);
 
         window.display();

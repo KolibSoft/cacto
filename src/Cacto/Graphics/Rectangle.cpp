@@ -50,13 +50,10 @@ namespace cacto
     {
     }
 
-    Rectangle::Rectangle()
-        : Rectangle({0, 0}, {0, 0})
-    {
-    }
-
     Rectangle::~Rectangle()
     {
     }
+
+    Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
 
 }

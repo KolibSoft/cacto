@@ -15,15 +15,6 @@ namespace sf
 namespace cacto
 {
 
-    using SharedTexture = std::shared_ptr<sf::Texture>;
-    using WeakNode = std::weak_ptr<Node>;
-
-    class Geometry;
-    using SharedGeometry = std::shared_ptr<Geometry>;
-
-    class Surface;
-    using SharedSurface = std::shared_ptr<Surface>;
-
     class CACTO_UI_API Surface
         : public Box,
           public virtual LeafNode,
@@ -32,10 +23,10 @@ namespace cacto
     {
 
     public:
-        SharedNode getParent() const override;
+        Node *const getParent() const override;
 
-        const SharedGeometry &getGeometry() const;
-        void setGeometry(const SharedGeometry &value);
+        Geometry &getGeometry() const;
+        void setGeometry(Geometry &value);
 
         szt getPrecision() const;
         void setPrecision(szt value);
@@ -43,20 +34,23 @@ namespace cacto
         const sf::Color &getColor() const;
         void setColor(const sf::Color &value);
 
-        const SharedTexture &getTexture() const;
-        void setTexture(const SharedTexture &value);
+        const sf::Texture *const getTexture() const;
+        void setTexture(const sf::Texture *const value);
 
         void update(bool force = false) const;
 
-        void attach(const SharedNode& parent);
-        void detach(const SharedNode& parent);
-
-        Surface();
+        Surface(Geometry &geometry, szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
         virtual ~Surface();
 
+        Surface(const Surface& other);
+        Surface& operator=(const Surface& other);
+
+        static const Surface Rectangle;
+        static const Surface Ellipse;
+
     protected:
-        void onAttach(const SharedNode &parent) override;
-        void onDetach(const SharedNode &parent) override;
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
 
         virtual void onUpdate() const;
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
@@ -66,19 +60,19 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        WeakNode m_parent;
+        Node *m_parent;
 
-        SharedGeometry m_geometry;
+        Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
-        SharedTexture m_texutre;
+        const sf::Texture *m_texutre;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
 
-    SharedSurface CACTO_UI_API makeColorSurface(const sf::Color &color, const SharedGeometry &geometry = nullptr, szt precision = 1);
-    SharedSurface CACTO_UI_API makeTextureSurface(const SharedTexture &texture, const SharedGeometry &geometry = nullptr, szt precision = 1);
+    Surface CACTO_UI_API colorSurface(const sf::Color &color, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
+    Surface CACTO_UI_API textureSurface(sf::Texture &texture, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
 
 }
 

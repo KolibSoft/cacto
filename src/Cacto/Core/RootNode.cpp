@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    SharedNode RootNode::getParent() const
+    Node *const RootNode::getParent() const
     {
         return nullptr;
     }
@@ -13,12 +13,12 @@ namespace cacto
 
     RootNode::~RootNode() = default;
 
-    void RootNode::onAttach(const SharedNode &child)
+    void RootNode::onAttach(Node& parent)
     {
         throw std::runtime_error("Root nodes can not be holded");
     }
 
-    void RootNode::onDetach(const SharedNode &child)
+    void RootNode::onDetach(Node& parent)
     {
         throw std::runtime_error("Root nodes can not be holded");
     }

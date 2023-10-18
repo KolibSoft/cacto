@@ -18,9 +18,10 @@ namespace cacto
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
 
-        Rectangle(const sf::Vector2f &position, const sf::Vector2f &size);
-        Rectangle();
+        Rectangle(const sf::Vector2f &position = {0, 0}, const sf::Vector2f &size = {1, 1});
         virtual ~Rectangle();
+
+        static Rectangle Identity;
 
     private:
         f32t m_width;

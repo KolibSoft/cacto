@@ -8,18 +8,17 @@
 namespace cacto
 {
 
-    SharedNode Block::getParent() const
+    Node *const Block::getParent() const
     {
-        auto parent = m_parent.lock();
-        return parent;
+        return m_parent;
     }
 
-    const SharedNode &Block::getBackground() const
+    Node *const Block::getBackground() const
     {
         return m_background;
     }
 
-    void Block::setBackground(const SharedNode &value)
+    void Block::setBackground(Node *const value)
     {
         m_background = value;
     }
@@ -96,18 +95,6 @@ namespace cacto
         m_maxHeight = value;
     }
 
-    void Block::attach(const SharedNode &parent)
-    {
-        auto self = as<Node>();
-        Node::link(parent, self);
-    }
-
-    void Block::detach(const SharedNode &parent)
-    {
-        auto self = as<Node>();
-        Node::unlink(parent, self);
-    }
-
     Block::Block()
         : m_parent(),
           m_background(nullptr),
@@ -118,20 +105,41 @@ namespace cacto
     {
     }
 
-    Block::~Block() = default;
-
-    void Block::onAttach(const SharedNode &parent)
+    Block::~Block()
     {
-        if (getParent() != nullptr)
-            throw std::runtime_error("Node attached to another parent");
-        m_parent = parent;
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
     }
 
-    void Block::onDetach(const SharedNode &parent)
+    Block::Block(const Block &other)
+        : m_parent(),
+          m_background(nullptr),
+          m_margin(other.m_margin),
+          m_padding(other.m_padding),
+          m_minWidth(other.m_minWidth), m_maxWidth(other.m_maxWidth),
+          m_minHeight(other.m_minHeight), m_maxHeight(other.m_maxHeight)
     {
-        if (getParent() != parent)
-            throw std::runtime_error("Node attached to another parent");
-        m_parent.reset();
+    }
+
+    Block &Block::operator=(const Block &other)
+    {
+        m_margin = other.m_margin;
+        m_padding = other.m_padding;
+        m_minWidth = other.m_minWidth;
+        m_maxWidth = other.m_maxWidth;
+        m_minHeight = other.m_minHeight;
+        m_maxHeight = other.m_maxHeight;
+        return *this;
+    }
+
+    void Block::onAttach(Node &parent)
+    {
+        m_parent = &parent;
+    }
+
+    void Block::onDetach(Node &parent)
+    {
+        m_parent = nullptr;
     }
 
     void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const

@@ -4,23 +4,27 @@
 namespace cacto
 {
 
-    void Node::link(const SharedNode &parent, const SharedNode &child)
+    void Node::link(Node &parent, Node &child)
     {
-        auto current = parent;
+        if (child.getParent() != nullptr)
+            throw std::runtime_error("The child was linked to another parent");
+        auto current = &parent;
         while (current)
         {
-            if (current == child)
-                throw std::runtime_error("The node is its own ancestor");
+            if (current == &child)
+                throw std::runtime_error("The child is its own ancestor");
             current = current->getParent();
         }
-        parent->onAppend(child);
-        child->onAttach(parent);
+        parent.onAppend(child);
+        child.onAttach(parent);
     }
 
-    void Node::unlink(const SharedNode &parent, const SharedNode &child)
+    void Node::unlink(Node &parent, Node &child)
     {
-        child->onDetach(parent);
-        parent->onRemove(child);
+        if (child.getParent() != &parent)
+            throw std::runtime_error("The child was linked to another parent");
+        child.onDetach(parent);
+        parent.onRemove(child);
     }
 
 }

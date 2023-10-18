@@ -1,7 +1,6 @@
 #ifndef CACTO_BLOCK_HPP
 #define CACTO_BLOCK_HPP
 
-#include <memory>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
@@ -17,12 +16,6 @@ namespace sf
 namespace cacto
 {
 
-    using SharedTexture = std::shared_ptr<sf::Texture>;
-    using WeakNode = std::weak_ptr<Node>;
-
-    class Geometry;
-    using SharedGeometry = std::shared_ptr<Geometry>;
-
     class CACTO_UI_API Block
         : public Box,
           public virtual LeafNode,
@@ -31,10 +24,10 @@ namespace cacto
     {
 
     public:
-        SharedNode getParent() const override;
+        Node *const getParent() const override;
 
-        const SharedNode &getBackground() const;
-        void setBackground(const SharedNode &value);
+        Node *const getBackground() const;
+        void setBackground(Node *const value);
 
         const Thickness &getMargin() const;
         void setMargin(const Thickness &value);
@@ -57,15 +50,15 @@ namespace cacto
         void setFixedWidth(f32t value);
         void setFixedHeight(f32t value);
 
-        void attach(const SharedNode& parent);
-        void detach(const SharedNode& parent);
-
         Block();
         virtual ~Block();
 
+        Block(const Block &other);
+        Block &operator=(const Block &other);
+
     protected:
-        void onAttach(const SharedNode &parent) override;
-        void onDetach(const SharedNode &parent) override;
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
@@ -74,8 +67,8 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        WeakNode m_parent;
-        SharedNode m_background;
+        Node *m_parent;
+        Node *m_background;
         Thickness m_margin;
         Thickness m_padding;
         f32t m_minWidth;

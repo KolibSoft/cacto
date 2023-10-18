@@ -13,7 +13,7 @@
 #include <Cacto/Collisions/Body.hpp>
 #include <Cacto/Collisions/CollisionNode.hpp>
 #include <Cacto/Collisions/Dimension.hpp>
-#include <Cacto/Common/GenericNode.hpp>
+#include <Cacto/Game/GameNode.hpp>
 
 auto color = sf::Color::Black;
 
@@ -30,10 +30,9 @@ public:
     mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
     mutable cacto::Trace trace{};
 
-    cacto::SharedNode getParent() const override
+    Node *const getParent() const override
     {
-        auto parent = m_parent.lock();
-        return parent;
+        return m_parent;
     }
 
     void onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
@@ -67,24 +66,24 @@ public:
     }
 
 protected:
-    void onAttach(const cacto::SharedNode &parent) override
+    void onAttach(Node &parent) override
     {
-        m_parent = parent;
+        m_parent = &parent;
     }
 
-    void onDetach(const cacto::SharedNode &parent) override
+    void onDetach(Node &parent) override
     {
-        m_parent.reset();
+        m_parent = nullptr;
     }
 
 private:
-    cacto::WeakNode m_parent;
+    Node *m_parent{nullptr};
 };
 
 auto makeSolid(const sf::Vector2f &position)
 {
-    auto solid = std::make_shared<Buddy>();
-    solid->setPosition(position);
+    Buddy solid{};
+    solid.setPosition(position);
     return solid;
 }
 
@@ -94,14 +93,19 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     window.setFramerateLimit(120);
 
-    auto root = std::make_shared<cacto::GenericNode>();
-    root->append(makeSolid({100, 50}));
-    root->append(makeSolid({250, 100}));
-    root->append(makeSolid({475, 225}));
-    root->append(makeSolid({100, 225}));
+    cacto::GameNode root{};
+    auto buddy1 = makeSolid({100, 50});
+    auto buddy2 = makeSolid({250, 100});
+    auto buddy3 = makeSolid({475, 225});
+    auto buddy4 = makeSolid({100, 225});
 
-    auto dynamic = std::make_shared<Buddy>();
-    root->append(dynamic);
+    root.append(buddy1);
+    root.append(buddy2);
+    root.append(buddy3);
+    root.append(buddy4);
+
+    Buddy dynamic{};
+    root.append(dynamic);
 
     cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
 
@@ -125,9 +129,9 @@ int main()
 
         color = sf::Color::Black;
         dimension.clean();
-        cacto::CollisionNode::collision(*root, dimension);
+        cacto::CollisionNode::collision(root, dimension);
 
-        dynamic->setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
+        dynamic.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
         window.clear(color);
         window.draw(dimension);
         window.display();

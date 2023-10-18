@@ -13,26 +13,29 @@ namespace cacto
 
     public:
         szt getChildCount() const override;
-        SharedNode getChild(szt index = 0) const override;
+        Node *const getChild(szt index = 0) const override;
 
-        Anchor getHorizontalAnchor(const SharedNode &child) const;
-        void setHorizontalAnchor(const SharedNode &child, Anchor value);
+        Anchor getHorizontalAnchor(Node &child) const;
+        void setHorizontalAnchor(Node &child, Anchor value);
 
-        Anchor getVerticalAnchor(const SharedNode &child) const;
-        void setVerticalAnchor(const SharedNode &child, Anchor value);
+        Anchor getVerticalAnchor(Node &child) const;
+        void setVerticalAnchor(Node &child, Anchor value);
 
-        void append(const SharedNode &child);
-        void remove(const SharedNode &child);
+        void append(Node &child);
+        void remove(Node &child);
 
         FrameLayout();
         virtual ~FrameLayout();
+
+        FrameLayout(const FrameLayout &other);
+        FrameLayout &operator=(const FrameLayout &other);
 
     protected:
         struct Holder;
         using SharedHolder = std::shared_ptr<Holder>;
 
-        void onAppend(const SharedNode &child) override;
-        void onRemove(const SharedNode &child) override;
+        void onAppend(Node &child) override;
+        void onRemove(Node &child) override;
 
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -45,14 +48,14 @@ namespace cacto
             Holder() = default;
             virtual ~Holder() = default;
 
-            SharedNode child;
+            Node *child;
             Anchor hAnchor;
             Anchor vAnchor;
             sf::Vector2f boxSize;
         };
 
     private:
-        SharedHolder m_holder;
+        Holder m_holder;
     };
 
 }

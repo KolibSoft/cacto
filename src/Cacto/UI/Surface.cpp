@@ -1,26 +1,27 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/UI/Surface.hpp>
 
 namespace cacto
 {
 
-    SharedNode Surface::getParent() const
+    Node *const Surface::getParent() const
     {
-        auto parent = m_parent.lock();
-        return parent;
+        return m_parent;
     }
 
-    const SharedGeometry &Surface::getGeometry() const
+    Geometry &Surface::getGeometry() const
     {
-        return m_geometry;
+        return *m_geometry;
     }
 
-    void Surface::setGeometry(const SharedGeometry &value)
+    void Surface::setGeometry(Geometry &value)
     {
-        m_geometry = value;
+        m_geometry = &value;
         m_invalid = true;
     }
 
@@ -48,12 +49,12 @@ namespace cacto
         m_invalid = true;
     }
 
-    const SharedTexture &Surface::getTexture() const
+    const sf::Texture *const Surface::getTexture() const
     {
         return m_texutre;
     }
 
-    void Surface::setTexture(const SharedTexture &value)
+    void Surface::setTexture(const sf::Texture *const value)
     {
         m_texutre = value;
         m_invalid = true;
@@ -68,43 +69,57 @@ namespace cacto
         }
     }
 
-    void Surface::attach(const SharedNode &parent)
-    {
-        auto self = as<Node>();
-        Node::link(parent, self);
-    }
-
-    void Surface::detach(const SharedNode &parent)
-    {
-        auto self = as<Node>();
-        Node::unlink(parent, self);
-    }
-
-    Surface::Surface()
+    Surface::Surface(Geometry &geometry, szt precision, const sf::Color &color, sf::Texture *texture)
         : m_parent(),
-          m_geometry(new Rectangle({0, 0}, {1, 1})),
-          m_precision(1),
-          m_color(sf::Color::White),
-          m_texutre(nullptr),
+          m_geometry(&geometry),
+          m_precision(precision),
+          m_color(color),
+          m_texutre(texture),
           m_invalid(true),
           m_array(sf::PrimitiveType::TriangleFan)
     {
     }
 
-    Surface::~Surface() = default;
-
-    void Surface::onAttach(const SharedNode &parent)
+    Surface::~Surface()
     {
-        if (getParent() != nullptr)
-            throw std::runtime_error("Node attached to another parent");
-        m_parent = parent;
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
     }
 
-    void Surface::onDetach(const SharedNode &parent)
+    Surface::Surface(const Surface &other)
+        : m_parent(),
+          m_geometry(other.m_geometry),
+          m_precision(other.m_precision),
+          m_color(other.m_color),
+          m_texutre(other.m_texutre),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::TriangleFan)
     {
-        if (getParent() != parent)
-            throw std::runtime_error("Node attached to another parent");
-        m_parent.reset();
+    }
+
+    Surface &Surface::operator=(const Surface &other)
+    {
+        m_geometry = other.m_geometry;
+        m_precision = other.m_precision;
+        m_color = other.m_color;
+        m_texutre = other.m_texutre;
+        m_invalid = true;
+        m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
+        return *this;
+    }
+
+    const Surface Surface::Rectangle{Rectangle::Identity};
+
+    const Surface Surface::Ellipse{Ellipse::Identity};
+
+    void Surface::onAttach(Node &parent)
+    {
+        m_parent = &parent;
+    }
+
+    void Surface::onDetach(Node &parent)
+    {
+        m_parent = nullptr;
     }
 
     void Surface::onUpdate() const
@@ -123,7 +138,7 @@ namespace cacto
         if (getWidth() > 0 && getHeight() > 0)
         {
             auto _states = states;
-            _states.texture = m_texutre.get();
+            _states.texture = m_texutre;
             target.draw(m_array, _states);
         }
         DrawNode::onDraw(target, states);
@@ -152,23 +167,19 @@ namespace cacto
         m_invalid = true;
     }
 
-    SharedSurface makeColorSurface(const sf::Color &color, const SharedGeometry &geometry, szt precision)
+    Surface colorSurface(const sf::Color &color, Geometry &geometry, szt precision)
     {
-        auto surface = std::make_shared<Surface>();
-        surface->setColor(color);
-        if (geometry)
-            surface->setGeometry(geometry);
-        surface->setPrecision(precision);
+        Surface surface{geometry};
+        surface.setColor(color);
+        surface.setPrecision(precision);
         return surface;
     }
 
-    SharedSurface makeTextureSurface(const SharedTexture &texture, const SharedGeometry &geometry, szt precision)
+    Surface textureSurface(sf::Texture &texture, Geometry &geometry, szt precision)
     {
-        auto surface = std::make_shared<Surface>();
-        surface->setTexture(texture);
-        if (geometry)
-            surface->setGeometry(geometry);
-        surface->setPrecision(precision);
+        Surface surface{geometry};
+        surface.setTexture(&texture);
+        surface.setPrecision(precision);
         return surface;
     }
 
