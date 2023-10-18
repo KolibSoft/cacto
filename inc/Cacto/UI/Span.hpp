@@ -41,6 +41,7 @@ namespace cacto
 
     private:
         Node *m_parent;
+        sf::Vector2f m_place;
     };
 
 }

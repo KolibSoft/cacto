@@ -11,7 +11,8 @@ namespace cacto
 
     Span::Span(const sf::Font &font, const sf::String &string, u32t characterSize)
         : sf::Text(font, string, characterSize),
-          m_parent()
+          m_parent(),
+          m_place()
     {
     }
 
@@ -23,13 +24,15 @@ namespace cacto
 
     Span::Span(const Span &other)
         : sf::Text(other),
-          m_parent()
+          m_parent(),
+          m_place(other.m_place)
     {
     }
 
     Span &Span::operator=(const Span &other)
     {
         sf::Text::operator=(other);
+        m_place = other.m_place;
         return *this;
     }
 
@@ -46,28 +49,29 @@ namespace cacto
     void Span::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         auto *text = dynamic_cast<const sf::Text *>(this);
-        target.draw(*text, states);
+        auto _states = states;
+        _states.transform.translate(m_place);
+        target.draw(*text, _states);
     }
 
     sf::Vector2f Span::onCompact(const sf::Vector2f &contentSize)
     {
-        auto bounds = getLocalBounds();
+        auto bounds = getGlobalBounds();
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
 
     sf::Vector2f Span::onInflate(const sf::Vector2f &containerSize)
     {
-        auto bounds = getLocalBounds();
+        auto bounds = getGlobalBounds();
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
 
     void Span::onPlace(const sf::Vector2f &position)
     {
-        auto bounds = getLocalBounds();
-        auto _position = position - sf::Vector2f{bounds.left, bounds.top};
-        setPosition(_position);
+        auto bounds = getGlobalBounds();
+        m_place = {position.x - bounds.left, position.y - bounds.top};
     }
 
 }
