@@ -42,21 +42,18 @@ namespace cacto
         return false;
     }
 
-    Ellipse::Ellipse(const sf::Vector2f &center, const sf::Vector2f &radius)
+    Ellipse::Ellipse(const sf::Vector2f &center, const sf::Vector2f &diameters)
         : m_centerX(center.x), m_centerY(center.y),
-          m_radiusX(radius.x), m_radiusY(radius.y),
-          m_left(center.x - radius.x), m_top(center.y - radius.y),
-          m_right(center.x + radius.x), m_bottom(center.y + radius.y)
-    {
-    }
-
-    Ellipse::Ellipse()
-        : Ellipse({0, 0}, {0, 0})
+          m_radiusX(diameters.x / 2), m_radiusY(diameters.y / 2),
+          m_left(center.x - diameters.x / 2), m_top(center.y - diameters.y / 2),
+          m_right(center.x + diameters.x / 2), m_bottom(center.y + diameters.y / 2)
     {
     }
 
     Ellipse::~Ellipse()
     {
     }
+
+    Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
 
 }

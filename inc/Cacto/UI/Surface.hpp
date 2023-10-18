@@ -15,14 +15,6 @@ namespace sf
 namespace cacto
 {
 
-    using SharedTexture = std::shared_ptr<sf::Texture>;
-
-    class Geometry;
-    using SharedGeometry = std::shared_ptr<Geometry>;
-
-    class Surface;
-    using SharedSurface = std::shared_ptr<Surface>;
-
     class CACTO_UI_API Surface
         : public Box,
           public virtual LeafNode,
@@ -33,8 +25,8 @@ namespace cacto
     public:
         Node *const getParent() const override;
 
-        const SharedGeometry &getGeometry() const;
-        void setGeometry(const SharedGeometry &value);
+        Geometry &getGeometry() const;
+        void setGeometry(Geometry &value);
 
         szt getPrecision() const;
         void setPrecision(szt value);
@@ -42,13 +34,16 @@ namespace cacto
         const sf::Color &getColor() const;
         void setColor(const sf::Color &value);
 
-        const SharedTexture &getTexture() const;
-        void setTexture(const SharedTexture &value);
+        sf::Texture *const getTexture() const;
+        void setTexture(sf::Texture *const value);
 
         void update(bool force = false) const;
 
-        Surface();
+        Surface(Geometry &geometry, szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
         virtual ~Surface();
+
+        static Surface Rectangle;
+        static Surface Ellipse;
 
     protected:
         void onAttach(Node &parent) override;
@@ -64,17 +59,17 @@ namespace cacto
     private:
         Node *m_parent;
 
-        SharedGeometry m_geometry;
+        Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
-        SharedTexture m_texutre;
+        sf::Texture *m_texutre;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
 
-    SharedSurface CACTO_UI_API makeColorSurface(const sf::Color &color, const SharedGeometry &geometry = nullptr, szt precision = 1);
-    SharedSurface CACTO_UI_API makeTextureSurface(const SharedTexture &texture, const SharedGeometry &geometry = nullptr, szt precision = 1);
+    Surface CACTO_UI_API colorSurface(const sf::Color &color, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
+    Surface CACTO_UI_API textureSurface(sf::Texture &texture, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
 
 }
 

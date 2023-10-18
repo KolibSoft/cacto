@@ -24,11 +24,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     textures.setLoadFromFile(SurfaceTexture, "res/fondo.png");
-
-    auto geometry = std::make_shared<cacto::Ellipse>(sf::Vector2f{0, 0}, sf::Vector2f{1, 1});
     auto texture = textures.get(SurfaceTexture);
 
-    auto root = cacto::makeTextureSurface(texture, geometry, 5);
+    auto root = cacto::Surface::Ellipse;
+    root.setPrecision(10);
+    root.setTexture(texture.get());
 
     while (window.isOpen())
     {
@@ -40,11 +40,11 @@ int main()
             if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
-        root->compact();
-        root->inflate(sf::Vector2f(window.getSize()));
-        root->place();
+        root.compact();
+        root.inflate(sf::Vector2f(window.getSize()));
+        root.place();
         window.clear(sf::Color::Black);
-        window.draw(*root);
+        window.draw(root);
         window.display();
     }
 

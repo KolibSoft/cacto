@@ -1,7 +1,6 @@
 #ifndef CACTO_BLOCK_HPP
 #define CACTO_BLOCK_HPP
 
-#include <memory>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
@@ -17,11 +16,6 @@ namespace sf
 namespace cacto
 {
 
-    using SharedTexture = std::shared_ptr<sf::Texture>;
-
-    class Geometry;
-    using SharedGeometry = std::shared_ptr<Geometry>;
-
     class CACTO_UI_API Block
         : public Box,
           public virtual LeafNode,
@@ -32,8 +26,8 @@ namespace cacto
     public:
         Node *const getParent() const override;
 
-        const SharedNode &getBackground() const;
-        void setBackground(const SharedNode &value);
+        Node *const getBackground() const;
+        void setBackground(Node *const value);
 
         const Thickness &getMargin() const;
         void setMargin(const Thickness &value);
@@ -71,7 +65,7 @@ namespace cacto
 
     private:
         Node *m_parent;
-        SharedNode m_background;
+        Node *m_background;
         Thickness m_margin;
         Thickness m_padding;
         f32t m_minWidth;

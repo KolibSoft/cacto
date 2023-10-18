@@ -13,12 +13,12 @@ namespace cacto
         return m_parent;
     }
 
-    const SharedNode &Block::getBackground() const
+    Node *const Block::getBackground() const
     {
         return m_background;
     }
 
-    void Block::setBackground(const SharedNode &value)
+    void Block::setBackground(Node *const value)
     {
         m_background = value;
     }

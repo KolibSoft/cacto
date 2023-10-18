@@ -1,3 +1,4 @@
+#include <math.h>
 #include <Cacto/UI/InflatableNode.hpp>
 
 namespace cacto

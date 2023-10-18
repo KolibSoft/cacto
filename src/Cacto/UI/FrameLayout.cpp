@@ -6,75 +6,75 @@ namespace cacto
 
     szt FrameLayout::getChildCount() const
     {
-        return m_holder && m_holder->child ? 1 : 0;
+        return m_holder.child ? 1 : 0;
     }
 
-    SharedNode FrameLayout::getChild(szt index) const
+    Node *const FrameLayout::getChild(szt index) const
     {
-        auto child = index == 0 && m_holder ? m_holder->child : nullptr;
+        auto child = m_holder.child;
         return child;
     }
 
-    Box::Anchor FrameLayout::getHorizontalAnchor(const SharedNode &child) const
+    Box::Anchor FrameLayout::getHorizontalAnchor(Node &child) const
     {
-        if (getChild() != child)
+        if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child");
-        return m_holder->hAnchor;
+        return m_holder.hAnchor;
     }
 
-    void FrameLayout::setHorizontalAnchor(const SharedNode &child, Anchor value)
+    void FrameLayout::setHorizontalAnchor(Node &child, Anchor value)
     {
-        if (getChild() != child)
+        if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child");
-        m_holder->hAnchor = value;
+        m_holder.hAnchor = value;
     }
 
-    Box::Anchor FrameLayout::getVerticalAnchor(const SharedNode &child) const
+    Box::Anchor FrameLayout::getVerticalAnchor(Node &child) const
     {
-        if (getChild() != child)
+        if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child");
-        return m_holder->vAnchor;
+        return m_holder.vAnchor;
     }
 
-    void FrameLayout::setVerticalAnchor(const SharedNode &child, Anchor value)
+    void FrameLayout::setVerticalAnchor(Node &child, Anchor value)
     {
-        if (getChild() != child)
+        if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child");
-        m_holder->vAnchor = value;
+        m_holder.vAnchor = value;
     }
 
-    void FrameLayout::append(const SharedNode &child)
+    void FrameLayout::append(Node &child)
     {
         Node::link(*this, child);
     }
 
-    void FrameLayout::remove(const SharedNode &child)
+    void FrameLayout::remove(Node &child)
     {
         Node::unlink(*this, child);
     }
 
     FrameLayout::FrameLayout()
-        : m_holder(nullptr)
+        : m_holder()
     {
     }
 
     FrameLayout::~FrameLayout() = default;
 
-    void FrameLayout::onAppend(const SharedNode &child)
+    void FrameLayout::onAppend(Node &child)
     {
-        if (getChild())
+        if (m_holder.child)
             throw std::runtime_error("This node can not has more child nodes");
-        m_holder.reset(new Holder());
-        m_holder->child = child;
-        m_holder->hAnchor = Start;
-        m_holder->vAnchor = Start;
+        m_holder = {};
+        m_holder.child = &child;
+        m_holder.hAnchor = Start;
+        m_holder.vAnchor = Start;
     }
 
-    void FrameLayout::onRemove(const SharedNode &child)
+    void FrameLayout::onRemove(Node &child)
     {
-        if (getChild() != child)
+        if (m_holder.child)
             throw std::runtime_error("The node is not a child node");
-        m_holder.reset();
+        m_holder.child = nullptr;
     }
 
     sf::Vector2f FrameLayout::onCompact(const sf::Vector2f &contentSize)
@@ -103,7 +103,7 @@ namespace cacto
                                         boxSize.y - margin.getVertical() - padding.getVertical()};
 
             auto _boxSize = InflatableNode::inflate(*child, _containerSize);
-            m_holder->boxSize = _boxSize;
+            m_holder.boxSize = _boxSize;
         }
         return boxSize;
     }
@@ -120,11 +120,11 @@ namespace cacto
                 getWidth() - padding.getHorizontal(),
                 getHeight() - padding.getVertical(),
             };
-            auto &boxSize = m_holder->boxSize;
+            auto &boxSize = m_holder.boxSize;
             sf::Vector2f contentPosition{
                 getLeft() + padding.left,
                 getTop() + padding.top};
-            switch (m_holder->hAnchor)
+            switch (m_holder.hAnchor)
             {
             case Start:
                 break;
@@ -135,7 +135,7 @@ namespace cacto
                 contentPosition.x += (containerSize.x - boxSize.x) / 2;
                 break;
             }
-            switch (m_holder->vAnchor)
+            switch (m_holder.vAnchor)
             {
             case Start:
                 break;
