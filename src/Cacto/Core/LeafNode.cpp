@@ -9,7 +9,7 @@ namespace cacto
         return 0;
     }
 
-    SharedNode LeafNode::getChild(szt index) const
+    Node *const LeafNode::getChild(szt index) const
     {
         return nullptr;
     }
@@ -18,12 +18,12 @@ namespace cacto
 
     LeafNode::~LeafNode() = default;
 
-    void LeafNode::onAppend(const SharedNode &child)
+    void LeafNode::onAppend(Node &child)
     {
         throw std::runtime_error("Leaf nodes can not hold children");
     }
 
-    void LeafNode::onRemove(const SharedNode &child)
+    void LeafNode::onRemove(Node &child)
     {
         throw std::runtime_error("Leaf nodes can not hold children");
     }
