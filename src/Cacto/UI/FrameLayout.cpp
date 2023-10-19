@@ -136,10 +136,10 @@ namespace cacto
                 getWidth() - padding.getHorizontal(),
                 getHeight() - padding.getVertical(),
             };
-            auto &boxSize = m_holder.boxSize;
             sf::Vector2f contentPosition{
                 getLeft() + padding.left,
                 getTop() + padding.top};
+            auto &boxSize = m_holder.boxSize;
             switch (m_holder.hAnchor)
             {
             case Start:

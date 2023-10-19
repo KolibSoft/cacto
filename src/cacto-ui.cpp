@@ -9,3 +9,4 @@
 #include "Cacto/UI/Label.cpp"
 #include "Cacto/UI/Button.cpp"
 #include "Cacto/UI/Input.cpp"
+#include "Cacto/UI/AnchorLayout.cpp"

@@ -1,13 +1,14 @@
-#ifndef CACTO_FRAME_LAYOUT_HPP
-#define CACTO_FRAME_LAYOUT_HPP
+#ifndef CACTO_ANCHOR_LAYOUT_HPP
+#define CACTO_ANCHOR_LAYOUT_HPP
 
+#include <vector>
 #include <Cacto/UI/Block.hpp>
 #include <Cacto/UI/Export.hpp>
 
 namespace cacto
 {
 
-    class CACTO_UI_API FrameLayout
+    class CACTO_UI_API AnchorLayout
         : public Block
     {
 
@@ -28,13 +29,21 @@ namespace cacto
         void append(Node &child);
         void remove(Node &child);
 
-        FrameLayout();
-        virtual ~FrameLayout();
+        AnchorLayout();
+        virtual ~AnchorLayout();
 
-        FrameLayout(const FrameLayout &other);
-        FrameLayout &operator=(const FrameLayout &other);
+        AnchorLayout(const AnchorLayout &other);
+        AnchorLayout &operator=(const AnchorLayout &other);
 
     protected:
+        struct Holder;
+
+        const Holder *const getHolder(const Node &node) const;
+        const Holder *const getHolder(Node &&node) const = delete;
+
+        Holder *const getHolder(const Node &node);
+        Holder *const getHolder(Node &&node) = delete;
+
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
 
@@ -56,7 +65,7 @@ namespace cacto
         };
 
     private:
-        Holder m_holder;
+        std::vector<Holder> m_holders;
     };
 
 }
