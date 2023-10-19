@@ -7,3 +7,4 @@
 #include "Cacto/UI/Block.cpp"
 #include "Cacto/UI/FrameLayout.cpp"
 #include "Cacto/UI/Label.cpp"
+#include "Cacto/UI/Button.cpp"
