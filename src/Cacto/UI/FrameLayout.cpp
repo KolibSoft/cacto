@@ -15,7 +15,7 @@ namespace cacto
         return child;
     }
 
-    Box::Anchor FrameLayout::getHorizontalAnchor(Node &child) const
+    Box::Anchor FrameLayout::getHorizontalAnchor(const Node &child) const
     {
         if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child");
@@ -29,7 +29,7 @@ namespace cacto
         m_holder.hAnchor = value;
     }
 
-    Box::Anchor FrameLayout::getVerticalAnchor(Node &child) const
+    Box::Anchor FrameLayout::getVerticalAnchor(const Node &child) const
     {
         if (m_holder.child != &child)
             throw std::runtime_error("The node is not a child");

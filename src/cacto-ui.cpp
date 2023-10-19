@@ -6,3 +6,4 @@
 #include "Cacto/UI/Span.cpp"
 #include "Cacto/UI/Block.cpp"
 #include "Cacto/UI/FrameLayout.cpp"
+#include "Cacto/UI/Label.cpp"
