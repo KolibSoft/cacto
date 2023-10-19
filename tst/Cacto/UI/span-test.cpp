@@ -33,8 +33,9 @@ int main()
     background.setColor(sf::Color::Red);
 
     cacto::Span span{font, "It Works"};
+    auto bounds = span.getLocalBounds();
+    span.setOrigin({bounds.width / 2, bounds.height / 2});
     span.setRotation(sf::degrees(45));
-    span.setScale({2, 2});
     span.setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
     span.setOutlineThickness(10);
     span.setOutlineColor(sf::Color::Blue);

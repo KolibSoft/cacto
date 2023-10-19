@@ -56,21 +56,21 @@ namespace cacto
 
     sf::Vector2f Span::onCompact(const sf::Vector2f &contentSize)
     {
-        auto bounds = getGlobalBounds();
+        auto bounds = getLocalBounds();
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
 
     sf::Vector2f Span::onInflate(const sf::Vector2f &containerSize)
     {
-        auto bounds = getGlobalBounds();
+        auto bounds = getLocalBounds();
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
 
     void Span::onPlace(const sf::Vector2f &position)
     {
-        auto bounds = getGlobalBounds();
+        auto bounds = getLocalBounds();
         m_place = {position.x - bounds.left, position.y - bounds.top};
     }
 
