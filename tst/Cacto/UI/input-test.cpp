@@ -39,8 +39,19 @@ int main()
     root.getSpan().setOutlineColor(sf::Color::Blue);
     root.setHorizontalAnchor(cacto::Box::Center);
     root.setVerticalAnchor(cacto::Box::Center);
-    root.setOnInputListener([](cacto::Node &target, const sf::Event &event)
-                            { std::cout << "Text entered\n"; });
+    root.setOnInputListener(
+        [](cacto::Node &target, const sf::Event &event)
+        {
+            auto &input = dynamic_cast<cacto::Input &>(target);
+            if (input.getSpan().getString().getSize() > 10)
+            {
+                input.getSpan().setFillColor(sf::Color::Yellow);
+            }
+            else
+            {
+                input.getSpan().setFillColor(sf::Color::White);
+            }
+        });
 
     while (window.isOpen())
     {
