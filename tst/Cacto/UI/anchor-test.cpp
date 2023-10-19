@@ -34,23 +34,32 @@ int main()
     auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
 
-    auto bgControl = background;
-    bgControl.setColor(sf::Color::Blue);
-
     cacto::Label label{font, "LABEL"};
-    label.getBlock().setBackground(&bgControl);
+    auto bgLabel = background;
+    bgLabel.setColor(sf::Color::Blue);
+    label.getBlock().setBackground(&bgLabel);
     // label.getBlock().setMaxWidth(0);
-    // label.getBlock().setMaxHeight(0);
+    label.getBlock().setMaxHeight(0);
+    // label.getBlock().setMargin(10);
+    label.getBlock().setPadding(10);
 
     cacto::Input input{font, "INPUT"};
-    input.getBlock().setBackground(&bgControl);
-    // input.getBlock().setMaxWidth(0);
+    auto bgInput = background;
+    bgInput.setColor(sf::Color::Green);
+    input.getBlock().setBackground(&bgInput);
+    input.getBlock().setMaxWidth(0);
     // input.getBlock().setMaxHeight(0);
+    input.getBlock().setMargin(10);
+    // input.getBlock().setPadding(10);
 
     cacto::Button button{font, "BUTTON"};
-    button.getBlock().setBackground(&bgControl);
-    // button.getBlock().setMaxWidth(0);
-    // button.getBlock().setMaxHeight(0);
+    auto bgButton = background;
+    bgButton.setColor(sf::Color::Magenta);
+    button.getBlock().setBackground(&bgButton);
+    button.getBlock().setMaxWidth(0);
+    button.getBlock().setMaxHeight(0);
+    button.getBlock().setMargin(10);
+    button.getBlock().setPadding(10);
 
     cacto::AnchorLayout root{};
     root.setBackground(&background);

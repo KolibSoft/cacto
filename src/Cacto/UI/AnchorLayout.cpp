@@ -146,8 +146,7 @@ namespace cacto
     sf::Vector2f AnchorLayout::onInflate(const sf::Vector2f &containerSize)
     {
         auto boxSize = Block::onInflate(containerSize);
-        auto child = getChild();
-        if (child)
+        if (m_holders.size() > 0)
         {
             auto margin = getMargin();
             auto padding = getPadding();
@@ -168,27 +167,26 @@ namespace cacto
         Block::onPlace(position);
         if (m_holders.size() > 0)
         {
-            auto margin = getMargin();
             auto padding = getPadding();
             sf::Vector2f containerSize{
                 getWidth() - padding.getHorizontal(),
-                getHeight() - padding.getVertical(),
-            };
+                getHeight() - padding.getVertical()};
             sf::Vector2f contentPosition{
                 getLeft() + padding.left,
                 getTop() + padding.top};
             for (auto &holder : m_holders)
             {
                 auto &boxSize = holder.boxSize;
+                auto _contentPosition = contentPosition;
                 switch (holder.hAnchor)
                 {
                 case Start:
                     break;
                 case End:
-                    contentPosition.x += containerSize.x - boxSize.x;
+                    _contentPosition.x += containerSize.x - boxSize.x;
                     break;
                 case Center:
-                    contentPosition.x += (containerSize.x - boxSize.x) / 2;
+                    _contentPosition.x += (containerSize.x - boxSize.x) / 2;
                     break;
                 }
                 switch (holder.vAnchor)
@@ -196,13 +194,13 @@ namespace cacto
                 case Start:
                     break;
                 case End:
-                    contentPosition.y += containerSize.y - boxSize.y;
+                    _contentPosition.y += containerSize.y - boxSize.y;
                     break;
                 case Center:
-                    contentPosition.y += (containerSize.y - boxSize.y) / 2;
+                    _contentPosition.y += (containerSize.y - boxSize.y) / 2;
                     break;
                 }
-                InflatableNode::place(*holder.child, contentPosition);
+                InflatableNode::place(*holder.child, _contentPosition);
             }
         }
     }

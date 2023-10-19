@@ -49,6 +49,7 @@ namespace cacto
         void onPlace(const sf::Vector2f &position) override;
 
     private:
+        Node* m_parent;
         FrameLayout m_frame;
         Span m_span;
     };

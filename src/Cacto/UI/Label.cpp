@@ -53,7 +53,8 @@ namespace cacto
     }
 
     Label::Label(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : m_frame(),
+        : m_parent(),
+          m_frame(),
           m_span(font, string, characterSize)
     {
         m_frame.append(m_span);
@@ -62,7 +63,8 @@ namespace cacto
     Label::~Label() {}
 
     Label::Label(const Label &other)
-        : m_frame(other.m_frame),
+        : m_parent(),
+          m_frame(other.m_frame),
           m_span(other.m_span)
     {
         m_frame.append(m_span);
@@ -77,12 +79,12 @@ namespace cacto
 
     void Label::onAttach(Node &parent)
     {
-        Node::link(parent, m_frame);
+        m_parent = &parent;
     }
 
     void Label::onDetach(Node &parent)
     {
-        Node::unlink(parent, m_frame);
+        m_parent = nullptr;
     }
 
     void Label::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const

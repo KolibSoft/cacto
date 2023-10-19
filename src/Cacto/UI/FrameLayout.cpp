@@ -130,12 +130,10 @@ namespace cacto
         auto child = getChild();
         if (child)
         {
-            auto margin = getMargin();
             auto padding = getPadding();
             sf::Vector2f containerSize{
                 getWidth() - padding.getHorizontal(),
-                getHeight() - padding.getVertical(),
-            };
+                getHeight() - padding.getVertical()};
             sf::Vector2f contentPosition{
                 getLeft() + padding.left,
                 getTop() + padding.top};
