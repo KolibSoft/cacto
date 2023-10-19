@@ -36,9 +36,7 @@ namespace cacto
 
     bool Button::onEvent(const sf::Event &event)
     {
-        if (eventChildren(event))
-            return true;
-        else if (event.type == sf::Event::MouseButtonReleased && getBlock().contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        if (event.type == sf::Event::MouseButtonReleased && getBlock().contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
             onClick(event);
             return true;
