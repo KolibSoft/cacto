@@ -130,6 +130,13 @@ namespace cacto
                                      { return &it == holder; }));
     }
 
+    void AnchorLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        Block::onDraw(target, states);
+        for (auto &holder : m_holders)
+            DrawNode::draw(*holder.child, target, states);
+    }
+
     sf::Vector2f AnchorLayout::onCompact(const sf::Vector2f &contentSize)
     {
         auto _contentSize = contentSize;
