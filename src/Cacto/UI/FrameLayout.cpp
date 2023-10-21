@@ -76,6 +76,13 @@ namespace cacto
         return *this;
     }
 
+    void FrameLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        Block::onDraw(target, states);
+        if (m_holder.child)
+            DrawNode::draw(*m_holder.child, target, states);
+    }
+
     void FrameLayout::onAppend(Node &child)
     {
         if (m_holder.child != nullptr)
@@ -113,11 +120,10 @@ namespace cacto
         auto child = getChild();
         if (child)
         {
-            auto margin = getMargin();
             auto padding = getPadding();
-            sf::Vector2f _containerSize{boxSize.x - margin.getHorizontal() - padding.getHorizontal(),
-                                        boxSize.y - margin.getVertical() - padding.getVertical()};
-
+            Box box{*this};
+            box.shrink(padding);
+            sf::Vector2f _containerSize{box.getWidth(), box.getHeight()};
             auto _boxSize = InflatableNode::inflate(*child, _containerSize);
             m_holder.boxSize = _boxSize;
         }
@@ -131,12 +137,10 @@ namespace cacto
         if (child)
         {
             auto padding = getPadding();
-            sf::Vector2f containerSize{
-                getWidth() - padding.getHorizontal(),
-                getHeight() - padding.getVertical()};
-            sf::Vector2f contentPosition{
-                getLeft() + padding.left,
-                getTop() + padding.top};
+            Box box{*this};
+            box.shrink(padding);
+            sf::Vector2f contentPosition{box.getLeft(), box.getTop()};
+            sf::Vector2f containerSize{box.getWidth(), box.getHeight()};
             auto &boxSize = m_holder.boxSize;
             switch (m_holder.hAnchor)
             {

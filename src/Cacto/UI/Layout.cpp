@@ -25,13 +25,13 @@ namespace cacto
         while (m_holders.size() > 0)
         {
             auto holder = m_holders.front();
-            auto& child = holder->getChild();
-            Node::unlink(*this, child);
+            Node::unlink(*this, holder->child);
         }
     }
 
     Layout::Layout(const Layout &other)
-        : Block(other)
+        : Block(other),
+          m_holders()
     {
     }
 
@@ -65,7 +65,7 @@ namespace cacto
     {
         for (auto holder : m_holders)
         {
-            if (&holder->getChild() == &child)
+            if (&holder->child == &child)
                 return holder;
         }
         return nullptr;
@@ -75,13 +75,13 @@ namespace cacto
     {
         for (auto holder : m_holders)
         {
-            if (&holder->getChild() == &child)
+            if (&holder->child == &child)
                 return holder;
         }
         return nullptr;
     }
 
-    Layout::Holder *Layout::onHold(Node &child)
+    Layout::Holder *Layout::onHold(Node &child) const
     {
         auto holder = new Holder(child);
         return holder;
@@ -109,10 +109,7 @@ namespace cacto
     {
         Block::onDraw(target, states);
         for (auto holder : m_holders)
-        {
-            auto& child = holder->getChild();
-            DrawNode::draw(child, target, states);
-        }
+            DrawNode::draw(holder->child, target, states);
     }
 
     sf::Vector2f Layout::onCompact(const sf::Vector2f &contentSize)
@@ -122,8 +119,7 @@ namespace cacto
         {
             for (auto holder : m_holders)
             {
-                auto& child = holder->getChild();
-                auto size = InflatableNode::compact(child, contentSize);
+                auto size = InflatableNode::compact(holder->child, contentSize);
                 _contentSize.x = std::max(size.x, _contentSize.x);
                 _contentSize.y = std::max(size.y, _contentSize.y);
             }
@@ -137,15 +133,12 @@ namespace cacto
         auto boxSize = Block::onInflate(containerSize);
         if (m_holders.size() > 0)
         {
-            auto margin = getMargin();
             auto padding = getPadding();
-            sf::Vector2f _containerSize{boxSize.x - margin.getHorizontal() - padding.getHorizontal(),
-                                        boxSize.y - margin.getVertical() - padding.getVertical()};
+            Box box{*this};
+            box.shrink(padding);
+            sf::Vector2f _containerSize{box.getWidth(), box.getHeight()};
             for (auto holder : m_holders)
-            {
-                auto& child = holder->getChild();
-                InflatableNode::inflate(child, _containerSize);
-            }
+                InflatableNode::inflate(holder->child, _containerSize);
         }
         return boxSize;
     }
@@ -160,25 +153,12 @@ namespace cacto
             box.shrink(padding);
             sf::Vector2f contentPosition{box.getLeft(), box.getTop()};
             for (auto holder : m_holders)
-            {
-                auto& child = holder->getChild();
-                InflatableNode::place(child, contentPosition);
-            }
+                InflatableNode::place(holder->child, contentPosition);
         }
     }
 
-    const Node &Layout::Holder::getChild() const
-    {
-        return *m_child;
-    }
-
-    Node &Layout::Holder::getChild()
-    {
-        return *m_child;
-    }
-
     Layout::Holder::Holder(Node &child)
-        : m_child(&child) {}
+        : child(child) {}
 
     Layout::Holder::~Holder() {}
 

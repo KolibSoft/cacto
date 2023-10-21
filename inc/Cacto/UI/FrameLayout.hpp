@@ -38,6 +38,8 @@ namespace cacto
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
 
+        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;

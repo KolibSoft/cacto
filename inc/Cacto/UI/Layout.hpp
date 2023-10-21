@@ -33,7 +33,7 @@ namespace cacto
         const Holder *const getHolder(const Node &child) const;
         const Holder *const getHolder(Node &&child) const = delete;
 
-        virtual Holder *onHold(Node &child);
+        virtual Holder *onHold(Node &child) const;
 
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
@@ -48,14 +48,10 @@ namespace cacto
         {
 
         public:
-            const Node &getChild() const;
-            Node &getChild();
-
             Holder(Node &child);
             virtual ~Holder();
 
-        private:
-            Node *m_child;
+            Node& child;
         };
 
     private:
