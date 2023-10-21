@@ -12,6 +12,9 @@ namespace cacto
     {
 
     public:
+        szt getChildCount() const override;
+        Node *const getChild(szt index = 0) const override;
+
         void append(Node &child);
         void remove(Node &child);
 
@@ -22,7 +25,15 @@ namespace cacto
         Layout &operator=(const Layout &other);
 
     protected:
-        class Holder;
+        class Holder
+        {
+
+        public:
+            Holder(Node &child);
+            virtual ~Holder();
+
+            Node &child;
+        };
 
         Holder *const getHolder(szt index = 0);
         const Holder *const getHolder(szt index = 0) const;
@@ -43,16 +54,6 @@ namespace cacto
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
-
-        class Holder
-        {
-
-        public:
-            Holder(Node &child);
-            virtual ~Holder();
-
-            Node& child;
-        };
 
     private:
         std::vector<Holder *> m_holders;

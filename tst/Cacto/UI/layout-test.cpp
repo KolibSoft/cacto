@@ -90,8 +90,8 @@ int main()
     root.setPadding(10);
 
     root.append(label);
-    // root.append(input);
-    // root.append(button);
+    root.append(input);
+    root.append(button);
 
     while (window.isOpen())
     {

@@ -5,6 +5,20 @@
 namespace cacto
 {
 
+    szt Layout::getChildCount() const
+    {
+        auto count = m_holders.size();
+        return count;
+    }
+
+    Node *const Layout::getChild(szt index) const
+    {
+        auto holder = getHolder(index);
+        if (holder)
+            return &holder->child;
+        return nullptr;
+    }
+
     void Layout::append(Node &child)
     {
         Node::link(*this, child);
