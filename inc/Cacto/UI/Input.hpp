@@ -4,6 +4,7 @@
 #include <SFML/System/String.hpp>
 #include <Cacto/Window/EventNode.hpp>
 #include <Cacto/Window/Inputable.hpp>
+#include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
 
 namespace cacto
@@ -12,7 +13,8 @@ namespace cacto
     class CACTO_UI_API Input
         : public Label,
           public virtual EventNode,
-          public virtual Inputable
+          public virtual Inputable,
+          public virtual Focusable
     {
 
     public:
@@ -31,9 +33,12 @@ namespace cacto
         bool onEvent(const sf::Event &event) override;
     
         void onInput(const sf::Event &event) override;
+        void onFocus(const sf::Event &event) override;
+        void onUnfocus(const sf::Event &event) override;
 
     private:
         EventListener m_onInput;
+        bool m_focused;
     };
 
 }

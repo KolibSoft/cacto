@@ -3,6 +3,7 @@
 
 #include <Cacto/Window/EventNode.hpp>
 #include <Cacto/Window/Clickable.hpp>
+#include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
 
 namespace cacto
@@ -11,7 +12,8 @@ namespace cacto
     class CACTO_UI_API Button
         : public Label,
           public virtual EventNode,
-          public virtual Clickable
+          public virtual Clickable,
+          public virtual Focusable
     {
 
     public:
@@ -30,9 +32,12 @@ namespace cacto
         bool onEvent(const sf::Event &event) override;
 
         void onClick(const sf::Event &event) override;
+        void onFocus(const sf::Event &event) override;
+        void onUnfocus(const sf::Event &event) override;
 
     private:
         EventListener m_onClick;
+        bool m_focused;
     };
 
 }

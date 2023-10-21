@@ -70,8 +70,11 @@ namespace cacto
 
     AnchorLayout::~AnchorLayout()
     {
-        for (auto &holder : m_holders)
+        while (m_holders.size() > 0)
+        {
+            auto &holder = m_holders.front();
             Node::unlink(*this, *holder.child);
+        }
     }
 
     AnchorLayout::AnchorLayout(const AnchorLayout &other)

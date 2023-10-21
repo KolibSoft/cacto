@@ -15,14 +15,16 @@ namespace cacto
     }
 
     Input::Input(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : Label(font, string, characterSize)
+        : Label(font, string, characterSize),
+          m_focused()
     {
     }
 
     Input::~Input() {}
 
     Input::Input(const Input &other)
-        : Label(other)
+        : Label(other),
+          m_focused()
     {
     }
 
@@ -34,7 +36,12 @@ namespace cacto
 
     bool Input::onEvent(const sf::Event &event)
     {
-        if (event.type == sf::Event::TextEntered)
+        if (event.type == sf::Event::MouseButtonReleased && getBlock().contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        {
+            focus();
+            return true;
+        }
+        else if (m_focused && event.type == sf::Event::TextEntered)
         {
             onInput(event);
             return true;
@@ -61,6 +68,18 @@ namespace cacto
             m_onInput(*this, event);
         else
             bubbleParent(*this, event);
+    }
+
+    void Input::onFocus(const sf::Event &event)
+    {
+        m_focused = true;
+        bubbleParent(*this, event);
+    }
+
+    void Input::onUnfocus(const sf::Event &event)
+    {
+        m_focused = false;
+        bubbleParent(*this, event);
     }
 
 }

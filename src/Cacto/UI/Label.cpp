@@ -6,8 +6,7 @@ namespace cacto
 
     Node *const Label::getParent() const
     {
-        auto parent = m_frame.getParent();
-        return parent;
+        return m_parent;
     }
 
     const Block &Label::getBlock() const
@@ -60,7 +59,11 @@ namespace cacto
         m_frame.append(m_span);
     }
 
-    Label::~Label() {}
+    Label::~Label()
+    {
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
+    }
 
     Label::Label(const Label &other)
         : m_parent(),

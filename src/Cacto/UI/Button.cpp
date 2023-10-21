@@ -15,14 +15,17 @@ namespace cacto
     }
 
     Button::Button(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : Label(font, string, characterSize)
+        : Label(font, string, characterSize),
+          m_onClick(),
+          m_focused()
     {
     }
 
     Button::~Button() {}
 
     Button::Button(const Button &other)
-        : Label(other)
+        : Label(other),
+          m_focused()
     {
         m_onClick = other.m_onClick;
     }
@@ -41,6 +44,10 @@ namespace cacto
             onClick(event);
             return true;
         }
+        else if (m_focused && event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
+        {
+            click();
+        }
         return false;
     }
 
@@ -50,6 +57,19 @@ namespace cacto
             m_onClick(*this, event);
         else
             bubbleParent(*this, event);
+        focus();
+    }
+
+    void Button::onFocus(const sf::Event &event)
+    {
+        m_focused = true;
+        bubbleParent(*this, event);
+    }
+
+    void Button::onUnfocus(const sf::Event &event)
+    {
+        m_focused = false;
+        bubbleParent(*this, event);
     }
 
 }
