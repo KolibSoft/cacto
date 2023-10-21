@@ -146,7 +146,6 @@ namespace cacto
     {
         if (m_background)
             DrawNode::draw(*m_background, target, states);
-        DrawNode::onDraw(target, states);
     }
 
     sf::Vector2f Block::onCompact(const sf::Vector2f &contentSize)
