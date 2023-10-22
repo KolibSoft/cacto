@@ -2,19 +2,16 @@
 #define CACTO_ROW_LAYOUT_HPP
 
 #include <vector>
-#include <Cacto/UI/Block.hpp>
+#include <Cacto/UI/Layout.hpp>
 
 namespace cacto
 {
 
     class CACTO_UI_API RowLayout
-        : public Block
+        : public Layout
     {
 
     public:
-        void append(Node &child);
-        void remove(Node &child);
-
         RowLayout();
         virtual ~RowLayout();
 
@@ -22,30 +19,21 @@ namespace cacto
         RowLayout &operator=(const RowLayout &other);
 
     protected:
-        struct Holder;
-
-        const Holder *const getHolder(const Node &node) const;
-        const Holder *const getHolder(Node &&node) const = delete;
-
-        Holder *const getHolder(const Node &node);
-        Holder *const getHolder(Node &&node) = delete;
-        
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
-
-        struct Holder
+        class RowHolder
+            : public Holder
         {
-
         public:
-            Holder() = default;
-            virtual ~Holder() = default;
+            RowHolder(Node &child);
+            virtual ~RowHolder();
 
-            Node *child;
             sf::Vector2f boxSize;
         };
 
-    private:
-        std::vector<Holder> m_holders;
+        RowHolder *onHold(Node &child) const override;
+
+        sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
+        sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void onPlace(const sf::Vector2f &position = {0, 0}) override;
     };
 
 }

@@ -5,68 +5,83 @@
 namespace cacto
 {
 
-    void RowLayout::append(Node &child)
+    RowLayout::RowLayout() = default;
+    RowLayout::~RowLayout() = default;
+
+    RowLayout::RowLayout(const RowLayout &other) = default;
+    RowLayout &RowLayout::operator=(const RowLayout &other) = default;
+
+    RowLayout::RowHolder *RowLayout::onHold(Node &child) const
     {
-        Node::link(*this, child);
+        auto holder = new RowHolder(child);
+        return holder;
     }
 
-    void RowLayout::remove(Node &child)
+    sf::Vector2f RowLayout::onCompact(const sf::Vector2f &contentSize)
     {
-        Node::unlink(*this, child);
-    }
-
-    RowLayout::RowLayout() {}
-
-    RowLayout::~RowLayout() {}
-
-    RowLayout::RowLayout(const RowLayout &other)
-        : Block(other)
-    {
-    }
-
-    RowLayout &RowLayout::operator=(const RowLayout &other)
-    {
-        Block::operator=(other);
-        return *this;
-    }
-
-    const RowLayout::Holder *const RowLayout::getHolder(const Node &node) const
-    {
-        for (auto &holder : m_holders)
+        sf::Vector2f _contentSize{contentSize};
+        if (getChildCount() > 0)
         {
-            if (holder.child == &node)
-                return &holder;
+            f32t length = 0;
+            for (szt i = 0; i < getChildCount(); i++)
+            {
+                auto holder = getHolder(i);
+                auto size = InflatableNode::compact(holder->child, contentSize);
+                length += size.x;
+                _contentSize.y = std::max(size.y, _contentSize.y);
+            }
+            _contentSize.x = std::max(length, _contentSize.x);
         }
-        return nullptr;
+        auto boxSize = Block::onCompact(_contentSize);
+        return boxSize;
     }
 
-    RowLayout::Holder *const RowLayout::getHolder(const Node &node)
+    sf::Vector2f RowLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        for (auto &holder : m_holders)
+        auto boxSize = Block::onInflate(containerSize);
+        if (getChildCount() > 0)
         {
-            if (holder.child == &node)
-                return &holder;
+            auto padding = getPadding();
+            Box box{*this};
+            box.shrink(padding);
+            sf::Vector2f _containerSize{0, box.getHeight()};
+            for (szt i = 0; i < getChildCount(); i++)
+            {
+                auto holder = dynamic_cast<RowHolder *>(getHolder(i));
+                auto _boxSize = InflatableNode::inflate(holder->child, _containerSize);
+                holder->boxSize = _boxSize;
+            }
         }
-        return nullptr;
+        return boxSize;
     }
 
-    void RowLayout::onAppend(Node &child)
+    void RowLayout::onPlace(const sf::Vector2f &position)
     {
-        auto holder = getHolder(child);
-        if (holder != nullptr)
-            throw std::runtime_error("This node can not has more child nodes");
-        Holder _holder{};
-        _holder.child = &child;
-        m_holders.push_back(_holder);
+        Block::onPlace(position);
+        if (getChildCount() > 0)
+        {
+            auto padding = getPadding();
+            Box box{*this};
+            box.shrink(padding);
+            sf::Vector2f contentPosition{box.getLeft(), box.getTop()};
+            f32t offset = 0;
+            for (szt i = 0; i < getChildCount(); i++)
+            {
+                auto _contentPosition{contentPosition};
+                _contentPosition.x += offset;
+                auto holder = dynamic_cast<RowHolder *>(getHolder(i));
+                InflatableNode::place(holder->child, _contentPosition);
+                offset += holder->boxSize.x;
+            }
+        }
     }
 
-    void RowLayout::onRemove(Node &child)
+    RowLayout::RowHolder::RowHolder(Node &child)
+        : Holder(child),
+          boxSize()
     {
-        auto holder = getHolder(child);
-        if (holder == nullptr)
-            throw std::runtime_error("The node is not a child node");
-        m_holders.erase(std::find_if(m_holders.begin(), m_holders.end(), [holder](auto &it)
-                                     { return &it == holder; }));
     }
+
+    RowLayout::RowHolder::~RowHolder() = default;
 
 }

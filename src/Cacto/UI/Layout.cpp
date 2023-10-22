@@ -172,8 +172,10 @@ namespace cacto
     }
 
     Layout::Holder::Holder(Node &child)
-        : child(child) {}
+        : child(child)
+    {
+    }
 
-    Layout::Holder::~Holder() {}
+    Layout::Holder::~Holder() = default;
 
 }
