@@ -39,16 +39,8 @@ namespace cacto
     FrameLayout::FrameLayout() = default;
     FrameLayout::~FrameLayout() = default;
 
-    FrameLayout::FrameLayout(const FrameLayout &other)
-        : Layout(other)
-    {
-    }
-
-    FrameLayout &FrameLayout::operator=(const FrameLayout &other)
-    {
-        Layout::operator=(other);
-        return *this;
-    }
+    FrameLayout::FrameLayout(const FrameLayout &other) = default;
+    FrameLayout &FrameLayout::operator=(const FrameLayout &other) = default;
 
     FrameLayout::Holder *FrameLayout::onHold(Node &child) const
     {
@@ -80,13 +72,13 @@ namespace cacto
             _contentSize.x = std::max(size.x, _contentSize.x);
             _contentSize.y = std::max(size.y, _contentSize.y);
         }
-        auto boxSize = Block::onCompact(_contentSize);
-        return boxSize;
+        auto outerSize = Block::onCompact(_contentSize);
+        return outerSize;
     }
 
     sf::Vector2f FrameLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto boxSize = Block::onInflate(containerSize);
+        auto outerSize = Block::onInflate(containerSize);
         auto holder = dynamic_cast<FrameHolder *>(getHolder());
         if (holder)
         {
@@ -95,7 +87,7 @@ namespace cacto
             auto _boxSize = InflatableNode::inflate(holder->child, _containerSize);
             holder->boxSize = _boxSize;
         }
-        return boxSize;
+        return outerSize;
     }
 
     void FrameLayout::onPlace(const sf::Vector2f &position)
