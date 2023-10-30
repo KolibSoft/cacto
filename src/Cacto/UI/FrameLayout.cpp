@@ -97,8 +97,8 @@ namespace cacto
         if (holder)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             auto &boxSize = holder->boxSize;
             switch (holder->hAnchor)
             {

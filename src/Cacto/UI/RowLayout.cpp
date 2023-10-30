@@ -5,6 +5,22 @@
 namespace cacto
 {
 
+    RowLayout::Anchor RowLayout::getVerticalAnchor(const Node &child) const
+    {
+        auto holder = dynamic_cast<const RowHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        return holder->vAnchor;
+    }
+
+    void RowLayout::setVerticalAnchor(Node &child, Anchor value)
+    {
+        auto holder = dynamic_cast<RowHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        holder->vAnchor = value;
+    }
+
     RowLayout::RowLayout() = default;
     RowLayout::~RowLayout() = default;
 
@@ -41,10 +57,8 @@ namespace cacto
         auto boxSize = Block::onInflate(containerSize);
         if (getChildCount() > 0)
         {
-            auto padding = getPadding();
-            Box box{*this};
-            box.shrink(padding);
-            sf::Vector2f _containerSize{0, box.getHeight()};
+            auto contentBox = getContentBox();
+            sf::Vector2f _containerSize{0, contentBox.getHeight()};
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<RowHolder *>(getHolder(i));
@@ -60,16 +74,27 @@ namespace cacto
         Block::onPlace(position);
         if (getChildCount() > 0)
         {
-            auto padding = getPadding();
-            Box box{*this};
-            box.shrink(padding);
-            sf::Vector2f contentPosition{box.getLeft(), box.getTop()};
+            auto contentBox = getContentBox();
+            sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             f32t offset = 0;
             for (szt i = 0; i < getChildCount(); i++)
             {
+                auto holder = dynamic_cast<RowHolder *>(getHolder(i));
+                auto &boxSize = holder->boxSize;
                 auto _contentPosition{contentPosition};
                 _contentPosition.x += offset;
-                auto holder = dynamic_cast<RowHolder *>(getHolder(i));
+                switch (holder->vAnchor)
+                {
+                case Start:
+                    break;
+                case End:
+                    _contentPosition.y += containerSize.y - boxSize.y;
+                    break;
+                case Center:
+                    _contentPosition.y += (containerSize.y - boxSize.y) / 2;
+                    break;
+                }
                 InflatableNode::place(holder->child, _contentPosition);
                 offset += holder->boxSize.x;
             }
@@ -78,6 +103,7 @@ namespace cacto
 
     RowLayout::RowHolder::RowHolder(Node &child)
         : Holder(child),
+          vAnchor(Start),
           boxSize()
     {
     }

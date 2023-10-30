@@ -91,8 +91,13 @@ int main()
     root.setPadding(10);
 
     root.append(label);
+    root.setVerticalAnchor(label, cacto::Box::Start);
+
     root.append(input);
+    root.setVerticalAnchor(input, cacto::Box::Center);
+
     root.append(button);
+    root.setVerticalAnchor(button, cacto::Box::End);
 
     while (window.isOpen())
     {

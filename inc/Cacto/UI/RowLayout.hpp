@@ -12,6 +12,11 @@ namespace cacto
     {
 
     public:
+        Anchor getVerticalAnchor(const Node &child) const;
+        Anchor getVerticalAnchor(Node &&child) const = delete;
+
+        void setVerticalAnchor(Node &child, Anchor value);
+
         RowLayout();
         virtual ~RowLayout();
 
@@ -26,6 +31,7 @@ namespace cacto
             RowHolder(Node &child);
             virtual ~RowHolder();
 
+            Anchor vAnchor;
             sf::Vector2f boxSize;
         };
 

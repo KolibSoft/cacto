@@ -6,38 +6,34 @@ namespace cacto
 
     Box::Anchor AnchorLayout::getHorizontalAnchor(const Node &child) const
     {
-        auto holder = getHolder(child);
-        if (!holder)
+        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
             throw std::runtime_error("The node is not a child");
-        auto _holder = dynamic_cast<const AnchorHolder *>(holder);
-        return _holder->hAnchor;
+        return holder->hAnchor;
     }
 
     void AnchorLayout::setHorizontalAnchor(Node &child, Anchor value)
     {
-        auto holder = getHolder(child);
-        if (!holder)
+        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
             throw std::runtime_error("The node is not a child");
-        auto _holder = dynamic_cast<AnchorHolder *>(holder);
-        _holder->hAnchor = value;
+        holder->hAnchor = value;
     }
 
     Box::Anchor AnchorLayout::getVerticalAnchor(const Node &child) const
     {
-        auto holder = getHolder(child);
-        if (!holder)
+        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
             throw std::runtime_error("The node is not a child");
-        auto _holder = dynamic_cast<const AnchorHolder *>(holder);
-        return _holder->vAnchor;
+        return holder->vAnchor;
     }
 
     void AnchorLayout::setVerticalAnchor(Node &child, Anchor value)
     {
-        auto holder = getHolder(child);
-        if (!holder)
+        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
             throw std::runtime_error("The node is not a child");
-        auto _holder = dynamic_cast<AnchorHolder *>(holder);
-        _holder->vAnchor = value;
+        holder->vAnchor = value;
     }
 
     AnchorLayout::AnchorLayout() = default;
@@ -76,8 +72,8 @@ namespace cacto
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
