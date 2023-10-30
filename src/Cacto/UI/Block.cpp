@@ -95,6 +95,20 @@ namespace cacto
         m_maxHeight = value;
     }
 
+    Box Block::getContainerBox() const
+    {
+        Box box{*this};
+        box.expand(m_margin);
+        return box;
+    }
+
+    Box Block::getContentBox() const
+    {
+        Box box{*this};
+        box.shrink(m_padding);
+        return box;
+    }
+
     Block::Block()
         : m_parent(),
           m_background(nullptr),
