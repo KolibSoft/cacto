@@ -138,23 +138,23 @@ namespace cacto
                 _contentSize.y = std::max(size.y, _contentSize.y);
             }
         }
-        auto boxSize = Block::onCompact(_contentSize);
-        return boxSize;
+        auto outerSize = Block::onCompact(_contentSize);
+        return outerSize;
     }
 
     sf::Vector2f Layout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto boxSize = Block::onInflate(containerSize);
+        auto outerSize = Block::onInflate(containerSize);
         if (m_holders.size() > 0)
         {
-            auto padding = getPadding();
-            Box box{*this};
-            box.shrink(padding);
-            sf::Vector2f _containerSize{box.getWidth(), box.getHeight()};
+            auto contentBox = getContentBox();
+            sf::Vector2f _containerSize{contentBox.getWidth(), contentBox.getHeight()};
             for (auto holder : m_holders)
-                InflatableNode::inflate(holder->child, _containerSize);
+            {
+                auto size = InflatableNode::inflate(holder->child, _containerSize);
+            }
         }
-        return boxSize;
+        return outerSize;
     }
 
     void Layout::onPlace(const sf::Vector2f &position)
@@ -162,12 +162,12 @@ namespace cacto
         Block::onPlace(position);
         if (m_holders.size() > 0)
         {
-            auto padding = getPadding();
-            Box box{*this};
-            box.shrink(padding);
-            sf::Vector2f contentPosition{box.getLeft(), box.getTop()};
+            auto contentBox = getContentBox();
+            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             for (auto holder : m_holders)
+            {
                 InflatableNode::place(holder->child, contentPosition);
+            }
         }
     }
 

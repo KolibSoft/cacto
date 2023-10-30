@@ -70,7 +70,7 @@ int main()
     input.getBlock().setBackground(&bgInput);
     input.getBlock().setMaxWidth(0);
     input.getBlock().setMaxHeight(0);
-    input.getBlock().setMargin(10);
+    // input.getBlock().setMargin(10);
     input.getBlock().setPadding(10);
 
     cacto::Button button{font, "BUTTON"};
@@ -80,7 +80,7 @@ int main()
     button.getBlock().setMaxWidth(0);
     button.getBlock().setMaxHeight(0);
     button.getBlock().setMargin(10);
-    button.getBlock().setPadding(10);
+    // button.getBlock().setPadding(10);
     button.setOnClickListener([](auto &target, auto &event)
                               { std::cout << "Clicked\n"; });
 
