@@ -21,11 +21,48 @@ namespace cacto
         holder->vAnchor = value;
     }
 
-    RowLayout::RowLayout() = default;
+    RowLayout::Anchor RowLayout::getHorizontalAnchor() const
+    {
+        return m_hAnchor;
+    }
+
+    void RowLayout::setHorizontalAnchor(Anchor value)
+    {
+        m_hAnchor = value;
+    }
+
+    RowLayout::Direction RowLayout::getDirection() const
+    {
+        return m_direction;
+    }
+
+    void RowLayout::setDirection(Direction value)
+    {
+        m_direction = value;
+    }
+
+    RowLayout::RowLayout()
+        : m_hAnchor(Start),
+          m_direction(Forward) {}
+
     RowLayout::~RowLayout() = default;
 
-    RowLayout::RowLayout(const RowLayout &other) = default;
-    RowLayout &RowLayout::operator=(const RowLayout &other) = default;
+    RowLayout::RowLayout(const RowLayout &other)
+        : Layout(other),
+          m_hAnchor(other.m_hAnchor),
+          m_direction(other.m_direction),
+          m_length(0)
+    {
+    }
+
+    RowLayout &RowLayout::operator=(const RowLayout &other)
+    {
+        Layout::operator=(other);
+        m_hAnchor = other.m_hAnchor;
+        m_direction = other.m_direction;
+        m_length = other.m_length;
+        return *this;
+    }
 
     RowLayout::RowHolder *RowLayout::onHold(Node &child) const
     {
@@ -46,6 +83,7 @@ namespace cacto
                 length += size.x;
                 _contentSize.y = std::max(size.y, _contentSize.y);
             }
+            m_length = length;
             _contentSize.x = std::max(length, _contentSize.x);
         }
         auto boxSize = Block::onCompact(_contentSize);
@@ -78,9 +116,19 @@ namespace cacto
             sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
             sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             f32t offset = 0;
-            for (szt i = 0; i < getChildCount(); i++)
+            switch (m_hAnchor)
             {
-                auto holder = dynamic_cast<RowHolder *>(getHolder(i));
+            case Start:
+                break;
+            case End:
+                offset += containerSize.x - m_length;
+                break;
+            case Center:
+                offset += (containerSize.x - m_length) / 2;
+                break;
+            }
+            auto place = [&](RowHolder *holder)
+            {
                 auto &boxSize = holder->boxSize;
                 auto _contentPosition{contentPosition};
                 _contentPosition.x += offset;
@@ -97,6 +145,23 @@ namespace cacto
                 }
                 InflatableNode::place(holder->child, _contentPosition);
                 offset += holder->boxSize.x;
+            };
+            switch (m_direction)
+            {
+            case Forward:
+                for (szt i = 0; i < getChildCount(); i++)
+                {
+                    auto holder = dynamic_cast<RowHolder *>(getHolder(i));
+                    place(holder);
+                }
+                break;
+            case Reverse:
+                for (szt i = getChildCount(); i > 0; i--)
+                {
+                    auto holder = dynamic_cast<RowHolder *>(getHolder(i - 1));
+                    place(holder);
+                }
+                break;
             }
         }
     }

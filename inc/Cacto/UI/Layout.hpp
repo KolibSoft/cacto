@@ -12,6 +12,12 @@ namespace cacto
     {
 
     public:
+        enum Direction
+        {
+            Forward,
+            Reverse
+        };
+
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 

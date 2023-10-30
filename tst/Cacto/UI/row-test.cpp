@@ -79,7 +79,7 @@ int main()
     bgButton.setColor(sf::Color::Magenta);
     button.getBlock().setBackground(&bgButton);
     button.getBlock().setMaxWidth(0);
-    button.getBlock().setMaxHeight(0);
+    // button.getBlock().setMaxHeight(0);
     button.getBlock().setMargin(10);
     button.getBlock().setPadding(10);
     button.setOnClickListener([](auto &target, auto &event)
@@ -89,6 +89,8 @@ int main()
     root.setBackground(&background);
     root.setMargin(10);
     root.setPadding(10);
+    root.setDirection(cacto::Layout::Reverse);
+    root.setHorizontalAnchor(cacto::Box::End);
 
     root.append(label);
     root.setVerticalAnchor(label, cacto::Box::Start);

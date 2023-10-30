@@ -17,6 +17,12 @@ namespace cacto
 
         void setVerticalAnchor(Node &child, Anchor value);
 
+        Anchor getHorizontalAnchor() const;
+        void setHorizontalAnchor(Anchor value);
+
+        Direction getDirection() const;
+        void setDirection(Direction value);
+
         RowLayout();
         virtual ~RowLayout();
 
@@ -40,6 +46,11 @@ namespace cacto
         sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
+
+    private:
+        Anchor m_hAnchor;
+        Direction m_direction;
+        f32t m_length;
     };
 
 }
