@@ -54,9 +54,27 @@ namespace cacto
         return m_texutre;
     }
 
-    void Surface::setTexture(const sf::Texture *const value)
+    void Surface::setTexture(const sf::Texture *const value, bool resetRect)
     {
         m_texutre = value;
+        m_invalid = true;
+        if (resetRect)
+        {
+            if (value)
+                setTextureRect({{0, 0}, sf::Vector2f(m_texutre->getSize())});
+            else
+                setTextureRect({{0, 0}, {0, 0}});
+        }
+    }
+
+    const sf::FloatRect &Surface::getTextureRect() const
+    {
+        return m_textureRect;
+    }
+
+    void Surface::setTextureRect(const sf::FloatRect &value)
+    {
+        m_textureRect = value;
         m_invalid = true;
     }
 
@@ -75,9 +93,12 @@ namespace cacto
           m_precision(precision),
           m_color(color),
           m_texutre(texture),
+          m_textureRect(),
           m_invalid(true),
           m_array(sf::PrimitiveType::TriangleFan)
     {
+        if (m_texutre)
+            setTextureRect({{0, 0}, sf::Vector2f(m_texutre->getSize())});
     }
 
     Surface::~Surface()
@@ -92,6 +113,7 @@ namespace cacto
           m_precision(other.m_precision),
           m_color(other.m_color),
           m_texutre(other.m_texutre),
+          m_textureRect(other.m_textureRect),
           m_invalid(true),
           m_array(sf::PrimitiveType::TriangleFan)
     {
@@ -103,6 +125,7 @@ namespace cacto
         m_precision = other.m_precision;
         m_color = other.m_color;
         m_texutre = other.m_texutre;
+        m_textureRect = other.m_textureRect;
         m_invalid = true;
         m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
         return *this;
@@ -128,7 +151,7 @@ namespace cacto
             cacto::setPoints(m_array, *m_geometry, m_precision);
         cacto::setColor(m_array, m_color);
         if (m_texutre)
-            cacto::setTexCoords(m_array, {{0, 0}, sf::Vector2f(m_texutre->getSize())});
+            cacto::setTexCoords(m_array, m_textureRect);
         cacto::mapPositions(m_array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
     }
 

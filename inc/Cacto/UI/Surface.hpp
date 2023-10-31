@@ -35,15 +35,18 @@ namespace cacto
         void setColor(const sf::Color &value);
 
         const sf::Texture *const getTexture() const;
-        void setTexture(const sf::Texture *const value);
+        void setTexture(const sf::Texture *const value, bool resetRect = true);
+
+        const sf::FloatRect &getTextureRect() const;
+        void setTextureRect(const sf::FloatRect &value);
 
         void update(bool force = false) const;
 
-        Surface(Geometry &geometry, szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
+        Surface(Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
         virtual ~Surface();
 
-        Surface(const Surface& other);
-        Surface& operator=(const Surface& other);
+        Surface(const Surface &other);
+        Surface &operator=(const Surface &other);
 
         static const Surface Rectangle;
         static const Surface Ellipse;
@@ -66,6 +69,7 @@ namespace cacto
         szt m_precision;
         sf::Color m_color;
         const sf::Texture *m_texutre;
+        sf::FloatRect m_textureRect;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
