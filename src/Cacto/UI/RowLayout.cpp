@@ -118,7 +118,7 @@ namespace cacto
             m_length = length;
             contentSize.x = std::max(length, contentSize.x);
         }
-        auto size = Block::compactContent(contentSize);
+        auto size = Block::compactBlock(contentSize);
         return size;
     }
 

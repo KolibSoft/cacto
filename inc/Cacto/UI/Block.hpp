@@ -60,7 +60,7 @@ namespace cacto
         Block &operator=(const Block &other);
 
     protected:
-        sf::Vector2f compactContent(const sf::Vector2f &contentSize);
+        sf::Vector2f compactBlock(const sf::Vector2f &contentSize);
         
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;
