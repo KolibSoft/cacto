@@ -146,7 +146,7 @@ namespace cacto
         return *this;
     }
 
-    sf::Vector2f Block::compact(const sf::Vector2f &contentSize)
+    sf::Vector2f Block::compactContent(const sf::Vector2f &contentSize)
     {
         auto hMargin = m_margin.getHorizontal();
         auto vMargin = m_margin.getVertical();
@@ -180,7 +180,7 @@ namespace cacto
 
     sf::Vector2f Block::onCompact()
     {
-        auto size = compact({0, 0});
+        auto size = compactContent({0, 0});
         return size;
     }
 

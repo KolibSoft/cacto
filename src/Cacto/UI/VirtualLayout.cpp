@@ -55,7 +55,7 @@ namespace cacto
     sf::Vector2f VirtualLayout::onCompact()
     {
         compactChildren();
-        auto size = Block::compact({0, 0});
+        auto size = Block::compactContent({0, 0});
         m_surface.compact();
         return size;
     }

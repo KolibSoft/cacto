@@ -37,7 +37,7 @@ int main()
             if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
-        root.compact();
+        root.compactContent();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
         root.place();
         window.clear(sf::Color::Black);

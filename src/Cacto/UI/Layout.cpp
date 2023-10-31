@@ -129,7 +129,7 @@ namespace cacto
     sf::Vector2f Layout::onCompact()
     {
         auto contentSize = compactChildren();
-        auto size = Block::compact(contentSize);
+        auto size = Block::compactContent(contentSize);
         return size;
     }
 
