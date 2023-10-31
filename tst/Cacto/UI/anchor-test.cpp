@@ -58,8 +58,8 @@ int main()
     auto bgLabel = background;
     bgLabel.setColor(sf::Color::Blue);
     label.getBlock().setBackground(&bgLabel);
-    label.getBlock().setMaxWidth(0);
-    label.getBlock().setMaxHeight(0);
+    // label.getBlock().setMaxWidth(0);
+    // label.getBlock().setMaxHeight(0);
     label.getBlock().setMargin(10);
     label.getBlock().setPadding(10);
 
@@ -67,8 +67,8 @@ int main()
     auto bgInput = background;
     bgInput.setColor(sf::Color::Green);
     input.getBlock().setBackground(&bgInput);
-    input.getBlock().setMaxWidth(0);
-    input.getBlock().setMaxHeight(0);
+    // input.getBlock().setMaxWidth(0);
+    // input.getBlock().setMaxHeight(0);
     input.getBlock().setMargin(10);
     input.getBlock().setPadding(10);
 
@@ -76,8 +76,8 @@ int main()
     auto bgButton = background;
     bgButton.setColor(sf::Color::Magenta);
     button.getBlock().setBackground(&bgButton);
-    button.getBlock().setMaxWidth(0);
-    button.getBlock().setMaxHeight(0);
+    // button.getBlock().setMaxWidth(0);
+    // button.getBlock().setMaxHeight(0);
     button.getBlock().setMargin(10);
     button.getBlock().setPadding(10);
     button.setOnClickListener([](auto &target, auto &event)
@@ -91,14 +91,18 @@ int main()
     root.append(label);
     root.setHorizontalAnchor(label, cacto::Box::Center);
     root.setVerticalAnchor(label, cacto::Box::Start);
+    root.setHorizontalWeight(label, 0.5);
+    root.setVerticalWeight(label, 0.33);
 
     root.append(input);
     root.setHorizontalAnchor(input, cacto::Box::Center);
     root.setVerticalAnchor(input, cacto::Box::Center);
+    root.setVerticalWeight(input, 0.33);
 
     root.append(button);
     root.setHorizontalAnchor(button, cacto::Box::Center);
     root.setVerticalAnchor(button, cacto::Box::End);
+    root.setVerticalWeight(button, 0.33);
 
     while (window.isOpen())
     {

@@ -22,6 +22,16 @@ namespace cacto
 
         void setVerticalAnchor(Node &child, Anchor value);
 
+        f32t getHorizontalWeight(const Node &child) const;
+        f32t getHorizontalWeight(Node &&child) const = delete;
+
+        void setHorizontalWeight(Node &child, f32t value);
+
+        f32t getVerticalWeight(const Node &child) const;
+        f32t getVerticalWeight(Node &&child) const = delete;
+
+        void setVerticalWeight(Node &child, f32t value);
+
         AnchorLayout();
         virtual ~AnchorLayout();
 
@@ -29,7 +39,6 @@ namespace cacto
         AnchorLayout &operator=(const AnchorLayout &other);
 
     protected:
-
         class AnchorHolder
             : public Holder
         {
@@ -40,6 +49,8 @@ namespace cacto
 
             Anchor hAnchor;
             Anchor vAnchor;
+            f32t hWeight;
+            f32t vWeight;
             sf::Vector2f boxSize;
         };
 

@@ -36,6 +36,38 @@ namespace cacto
         holder->vAnchor = value;
     }
 
+    f32t AnchorLayout::getHorizontalWeight(const Node &child) const
+    {
+        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        return holder->hWeight;
+    }
+
+    void AnchorLayout::setHorizontalWeight(Node &child, f32t value)
+    {
+        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        holder->hWeight = value;
+    }
+
+    f32t AnchorLayout::getVerticalWeight(const Node &child) const
+    {
+        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        return holder->vWeight;
+    }
+
+    void AnchorLayout::setVerticalWeight(Node &child, f32t value)
+    {
+        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        holder->vWeight = value;
+    }
+
     AnchorLayout::AnchorLayout() = default;
     AnchorLayout::~AnchorLayout() = default;
 
@@ -57,10 +89,9 @@ namespace cacto
             sf::Vector2f _containerSize{contentBox.getWidth(), contentBox.getHeight()};
             for (szt i = 0; i < getChildCount(); i++)
             {
-                auto holder = getHolder(i);
-                auto _holder = dynamic_cast<AnchorHolder *>(holder);
-                auto _boxSize = InflatableNode::inflate(_holder->child, _containerSize);
-                _holder->boxSize = _boxSize;
+                auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
+                auto _boxSize = InflatableNode::inflate(holder->child, {_containerSize.x * holder->hWeight, _containerSize.y * holder->vWeight});
+                holder->boxSize = _boxSize;
             }
         }
         return outerSize;
@@ -110,6 +141,8 @@ namespace cacto
         : Holder(child),
           hAnchor(Start),
           vAnchor(Start),
+          hWeight(1),
+          vWeight(1),
           boxSize()
     {
     }
