@@ -2,14 +2,13 @@
 #define CACTO_VIRTUAL_LAYOUT_HPP
 
 #include <SFML/Graphics/RenderTexture.hpp>
-#include <Cacto/UI/Block.hpp>
-#include <Cacto/UI/Surface.hpp>
+#include <Cacto/UI/FrameLayout.hpp>
 
 namespace cacto
 {
 
     class CACTO_UI_API VirtualLayout
-        : public Block
+        : public FrameLayout
     {
 
     public:
@@ -27,7 +26,7 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        Surface m_surface;
+        mutable Surface m_surface;
         mutable sf::RenderTexture m_texture;
     };
 

@@ -31,11 +31,13 @@ int main()
     bgBlock.setColor(sf::Color::Blue);
     block.setBackground(&bgBlock);
     block.setMargin(10);
-    block.setMinWidth(100);
-    block.setMaxHeight(100);
+    block.setFixedWidth(100);
+    block.setFixedHeight(100);
     block.setPadding(10);
 
-    // root.append(block);
+    root.append(block);
+    root.setHorizontalAnchor(block, cacto::Block::Center);
+    root.setVerticalAnchor(block, cacto::Block::Center);
 
     while (window.isOpen())
     {

@@ -4,7 +4,7 @@ namespace cacto
 {
 
     VirtualLayout::VirtualLayout()
-        : Block(),
+        : FrameLayout(),
           m_surface(Surface::Rectangle),
           m_texture()
     {
@@ -14,7 +14,7 @@ namespace cacto
     VirtualLayout::~VirtualLayout() = default;
 
     VirtualLayout::VirtualLayout(const VirtualLayout &other)
-        : Block(other),
+        : FrameLayout(other),
           m_surface(other.m_surface),
           m_texture()
     {
@@ -22,7 +22,7 @@ namespace cacto
 
     VirtualLayout &VirtualLayout::operator=(const VirtualLayout &other)
     {
-        Block::operator=(other);
+        FrameLayout::operator=(other);
         m_surface = other.m_surface;
         return *this;
     }
@@ -30,13 +30,36 @@ namespace cacto
     void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         Block::onDraw(target, states);
-        target.draw(m_surface, states);
+        auto holder = dynamic_cast<const FrameHolder *>(getHolder());
+        if (holder)
+        {
+            auto contentBox = getContentBox();
+            sf::Vector2u contentSize{u32t(contentBox.getWidth()), u32t(contentBox.getHeight())};
+            if (contentSize.x > 0 && contentSize.y > 0)
+            {
+                if (contentSize != m_texture.getSize())
+                {
+                    auto _ = m_texture.create(contentSize);
+                    m_surface.setTexture(&m_texture.getTexture());
+                }
+                m_texture.clear();
+                DrawNode::draw(holder->child, m_texture, sf::RenderStates::Default);
+                m_texture.display();
+                target.draw(m_surface, states);
+            }
+        }
     }
 
     sf::Vector2f VirtualLayout::onCompact(const sf::Vector2f &contentSize)
     {
         auto outerSize = Block::onCompact(contentSize);
         m_surface.compact();
+        auto holder = dynamic_cast<FrameHolder *>(getHolder());
+        if (holder)
+        {
+            auto contentBox = getContentBox();
+            auto size = InflatableNode::compact(holder->child, {contentBox.getWidth(), contentBox.getHeight()});
+        }
         return outerSize;
     }
 
@@ -45,6 +68,12 @@ namespace cacto
         auto outerSize = Block::onInflate(containerSize);
         auto contentBox = getContentBox();
         m_surface.inflate({contentBox.getWidth(), contentBox.getHeight()});
+        auto holder = dynamic_cast<FrameHolder *>(getHolder());
+        if (holder)
+        {
+            auto size = InflatableNode::inflate(holder->child, {contentBox.getWidth(), contentBox.getHeight()});
+            holder->boxSize = size;
+        }
         return outerSize;
     }
 
@@ -53,6 +82,36 @@ namespace cacto
         Block::onPlace(position);
         auto contentBox = getContentBox();
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
+        auto holder = dynamic_cast<FrameHolder *>(getHolder());
+        if (holder)
+        {
+            sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentPosition{0, 0};
+            auto &boxSize = holder->boxSize;
+            switch (holder->hAnchor)
+            {
+            case Start:
+                break;
+            case End:
+                contentPosition.x += containerSize.x - boxSize.x;
+                break;
+            case Center:
+                contentPosition.x += (containerSize.x - boxSize.x) / 2;
+                break;
+            }
+            switch (holder->vAnchor)
+            {
+            case Start:
+                break;
+            case End:
+                contentPosition.y += containerSize.y - boxSize.y;
+                break;
+            case Center:
+                contentPosition.y += (containerSize.y - boxSize.y) / 2;
+                break;
+            }
+            InflatableNode::place(holder->child, contentPosition);
+        }
     }
 
 }
