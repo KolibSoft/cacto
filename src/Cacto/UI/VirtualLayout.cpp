@@ -74,7 +74,7 @@ namespace cacto
         if (holder)
         {
             auto size = InflatableNode::inflate(holder->child, {contentBox.getWidth(), contentBox.getHeight()});
-            holder->boxSize = size;
+            holder->size = size;
         }
         return outerSize;
     }
@@ -89,7 +89,7 @@ namespace cacto
         {
             sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
             sf::Vector2f contentPosition{0, 0};
-            auto &boxSize = holder->boxSize;
+            auto &boxSize = holder->size;
             switch (holder->hAnchor)
             {
             case Start:

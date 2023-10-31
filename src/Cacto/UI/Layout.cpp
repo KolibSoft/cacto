@@ -128,16 +128,7 @@ namespace cacto
 
     sf::Vector2f Layout::onCompact()
     {
-        sf::Vector2f contentSize{0, 0};
-        if (m_holders.size() > 0)
-        {
-            for (auto holder : m_holders)
-            {
-                auto size = InflatableNode::compact(holder->child);
-                contentSize.x = std::max(size.x, contentSize.x);
-                contentSize.y = std::max(size.y, contentSize.y);
-            }
-        }
+        auto contentSize = compactChildren();
         auto size = Block::compact(contentSize);
         return size;
     }
@@ -149,10 +140,7 @@ namespace cacto
         {
             auto contentBox = getContentBox();
             sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            for (auto holder : m_holders)
-            {
-                auto childSize = InflatableNode::inflate(holder->child, contentSize);
-            }
+            inflateChildren(contentSize);
         }
         return size;
     }
@@ -164,10 +152,7 @@ namespace cacto
         {
             auto contentBox = getContentBox();
             sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
-            for (auto holder : m_holders)
-            {
-                InflatableNode::place(holder->child, contentPosition);
-            }
+            placeChildren(contentPosition);
         }
     }
 
