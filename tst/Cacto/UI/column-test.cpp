@@ -16,9 +16,10 @@
 #include <Cacto/UI/Button.hpp>
 #include <Cacto/UI/Input.hpp>
 #include <Cacto/UI/RowLayout.hpp>
+#include <Cacto/UI/ColumnLayout.hpp>
 
 class Layout
-    : public cacto::RowLayout,
+    : public cacto::ColumnLayout,
       public virtual cacto::EventNode
 {
 
@@ -78,8 +79,8 @@ int main()
     auto bgButton = background;
     bgButton.setColor(sf::Color::Magenta);
     button.getBlock().setBackground(&bgButton);
-    // button.getBlock().setMaxWidth(0);
-    button.getBlock().setMaxHeight(0);
+    button.getBlock().setMaxWidth(0);
+    // button.getBlock().setMaxHeight(0);
     button.getBlock().setMargin(10);
     button.getBlock().setPadding(10);
     button.setOnClickListener([](auto &target, auto &event)
@@ -90,16 +91,16 @@ int main()
     root.setMargin(10);
     root.setPadding(10);
     root.setDirection(cacto::Layout::Reverse);
-    root.setHorizontalAnchor(cacto::Box::End);
+    root.setVerticalAnchor(cacto::Box::End);
 
     root.append(label);
-    root.setVerticalAnchor(label, cacto::Box::Start);
+    root.setHorizontalAnchor(label, cacto::Box::Start);
 
     root.append(input);
-    root.setVerticalAnchor(input, cacto::Box::Center);
+    root.setHorizontalAnchor(input, cacto::Box::Center);
 
     root.append(button);
-    root.setVerticalAnchor(button, cacto::Box::End);
+    root.setHorizontalAnchor(button, cacto::Box::End);
 
     while (window.isOpen())
     {

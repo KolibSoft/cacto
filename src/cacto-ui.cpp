@@ -12,3 +12,4 @@
 #include "Cacto/UI/Input.cpp"
 #include "Cacto/UI/AnchorLayout.cpp"
 #include "Cacto/UI/RowLayout.cpp"
+#include "Cacto/UI/ColumnLayout.cpp"
