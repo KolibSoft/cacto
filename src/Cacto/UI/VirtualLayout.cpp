@@ -123,32 +123,35 @@ namespace cacto
         {
         case sf::Event::MouseButtonPressed:
         case sf::Event::MouseButtonReleased:
-        {
-            auto contentBox = getContentBox();
-            auto _event = event;
-            _event.mouseButton.x -= contentBox.getLeft();
-            _event.mouseButton.y -= contentBox.getTop();
-            handled = eventChildren(_event);
-        }
-        break;
+            if (m_surface.contains({f32t(event.mouseButton.x), f32t(event.mouseButton.y)}))
+            {
+                auto contentBox = getContentBox();
+                auto _event = event;
+                _event.mouseButton.x -= contentBox.getLeft();
+                _event.mouseButton.y -= contentBox.getTop();
+                handled = eventChildren(_event);
+            }
+            break;
         case sf::Event::MouseMoved:
-        {
-            auto contentBox = getContentBox();
-            auto _event = event;
-            _event.mouseMove.x -= contentBox.getLeft();
-            _event.mouseMove.y -= contentBox.getTop();
-            handled = eventChildren(_event);
-        }
-        break;
+            if (m_surface.contains({f32t(event.mouseMove.x), f32t(event.mouseMove.y)}))
+            {
+                auto contentBox = getContentBox();
+                auto _event = event;
+                _event.mouseMove.x -= contentBox.getLeft();
+                _event.mouseMove.y -= contentBox.getTop();
+                handled = eventChildren(_event);
+            }
+            break;
         case sf::Event::MouseWheelScrolled:
-        {
-            auto contentBox = getContentBox();
-            auto _event = event;
-            _event.mouseWheelScroll.x -= contentBox.getLeft();
-            _event.mouseWheelScroll.y -= contentBox.getTop();
-            handled = eventChildren(_event);
-        }
-        break;
+            if (m_surface.contains({f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)}))
+            {
+                auto contentBox = getContentBox();
+                auto _event = event;
+                _event.mouseWheelScroll.x -= contentBox.getLeft();
+                _event.mouseWheelScroll.y -= contentBox.getTop();
+                handled = eventChildren(_event);
+            }
+            break;
         default:
             handled = eventChildren(event);
             break;
