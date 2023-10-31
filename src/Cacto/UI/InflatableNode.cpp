@@ -4,9 +4,9 @@
 namespace cacto
 {
 
-    sf::Vector2f InflatableNode::compact(const sf::Vector2f &contentSize)
+    sf::Vector2f InflatableNode::compact()
     {
-        auto size = InflatableNode::compact(*this, contentSize);
+        auto size = InflatableNode::compact(*this);
         return size;
     }
 
@@ -25,29 +25,29 @@ namespace cacto
 
     InflatableNode::~InflatableNode() = default;
 
-    sf::Vector2f InflatableNode::compact(Node &node, const sf::Vector2f &contentSize)
+    sf::Vector2f InflatableNode::compact(Node &node)
     {
         auto inflatableNode = dynamic_cast<InflatableNode *>(&node);
         if (inflatableNode)
         {
-            auto size = inflatableNode->onCompact(contentSize);
+            auto size = inflatableNode->onCompact();
             return size;
         }
         else
         {
-            auto size = InflatableNode::compactChildren(node, contentSize);
+            auto size = InflatableNode::compactChildren(node);
             return size;
         }
     }
 
-    sf::Vector2f InflatableNode::compactChildren(Node &node, const sf::Vector2f &contentSize)
+    sf::Vector2f InflatableNode::compactChildren(Node &node)
     {
         sf::Vector2f size{0, 0};
         auto childCount = node.getChildCount();
         for (szt i = 0; i < childCount; i++)
         {
             auto child = node.getChild(i);
-            auto childSize = InflatableNode::compact(*child, contentSize);
+            auto childSize = InflatableNode::compact(*child);
             size.x = std::max(size.x, childSize.x);
             size.y = std::max(size.y, childSize.y);
         }
@@ -102,15 +102,15 @@ namespace cacto
         }
     }
 
-    sf::Vector2f InflatableNode::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f InflatableNode::onCompact()
     {
-        auto size = InflatableNode::compactChildren(*this, contentSize);
+        auto size = InflatableNode::compactChildren(*this);
         return size;
     }
 
     sf::Vector2f InflatableNode::onInflate(const sf::Vector2f &containerSize)
     {
-        auto size = InflatableNode::compactChildren(*this, containerSize);
+        auto size = InflatableNode::inflateChildren(*this, containerSize);
         return size;
     }
 
