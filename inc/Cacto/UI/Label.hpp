@@ -2,7 +2,7 @@
 #define CACTO_LABEL_HPP
 
 #include <Cacto/UI/Span.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
+#include <Cacto/UI/AnchorLayout.hpp>
 
 namespace cacto
 {
@@ -50,7 +50,7 @@ namespace cacto
 
     private:
         Node* m_parent;
-        FrameLayout m_frame;
+        AnchorLayout m_frame;
         Span m_span;
     };
 

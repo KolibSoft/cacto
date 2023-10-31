@@ -6,7 +6,7 @@ namespace cacto
 {
 
     VirtualLayout::VirtualLayout()
-        : FrameLayout(),
+        : AnchorLayout(),
           m_surface(Surface::Rectangle),
           m_texture()
     {
@@ -16,7 +16,7 @@ namespace cacto
     VirtualLayout::~VirtualLayout() = default;
 
     VirtualLayout::VirtualLayout(const VirtualLayout &other)
-        : FrameLayout(other),
+        : AnchorLayout(other),
           m_surface(other.m_surface),
           m_texture()
     {
@@ -24,7 +24,7 @@ namespace cacto
 
     VirtualLayout &VirtualLayout::operator=(const VirtualLayout &other)
     {
-        FrameLayout::operator=(other);
+        AnchorLayout::operator=(other);
         m_surface = other.m_surface;
         return *this;
     }
@@ -32,8 +32,7 @@ namespace cacto
     void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         Block::onDraw(target, states);
-        auto holder = dynamic_cast<const FrameHolder *>(getHolder());
-        if (holder)
+        if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
             sf::Vector2u contentSize{u32t(contentBox.getWidth()), u32t(contentBox.getHeight())};
@@ -45,7 +44,7 @@ namespace cacto
                     m_surface.setTexture(&m_texture.getTexture());
                 }
                 m_texture.clear(sf::Color::Transparent);
-                DrawNode::draw(holder->child, m_texture, sf::RenderStates::Default);
+                drawChildren(m_texture, sf::RenderStates::Default);
                 m_texture.display();
                 target.draw(m_surface, states);
             }
@@ -62,7 +61,7 @@ namespace cacto
 
     sf::Vector2f VirtualLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto size = FrameLayout::onInflate(containerSize);
+        auto size = AnchorLayout::onInflate(containerSize);
         auto contentBox = getContentBox();
         m_surface.inflate({contentBox.getWidth(), contentBox.getHeight()});
         return size;
@@ -73,35 +72,40 @@ namespace cacto
         Block::onPlace(position);
         auto contentBox = getContentBox();
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
-        auto holder = dynamic_cast<FrameHolder *>(getHolder());
-        if (holder)
+        if (getChildCount() > 0)
         {
+            auto contentBox = getContentBox();
             sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
             sf::Vector2f contentPosition{0, 0};
-            auto &boxSize = holder->size;
-            switch (holder->hAnchor)
+            for (szt i = 0; i < getChildCount(); i++)
             {
-            case Start:
-                break;
-            case End:
-                contentPosition.x += contentSize.x - boxSize.x;
-                break;
-            case Center:
-                contentPosition.x += (contentSize.x - boxSize.x) / 2;
-                break;
+                auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
+                auto &childSize = holder->size;
+                auto _contentPosition = contentPosition;
+                switch (holder->hAnchor)
+                {
+                case Start:
+                    break;
+                case End:
+                    _contentPosition.x += contentSize.x - childSize.x;
+                    break;
+                case Center:
+                    _contentPosition.x += (contentSize.x - childSize.x) / 2;
+                    break;
+                }
+                switch (holder->vAnchor)
+                {
+                case Start:
+                    break;
+                case End:
+                    _contentPosition.y += contentSize.y - childSize.y;
+                    break;
+                case Center:
+                    _contentPosition.y += (contentSize.y - childSize.y) / 2;
+                    break;
+                }
+                InflatableNode::place(holder->child, _contentPosition);
             }
-            switch (holder->vAnchor)
-            {
-            case Start:
-                break;
-            case End:
-                contentPosition.y += contentSize.y - boxSize.y;
-                break;
-            case Center:
-                contentPosition.y += (contentSize.y - boxSize.y) / 2;
-                break;
-            }
-            InflatableNode::place(holder->child, contentPosition);
         }
     }
 

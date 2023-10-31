@@ -3,13 +3,13 @@
 
 #include <SFML/Graphics/RenderTexture.hpp>
 #include <Cacto/Window/EventNode.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
+#include <Cacto/UI/AnchorLayout.hpp>
 
 namespace cacto
 {
 
     class CACTO_UI_API VirtualLayout
-        : public FrameLayout,
+        : public AnchorLayout,
           public EventNode
     {
 
