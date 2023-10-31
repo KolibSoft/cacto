@@ -1,4 +1,5 @@
 #include <limits>
+#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -10,6 +11,7 @@
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
+#include <Cacto/UI/Button.hpp>
 
 auto _ = false;
 
@@ -17,6 +19,9 @@ int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+
+    sf::Font font;
+    auto _ = font.loadFromFile("./res/Grandview.ttf");
 
     auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
@@ -26,28 +31,36 @@ int main()
     root.setMargin(10);
     root.setPadding(10);
 
-    cacto::Block block{};
+    cacto::Button button{font, "It Works"};
     auto bgBlock = background;
     bgBlock.setColor(sf::Color::Blue);
-    block.setBackground(&bgBlock);
-    block.setMargin(10);
-    block.setFixedWidth(100);
-    block.setFixedHeight(100);
-    block.setPadding(10);
+    button.getBlock().setBackground(&bgBlock);
+    button.getBlock().setMargin(10);
+    button.getBlock().setFixedWidth(0);
+    button.getBlock().setFixedHeight(0);
+    button.getBlock().setPadding(10);
 
-    root.append(block);
-    root.setHorizontalAnchor(block, cacto::Block::Center);
-    root.setVerticalAnchor(block, cacto::Block::Center);
+    button.setOnClickListener([](auto &node, auto &event)
+                              { std::cout << "Clicked\n"; });
+
+    root.append(button);
+    root.setHorizontalAnchor(button, cacto::Block::Center);
+    root.setVerticalAnchor(button, cacto::Block::Center);
+    root.setMinWidth(300);
+    root.setMinHeight(300);
 
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
-                window.close();
-            if (event.type == sf::Event::Resized)
-                window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            if (!root.event(event))
+            {
+                if (event.type == sf::Event::Closed)
+                    window.close();
+                if (event.type == sf::Event::Resized)
+                    window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            }
         }
         root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});

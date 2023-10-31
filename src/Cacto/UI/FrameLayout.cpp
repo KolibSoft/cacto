@@ -68,7 +68,7 @@ namespace cacto
         auto holder = dynamic_cast<FrameHolder *>(getHolder());
         if (holder)
         {
-            auto size = InflatableNode::compact(holder->child, contentSize);
+            auto size = InflatableNode::compact(holder->child, {0, 0});
             _contentSize.x = std::max(size.x, _contentSize.x);
             _contentSize.y = std::max(size.y, _contentSize.y);
         }

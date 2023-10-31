@@ -1,3 +1,4 @@
+#include <SFML/Window/Event.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
 
 namespace cacto
@@ -58,7 +59,7 @@ namespace cacto
         if (holder)
         {
             auto contentBox = getContentBox();
-            auto size = InflatableNode::compact(holder->child, {contentBox.getWidth(), contentBox.getHeight()});
+            auto size = InflatableNode::compact(holder->child, {0, 0});
         }
         return outerSize;
     }
@@ -112,6 +113,86 @@ namespace cacto
             }
             InflatableNode::place(holder->child, contentPosition);
         }
+    }
+
+    bool VirtualLayout::onEvent(const sf::Event &event)
+    {
+        auto handled = false;
+        switch (event.type)
+        {
+        case sf::Event::MouseButtonPressed:
+        case sf::Event::MouseButtonReleased:
+        {
+            auto contentBox = getContentBox();
+            auto _event = event;
+            _event.mouseButton.x -= contentBox.getLeft();
+            _event.mouseButton.y -= contentBox.getTop();
+            handled = eventChildren(_event);
+        }
+        break;
+        case sf::Event::MouseMoved:
+        {
+            auto contentBox = getContentBox();
+            auto _event = event;
+            _event.mouseMove.x -= contentBox.getLeft();
+            _event.mouseMove.y -= contentBox.getTop();
+            handled = eventChildren(_event);
+        }
+        break;
+        case sf::Event::MouseWheelScrolled:
+        {
+            auto contentBox = getContentBox();
+            auto _event = event;
+            _event.mouseWheelScroll.x -= contentBox.getLeft();
+            _event.mouseWheelScroll.y -= contentBox.getTop();
+            handled = eventChildren(_event);
+        }
+        break;
+        default:
+            handled = eventChildren(event);
+            break;
+        }
+        return handled;
+    }
+
+    bool VirtualLayout::onBubble(Node &target, const sf::Event &event)
+    {
+        auto handled = false;
+        switch (event.type)
+        {
+        case sf::Event::MouseButtonPressed:
+        case sf::Event::MouseButtonReleased:
+        {
+            auto contentBox = getContentBox();
+            auto _event = event;
+            _event.mouseButton.x += contentBox.getLeft();
+            _event.mouseButton.y += contentBox.getTop();
+            handled = bubbleParent(target, _event);
+        }
+        break;
+        case sf::Event::MouseMoved:
+        {
+            auto contentBox = getContentBox();
+            auto _event = event;
+            _event.mouseMove.x += contentBox.getLeft();
+            _event.mouseMove.y += contentBox.getTop();
+            handled = bubbleParent(target, _event);
+        }
+        break;
+        case sf::Event::MouseWheelScrolled:
+        {
+            auto contentBox = getContentBox();
+            auto _event = event;
+            _event.mouseWheelScroll.x += contentBox.getLeft();
+            _event.mouseWheelScroll.y += contentBox.getTop();
+            handled = bubbleParent(target, _event);
+        }
+        break;
+        default:
+            handled = bubbleParent(target, event);
+            break;
+        }
+        return handled;
     }
 
 }
