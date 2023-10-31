@@ -46,8 +46,8 @@ int main()
     root.append(button);
     root.setHorizontalAnchor(button, cacto::Block::Center);
     root.setVerticalAnchor(button, cacto::Block::Center);
-    root.setMinWidth(300);
-    root.setMinHeight(300);
+    // root.setMinWidth(300);
+    // root.setMinHeight(300);
 
     while (window.isOpen())
     {
@@ -62,7 +62,7 @@ int main()
                     window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             }
         }
-        root.compactContent();
+        root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
         root.place();
         window.clear(sf::Color::Black);

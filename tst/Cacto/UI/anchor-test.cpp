@@ -117,7 +117,7 @@ int main()
                     window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             }
         }
-        root.compactContent();
+        root.compact();
         root.inflate(sf::Vector2f(window.getSize()));
         root.place();
         window.clear(sf::Color::Black);
