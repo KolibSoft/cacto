@@ -146,6 +146,12 @@ namespace cacto
         return *this;
     }
 
+    void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        if (m_background)
+            DrawNode::draw(*m_background, target, states);
+    }
+
     sf::Vector2f Block::compactBlock(const sf::Vector2f &contentSize)
     {
         auto hMargin = m_margin.getHorizontal();
@@ -162,29 +168,7 @@ namespace cacto
         return size;
     }
 
-    void Block::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Block::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
-    }
-
-    void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_background)
-            DrawNode::draw(*m_background, target, states);
-    }
-
-    sf::Vector2f Block::onCompact()
-    {
-        auto size = compactBlock({0, 0});
-        return size;
-    }
-
-    sf::Vector2f Block::onInflate(const sf::Vector2f &containerSize)
+    sf::Vector2f Block::inflateBlock(const sf::Vector2f &containerSize)
     {
         auto hMargin = m_margin.getHorizontal();
         auto vMargin = m_margin.getVertical();
@@ -197,12 +181,44 @@ namespace cacto
         return size;
     }
 
-    void Block::onPlace(const sf::Vector2f &position)
+    void Block::placeBlock(const sf::Vector2f &position)
     {
         setLeft(position.x + m_margin.left);
         setTop(position.y + m_margin.top);
         if (m_background)
             InflatableNode::place(*m_background, {getLeft(), getTop()});
+    }
+
+    void Block::onAttach(Node &parent)
+    {
+        m_parent = &parent;
+    }
+
+    void Block::onDetach(Node &parent)
+    {
+        m_parent = nullptr;
+    }
+
+    void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+    }
+
+    sf::Vector2f Block::onCompact()
+    {
+        auto size = compactBlock({0, 0});
+        return size;
+    }
+
+    sf::Vector2f Block::onInflate(const sf::Vector2f &containerSize)
+    {
+        auto size = inflateBlock(containerSize);
+        return size;
+    }
+
+    void Block::onPlace(const sf::Vector2f &position)
+    {
+        placeBlock(position);
     }
 
 }

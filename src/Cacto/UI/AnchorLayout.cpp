@@ -82,7 +82,7 @@ namespace cacto
 
     sf::Vector2f AnchorLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto outerSize = Block::onInflate(containerSize);
+        auto outerSize = inflateBlock(containerSize);
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
@@ -99,7 +99,7 @@ namespace cacto
 
     void AnchorLayout::onPlace(const sf::Vector2f &position)
     {
-        Block::onPlace(position);
+        placeBlock(position);
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();

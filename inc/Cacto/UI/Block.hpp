@@ -60,8 +60,11 @@ namespace cacto
         Block &operator=(const Block &other);
 
     protected:
+        void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
         sf::Vector2f compactBlock(const sf::Vector2f &contentSize);
-        
+        sf::Vector2f inflateBlock(const sf::Vector2f &containerSize);
+        void placeBlock(const sf::Vector2f &position);
+
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;
 

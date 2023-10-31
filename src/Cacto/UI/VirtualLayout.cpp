@@ -31,7 +31,7 @@ namespace cacto
 
     void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        Block::onDraw(target, states);
+        drawBlock(target, states);
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
@@ -54,7 +54,7 @@ namespace cacto
     sf::Vector2f VirtualLayout::onCompact()
     {
         compactChildren();
-        auto size = Block::compactBlock({0, 0});
+        auto size = compactBlock({0, 0});
         m_surface.compact();
         return size;
     }
@@ -69,7 +69,7 @@ namespace cacto
 
     void VirtualLayout::onPlace(const sf::Vector2f &position)
     {
-        Block::onPlace(position);
+        placeBlock(position);
         auto contentBox = getContentBox();
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
         if (getChildCount() > 0)
