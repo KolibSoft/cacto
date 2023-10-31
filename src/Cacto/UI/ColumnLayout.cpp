@@ -41,6 +41,38 @@ namespace cacto
         m_direction = value;
     }
 
+    f32t ColumnLayout::getHorizontalWeight(const Node &child) const
+    {
+        auto holder = dynamic_cast<const ColumnHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        return holder->hWeight;
+    }
+
+    void ColumnLayout::setHorizontalWeight(Node &child, f32t value)
+    {
+        auto holder = dynamic_cast<ColumnHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        holder->hWeight = value;
+    }
+
+    f32t ColumnLayout::getVerticalWeight(const Node &child) const
+    {
+        auto holder = dynamic_cast<const ColumnHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        return holder->vWeight;
+    }
+
+    void ColumnLayout::setVerticalWeight(Node &child, f32t value)
+    {
+        auto holder = dynamic_cast<ColumnHolder *>(getHolder(child));
+        if (holder == nullptr)
+            throw std::runtime_error("The node is not a child");
+        holder->vWeight = value;
+    }
+
     ColumnLayout::ColumnLayout()
         : m_vAnchor(Start),
           m_direction(Forward) {}
@@ -95,14 +127,17 @@ namespace cacto
         auto boxSize = Block::onInflate(containerSize);
         if (getChildCount() > 0)
         {
+            f32t length = 0;
             auto contentBox = getContentBox();
-            sf::Vector2f _containerSize{contentBox.getWidth(), 0};
+            sf::Vector2f _containerSize{contentBox.getWidth(), contentBox.getHeight()};
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<ColumnHolder *>(getHolder(i));
-                auto _boxSize = InflatableNode::inflate(holder->child, _containerSize);
-                holder->boxSize = _boxSize;
+                auto size = InflatableNode::inflate(holder->child, {_containerSize.x * holder->hWeight, _containerSize.y * holder->vWeight});
+                holder->boxSize = size;
+                length += size.y;
             }
+            m_length = length;
         }
         return boxSize;
     }
@@ -169,6 +204,8 @@ namespace cacto
     ColumnLayout::ColumnHolder::ColumnHolder(Node &child)
         : Holder(child),
           hAnchor(Start),
+          hWeight(1),
+          vWeight(0),
           boxSize()
     {
     }

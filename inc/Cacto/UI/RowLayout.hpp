@@ -23,6 +23,16 @@ namespace cacto
         Direction getDirection() const;
         void setDirection(Direction value);
 
+        f32t getHorizontalWeight(const Node &child) const;
+        f32t getHorizontalWeight(Node &&child) const = delete;
+
+        void setHorizontalWeight(Node &child, f32t value);
+
+        f32t getVerticalWeight(const Node &child) const;
+        f32t getVerticalWeight(Node &&child) const = delete;
+
+        void setVerticalWeight(Node &child, f32t value);
+
         RowLayout();
         virtual ~RowLayout();
 
@@ -38,6 +48,8 @@ namespace cacto
             virtual ~RowHolder();
 
             Anchor vAnchor;
+            f32t hWeight;
+            f32t vWeight;
             sf::Vector2f boxSize;
         };
 
