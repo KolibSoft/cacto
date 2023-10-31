@@ -5,6 +5,16 @@
 namespace cacto
 {
 
+    const sf::Transformable &VirtualLayout::getTransformable() const
+    {
+        return m_transformable;
+    }
+
+    sf::Transformable &VirtualLayout::getTransformable()
+    {
+        return m_transformable;
+    }
+
     VirtualLayout::VirtualLayout()
         : AnchorLayout(),
           m_surface(Surface::Rectangle),
@@ -44,7 +54,7 @@ namespace cacto
                     m_surface.setTexture(&m_texture.getTexture());
                 }
                 m_texture.clear(sf::Color::Transparent);
-                drawChildren(m_texture, sf::RenderStates::Default);
+                drawChildren(m_texture, m_transformable.getTransform());
                 m_texture.display();
                 target.draw(m_surface, states);
             }
@@ -112,39 +122,58 @@ namespace cacto
     bool VirtualLayout::onEvent(const sf::Event &event)
     {
         auto handled = false;
+        auto map = [&](const sf::Vector2f &point)
+        {
+            auto contentBox = getContentBox();
+            auto transform = m_transformable.getInverseTransform();
+            sf::Vector2f mappedPoint{point.x, point.y};
+            mappedPoint.x -= contentBox.getLeft();
+            mappedPoint.y -= contentBox.getTop();
+            mappedPoint = transform.transformPoint(mappedPoint);
+            return mappedPoint;
+        };
         switch (event.type)
         {
         case sf::Event::MouseButtonPressed:
         case sf::Event::MouseButtonReleased:
-            if (m_surface.contains({f32t(event.mouseButton.x), f32t(event.mouseButton.y)}))
+        {
+            sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
+            if (m_surface.contains(point))
             {
-                auto contentBox = getContentBox();
+                point = map(point);
                 auto _event = event;
-                _event.mouseButton.x -= contentBox.getLeft();
-                _event.mouseButton.y -= contentBox.getTop();
+                _event.mouseButton.x = point.x;
+                _event.mouseButton.y = point.y;
                 handled = eventChildren(_event);
             }
-            break;
+        }
+        break;
         case sf::Event::MouseMoved:
-            if (m_surface.contains({f32t(event.mouseMove.x), f32t(event.mouseMove.y)}))
+        {
+            sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
+            if (m_surface.contains(point))
             {
-                auto contentBox = getContentBox();
+                point = map(point);
                 auto _event = event;
-                _event.mouseMove.x -= contentBox.getLeft();
-                _event.mouseMove.y -= contentBox.getTop();
+                _event.mouseMove.x = point.x;
+                _event.mouseMove.y = point.y;
                 handled = eventChildren(_event);
             }
-            break;
+        }
+        break;
         case sf::Event::MouseWheelScrolled:
-            if (m_surface.contains({f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)}))
+        {
+            sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
+            if (m_surface.contains(point))
             {
-                auto contentBox = getContentBox();
+                point = map(point);
                 auto _event = event;
-                _event.mouseWheelScroll.x -= contentBox.getLeft();
-                _event.mouseWheelScroll.y -= contentBox.getTop();
+                _event.mouseWheelScroll.x = point.x;
+                _event.mouseWheelScroll.y = point.y;
                 handled = eventChildren(_event);
             }
-            break;
+        }
+        break;
         default:
             handled = eventChildren(event);
             break;
@@ -155,33 +184,46 @@ namespace cacto
     bool VirtualLayout::onBubble(Node &target, const sf::Event &event)
     {
         auto handled = false;
+        auto map = [&](const sf::Vector2f &point)
+        {
+            auto contentBox = getContentBox();
+            auto transform = m_transformable.getTransform();
+            sf::Vector2f mappedPoint{point.x, point.y};
+            mappedPoint = transform.transformPoint(mappedPoint);
+            mappedPoint.x += contentBox.getLeft();
+            mappedPoint.y += contentBox.getTop();
+            return mappedPoint;
+        };
         switch (event.type)
         {
         case sf::Event::MouseButtonPressed:
         case sf::Event::MouseButtonReleased:
         {
-            auto contentBox = getContentBox();
+            sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
+            point = map(point);
             auto _event = event;
-            _event.mouseButton.x += contentBox.getLeft();
-            _event.mouseButton.y += contentBox.getTop();
+            _event.mouseButton.x = point.x;
+            _event.mouseButton.y = point.y;
             handled = bubbleParent(target, _event);
         }
         break;
         case sf::Event::MouseMoved:
         {
-            auto contentBox = getContentBox();
+            sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
+            point = map(point);
             auto _event = event;
-            _event.mouseMove.x += contentBox.getLeft();
-            _event.mouseMove.y += contentBox.getTop();
+            _event.mouseMove.x = point.x;
+            _event.mouseMove.y = point.y;
             handled = bubbleParent(target, _event);
         }
         break;
         case sf::Event::MouseWheelScrolled:
         {
-            auto contentBox = getContentBox();
+            sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
+            point = map(point);
             auto _event = event;
-            _event.mouseWheelScroll.x += contentBox.getLeft();
-            _event.mouseWheelScroll.y += contentBox.getTop();
+            _event.mouseWheelScroll.x = point.x;
+            _event.mouseWheelScroll.y = point.y;
             handled = bubbleParent(target, _event);
         }
         break;

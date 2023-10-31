@@ -46,8 +46,12 @@ int main()
     root.append(button);
     root.setHorizontalAnchor(button, cacto::Block::Center);
     root.setVerticalAnchor(button, cacto::Block::Center);
-    // root.setMinWidth(300);
-    // root.setMinHeight(300);
+
+    root.setMinWidth(300);
+    root.setMinHeight(300);
+    root.getTransformable().setOrigin({150, 150});
+    root.getTransformable().rotate(sf::degrees(45));
+    root.getTransformable().scale({2, 2});
 
     while (window.isOpen())
     {

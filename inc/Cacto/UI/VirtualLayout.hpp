@@ -14,6 +14,9 @@ namespace cacto
     {
 
     public:
+        const sf::Transformable &getTransformable() const;
+        sf::Transformable &getTransformable();
+
         VirtualLayout();
         virtual ~VirtualLayout();
 
@@ -31,6 +34,8 @@ namespace cacto
         bool onBubble(Node &target, const sf::Event &event) override;
 
     private:
+        sf::Transformable m_transformable;
+
         mutable Surface m_surface;
         mutable sf::RenderTexture m_texture;
     };
