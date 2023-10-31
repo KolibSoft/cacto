@@ -89,8 +89,7 @@ int main()
     root.setBackground(&background);
     root.setMargin(10);
     root.setPadding(10);
-    // root.setDirection(cacto::Layout::Reverse);
-    // root.setHorizontalAnchor(cacto::Box::End);
+    root.setDirection(cacto::Layout::Reverse);
 
     root.append(label);
     root.setVerticalAnchor(label, cacto::Box::Start);

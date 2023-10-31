@@ -151,17 +151,6 @@ namespace cacto
             sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
             sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             f32t offset = 0;
-            switch (m_vAnchor)
-            {
-            case Start:
-                break;
-            case End:
-                offset += containerSize.y - m_length;
-                break;
-            case Center:
-                offset += (containerSize.y - m_length) / 2;
-                break;
-            }
             auto place = [&](ColumnHolder *holder)
             {
                 auto &boxSize = holder->boxSize;
@@ -184,6 +173,17 @@ namespace cacto
             switch (m_direction)
             {
             case Forward:
+                switch (m_vAnchor)
+                {
+                case Start:
+                    break;
+                case End:
+                    offset += containerSize.y - m_length;
+                    break;
+                case Center:
+                    offset += (containerSize.y - m_length) / 2;
+                    break;
+                }
                 for (szt i = 0; i < getChildCount(); i++)
                 {
                     auto holder = dynamic_cast<ColumnHolder *>(getHolder(i));
@@ -191,6 +191,17 @@ namespace cacto
                 }
                 break;
             case Reverse:
+                switch (m_vAnchor)
+                {
+                case Start:
+                    offset += containerSize.y - m_length;
+                    break;
+                case End:
+                    break;
+                case Center:
+                    offset += (containerSize.y - m_length) / 2;
+                    break;
+                }
                 for (szt i = getChildCount(); i > 0; i--)
                 {
                     auto holder = dynamic_cast<ColumnHolder *>(getHolder(i - 1));
