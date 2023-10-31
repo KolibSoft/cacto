@@ -50,12 +50,12 @@ namespace cacto
             Anchor vAnchor;
             f32t hWeight;
             f32t vWeight;
-            sf::Vector2f boxSize;
+            sf::Vector2f size;
         };
 
         RowHolder *onHold(Node &child) const override;
 
-        sf::Vector2f onCompact(const sf::Vector2f &contentSize = {0, 0}) override;
+        sf::Vector2f onCompact() override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 

@@ -51,7 +51,7 @@ namespace cacto
             Anchor vAnchor;
             f32t hWeight;
             f32t vWeight;
-            sf::Vector2f boxSize;
+            sf::Vector2f size;
         };
 
         AnchorHolder *onHold(Node &child) const override;
