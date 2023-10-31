@@ -54,7 +54,7 @@ namespace cacto
         target.draw(*text, _states);
     }
 
-    sf::Vector2f Span::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f Span::onCompact()
     {
         auto bounds = getLocalBounds();
         sf::Vector2f size{bounds.width, bounds.height};

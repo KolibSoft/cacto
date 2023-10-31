@@ -95,9 +95,9 @@ namespace cacto
         target.draw(m_frame, states);
     }
 
-    sf::Vector2f Label::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f Label::onCompact()
     {
-        auto size = m_frame.compact(contentSize);
+        auto size = m_frame.compact();
         return size;
     }
 

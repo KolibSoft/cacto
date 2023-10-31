@@ -144,12 +144,12 @@ namespace cacto
         DrawNode::onDraw(target, states);
     }
 
-    sf::Vector2f Surface::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f Surface::onCompact()
     {
-        setWidth(contentSize.x);
-        setHeight(contentSize.y);
+        setWidth(0);
+        setHeight(0);
         m_invalid = true;
-        return contentSize;
+        return {0, 0};
     }
 
     sf::Vector2f Surface::onInflate(const sf::Vector2f &containerSize)

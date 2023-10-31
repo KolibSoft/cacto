@@ -121,53 +121,38 @@ namespace cacto
 
     void Layout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        Block::onDraw(target, states);
+        drawBlock(target, states);
         for (auto holder : m_holders)
             DrawNode::draw(holder->child, target, states);
     }
 
-    sf::Vector2f Layout::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f Layout::onCompact()
     {
-        auto _contentSize = contentSize;
-        if (m_holders.size() > 0)
-        {
-            for (auto holder : m_holders)
-            {
-                auto size = InflatableNode::compact(holder->child, contentSize);
-                _contentSize.x = std::max(size.x, _contentSize.x);
-                _contentSize.y = std::max(size.y, _contentSize.y);
-            }
-        }
-        auto outerSize = Block::onCompact(_contentSize);
-        return outerSize;
+        auto contentSize = compactChildren();
+        auto size = compactBlock(contentSize);
+        return size;
     }
 
     sf::Vector2f Layout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto outerSize = Block::onInflate(containerSize);
+        auto size = inflateBlock(containerSize);
         if (m_holders.size() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f _containerSize{contentBox.getWidth(), contentBox.getHeight()};
-            for (auto holder : m_holders)
-            {
-                auto size = InflatableNode::inflate(holder->child, _containerSize);
-            }
+            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
+            inflateChildren(contentSize);
         }
-        return outerSize;
+        return size;
     }
 
     void Layout::onPlace(const sf::Vector2f &position)
     {
-        Block::onPlace(position);
+        placeBlock(position);
         if (m_holders.size() > 0)
         {
             auto contentBox = getContentBox();
             sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
-            for (auto holder : m_holders)
-            {
-                InflatableNode::place(holder->child, contentPosition);
-            }
+            placeChildren(contentPosition);
         }
     }
 

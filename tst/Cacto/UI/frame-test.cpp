@@ -10,12 +10,12 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
+#include <Cacto/UI/AnchorLayout.hpp>
 
 auto _ = false;
 
 class Frame
-    : public cacto::FrameLayout,
+    : public cacto::AnchorLayout,
       public virtual cacto::EventNode
 {
 

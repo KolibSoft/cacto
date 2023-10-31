@@ -146,6 +146,49 @@ namespace cacto
         return *this;
     }
 
+    void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        if (m_background)
+            DrawNode::draw(*m_background, target, states);
+    }
+
+    sf::Vector2f Block::compactBlock(const sf::Vector2f &contentSize)
+    {
+        auto hMargin = m_margin.getHorizontal();
+        auto vMargin = m_margin.getVertical();
+        auto hPadding = m_padding.getHorizontal();
+        auto vPadding = m_padding.getVertical();
+        sf::Vector2f size{
+            std::max(hPadding, std::max(m_minWidth, contentSize.x + hPadding)) + hMargin,
+            std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
+        if (m_background)
+            InflatableNode::compact(*m_background);
+        setWidth(size.x);
+        setHeight(size.y);
+        return size;
+    }
+
+    sf::Vector2f Block::inflateBlock(const sf::Vector2f &containerSize)
+    {
+        auto hMargin = m_margin.getHorizontal();
+        auto vMargin = m_margin.getVertical();
+        sf::Vector2f size{std::max(getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
+                          std::max(getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
+        setWidth(size.x - hMargin);
+        setHeight(size.y - vMargin);
+        if (m_background)
+            InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
+        return size;
+    }
+
+    void Block::placeBlock(const sf::Vector2f &position)
+    {
+        setLeft(position.x + m_margin.left);
+        setTop(position.y + m_margin.top);
+        if (m_background)
+            InflatableNode::place(*m_background, {getLeft(), getTop()});
+    }
+
     void Block::onAttach(Node &parent)
     {
         m_parent = &parent;
@@ -158,41 +201,24 @@ namespace cacto
 
     void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        if (m_background)
-            DrawNode::draw(*m_background, target, states);
+        drawBlock(target, states);
     }
 
-    sf::Vector2f Block::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f Block::onCompact()
     {
-        sf::Vector2f outerSize{
-            std::max(m_padding.getHorizontal(), std::max(m_minWidth, contentSize.x + m_padding.getHorizontal())) + m_margin.getHorizontal(),
-            std::max(m_padding.getVertical(), std::max(m_minHeight, contentSize.y + m_padding.getVertical())) + m_margin.getVertical()};
-        if (m_background)
-            InflatableNode::compact(*m_background);
-        setWidth(outerSize.x);
-        setHeight(outerSize.y);
-        return outerSize;
+        auto size = compactBlock({0, 0});
+        return size;
     }
 
     sf::Vector2f Block::onInflate(const sf::Vector2f &containerSize)
     {
-        auto minWidth = getWidth();
-        auto minHeight = getHeight();
-        sf::Vector2f outerSize{std::max(minWidth, std::min(containerSize.x, m_maxWidth + m_margin.getHorizontal())),
-                             std::max(minHeight, std::min(containerSize.y, m_maxHeight + m_margin.getVertical()))};
-        setWidth(outerSize.x - m_margin.getHorizontal());
-        setHeight(outerSize.y - m_margin.getVertical());
-        if (m_background)
-            InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
-        return outerSize;
+        auto size = inflateBlock(containerSize);
+        return size;
     }
 
     void Block::onPlace(const sf::Vector2f &position)
     {
-        setLeft(position.x + m_margin.left);
-        setTop(position.y + m_margin.top);
-        if (m_background)
-            InflatableNode::place(*m_background, {getLeft(), getTop()});
+        placeBlock(position);
     }
 
 }

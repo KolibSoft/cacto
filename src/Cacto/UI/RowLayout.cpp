@@ -102,44 +102,44 @@ namespace cacto
         return holder;
     }
 
-    sf::Vector2f RowLayout::onCompact(const sf::Vector2f &contentSize)
+    sf::Vector2f RowLayout::onCompact()
     {
-        sf::Vector2f _contentSize{contentSize};
+        sf::Vector2f contentSize{0, 0};
         if (getChildCount() > 0)
         {
             f32t length = 0;
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = getHolder(i);
-                auto size = InflatableNode::compact(holder->child, contentSize);
-                length += size.x;
-                _contentSize.y = std::max(size.y, _contentSize.y);
+                auto childSize = InflatableNode::compact(holder->child);
+                length += childSize.x;
+                contentSize.y = std::max(childSize.y, contentSize.y);
             }
             m_length = length;
-            _contentSize.x = std::max(length, _contentSize.x);
+            contentSize.x = std::max(length, contentSize.x);
         }
-        auto boxSize = Block::onCompact(_contentSize);
-        return boxSize;
+        auto size = Block::compactBlock(contentSize);
+        return size;
     }
 
     sf::Vector2f RowLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto boxSize = Block::onInflate(containerSize);
+        auto size = Block::onInflate(containerSize);
         if (getChildCount() > 0)
         {
             f32t length = 0;
             auto contentBox = getContentBox();
-            sf::Vector2f _containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<RowHolder *>(getHolder(i));
-                auto size = InflatableNode::inflate(holder->child, {_containerSize.x * holder->hWeight, _containerSize.y * holder->vWeight});
-                holder->boxSize = size;
-                length += size.x;
+                auto childSize = InflatableNode::inflate(holder->child, {contentSize.x * holder->hWeight, contentSize.y * holder->vWeight});
+                holder->size = childSize;
+                length += childSize.x;
             }
             m_length = length;
         }
-        return boxSize;
+        return size;
     }
 
     void RowLayout::onPlace(const sf::Vector2f &position)
@@ -148,12 +148,12 @@ namespace cacto
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
             sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             f32t offset = 0;
             auto place = [&](RowHolder *holder)
             {
-                auto &boxSize = holder->boxSize;
+                auto &childSize = holder->size;
                 auto _contentPosition{contentPosition};
                 _contentPosition.x += offset;
                 switch (holder->vAnchor)
@@ -161,14 +161,14 @@ namespace cacto
                 case Start:
                     break;
                 case End:
-                    _contentPosition.y += containerSize.y - boxSize.y;
+                    _contentPosition.y += contentSize.y - childSize.y;
                     break;
                 case Center:
-                    _contentPosition.y += (containerSize.y - boxSize.y) / 2;
+                    _contentPosition.y += (contentSize.y - childSize.y) / 2;
                     break;
                 }
                 InflatableNode::place(holder->child, _contentPosition);
-                offset += holder->boxSize.x;
+                offset += holder->size.x;
             };
             switch (m_direction)
             {
@@ -178,10 +178,10 @@ namespace cacto
                 case Start:
                     break;
                 case End:
-                    offset += containerSize.x - m_length;
+                    offset += contentSize.x - m_length;
                     break;
                 case Center:
-                    offset += (containerSize.x - m_length) / 2;
+                    offset += (contentSize.x - m_length) / 2;
                     break;
                 }
                 for (szt i = 0; i < getChildCount(); i++)
@@ -194,12 +194,12 @@ namespace cacto
                 switch (m_hAnchor)
                 {
                 case Start:
-                    offset += containerSize.x - m_length;
+                    offset += contentSize.x - m_length;
                     break;
                 case End:
                     break;
                 case Center:
-                    offset += (containerSize.x - m_length) / 2;
+                    offset += (contentSize.x - m_length) / 2;
                     break;
                 }
                 for (szt i = getChildCount(); i > 0; i--)
@@ -217,7 +217,7 @@ namespace cacto
           vAnchor(Start),
           hWeight(0),
           vWeight(1),
-          boxSize()
+          size()
     {
     }
 

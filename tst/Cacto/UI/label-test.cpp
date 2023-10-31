@@ -9,7 +9,6 @@
 #include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
 #include <Cacto/UI/Span.hpp>
 #include <Cacto/UI/Label.hpp>
 
