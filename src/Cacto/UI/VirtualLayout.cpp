@@ -1,4 +1,5 @@
 #include <SFML/Window/Event.hpp>
+#include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
 
 namespace cacto
@@ -43,7 +44,7 @@ namespace cacto
                     auto _ = m_texture.create(contentSize);
                     m_surface.setTexture(&m_texture.getTexture());
                 }
-                m_texture.clear();
+                m_texture.clear(sf::Color::Transparent);
                 DrawNode::draw(holder->child, m_texture, sf::RenderStates::Default);
                 m_texture.display();
                 target.draw(m_surface, states);
