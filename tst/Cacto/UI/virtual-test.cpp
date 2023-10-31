@@ -49,9 +49,6 @@ int main()
 
     root.setMinWidth(300);
     root.setMinHeight(300);
-    root.getTransformable().setOrigin({150, 150});
-    root.getTransformable().rotate(sf::degrees(45));
-    root.getTransformable().scale({2, 2});
 
     while (window.isOpen())
     {
@@ -64,6 +61,8 @@ int main()
                     window.close();
                 if (event.type == sf::Event::Resized)
                     window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+                if (event.type == sf::Event::MouseWheelScrolled)
+                    root.getTransformable().move({0, event.mouseWheelScroll.delta * 5});
             }
         }
         root.compact();
