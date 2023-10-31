@@ -97,6 +97,8 @@ int main()
     Square target{};
     auto level1 = makeFrame(sf::Color::Green, target, cacto::Box::Center, cacto::Box::Center);
     auto level2 = makeFrame(sf::Color::Blue, level1, cacto::Box::Center, cacto::Box::Center);
+    level2.setMaxWidth(0);
+    level2.setMaxHeight(0);
     auto root = makeFrame(sf::Color::Red, level2, cacto::Box::Center, cacto::Box::Center);
 
     root.onClickListener = [](auto &target, auto &event)

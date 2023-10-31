@@ -3,14 +3,16 @@
 namespace cacto
 {
 
-    void EventNode::event(const sf::Event &event)
+    bool EventNode::event(const sf::Event &event)
     {
-        EventNode::event(*this, event);
+        auto handled = EventNode::event(*this, event);
+        return handled;
     }
 
-    void EventNode::bubble(Node &target, const sf::Event &event)
+    bool EventNode::bubble(Node &target, const sf::Event &event)
     {
-        EventNode::bubble(*this, target, event);
+        auto handled = EventNode::bubble(*this, target, event);
+        return handled;
     }
 
     EventNode::EventNode() = default;

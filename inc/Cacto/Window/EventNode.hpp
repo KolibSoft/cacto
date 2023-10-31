@@ -20,8 +20,8 @@ namespace cacto
     {
 
     public:
-        void event(const sf::Event &event);
-        void bubble(Node &target, const sf::Event &event);
+        bool event(const sf::Event &event);
+        bool bubble(Node &target, const sf::Event &event);
 
         EventNode();
         virtual ~EventNode();

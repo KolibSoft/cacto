@@ -50,6 +50,9 @@ namespace cacto
         void setFixedWidth(f32t value);
         void setFixedHeight(f32t value);
 
+        Box getContainerBox() const;
+        Box getContentBox() const;
+
         Block();
         virtual ~Block();
 
