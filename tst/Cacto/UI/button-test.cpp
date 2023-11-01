@@ -10,7 +10,7 @@
 #include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
+#include <Cacto/UI/AnchorLayout.hpp>
 #include <Cacto/UI/Span.hpp>
 #include <Cacto/UI/Button.hpp>
 
@@ -35,8 +35,8 @@ int main()
     background.setColor(sf::Color::Red);
 
     cacto::Button root{font, "It Works"};
-    root.getBlock().setBackground(&background);
-    root.getBlock().setMargin(10);
+    root.setBackground(&background);
+    root.setMargin(10);
     root.getSpan().setOutlineThickness(10);
     root.getSpan().setOutlineColor(sf::Color::Blue);
     root.setHorizontalAnchor(cacto::Box::Center);

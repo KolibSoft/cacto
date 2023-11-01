@@ -33,8 +33,9 @@ int main()
     background.setColor(sf::Color::Red);
 
     cacto::Input root{font};
-    root.getBlock().setBackground(&background);
-    root.getBlock().setMargin(10);
+    root.setBackground(&background);
+    root.setMargin(10);
+    root.setPadding(10);
     root.getSpan().setOutlineThickness(10);
     root.getSpan().setOutlineColor(sf::Color::Blue);
     root.setHorizontalAnchor(cacto::Box::Center);

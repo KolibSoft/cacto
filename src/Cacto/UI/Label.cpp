@@ -4,21 +4,6 @@
 namespace cacto
 {
 
-    Node *const Label::getParent() const
-    {
-        return m_parent;
-    }
-
-    const Block &Label::getBlock() const
-    {
-        return m_frame;
-    }
-
-    Block &Label::getBlock()
-    {
-        return m_frame;
-    }
-
     const Span &Label::getSpan() const
     {
         return m_span;
@@ -31,85 +16,79 @@ namespace cacto
 
     Label::Anchor Label::getHorizontalAnchor() const
     {
-        auto anchor = m_frame.getHorizontalAnchor(m_span);
-        return anchor;
+        return m_hAnchor;
     }
 
     void Label::setHorizontalAnchor(Anchor value)
     {
-        m_frame.setHorizontalAnchor(m_span, value);
+        m_hAnchor = value;
     }
 
     Label::Anchor Label::getVerticalAnchor() const
     {
-        auto anchor = m_frame.getVerticalAnchor(m_span);
-        return anchor;
+        return m_vAnchor;
     }
 
     void Label::setVerticalAnchor(Anchor value)
     {
-        m_frame.setVerticalAnchor(m_span, value);
+        m_vAnchor = value;
     }
 
     Label::Label(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : m_parent(),
-          m_frame(),
-          m_span(font, string, characterSize)
+        : Block(),
+          m_span(font, string, characterSize),
+          m_hAnchor(Start),
+          m_vAnchor(Start)
     {
-        m_frame.append(m_span);
     }
 
-    Label::~Label()
-    {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
-    }
+    Label::~Label() = default;
 
     Label::Label(const Label &other)
-        : m_parent(),
-          m_frame(other.m_frame),
-          m_span(other.m_span)
+        : Block(other),
+          m_span(other.m_span),
+          m_hAnchor(other.m_hAnchor),
+          m_vAnchor(other.m_vAnchor)
     {
-        m_frame.append(m_span);
     }
 
     Label &Label::operator=(const Label &other)
     {
-        m_frame = other.m_frame;
         m_span = other.m_span;
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
         return *this;
-    }
-
-    void Label::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Label::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
     }
 
     void Label::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        target.draw(m_frame, states);
+        drawBlock(target, states);
+        target.draw(dynamic_cast<const DrawNode &>(m_span), states);
     }
 
     sf::Vector2f Label::onCompact()
     {
-        auto size = m_frame.compact();
+        auto contentSize = m_span.compact();
+        auto size = compactBlock(contentSize);
         return size;
     }
 
     sf::Vector2f Label::onInflate(const sf::Vector2f &containerSize)
     {
-        auto size = m_frame.inflate(containerSize);
+        auto size = inflateBlock(containerSize);
+        auto contentBox = getContentBox();
+        m_span.inflate({contentBox.getWidth(), contentBox.getHeight()});
         return size;
     }
 
     void Label::onPlace(const sf::Vector2f &position)
     {
-        m_frame.place(position);
+        placeBlock(position);
+        auto contentBox = getContentBox();
+        auto bounds = m_span.getLocalBounds();
+        contentBox.setWidth(bounds.width, m_hAnchor);
+        contentBox.setHeight(bounds.height, m_vAnchor);
+        m_span.place({contentBox.getLeft(), contentBox.getTop()});
     }
 
 }
