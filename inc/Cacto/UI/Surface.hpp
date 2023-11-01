@@ -70,7 +70,7 @@ namespace cacto
         Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
-        const sf::Texture *m_texutre;
+        const sf::Texture *m_texture;
         sf::FloatRect m_textureRect;
 
         mutable bool m_invalid;
