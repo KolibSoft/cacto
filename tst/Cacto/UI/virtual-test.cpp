@@ -34,11 +34,11 @@ int main()
     cacto::Button button{font, "It Works"};
     auto bgBlock = background;
     bgBlock.setColor(sf::Color::Blue);
-    button.getBlock().setBackground(&bgBlock);
-    button.getBlock().setMargin(10);
-    button.getBlock().setFixedWidth(0);
-    button.getBlock().setFixedHeight(0);
-    button.getBlock().setPadding(10);
+    button.setBackground(&bgBlock);
+    button.setMargin(10);
+    button.setFixedWidth(0);
+    button.setFixedHeight(0);
+    button.setPadding(10);
 
     button.setOnClickListener([](auto &node, auto &event)
                               { std::cout << "Clicked\n"; });
@@ -47,8 +47,8 @@ int main()
     root.setHorizontalAnchor(button, cacto::Block::Center);
     root.setVerticalAnchor(button, cacto::Block::Center);
 
-    root.setMinWidth(300);
-    root.setMinHeight(300);
+    // root.setMinWidth(300);
+    // root.setMinHeight(300);
 
     while (window.isOpen())
     {
