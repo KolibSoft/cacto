@@ -82,19 +82,19 @@ namespace cacto
 
     sf::Vector2f AnchorLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto outerSize = inflateBlock(containerSize);
+        auto size = inflateBlock(containerSize);
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f _containerSize{contentBox.getWidth(), contentBox.getHeight()};
+            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
-                auto childSize = InflatableNode::inflate(holder->child, {_containerSize.x * holder->hWeight, _containerSize.y * holder->vWeight});
+                auto childSize = InflatableNode::inflate(holder->child, {contentSize.x * holder->hWeight, contentSize.y * holder->vWeight});
                 holder->size = childSize;
             }
         }
-        return outerSize;
+        return size;
     }
 
     void AnchorLayout::onPlace(const sf::Vector2f &position)
@@ -103,36 +103,13 @@ namespace cacto
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
-                auto &childSize = holder->size;
-                auto _contentPosition = contentPosition;
-                switch (holder->hAnchor)
-                {
-                case Start:
-                    break;
-                case End:
-                    _contentPosition.x += contentSize.x - childSize.x;
-                    break;
-                case Center:
-                    _contentPosition.x += (contentSize.x - childSize.x) / 2;
-                    break;
-                }
-                switch (holder->vAnchor)
-                {
-                case Start:
-                    break;
-                case End:
-                    _contentPosition.y += contentSize.y - childSize.y;
-                    break;
-                case Center:
-                    _contentPosition.y += (contentSize.y - childSize.y) / 2;
-                    break;
-                }
-                InflatableNode::place(holder->child, _contentPosition);
+                auto _contentBox = contentBox;
+                _contentBox.setWidth(holder->size.x, holder->hAnchor);
+                _contentBox.setHeight(holder->size.y, holder->vAnchor);
+                InflatableNode::place(holder->child, {_contentBox.getLeft(), _contentBox.getTop()});
             }
         }
     }
