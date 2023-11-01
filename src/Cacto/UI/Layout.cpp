@@ -122,8 +122,7 @@ namespace cacto
     void Layout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
-        for (auto holder : m_holders)
-            DrawNode::draw(holder->child, target, states);
+        drawChildren(target, states);
     }
 
     sf::Vector2f Layout::onCompact()
@@ -139,8 +138,7 @@ namespace cacto
         if (m_holders.size() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            inflateChildren(contentSize);
+            inflateChildren({contentBox.getWidth(), contentBox.getHeight()});
         }
         return size;
     }
@@ -151,8 +149,7 @@ namespace cacto
         if (m_holders.size() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
-            placeChildren(contentPosition);
+            placeChildren({contentBox.getLeft(), contentBox.getTop()});
         }
     }
 
