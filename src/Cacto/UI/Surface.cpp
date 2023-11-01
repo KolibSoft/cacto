@@ -87,10 +87,10 @@ namespace cacto
         }
     }
 
-    Surface::Surface(Geometry &geometry, szt precision, const sf::Color &color, sf::Texture *texture)
+    Surface::Surface(Geometry &geometry, const sf::Color &color, sf::Texture *texture)
         : m_parent(),
           m_geometry(&geometry),
-          m_precision(precision),
+          m_precision(1),
           m_color(color),
           m_texutre(texture),
           m_textureRect(),
@@ -190,19 +190,25 @@ namespace cacto
         m_invalid = true;
     }
 
-    Surface colorSurface(const sf::Color &color, Geometry &geometry, szt precision)
+    Surface colorSurface(const sf::Color &color)
     {
-        Surface surface{geometry};
+        auto surface = Surface::Rectangle;
         surface.setColor(color);
-        surface.setPrecision(precision);
         return surface;
     }
 
-    Surface textureSurface(sf::Texture &texture, Geometry &geometry, szt precision)
+    Surface textureSurface(sf::Texture &texture, const sf::FloatRect &textureRect)
     {
-        Surface surface{geometry};
-        surface.setTexture(&texture);
-        surface.setPrecision(precision);
+        auto surface = Surface::Rectangle;
+        if (textureRect == sf::FloatRect{})
+        {
+            surface.setTexture(&texture, true);
+        }
+        else
+        {
+            surface.setTexture(&texture, false);
+            surface.setTextureRect(textureRect);
+        }
         return surface;
     }
 

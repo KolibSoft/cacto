@@ -15,6 +15,8 @@ namespace sf
 namespace cacto
 {
 
+    class Geometry;
+
     class CACTO_UI_API Surface
         : public Box,
           public virtual LeafNode,
@@ -42,7 +44,7 @@ namespace cacto
 
         void update(bool force = false) const;
 
-        Surface(Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
+        Surface(Geometry &geometry, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
         virtual ~Surface();
 
         Surface(const Surface &other);
@@ -75,8 +77,8 @@ namespace cacto
         mutable sf::VertexArray m_array;
     };
 
-    Surface CACTO_UI_API colorSurface(const sf::Color &color, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
-    Surface CACTO_UI_API textureSurface(sf::Texture &texture, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
+    Surface CACTO_UI_API colorSurface(const sf::Color &color);
+    Surface CACTO_UI_API textureSurface(sf::Texture &texture, const sf::FloatRect &textureRect = {});
 
 }
 
