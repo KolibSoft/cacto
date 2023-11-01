@@ -118,13 +118,13 @@ namespace cacto
             m_length = length;
             contentSize.y = std::max(length, contentSize.y);
         }
-        auto size = Block::compactBlock(contentSize);
+        auto size = compactBlock(contentSize);
         return size;
     }
 
     sf::Vector2f ColumnLayout::onInflate(const sf::Vector2f &containerSize)
     {
-        auto size = Block::onInflate(containerSize);
+        auto size = inflateBlock(containerSize);
         if (getChildCount() > 0)
         {
             f32t length = 0;
@@ -144,46 +144,23 @@ namespace cacto
 
     void ColumnLayout::onPlace(const sf::Vector2f &position)
     {
-        Block::onPlace(position);
+        placeBlock(position);
         if (getChildCount() > 0)
         {
             auto contentBox = getContentBox();
-            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            sf::Vector2f contentPosition{contentBox.getLeft(), contentBox.getTop()};
             f32t offset = 0;
             auto place = [&](ColumnHolder *holder)
             {
-                auto &childSize = holder->size;
-                auto _contentPosition{contentPosition};
-                _contentPosition.y += offset;
-                switch (holder->hAnchor)
-                {
-                case Start:
-                    break;
-                case End:
-                    _contentPosition.x += contentSize.x - childSize.x;
-                    break;
-                case Center:
-                    _contentPosition.x += (contentSize.x - childSize.x) / 2;
-                    break;
-                }
-                InflatableNode::place(holder->child, _contentPosition);
+                auto _contentBox = contentBox;
+                _contentBox.setTop(_contentBox.getTop() + offset);
+                _contentBox.setWidth(holder->size.x, holder->hAnchor);
+                InflatableNode::place(holder->child, {_contentBox.getLeft(), _contentBox.getTop()});
                 offset += holder->size.y;
             };
             switch (m_direction)
             {
             case Forward:
-                switch (m_vAnchor)
-                {
-                case Start:
-                    break;
-                case End:
-                    offset += contentSize.y - m_length;
-                    break;
-                case Center:
-                    offset += (contentSize.y - m_length) / 2;
-                    break;
-                }
+                contentBox.setHeight(m_length, m_vAnchor);
                 for (szt i = 0; i < getChildCount(); i++)
                 {
                     auto holder = dynamic_cast<ColumnHolder *>(getHolder(i));
@@ -194,12 +171,13 @@ namespace cacto
                 switch (m_vAnchor)
                 {
                 case Start:
-                    offset += contentSize.y - m_length;
+                    contentBox.setHeight(m_length, End);
                     break;
                 case End:
+                    contentBox.setHeight(m_length, Start);
                     break;
                 case Center:
-                    offset += (contentSize.y - m_length) / 2;
+                    contentBox.setHeight(m_length, Center);
                     break;
                 }
                 for (szt i = getChildCount(); i > 0; i--)
