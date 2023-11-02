@@ -13,9 +13,9 @@ namespace cacto
     {
         return m_figure;
     }
-    Picture::Picture(const sf::Texture &texture)
+    Picture::Picture(const sf::Texture &texture, Figure::Scale scale)
         : Block(),
-          m_figure(texture)
+          m_figure(texture, scale)
     {
     }
 

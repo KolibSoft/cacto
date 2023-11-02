@@ -15,8 +15,11 @@
 #include <Cacto/UI/Label.hpp>
 #include <Cacto/UI/Button.hpp>
 #include <Cacto/UI/Input.hpp>
+#include <Cacto/UI/Picture.hpp>
 #include <Cacto/UI/RowLayout.hpp>
 #include <Cacto/UI/ColumnLayout.hpp>
+
+auto _ = false;
 
 class Layout
     : public cacto::ColumnLayout,
@@ -52,10 +55,23 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     sf::Font font;
-    auto _ = font.loadFromFile("./res/Grandview.ttf");
+    _ = font.loadFromFile("./res/Grandview.ttf");
+
+    sf::Texture texture;
+    _ = texture.loadFromFile("res/fondo.png");
 
     auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
+
+    cacto::Picture picture{texture, cacto::Figure::Fit};
+    auto bgPicture = background;
+    bgPicture.setColor(sf::Color::Cyan);
+    picture.setBackground(&bgPicture);
+    picture.setFixedHeight(200);
+    picture.setMargin(10);
+    picture.setPadding(10);
+    picture.getFigure().setHorizontalAnchor(cacto::Box::Center);
+    picture.getFigure().setVerticalAnchor(cacto::Box::Center);
 
     cacto::Label label{font, "LABEL"};
     auto bgLabel = background;
@@ -92,9 +108,13 @@ int main()
     root.setPadding(10);
     root.setDirection(cacto::Layout::Reverse);
 
+    root.append(picture);
+    root.setHorizontalAnchor(picture, cacto::Box::Start);
+    root.setVerticalWeight(picture, 0.125);
+
     root.append(label);
     root.setHorizontalAnchor(label, cacto::Box::Start);
-    root.setVerticalWeight(label, 0.25);
+    root.setVerticalWeight(label, 0.125);
 
     root.append(input);
     root.setHorizontalAnchor(input, cacto::Box::Center);

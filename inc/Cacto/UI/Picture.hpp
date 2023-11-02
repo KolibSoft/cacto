@@ -15,8 +15,8 @@ namespace cacto
         const Figure &getFigure() const;
         Figure &getFigure();
 
-        Picture(const sf::Texture &texture);
-        Picture(sf::Texture &&texture) = delete;
+        Picture(const sf::Texture &texture, Figure::Scale scale = Figure::Fill);
+        Picture(sf::Texture &&texture, Figure::Scale scale = Figure::Fill) = delete;
 
         virtual ~Picture();
 
