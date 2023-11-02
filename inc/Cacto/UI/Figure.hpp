@@ -20,6 +20,12 @@ namespace cacto
         Scale getScale() const;
         void setScale(Scale value);
 
+        Anchor getHorizontalAnchor() const;
+        void setHorizontalAnchor(Anchor value);
+
+        Anchor getVerticalAnchor() const;
+        void setVerticalAnchor(Anchor value);
+
         Figure(const sf::Texture &texture, Scale scale = Fill);
         virtual ~Figure();
 
@@ -31,8 +37,8 @@ namespace cacto
 
     private:
         Scale m_scale;
-        
-        sf::Vector2f m_size;
+        Anchor m_hAnchor;
+        Anchor m_vAnchor;
     };
 
 }
