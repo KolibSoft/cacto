@@ -9,59 +9,18 @@
 #include <SFML/Audio/Music.hpp>
 #include <Cacto/Core/Loader.hpp>
 
-enum Images
-{
-    MyImage
-};
-
-enum Textures
-{
-    MyTexture
-};
-
-enum Music
-{
-    MyMusic
-};
-
-enum Sound
-{
-    MySound
-};
+namespace R {
+    auto image = cacto::Loader<sf::Image>::fromFile("./res/fondo.png");
+    auto texture = cacto::Loader<sf::Texture>::fromFile("./res/fondo.png");
+    auto soundBuffer = cacto::Loader<sf::SoundBuffer>::fromFile("./res/track.mp3");
+}
 
 int main()
 {
 
-    cacto::Loader<sf::Image> images;
-    images.setLoadFromFile(Images::MyImage, "./res/fondo.png");
-    auto image = images.get(Images::MyImage);
-
-    cacto::Loader<sf::Texture> textures;
-    textures.setLoadFromImage(Textures::MyTexture, *image);
-
-    cacto::Loader<sf::Music> music;
-    music.setOpenFromFile(Music::MyMusic, "./res/track.mp3");
-
-    cacto::Loader<sf::SoundBuffer> sounds;
-    sounds.setLoadFromFile(Sound::MySound, "./res/track.mp3");
-
-    {
-        auto texture = textures.get(Textures::MyTexture);
-        texture = textures.get(Textures::MyTexture);
-    }
-
-    {
-        auto buffer = sounds.get(Sound::MySound);
-        sf::Sound sound{*buffer};
-        sound.play();
-        sf::sleep(sf::seconds(5));
-    }
-
-    {
-        auto _music = music.get(Music::MyMusic);
-        _music->play();
-        sf::sleep(sf::seconds(5));
-    }
+    auto image = R::image.get();
+    auto texture = R::texture.get();
+    auto soundBuffer = R::soundBuffer.get();
 
     return 0;
 }

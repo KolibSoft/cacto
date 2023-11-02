@@ -3,8 +3,13 @@
 
 #include <memory>
 #include <functional>
-#include <unordered_map>
+#include <filesystem>
 #include <Cacto/Config.hpp>
+
+namespace sf
+{
+    class InputStream;
+}
 
 namespace cacto
 {
@@ -14,47 +19,24 @@ namespace cacto
     {
 
     public:
-        std::shared_ptr<T> get(i32t id) const;
-        void set(i32t id, const std::function<std::shared_ptr<T>()> &load);
+        std::shared_ptr<T> get() const;
 
-        template <typename... As>
-        void setLoadFromMemory(i32t id, const As &...args);
-
-        template <typename... As>
-        void setLoadFromStream(i32t id, const As &...args);
-
-        template <typename... As>
-        void setLoadFromFile(i32t id, const As &...args);
-
-        template <typename... As>
-        void setOpenFromMemory(i32t id, const As &...args);
-
-        template <typename... As>
-        void setOpenFromStream(i32t id, const As &...args);
-
-        template <typename... As>
-        void setOpenFromFile(i32t id, const As &...args);
-
-        template <typename... As>
-        void setLoadFromImage(i32t id, const As &...args);
-
-        template <typename... As>
-        void setLoadFromSamples(i32t id, const As &...args);
-
-        Loader();
+        Loader(const std::function<T *()> &load);
         virtual ~Loader();
 
+        Loader(const Loader<T> &other) = delete;
+        Loader &operator=(const Loader<T> &other) = delete;
+
+        Loader(Loader<T>&& temp) = default;
+        Loader &operator=(Loader<T>&& temp) = default;
+
+        static Loader<T> fromMemory(const void *data, szt size);
+        static Loader<T> fromStream(sf::InputStream& stream);
+        static Loader<T> fromFile(const std::filesystem::path& filename);
+
     private:
-        struct Holder
-        {
-            Holder() = default;
-            virtual ~Holder() = default;
-
-            std::weak_ptr<T> resource;
-            std::function<std::shared_ptr<T>()> load;
-        };
-
-        mutable std::unordered_map<u32t, Holder> m_holders;
+        mutable std::weak_ptr<T> m_resource;
+        std::function<T *()> m_load;
     };
 
 }

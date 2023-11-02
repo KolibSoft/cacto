@@ -7,134 +7,63 @@ namespace cacto
 {
 
     template <typename T>
-    inline std::shared_ptr<T> Loader<T>::get(i32t id) const
+    inline std::shared_ptr<T> Loader<T>::get() const
     {
-        auto &holder = m_holders[id];
-        auto resource = holder.resource.lock();
-        if (resource)
-            return resource;
-        resource = holder.load();
-        holder.resource = resource;
+        auto resource = m_resource.lock();
+        if (!resource)
+            resource = std::shared_ptr<T>(m_load());
+        m_resource = resource;
         return resource;
     }
 
     template <typename T>
-    inline void Loader<T>::set(i32t id, const std::function<std::shared_ptr<T>()> &load)
+    inline Loader<T>::Loader(const std::function<T *()> &load)
+        : m_resource(),
+          m_load(load)
     {
-        Holder holder{};
-        holder.load = load;
-        m_holders[id] = holder;
     }
-
-    template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setLoadFromMemory(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->loadFromMemory(args...);
-                return resource;
-            });
-    }
-
-    template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setLoadFromStream(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->loadFromStream(args...);
-                return resource;
-            });
-    }
-
-        template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setLoadFromFile(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->loadFromFile(args...);
-                return resource;
-            });
-    }
-
-    template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setOpenFromMemory(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->openFromMemory(args...);
-                return resource;
-            });
-    }
-
-    template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setOpenFromStream(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->openFromStream(args...);
-                return resource;
-            });
-    }
-
-        template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setOpenFromFile(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->openFromFile(args...);
-                return resource;
-            });
-    }
-
-    template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setLoadFromImage(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->loadFromImage(args...);
-                return resource;
-            });
-    }
-
-    template <typename T>
-    template <typename... As>
-    inline void Loader<T>::setLoadFromSamples(i32t id, const As &...args)
-    {
-        set(id,
-            [=]() -> std::shared_ptr<T>
-            {
-                auto resource = std::make_shared<T>();
-                auto result = resource->loadFromSamples(args...);
-                return resource;
-            });
-    }
-
-    template <typename T>
-    inline Loader<T>::Loader() = default;
 
     template <typename T>
     inline Loader<T>::~Loader() = default;
+
+    template <typename T>
+    inline Loader<T> Loader<T>::fromMemory(const void *data, szt size)
+    {
+        Loader<T> loader{
+            [=]() -> T *
+            {
+                auto resource = new T();
+                auto _ = resource->loadFromMemory(data, size);
+                return resource;
+            }};
+        return loader;
+    }
+
+    template <typename T>
+    inline Loader<T> Loader<T>::fromStream(sf::InputStream &stream)
+    {
+        Loader<T> loader{
+            [=]() -> T *
+            {
+                auto resource = new T();
+                auto _ = resource->loadFromStream(stream);
+                return resource;
+            }};
+        return loader;
+    }
+
+    template <typename T>
+    inline Loader<T> Loader<T>::fromFile(const std::filesystem::path &filename)
+    {
+        Loader<T> loader{
+            [=]() -> T *
+            {
+                auto resource = new T();
+                auto _ = resource->loadFromFile(filename);
+                return resource;
+            }};
+        return loader;
+    }
 
 }
 
