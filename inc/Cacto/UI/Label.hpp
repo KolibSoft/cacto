@@ -2,25 +2,16 @@
 #define CACTO_LABEL_HPP
 
 #include <Cacto/UI/Span.hpp>
-#include <Cacto/UI/AnchorLayout.hpp>
+#include <Cacto/UI/Block.hpp>
 
 namespace cacto
 {
 
     class CACTO_UI_API Label
-        : public virtual LeafNode,
-          public virtual DrawNode,
-          public virtual InflatableNode
+        : public Block
     {
 
     public:
-        using Anchor = Box::Anchor;
-
-        Node *const getParent() const override;
-
-        const Block &getBlock() const;
-        Block &getBlock();
-
         const Span &getSpan() const;
         Span &getSpan();
 
@@ -39,9 +30,6 @@ namespace cacto
         Label &operator=(const Label &other);
 
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
-
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f onCompact() override;
@@ -49,9 +37,9 @@ namespace cacto
         void onPlace(const sf::Vector2f &position) override;
 
     private:
-        Node* m_parent;
-        AnchorLayout m_frame;
         Span m_span;
+        Anchor m_hAnchor;
+        Anchor m_vAnchor;
     };
 
 }

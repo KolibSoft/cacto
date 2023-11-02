@@ -8,10 +8,7 @@
 
 #include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
-#include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/Span.hpp>
-#include <Cacto/UI/Label.hpp>
-
+#include <Cacto/UI/Figure.hpp>
 auto _ = false;
 
 enum Textures
@@ -26,19 +23,13 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    sf::Font font;
-    auto _ = font.loadFromFile("./res/Grandview.ttf");
+    textures.setLoadFromFile(SurfaceTexture, "res/fondo.png");
+    auto texture = textures.get(SurfaceTexture);
+    texture->setRepeated(true);
 
-    auto background = cacto::Surface::Rectangle;
-    background.setColor(sf::Color::Red);
-
-    cacto::Label root{font, "It Works"};
-    root.setBackground(&background);
-    root.setMargin(10);
-    root.getSpan().setOutlineThickness(10);
-    root.getSpan().setOutlineColor(sf::Color::Blue);
+    cacto::Figure root{*texture.get()};
+    root.setScale(cacto::Figure::Fit);
     root.setHorizontalAnchor(cacto::Box::Center);
-    root.setVerticalAnchor(cacto::Box::Center);
 
     while (window.isOpen())
     {
@@ -51,7 +42,7 @@ int main()
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
         root.compact();
-        root.inflate(sf::Vector2f(sf::Mouse::getPosition(window)));
+        root.inflate(sf::Vector2f(window.getSize()));
         root.place();
         window.clear(sf::Color::Black);
         window.draw(root);

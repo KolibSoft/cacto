@@ -15,8 +15,11 @@
 #include <Cacto/UI/Label.hpp>
 #include <Cacto/UI/Button.hpp>
 #include <Cacto/UI/Input.hpp>
+#include <Cacto/UI/Picture.hpp>
 #include <Cacto/UI/RowLayout.hpp>
 #include <Cacto/UI/ColumnLayout.hpp>
+
+auto _ = false;
 
 class Layout
     : public cacto::ColumnLayout,
@@ -52,37 +55,50 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     sf::Font font;
-    auto _ = font.loadFromFile("./res/Grandview.ttf");
+    _ = font.loadFromFile("./res/Grandview.ttf");
+
+    sf::Texture texture;
+    _ = texture.loadFromFile("res/fondo.png");
 
     auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
 
+    cacto::Picture picture{texture, cacto::Figure::Fit};
+    auto bgPicture = background;
+    bgPicture.setColor(sf::Color::Cyan);
+    picture.setBackground(&bgPicture);
+    picture.setFixedHeight(200);
+    picture.setMargin(10);
+    picture.setPadding(10);
+    picture.getFigure().setHorizontalAnchor(cacto::Box::Center);
+    picture.getFigure().setVerticalAnchor(cacto::Box::Center);
+
     cacto::Label label{font, "LABEL"};
     auto bgLabel = background;
     bgLabel.setColor(sf::Color::Blue);
-    label.getBlock().setBackground(&bgLabel);
-    // label.getBlock().setMaxWidth(0);
-    // label.getBlock().setMaxHeight(0);
-    label.getBlock().setMargin(10);
-    label.getBlock().setPadding(10);
+    label.setBackground(&bgLabel);
+    label.setMaxWidth(0);
+    label.setMaxHeight(0);
+    label.setMargin(10);
+    label.setPadding(10);
 
     cacto::Input input{font, "INPUT"};
     auto bgInput = background;
     bgInput.setColor(sf::Color::Green);
-    input.getBlock().setBackground(&bgInput);
-    // input.getBlock().setMaxWidth(0);
-    // input.getBlock().setMaxHeight(0);
-    input.getBlock().setMargin(10);
-    input.getBlock().setPadding(10);
+    input.setBackground(&bgInput);
+    input.setMaxWidth(0);
+    input.setMaxHeight(0);
+    input.setMargin(10);
+    input.setPadding(10);
 
     cacto::Button button{font, "BUTTON"};
     auto bgButton = background;
     bgButton.setColor(sf::Color::Magenta);
-    button.getBlock().setBackground(&bgButton);
-    // button.getBlock().setMaxWidth(0);
-    // button.getBlock().setMaxHeight(0);
-    button.getBlock().setMargin(10);
-    button.getBlock().setPadding(10);
+    button.setBackground(&bgButton);
+    button.setMaxWidth(0);
+    button.setMaxHeight(0);
+    button.setMargin(10);
+    button.setPadding(10);
     button.setOnClickListener([](auto &target, auto &event)
                               { std::cout << "Clicked\n"; });
 
@@ -92,9 +108,13 @@ int main()
     root.setPadding(10);
     root.setDirection(cacto::Layout::Reverse);
 
+    root.append(picture);
+    root.setHorizontalAnchor(picture, cacto::Box::Start);
+    root.setVerticalWeight(picture, 0.125);
+
     root.append(label);
     root.setHorizontalAnchor(label, cacto::Box::Start);
-    root.setVerticalWeight(label, 0.25);
+    root.setVerticalWeight(label, 0.125);
 
     root.append(input);
     root.setHorizontalAnchor(input, cacto::Box::Center);

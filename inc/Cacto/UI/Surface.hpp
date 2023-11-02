@@ -15,6 +15,8 @@ namespace sf
 namespace cacto
 {
 
+    class Geometry;
+
     class CACTO_UI_API Surface
         : public Box,
           public virtual LeafNode,
@@ -42,7 +44,7 @@ namespace cacto
 
         void update(bool force = false) const;
 
-        Surface(Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1, const sf::Color &color = sf::Color::White, sf::Texture *texture = nullptr);
+        Surface(Geometry &geometry, const sf::Color &color = sf::Color::White, const sf::Texture *texture = nullptr);
         virtual ~Surface();
 
         Surface(const Surface &other);
@@ -52,6 +54,9 @@ namespace cacto
         static const Surface Ellipse;
 
     protected:
+        sf::VertexArray& getArray() const;
+        void invalidate();
+
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;
 
@@ -68,15 +73,15 @@ namespace cacto
         Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
-        const sf::Texture *m_texutre;
+        const sf::Texture *m_texture;
         sf::FloatRect m_textureRect;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
 
-    Surface CACTO_UI_API colorSurface(const sf::Color &color, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
-    Surface CACTO_UI_API textureSurface(sf::Texture &texture, Geometry &geometry = Surface::Rectangle.getGeometry(), szt precision = 1);
+    Surface CACTO_UI_API colorSurface(const sf::Color &color);
+    Surface CACTO_UI_API textureSurface(const sf::Texture &texture, const sf::FloatRect &textureRect = {});
 
 }
 

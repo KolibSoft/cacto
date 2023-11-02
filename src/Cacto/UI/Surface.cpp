@@ -51,17 +51,17 @@ namespace cacto
 
     const sf::Texture *const Surface::getTexture() const
     {
-        return m_texutre;
+        return m_texture;
     }
 
     void Surface::setTexture(const sf::Texture *const value, bool resetRect)
     {
-        m_texutre = value;
+        m_texture = value;
         m_invalid = true;
         if (resetRect)
         {
             if (value)
-                setTextureRect({{0, 0}, sf::Vector2f(m_texutre->getSize())});
+                setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
             else
                 setTextureRect({{0, 0}, {0, 0}});
         }
@@ -87,18 +87,18 @@ namespace cacto
         }
     }
 
-    Surface::Surface(Geometry &geometry, szt precision, const sf::Color &color, sf::Texture *texture)
+    Surface::Surface(Geometry &geometry, const sf::Color &color, const sf::Texture *texture)
         : m_parent(),
           m_geometry(&geometry),
-          m_precision(precision),
+          m_precision(1),
           m_color(color),
-          m_texutre(texture),
+          m_texture(texture),
           m_textureRect(),
           m_invalid(true),
           m_array(sf::PrimitiveType::TriangleFan)
     {
-        if (m_texutre)
-            setTextureRect({{0, 0}, sf::Vector2f(m_texutre->getSize())});
+        if (m_texture)
+            setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
     }
 
     Surface::~Surface()
@@ -112,7 +112,7 @@ namespace cacto
           m_geometry(other.m_geometry),
           m_precision(other.m_precision),
           m_color(other.m_color),
-          m_texutre(other.m_texutre),
+          m_texture(other.m_texture),
           m_textureRect(other.m_textureRect),
           m_invalid(true),
           m_array(sf::PrimitiveType::TriangleFan)
@@ -124,7 +124,7 @@ namespace cacto
         m_geometry = other.m_geometry;
         m_precision = other.m_precision;
         m_color = other.m_color;
-        m_texutre = other.m_texutre;
+        m_texture = other.m_texture;
         m_textureRect = other.m_textureRect;
         m_invalid = true;
         m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
@@ -134,6 +134,16 @@ namespace cacto
     const Surface Surface::Rectangle{Rectangle::Identity};
 
     const Surface Surface::Ellipse{Ellipse::Identity};
+
+    sf::VertexArray &Surface::getArray() const
+    {
+        return m_array;
+    }
+
+    void Surface::invalidate()
+    {
+        m_invalid = true;
+    }
 
     void Surface::onAttach(Node &parent)
     {
@@ -147,10 +157,9 @@ namespace cacto
 
     void Surface::onUpdate() const
     {
-        if (m_geometry)
-            cacto::setPoints(m_array, *m_geometry, m_precision);
+        cacto::setPoints(m_array, *m_geometry, m_precision);
         cacto::setColor(m_array, m_color);
-        if (m_texutre)
+        if (m_texture)
             cacto::setTexCoords(m_array, m_textureRect);
         cacto::mapPositions(m_array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
     }
@@ -161,7 +170,7 @@ namespace cacto
         if (getWidth() > 0 && getHeight() > 0)
         {
             auto _states = states;
-            _states.texture = m_texutre;
+            _states.texture = m_texture;
             target.draw(m_array, _states);
         }
         DrawNode::onDraw(target, states);
@@ -190,19 +199,25 @@ namespace cacto
         m_invalid = true;
     }
 
-    Surface colorSurface(const sf::Color &color, Geometry &geometry, szt precision)
+    Surface colorSurface(const sf::Color &color)
     {
-        Surface surface{geometry};
+        auto surface = Surface::Rectangle;
         surface.setColor(color);
-        surface.setPrecision(precision);
         return surface;
     }
 
-    Surface textureSurface(sf::Texture &texture, Geometry &geometry, szt precision)
+    Surface textureSurface(const sf::Texture &texture, const sf::FloatRect &textureRect)
     {
-        Surface surface{geometry};
-        surface.setTexture(&texture);
-        surface.setPrecision(precision);
+        auto surface = Surface::Rectangle;
+        if (textureRect == sf::FloatRect{})
+        {
+            surface.setTexture(&texture, true);
+        }
+        else
+        {
+            surface.setTexture(&texture, false);
+            surface.setTextureRect(textureRect);
+        }
         return surface;
     }
 

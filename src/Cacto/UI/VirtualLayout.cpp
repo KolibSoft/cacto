@@ -84,37 +84,15 @@ namespace cacto
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
         if (getChildCount() > 0)
         {
-            auto contentBox = getContentBox();
-            sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            sf::Vector2f contentPosition{0, 0};
+            contentBox.setLeft(0);
+            contentBox.setTop(0);
             for (szt i = 0; i < getChildCount(); i++)
             {
                 auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
-                auto &childSize = holder->size;
-                auto _contentPosition = contentPosition;
-                switch (holder->hAnchor)
-                {
-                case Start:
-                    break;
-                case End:
-                    _contentPosition.x += contentSize.x - childSize.x;
-                    break;
-                case Center:
-                    _contentPosition.x += (contentSize.x - childSize.x) / 2;
-                    break;
-                }
-                switch (holder->vAnchor)
-                {
-                case Start:
-                    break;
-                case End:
-                    _contentPosition.y += contentSize.y - childSize.y;
-                    break;
-                case Center:
-                    _contentPosition.y += (contentSize.y - childSize.y) / 2;
-                    break;
-                }
-                InflatableNode::place(holder->child, _contentPosition);
+                auto _contentBox = contentBox;
+                _contentBox.setWidth(holder->size.x, holder->hAnchor);
+                _contentBox.setHeight(holder->size.y, holder->vAnchor);
+                InflatableNode::place(holder->child, {_contentBox.getLeft(), _contentBox.getTop()});
             }
         }
     }

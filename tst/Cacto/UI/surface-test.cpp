@@ -25,10 +25,10 @@ int main()
 
     textures.setLoadFromFile(SurfaceTexture, "res/fondo.png");
     auto texture = textures.get(SurfaceTexture);
+    texture->setRepeated(true);
 
-    auto root = cacto::Surface::Ellipse;
-    root.setPrecision(10);
-    root.setTexture(texture.get());
+    auto root = cacto::textureSurface(*texture.get());
+    root.setTextureRect({{-100, -100}, {1000, 1000}});
 
     while (window.isOpen())
     {
