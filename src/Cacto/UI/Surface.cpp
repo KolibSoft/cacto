@@ -87,7 +87,7 @@ namespace cacto
         }
     }
 
-    Surface::Surface(Geometry &geometry, const sf::Color &color, sf::Texture *texture)
+    Surface::Surface(Geometry &geometry, const sf::Color &color, const sf::Texture *texture)
         : m_parent(),
           m_geometry(&geometry),
           m_precision(1),
@@ -147,8 +147,7 @@ namespace cacto
 
     void Surface::onUpdate() const
     {
-        if (m_geometry)
-            cacto::setPoints(m_array, *m_geometry, m_precision);
+        cacto::setPoints(m_array, *m_geometry, m_precision);
         cacto::setColor(m_array, m_color);
         if (m_texture)
             cacto::setTexCoords(m_array, m_textureRect);
@@ -197,7 +196,7 @@ namespace cacto
         return surface;
     }
 
-    Surface textureSurface(sf::Texture &texture, const sf::FloatRect &textureRect)
+    Surface textureSurface(const sf::Texture &texture, const sf::FloatRect &textureRect)
     {
         auto surface = Surface::Rectangle;
         if (textureRect == sf::FloatRect{})
