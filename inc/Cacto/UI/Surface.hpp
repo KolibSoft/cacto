@@ -54,6 +54,9 @@ namespace cacto
         static const Surface Ellipse;
 
     protected:
+        sf::VertexArray& getArray() const;
+        void invalidate();
+
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;
 

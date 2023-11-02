@@ -28,7 +28,7 @@ int main()
     texture->setRepeated(true);
 
     cacto::Figure root{*texture.get()};
-    // root.setScale(cacto::Figure::Fit);
+    root.setScale(cacto::Figure::Crop);
 
     while (window.isOpen())
     {

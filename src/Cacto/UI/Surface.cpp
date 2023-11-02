@@ -135,6 +135,16 @@ namespace cacto
 
     const Surface Surface::Ellipse{Ellipse::Identity};
 
+    sf::VertexArray &Surface::getArray() const
+    {
+        return m_array;
+    }
+
+    void Surface::invalidate()
+    {
+        m_invalid = true;
+    }
+
     void Surface::onAttach(Node &parent)
     {
         m_parent = &parent;

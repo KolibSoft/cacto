@@ -1,139 +1,76 @@
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Texture.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/UI/Figure.hpp>
 
 namespace cacto
 {
 
-    Node *const Figure::getParent() const
+    Figure::Scale Figure::getScale() const
     {
-        return m_parent;
+        return m_scale;
     }
 
-    const sf::Texture &Figure::getTexture() const
+    void Figure::setScale(Scale value)
     {
-        return *m_texture;
+        m_scale = value;
+        invalidate();
     }
 
-    void Figure::setTexture(const sf::Texture &value, bool resetRect)
+    Figure::Figure(const sf::Texture &texture, Scale scale)
+        : Surface(Rectangle.getGeometry(), sf::Color::White, &texture),
+          m_scale(scale)
     {
-        m_texture = &value;
-        m_invalid = true;
-        if (resetRect)
-            setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
     }
 
-    const sf::FloatRect &Figure::getTextureRect() const
-    {
-        return m_textureRect;
-    }
-
-    void Figure::setTextureRect(const sf::FloatRect &value)
-    {
-        m_textureRect = value;
-        m_invalid = true;
-    }
-
-    void Figure::update(bool force) const
-    {
-        if (m_invalid || force)
-        {
-            onUpdate();
-            m_invalid = false;
-        }
-    }
-
-    Figure::Figure(const sf::Texture &texture)
-        : m_parent(),
-          m_texture(&texture),
-          m_textureRect(),
-          m_invalid(true),
-          m_array(sf::PrimitiveType::TriangleFan)
-    {
-        cacto::setPoints(m_array, Rectangle::Identity, 1);
-        cacto::setColor(m_array, sf::Color::White);
-        setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
-    }
-
-    Figure::~Figure()
-    {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
-    }
+    Figure::~Figure() = default;
 
     Figure::Figure(const Figure &other)
-        : m_parent(),
-          m_texture(other.m_texture),
-          m_textureRect(other.m_textureRect),
-          m_invalid(true),
-          m_array(sf::PrimitiveType::TriangleFan)
+        : Surface(other),
+          m_scale(other.m_scale)
     {
-        cacto::setPoints(m_array, Rectangle::Identity, 1);
-        cacto::setColor(m_array, sf::Color::White);
     }
 
     Figure &Figure::operator=(const Figure &other)
     {
-        m_texture = other.m_texture;
-        m_textureRect = other.m_textureRect;
-        m_invalid = true;
-        m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
-        cacto::setPoints(m_array, Rectangle::Identity, 1);
-        cacto::setColor(m_array, sf::Color::White);
+        Surface::operator=(other);
+        m_scale = other.m_scale;
         return *this;
-    }
-
-    void Figure::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Figure::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
     }
 
     void Figure::onUpdate() const
     {
-        cacto::setTexCoords(m_array, m_textureRect);
-        cacto::mapPositions(m_array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
-    }
-
-    void Figure::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        update();
-        if (getWidth() > 0 && getHeight() > 0)
+        auto &array = getArray();
+        cacto::setPoints(array, getGeometry(), getPrecision());
+        cacto::setColor(array, getColor());
+        switch (m_scale)
         {
-            auto _states = states;
-            _states.texture = m_texture;
-            target.draw(m_array, _states);
+        case Fill:
+        {
+            cacto::setTexCoords(array, getTextureRect());
+            cacto::mapPositions(array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
         }
-        DrawNode::onDraw(target, states);
-    }
-
-    sf::Vector2f Figure::onCompact()
-    {
-        setWidth(0);
-        setHeight(0);
-        m_invalid = true;
-        return {0, 0};
-    }
-
-    sf::Vector2f Figure::onInflate(const sf::Vector2f &containerSize)
-    {
-        setWidth(containerSize.x);
-        setHeight(containerSize.y);
-        m_invalid = true;
-        return containerSize;
-    }
-
-    void Figure::onPlace(const sf::Vector2f &position)
-    {
-        setLeft(position.x);
-        setTop(position.y);
-        m_invalid = true;
+        break;
+        case Fit:
+        {
+            auto textureRect = getTextureRect();
+            auto size = fitSize({textureRect.width, textureRect.height}, {getWidth(), getHeight()});
+            Box box{*this};
+            box.setWidth(size.x, Center);
+            box.setHeight(size.y, Center);
+            cacto::setTexCoords(array, textureRect);
+            cacto::mapPositions(array, {{box.getLeft(), box.getTop()}, {box.getWidth(), box.getHeight()}});
+        }
+        break;
+        case Crop:
+            auto textureRect = getTextureRect();
+            auto size = fitSize({getWidth(), getHeight()}, {textureRect.width, textureRect.height});
+            Box box{textureRect.left, textureRect.top, textureRect.width, textureRect.height};
+            box.setWidth(size.x, Center);
+            box.setHeight(size.y, Center);
+            cacto::setTexCoords(array, {{box.getLeft(), box.getTop()}, {box.getWidth(), box.getHeight()}});
+            cacto::mapPositions(array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
+            break;
+        }
     }
 
 }
