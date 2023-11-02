@@ -27,6 +27,8 @@ namespace cacto
         void setVerticalAnchor(Anchor value);
 
         Figure(const sf::Texture &texture, Scale scale = Fill);
+        Figure(sf::Texture &&texture, Scale scale = Fill) = delete;
+
         virtual ~Figure();
 
         Figure(const Figure &other);
