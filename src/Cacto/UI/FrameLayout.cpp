@@ -75,6 +75,11 @@ namespace cacto
         m_vAnchor = other.m_vAnchor;
         return *this;
     }
+    
+    const sf::Vector2f &FrameLayout::getChildSize() const
+    {
+        return m_childSize;
+    }
 
     void FrameLayout::onAppend(Node &child)
     {

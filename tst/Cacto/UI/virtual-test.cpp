@@ -44,8 +44,8 @@ int main()
                               { std::cout << "Clicked\n"; });
 
     root.append(button);
-    root.setHorizontalAnchor(button, cacto::Block::Center);
-    root.setVerticalAnchor(button, cacto::Block::Center);
+    root.setHorizontalAnchor(cacto::Block::Center);
+    root.setVerticalAnchor(cacto::Block::Center);
 
     // root.setMinWidth(300);
     // root.setMinHeight(300);

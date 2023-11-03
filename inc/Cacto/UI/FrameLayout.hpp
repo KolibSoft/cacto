@@ -31,6 +31,8 @@ namespace cacto
         FrameLayout &operator=(const FrameLayout &other);
 
     protected:
+        const sf::Vector2f& getChildSize() const;
+
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
 
