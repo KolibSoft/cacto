@@ -17,6 +17,8 @@ namespace cacto
 
     VirtualLayout::VirtualLayout()
         : FrameLayout(),
+          m_transformable(),
+          m_childPlace(),
           m_surface(Surface::Rectangle),
           m_texture()
     {
@@ -27,6 +29,8 @@ namespace cacto
 
     VirtualLayout::VirtualLayout(const VirtualLayout &other)
         : FrameLayout(other),
+          m_transformable(other.m_transformable),
+          m_childPlace(),
           m_surface(other.m_surface),
           m_texture()
     {
@@ -35,8 +39,14 @@ namespace cacto
     VirtualLayout &VirtualLayout::operator=(const VirtualLayout &other)
     {
         FrameLayout::operator=(other);
+        m_transformable = other.m_transformable;
         m_surface = other.m_surface;
         return *this;
+    }
+
+    const sf::Vector2f &VirtualLayout::getChildPlace() const
+    {
+        return m_childPlace;
     }
 
     void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -91,7 +101,8 @@ namespace cacto
             contentBox.setTop(0);
             contentBox.setWidth(childSize.x, getHorizontalAnchor());
             contentBox.setHeight(childSize.y, getVerticalAnchor());
-            InflatableNode::place(*child, {contentBox.getLeft(), contentBox.getTop()});
+            m_childPlace = {contentBox.getLeft(), contentBox.getTop()};
+            InflatableNode::place(*child, m_childPlace);
         }
     }
 
