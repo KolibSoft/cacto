@@ -60,8 +60,6 @@ int main()
     auto bgLabel = background;
     bgLabel.setColor(sf::Color::Blue);
     label.setBackground(&bgLabel);
-    label.setMaxWidth(0);
-    label.setMaxHeight(0);
     label.setMargin(10);
     label.setPadding(10);
 
@@ -69,8 +67,6 @@ int main()
     auto bgInput = background;
     bgInput.setColor(sf::Color::Green);
     input.setBackground(&bgInput);
-    input.setMaxWidth(0);
-    input.setMaxHeight(0);
     input.setMargin(10);
     input.setPadding(10);
 
@@ -78,8 +74,6 @@ int main()
     auto bgButton = background;
     bgButton.setColor(sf::Color::Magenta);
     button.setBackground(&bgButton);
-    button.setMaxWidth(0);
-    button.setMaxHeight(0);
     button.setMargin(10);
     button.setPadding(10);
     button.setOnClickListener([](auto &target, auto &event)
