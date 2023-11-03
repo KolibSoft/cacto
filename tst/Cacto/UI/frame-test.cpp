@@ -10,12 +10,12 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/AnchorLayout.hpp>
+#include <Cacto/UI/FrameLayout.hpp>
 
 auto _ = false;
 
 class Frame
-    : public cacto::AnchorLayout,
+    : public cacto::FrameLayout,
       public virtual cacto::EventNode
 {
 
@@ -82,8 +82,8 @@ auto makeFrame(const sf::Color &color, cacto::Node &node, cacto::Box::Anchor hAn
     Frame frame{};
     frame.background.setColor(color);
     frame.append(node);
-    frame.setHorizontalAnchor(node, hAnchor);
-    frame.setVerticalAnchor(node, vAnchor);
+    frame.setHorizontalAnchor(hAnchor);
+    frame.setVerticalAnchor(vAnchor);
     frame.setMargin(10);
     frame.setPadding(10);
     return frame;

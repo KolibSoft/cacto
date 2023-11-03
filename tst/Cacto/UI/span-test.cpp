@@ -44,8 +44,8 @@ int main()
     root.setBackground(&background);
     root.setMargin(10);
     root.append(span);
-    root.setHorizontalAnchor(span, cacto::FrameLayout::Center);
-    root.setVerticalAnchor(span, cacto::FrameLayout::Center);
+    root.setHorizontalAnchor(cacto::FrameLayout::Center);
+    root.setVerticalAnchor(cacto::FrameLayout::Center);
 
     while (window.isOpen())
     {

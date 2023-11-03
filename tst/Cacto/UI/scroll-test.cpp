@@ -10,7 +10,7 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
-#include <Cacto/UI/VirtualLayout.hpp>
+#include <Cacto/UI/ScrollLayout.hpp>
 #include <Cacto/UI/Button.hpp>
 
 auto _ = false;
@@ -26,7 +26,7 @@ int main()
     auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
 
-    cacto::VirtualLayout root{};
+    cacto::ScrollLayout root{};
     root.setBackground(&background);
     root.setMargin(10);
     root.setPadding(10);
@@ -36,9 +36,11 @@ int main()
     bgBlock.setColor(sf::Color::Blue);
     button.setBackground(&bgBlock);
     button.setMargin(10);
-    button.setFixedWidth(0);
-    button.setFixedHeight(0);
+    button.setFixedWidth(400);
+    button.setFixedHeight(400);
     button.setPadding(10);
+    button.setHorizontalAnchor(cacto::Box::Center);
+    button.setVerticalAnchor(cacto::Box::Center);
 
     button.setOnClickListener([](auto &node, auto &event)
                               { std::cout << "Clicked\n"; });
@@ -47,8 +49,8 @@ int main()
     root.setHorizontalAnchor(cacto::Block::Center);
     root.setVerticalAnchor(cacto::Block::Center);
 
-    // root.setMinWidth(300);
-    // root.setMinHeight(300);
+    root.setFixedWidth(300);
+    root.setFixedHeight(300);
 
     while (window.isOpen())
     {
@@ -61,12 +63,11 @@ int main()
                     window.close();
                 if (event.type == sf::Event::Resized)
                     window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
-                if (event.type == sf::Event::MouseWheelScrolled)
-                    root.getTransformable().move({0, event.mouseWheelScroll.delta * 5});
             }
         }
         root.compact();
-        root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
+        // root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
+        root.inflate(sf::Vector2f{window.getSize()});
         root.place();
         window.clear(sf::Color::Black);
         window.draw(root);
