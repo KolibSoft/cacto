@@ -63,15 +63,15 @@ int main()
     auto background = cacto::Surface::Rectangle;
     background.setColor(sf::Color::Red);
 
-    cacto::Picture picture{texture, cacto::Figure::Fit};
+    cacto::Picture picture{texture, cacto::Picture::Fit};
     auto bgPicture = background;
     bgPicture.setColor(sf::Color::Cyan);
     picture.setBackground(&bgPicture);
     picture.setFixedHeight(200);
     picture.setMargin(10);
     picture.setPadding(10);
-    picture.getFigure().setHorizontalAnchor(cacto::Box::Center);
-    picture.getFigure().setVerticalAnchor(cacto::Box::Center);
+    picture.setHorizontalAnchor(cacto::Box::Center);
+    picture.setVerticalAnchor(cacto::Box::Center);
 
     cacto::Label label{font, "LABEL"};
     auto bgLabel = background;
