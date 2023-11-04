@@ -12,20 +12,16 @@
 
 auto _ = false;
 
-enum Textures
-{
-    SurfaceTexture
-};
-
-cacto::Loader<sf::Texture> textures;
+namespace R {
+    auto texture = cacto::Loader<sf::Texture>::fromFile("res/fondo.png");
+}
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    textures.setLoadFromFile(SurfaceTexture, "res/fondo.png");
-    auto texture = textures.get(SurfaceTexture);
+    auto texture = R::texture.get();
     texture->setRepeated(true);
 
     cacto::Picture root{*texture.get()};
@@ -33,9 +29,9 @@ int main()
     root.setBackground(&background);
     root.setMargin(10);
     root.setPadding(10);
-    root.getFigure().setScale(cacto::Figure::Crop);
-    root.getFigure().setHorizontalAnchor(cacto::Box::Center);
-    root.getFigure().setVerticalAnchor(cacto::Box::Center);
+    root.setScale(cacto::Picture::Fit);
+    root.setHorizontalAnchor(cacto::Box::Center);
+    root.setVerticalAnchor(cacto::Box::Center);
 
     while (window.isOpen())
     {

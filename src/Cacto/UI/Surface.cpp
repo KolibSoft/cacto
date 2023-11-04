@@ -161,7 +161,7 @@ namespace cacto
         cacto::setColor(m_array, m_color);
         if (m_texture)
             cacto::setTexCoords(m_array, m_textureRect);
-        cacto::mapPositions(m_array, {{getLeft(), getTop()}, {getWidth(), getHeight()}});
+        cacto::mapPositions(m_array, *this);
     }
 
     void Surface::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const

@@ -8,63 +8,63 @@ namespace cacto
 
     f32t Box::getLeft() const
     {
-        return m_left;
+        return m_rect.left;
     }
 
     void Box::setLeft(f32t value, bool resize)
     {
         if (resize)
         {
-            m_width += m_left - value;
+            m_rect.width += m_rect.left - value;
         }
-        m_left = value;
+        m_rect.left = value;
     }
 
     f32t Box::getRight() const
     {
-        return m_left + m_width;
+        return m_rect.left + m_rect.width;
     }
 
     void Box::setRight(f32t value, bool resize)
     {
         if (resize)
         {
-            m_width = value - m_left;
+            m_rect.width = value - m_rect.left;
         }
-        m_left = value - m_width;
+        m_rect.left = value - m_rect.width;
     }
 
     f32t Box::getTop() const
     {
-        return m_top;
+        return m_rect.top;
     }
 
     void Box::setTop(f32t value, bool resize)
     {
         if (resize)
         {
-            m_height += m_top - value;
+            m_rect.height += m_rect.top - value;
         }
-        m_top = value;
+        m_rect.top = value;
     }
 
     f32t Box::getBottom() const
     {
-        return m_top + m_height;
+        return m_rect.top + m_rect.height;
     }
 
     void Box::setBottom(f32t value, bool resize)
     {
         if (resize)
         {
-            m_height = value - m_top;
+            m_rect.height = value - m_rect.top;
         }
-        m_top = value - m_height;
+        m_rect.top = value - m_rect.height;
     }
 
     f32t Box::getWidth() const
     {
-        return m_width;
+        return m_rect.width;
     }
 
     void Box::setWidth(f32t value, Anchor anchor)
@@ -74,18 +74,18 @@ namespace cacto
         case Start:
             break;
         case End:
-            m_left -= value - m_width;
+            m_rect.left -= value - m_rect.width;
             break;
         case Center:
-            m_left -= (value - m_width) / 2;
+            m_rect.left -= (value - m_rect.width) / 2;
             break;
         }
-        m_width = value;
+        m_rect.width = value;
     }
 
     f32t Box::getHeight() const
     {
-        return m_height;
+        return m_rect.height;
     }
 
     void Box::setHeight(f32t value, Anchor anchor)
@@ -95,55 +95,45 @@ namespace cacto
         case Start:
             break;
         case End:
-            m_top -= value - m_height;
+            m_rect.top -= value - m_rect.height;
             break;
         case Center:
-            m_top -= (value - m_height) / 2;
+            m_rect.top -= (value - m_rect.height) / 2;
             break;
         }
-        m_height = value;
+        m_rect.height = value;
     }
 
     void Box::shrink(const Thickness &thickness)
     {
-        m_left += thickness.left;
-        m_top += thickness.top;
-        m_width -= thickness.getHorizontal();
-        m_height -= thickness.getVertical();
+        m_rect.left += thickness.left;
+        m_rect.top += thickness.top;
+        m_rect.width -= thickness.getHorizontal();
+        m_rect.height -= thickness.getVertical();
     }
 
     void Box::expand(const Thickness &thickness)
     {
-        m_left -= thickness.left;
-        m_top -= thickness.top;
-        m_width += thickness.getHorizontal();
-        m_height += thickness.getVertical();
-    }
-
-    sf::FloatRect Box::getBounds() const
-    {
-        sf::FloatRect bounds({m_top, m_left}, {m_width, m_height});
-        return bounds;
+        m_rect.left -= thickness.left;
+        m_rect.top -= thickness.top;
+        m_rect.width += thickness.getHorizontal();
+        m_rect.height += thickness.getVertical();
     }
 
     bool Box::contains(const sf::Vector2f &point) const
     {
-        return point.x >= m_left && point.x <= (m_left + m_width) && point.y >= m_top && point.y <= (m_top + m_height);
+        auto result = m_rect.contains(point);
+        return result;
     }
 
-    Box::Box(f32t width, f32t height)
-        : m_left(0), m_top(0), m_width(width), m_height(height)
+    Box::Box(const sf::FloatRect &rect)
+        : m_rect(rect)
     {
     }
 
-    Box::Box(f32t left, f32t top, f32t width, f32t height)
-        : m_left(left), m_top(top), m_width(width), m_height(height)
+    Box::operator const sf::FloatRect &() const
     {
-    }
-
-    Box::Box()
-        : Box(0, 0)
-    {
+        return m_rect;
     }
 
     Box::~Box()

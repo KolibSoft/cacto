@@ -41,19 +41,15 @@ namespace cacto
         void shrink(const Thickness &thickness);
         void expand(const Thickness &thickness);
 
-        sf::FloatRect getBounds() const;
         bool contains(const sf::Vector2f &point) const;
 
-        Box(f32t width, f32t height);
-        Box(f32t left, f32t top, f32t width, f32t height);
-        Box();
+        Box(const sf::FloatRect &rect = {});
+        operator const sf::FloatRect &() const;
+
         virtual ~Box();
 
     private:
-        f32t m_left;
-        f32t m_top;
-        f32t m_width;
-        f32t m_height;
+        sf::FloatRect m_rect;
     };
 
 }

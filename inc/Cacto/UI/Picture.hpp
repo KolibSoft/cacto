@@ -1,7 +1,7 @@
 #ifndef CACTO_PICTURE_HPP
 #define CACTO_PICTURE_HPP
 
-#include <Cacto/UI/Figure.hpp>
+#include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
 
 namespace cacto
@@ -12,11 +12,30 @@ namespace cacto
     {
 
     public:
-        const Figure &getFigure() const;
-        Figure &getFigure();
+        enum Scale
+        {
+            Fill,
+            Fit,
+            Crop
+        };
 
-        Picture(const sf::Texture &texture, Figure::Scale scale = Figure::Fill);
-        Picture(sf::Texture &&texture, Figure::Scale scale = Figure::Fill) = delete;
+        Scale getScale() const;
+        void setScale(Scale value);
+
+        const sf::FloatRect& getTextureRect() const;
+        void setTextureRect(const sf::FloatRect& value);
+
+        Anchor getHorizontalAnchor() const;
+        void setHorizontalAnchor(Anchor value);
+
+        Anchor getVerticalAnchor() const;
+        void setVerticalAnchor(Anchor value);
+
+        const Surface &getSurface() const;
+        Surface &getSurface();
+
+        Picture(const sf::Texture &texture, Scale scale = Fill);
+        Picture(sf::Texture &&texture, Scale scale = Fill) = delete;
 
         virtual ~Picture();
 
@@ -31,7 +50,11 @@ namespace cacto
         void onPlace(const sf::Vector2f &position) override;
 
     private:
-        Figure m_figure;
+        Surface m_surface;
+        Scale m_scale;
+        sf::FloatRect m_textureRect;
+        Anchor m_hAnchor;
+        Anchor m_vAnchor;
     };
 
 }
