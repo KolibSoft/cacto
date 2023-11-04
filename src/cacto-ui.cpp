@@ -16,3 +16,4 @@
 #include "Cacto/UI/AnchorLayout.cpp"
 #include "Cacto/UI/RowLayout.cpp"
 #include "Cacto/UI/ColumnLayout.cpp"
+#include "Cacto/UI/UIRoot.cpp"
