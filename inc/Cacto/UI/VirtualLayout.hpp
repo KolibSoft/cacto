@@ -9,8 +9,7 @@ namespace cacto
 {
 
     class CACTO_UI_API VirtualLayout
-        : public FrameLayout,
-          public EventNode
+        : public FrameLayout
     {
 
     public:

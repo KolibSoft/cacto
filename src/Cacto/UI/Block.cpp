@@ -152,6 +152,12 @@ namespace cacto
             DrawNode::draw(*m_background, target, states);
     }
 
+    void Block::eventBlock(const sf::Event &event)
+    {
+        if (m_background)
+            EventNode::event(*m_background, event);
+    }
+
     sf::Vector2f Block::compactBlock(const sf::Vector2f &contentSize)
     {
         auto hMargin = m_margin.getHorizontal();
@@ -202,6 +208,13 @@ namespace cacto
     void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
+    }
+
+    bool Block::onEvent(const sf::Event &event)
+    {
+        eventBlock(event);
+        auto handled = eventChildren(event);
+        return handled;
     }
 
     sf::Vector2f Block::onCompact()

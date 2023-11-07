@@ -4,6 +4,7 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/Thickness.hpp>
 #include <Cacto/UI/Box.hpp>
 #include <Cacto/UI/InflatableNode.hpp>
@@ -20,6 +21,7 @@ namespace cacto
         : public Box,
           public virtual LeafNode,
           public virtual DrawNode,
+          public virtual EventNode,
           public virtual InflatableNode
     {
 
@@ -61,6 +63,7 @@ namespace cacto
 
     protected:
         void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
+        void eventBlock(const sf::Event& event);
         sf::Vector2f compactBlock(const sf::Vector2f &contentSize);
         sf::Vector2f inflateBlock(const sf::Vector2f &containerSize);
         void placeBlock(const sf::Vector2f &position);
@@ -69,6 +72,8 @@ namespace cacto
         void onDetach(Node &parent) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        
+        bool onEvent(const sf::Event& event) override;
 
         sf::Vector2f onCompact() override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
