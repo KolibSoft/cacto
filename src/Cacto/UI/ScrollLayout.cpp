@@ -1,3 +1,4 @@
+#include <SFML/Window/Event.hpp>
 #include <Cacto/UI/ScrollLayout.hpp>
 
 namespace cacto
