@@ -6,7 +6,6 @@ namespace cacto
 
     ScrollLayout::ScrollLayout()
         : VirtualLayout(),
-          m_scroll(),
           m_hovered(false),
           m_shift(false)
     {
@@ -16,7 +15,6 @@ namespace cacto
 
     ScrollLayout::ScrollLayout(const ScrollLayout &other)
         : VirtualLayout(other),
-          m_scroll(other.m_scroll),
           m_hovered(false),
           m_shift(false)
     {
@@ -25,8 +23,28 @@ namespace cacto
     ScrollLayout &ScrollLayout::operator=(const ScrollLayout &other)
     {
         VirtualLayout::operator=(other);
-        m_scroll = other.m_scroll;
         return *this;
+    }
+
+    bool ScrollLayout::canScroll(f32t delta) const
+    {
+        auto contentBox = getContentBox();
+        auto childSize = getChildSize();
+        if (!m_shift && contentBox.getHeight() < childSize.y)
+        {
+            auto childPlace = getChildPlace();
+            childPlace.y += getTransformable().getPosition().y + delta;
+            auto result = childPlace.y < 0 && childPlace.y + childSize.y > contentBox.getHeight();
+            return result;
+        }
+        if (m_shift && contentBox.getWidth() < childSize.x)
+        {
+            auto childPlace = getChildPlace();
+            childPlace.x += getTransformable().getPosition().x + delta;
+            auto result = childPlace.x < 0 && childPlace.x + childSize.x > contentBox.getWidth();
+            return result;
+        }
+        return false;
     }
 
     bool ScrollLayout::onEvent(const sf::Event &event)
@@ -37,7 +55,7 @@ namespace cacto
             m_shift = event.key.shift;
         if (VirtualLayout::onEvent(event))
             return true;
-        if (event.type == sf::Event::MouseWheelScrolled && m_hovered)
+        if (event.type == sf::Event::MouseWheelScrolled && m_hovered && canScroll(event.mouseWheelScroll.delta * 5))
         {
             onScroll(event);
             return true;
@@ -47,30 +65,10 @@ namespace cacto
 
     void ScrollLayout::onScroll(const sf::Event &event)
     {
-        auto childSize = getChildSize();
-        auto contentBox = getContentBox();
-        if (!m_shift && contentBox.getHeight() < childSize.y)
-        {
-            auto childPlace = getChildPlace();
-            auto delta = event.mouseWheelScroll.delta;
-            childPlace.y += m_scroll.y + delta;
-            if (childPlace.y < 0 && childPlace.y + childSize.y > contentBox.getHeight())
-            {
-                m_scroll.y += delta;
-                getTransformable().setPosition(m_scroll);
-            }
-        }
-        if (m_shift && contentBox.getWidth() < childSize.x)
-        {
-            auto childPlace = getChildPlace();
-            auto delta = event.mouseWheelScroll.delta;
-            childPlace.x += m_scroll.x + delta;
-            if (childPlace.x < 0 && childPlace.x + childSize.x > contentBox.getWidth())
-            {
-                m_scroll.x += delta;
-                getTransformable().setPosition(m_scroll);
-            }
-        }
+        if (m_shift)
+            getTransformable().move({event.mouseWheelScroll.delta * 5, 0});
+        else
+            getTransformable().move({0, event.mouseWheelScroll.delta * 5});
     }
 
 }

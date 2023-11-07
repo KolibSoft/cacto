@@ -20,6 +20,13 @@ namespace cacto
 
     void Block::setBackground(Node *const value)
     {
+        Node* current = this;
+        while (current)
+        {
+            if (current == value)
+                throw std::runtime_error("The background is its own block ancestor");
+            current = current->getParent();
+        }
         m_background = value;
     }
 

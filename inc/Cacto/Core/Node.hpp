@@ -19,23 +19,14 @@ namespace cacto
         virtual ~Node() = default;
 
         static void link(Node &parent, Node &child);
-        static void link(Node &&parent, Node &&child) = delete;
-
         static void unlink(Node &parent, Node &child);
-        static void unlink(Node &&parent, Node &&child) = delete;
 
     protected:
-        virtual void onAppend(Node &child) = 0;
-        virtual void onAppend(Node &&child) = delete;
-
-        virtual void onRemove(Node &child) = 0;
-        virtual void onRemove(Node &&child) = delete;
-
         virtual void onAttach(Node &parent) = 0;
-        virtual void onAttach(Node &&parent) = delete;
-
         virtual void onDetach(Node &parent) = 0;
-        virtual void onDetach(Node &&parent) = delete;
+
+        virtual void onAppend(Node &child) = 0;
+        virtual void onRemove(Node &child) = 0;
     };
 
 }

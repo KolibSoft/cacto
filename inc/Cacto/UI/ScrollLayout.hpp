@@ -20,12 +20,13 @@ namespace cacto
         ScrollLayout &operator=(const ScrollLayout &other);
 
     protected:
+        bool canScroll(f32t delta) const;
+
         bool onEvent(const sf::Event &event) override;
 
         void onScroll(const sf::Event &event) override;
 
     private:
-        sf::Vector2f m_scroll;
         bool m_hovered;
         bool m_shift;
     };

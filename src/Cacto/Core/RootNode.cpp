@@ -9,10 +9,6 @@ namespace cacto
         return nullptr;
     }
 
-    RootNode::RootNode() = default;
-
-    RootNode::~RootNode() = default;
-
     void RootNode::onAttach(Node& parent)
     {
         throw std::runtime_error("Root nodes can not be holded");

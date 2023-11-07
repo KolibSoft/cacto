@@ -14,8 +14,8 @@ namespace cacto
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
-        LeafNode();
-        virtual ~LeafNode();
+        LeafNode() = default;
+        virtual ~LeafNode() = default;
 
     protected:
         void onAppend(Node &child) override;

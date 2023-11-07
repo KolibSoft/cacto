@@ -13,8 +13,8 @@ namespace cacto
     public:
         Node *const getParent() const override;
 
-        RootNode();
-        virtual ~RootNode();
+        RootNode() = default;
+        virtual ~RootNode() = default;
 
     protected:
         void onAttach(Node &parent) override;

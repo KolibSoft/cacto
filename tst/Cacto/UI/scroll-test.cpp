@@ -31,6 +31,13 @@ int main()
     root.setMargin(10);
     root.setPadding(10);
 
+    cacto::ScrollLayout subscroll{};
+    auto bgSubscroll = background;
+    bgSubscroll.setColor(sf::Color::Yellow);
+    subscroll.setBackground(&bgSubscroll);
+    subscroll.setMargin(10);
+    subscroll.setPadding(10);
+
     cacto::Button button{font, "It Works"};
     auto bgBlock = background;
     bgBlock.setColor(sf::Color::Blue);
@@ -45,12 +52,17 @@ int main()
     button.setOnClickListener([](auto &node, auto &event)
                               { std::cout << "Clicked\n"; });
 
-    root.append(button);
+    subscroll.append(button);
+    subscroll.setHorizontalAnchor(cacto::Block::Center);
+    subscroll.setVerticalAnchor(cacto::Block::Center);
+    subscroll.setFixedWidth(300);
+    subscroll.setFixedHeight(300);
+
+    root.append(subscroll);
     root.setHorizontalAnchor(cacto::Block::Center);
     root.setVerticalAnchor(cacto::Block::Center);
-
-    root.setFixedWidth(300);
-    root.setFixedHeight(300);
+    root.setFixedWidth(200);
+    root.setFixedHeight(200);
 
     while (window.isOpen())
     {

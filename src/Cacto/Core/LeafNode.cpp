@@ -14,10 +14,6 @@ namespace cacto
         return nullptr;
     }
 
-    LeafNode::LeafNode() = default;
-
-    LeafNode::~LeafNode() = default;
-
     void LeafNode::onAppend(Node &child)
     {
         throw std::runtime_error("Leaf nodes can not hold children");
