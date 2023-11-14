@@ -31,34 +31,34 @@ namespace cacto
         return nullptr;
     }
 
-    void Dimension::append(Collisionable &body, const Trace &trace)
+    void Dimension::append(Collisionable &collisionable, const Trace &trace)
     {
         Holder holder;
-        holder.body = &body;
+        holder.collisionable = &collisionable;
         holder.trace = &trace;
         append(holder);
     }
 
-    void Dimension::collisions(Collisionable &body, const Trace &trace)
+    void Dimension::collisions(Collisionable &collisionable, const Trace &trace)
     {
         Holder holder;
-        holder.body = &body;
+        holder.collisionable = &collisionable;
         holder.trace = &trace;
         collisions(holder);
     }
 
-    void Dimension::collisionsChildren(Collisionable &body, const Trace &trace)
+    void Dimension::collisionsChildren(Collisionable &collisionable, const Trace &trace)
     {
         Holder holder;
-        holder.body = &body;
+        holder.collisionable = &collisionable;
         holder.trace = &trace;
         collisionsChildren(holder);
     }
 
-    Dimension &Dimension::locateCollisions(Collisionable &body, const Trace &trace)
+    Dimension &Dimension::locateCollisions(Collisionable &collisionable, const Trace &trace)
     {
         Holder holder;
-        holder.body = &body;
+        holder.collisionable = &collisionable;
         holder.trace = &trace;
         auto &target = Dimension::locateCollisions(*this, holder);
         return target;
@@ -199,8 +199,8 @@ namespace cacto
         {
             if (holder.trace->checkCollision(*_holder.trace))
             {
-                holder.body->collision(*_holder.body);
-                _holder.body->collision(*holder.body);
+                holder.collisionable->collision(*_holder.collisionable);
+                _holder.collisionable->collision(*holder.collisionable);
             }
         }
     }

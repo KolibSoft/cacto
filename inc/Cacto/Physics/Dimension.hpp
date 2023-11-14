@@ -23,12 +23,12 @@ namespace cacto
         bool hasZone(const sf::FloatRect &zone) const;
         Dimension *const locate(const sf::FloatRect &zone) const;
 
-        void append(Collisionable &body, const Trace &trace);
+        void append(Collisionable &collisionable, const Trace &trace);
 
-        void collisions(Collisionable &body, const Trace &trace);
-        void collisionsChildren(Collisionable &body, const Trace &trace);
+        void collisions(Collisionable &collisionable, const Trace &trace);
+        void collisionsChildren(Collisionable &collisionable, const Trace &trace);
 
-        Dimension &locateCollisions(Collisionable &body, const Trace &trace);
+        Dimension &locateCollisions(Collisionable &collisionable, const Trace &trace);
 
         bool isEmpty() const;
         void clean();
@@ -62,7 +62,7 @@ namespace cacto
 
         struct Holder
         {
-            Collisionable *body;
+            Collisionable *collisionable;
             const Trace *trace;
         };
     };
