@@ -24,6 +24,10 @@ int main()
         {400, 300},
     }};
 
+    cacto::Rectangle rectangle{{100, 10}, {100, 100}};
+    cacto::Ellipse ellipse{{200, 200}, {100, 50}};
+    cacto::Triangle triangle{{300, 300}, {400, 350}, {350, 400}};
+
     cacto::LineViewer viewer{};
 
     while (window.isOpen())
@@ -40,11 +44,31 @@ int main()
         viewer.setLine(&straight);
         viewer.setPrecision(1);
         viewer.setColor(sf::Color::Red);
+        viewer.setClosed(false);
         window.draw(viewer);
 
         viewer.setLine(&bezier);
-        viewer.setPrecision(5);
+        viewer.setPrecision(1);
         viewer.setColor(sf::Color::Green);
+        viewer.setClosed(false);
+        window.draw(viewer);
+
+        viewer.setLine(&rectangle);
+        viewer.setPrecision(1);
+        viewer.setColor(sf::Color::Blue);
+        viewer.setClosed(true);
+        window.draw(viewer);
+
+        viewer.setLine(&ellipse);
+        viewer.setPrecision(1);
+        viewer.setColor(sf::Color::Yellow);
+        viewer.setClosed(true);
+        window.draw(viewer);
+
+        viewer.setLine(&triangle);
+        viewer.setPrecision(1);
+        viewer.setColor(sf::Color::Cyan);
+        viewer.setClosed(true);
         window.draw(viewer);
 
         window.display();
