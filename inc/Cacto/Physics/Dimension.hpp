@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/Drawable.hpp>
 #include <Cacto/Physics/Export.hpp>
 
 namespace cacto
@@ -15,7 +14,6 @@ namespace cacto
     class Dimension;
 
     class CACTO_PHYSICS_API Dimension
-        : public virtual sf::Drawable
     {
 
     public:
@@ -41,9 +39,6 @@ namespace cacto
         Dimension(const Dimension &other);
         Dimension &operator=(const Dimension &other);
 
-    protected:
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
     private:
         struct Holder;
 
@@ -62,9 +57,6 @@ namespace cacto
         Dimension *m_topRight;
         Dimension *m_bottomLeft;
         Dimension *m_bottomRight;
-
-        mutable bool m_invalid;
-        mutable sf::VertexArray m_array;
 
         static Dimension &locateCollisions(Dimension &dimension, const Holder &holder);
 

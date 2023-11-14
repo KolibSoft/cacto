@@ -3,6 +3,7 @@
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Physics/Collisionable.hpp>
+#include <Cacto/Physics/Trace.hpp>
 #include <Cacto/Physics/Dimension.hpp>
 
 namespace cacto
@@ -97,9 +98,7 @@ namespace cacto
     Dimension::Dimension(const sf::FloatRect &zone, szt capacity)
         : m_zone(zone), m_capacity(capacity), m_holders(), m_subdimensions(false),
           m_topLeft(nullptr), m_topRight(nullptr),
-          m_bottomLeft(nullptr), m_bottomRight(nullptr),
-          m_invalid(true),
-          m_array()
+          m_bottomLeft(nullptr), m_bottomRight(nullptr)
     {
         if (capacity < 1)
             capacity = 1;
@@ -120,9 +119,7 @@ namespace cacto
     Dimension::Dimension(const Dimension &other)
         : m_zone(other.m_zone), m_capacity(other.m_capacity), m_holders(), m_subdimensions(false),
           m_topLeft(nullptr), m_topRight(nullptr),
-          m_bottomLeft(nullptr), m_bottomRight(nullptr),
-          m_invalid(true),
-          m_array()
+          m_bottomLeft(nullptr), m_bottomRight(nullptr)
     {
     }
 
@@ -138,30 +135,7 @@ namespace cacto
             delete m_bottomRight;
             m_subdimensions = false;
         }
-        m_invalid = true;
         return *this;
-    }
-
-    void Dimension::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_invalid)
-        {
-            m_array.setPrimitiveType(sf::PrimitiveType::LineStrip);
-            setPoints(m_array, Rectangle({m_zone.left, m_zone.top}, {m_zone.width, m_zone.height}));
-            m_array.append(m_array[0]);
-            setColor(m_array, sf::Color::Magenta);
-            target.draw(m_array, states);
-            m_invalid = false;
-        }
-        if (m_subdimensions)
-        {
-            m_topLeft->draw(target, states);
-            m_topRight->draw(target, states);
-            m_bottomLeft->draw(target, states);
-            m_bottomRight->draw(target, states);
-        }
-        for (auto &holder : m_holders)
-            target.draw(*holder.trace, states);
     }
 
     void Dimension::append(const Holder &holder)
