@@ -1,4 +1,4 @@
-#include <Cacto/Collisions/CollisionNode.hpp>
+#include <Cacto/Physics/CollisionNode.hpp>
 
 namespace cacto
 {

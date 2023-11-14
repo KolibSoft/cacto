@@ -3,14 +3,14 @@
 
 #include <SFML/Graphics/Transform.hpp>
 #include <Cacto/Core/Node.hpp>
-#include <Cacto/Collisions/Export.hpp>
+#include <Cacto/Physics/Export.hpp>
 
 namespace cacto
 {
 
     class Dimension;
 
-    class CACTO_COLLISIONS_API CollisionNode
+    class CACTO_PHYSICS_API CollisionNode
         : public virtual Node
     {
 

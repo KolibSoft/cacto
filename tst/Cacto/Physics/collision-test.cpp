@@ -10,9 +10,10 @@
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
-#include <Cacto/Collisions/Body.hpp>
-#include <Cacto/Collisions/CollisionNode.hpp>
-#include <Cacto/Collisions/Dimension.hpp>
+#include <Cacto/Physics/Collisionable.hpp>
+#include <Cacto/Physics/CollisionNode.hpp>
+#include <Cacto/Physics/Dimension.hpp>
+#include <Cacto/Physics/Trace.hpp>
 #include <Cacto/Game/GameNode.hpp>
 
 auto color = sf::Color::Black;
@@ -20,15 +21,15 @@ auto color = sf::Color::Black;
 class Buddy
     : public sf::Transformable,
       public virtual cacto::LeafNode,
-      public virtual cacto::Body,
+      public virtual cacto::Collisionable,
       public virtual cacto::CollisionNode,
       public virtual cacto::DrawNode
 {
 
 public:
     mutable sf::VertexArray visual{sf::PrimitiveType::LineStrip};
-    mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
-    mutable cacto::Trace trace{};
+    mutable cacto::Ellipse *geometry{new cacto::Ellipse({0, 0}, {25, 25})};
+    mutable cacto::Trace trace{*geometry};
 
     Node *const getParent() const override
     {
@@ -37,7 +38,7 @@ public:
 
     void onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
     {
-        trace = {geometry, transform * getTransform()};
+        trace = {*geometry, transform * getTransform()};
         auto &target = dimension.locateCollisions(*this, trace);
         target.append(*this, trace);
         collisionChildren(dimension, transform);
@@ -54,7 +55,7 @@ public:
         drawChildren(target, _states);
     }
 
-    void collision(Body &body) override
+    void collision(Collisionable &body) override
     {
         color = sf::Color::White;
     }

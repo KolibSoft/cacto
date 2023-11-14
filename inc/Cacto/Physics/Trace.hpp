@@ -4,35 +4,40 @@
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/Transform.hpp>
-#include <Cacto/Collisions/Export.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Physics/Export.hpp>
 
 namespace cacto
 {
 
     class Geometry;
-    using SharedGeometry = std::shared_ptr<Geometry>;
 
-    class CACTO_COLLISIONS_API Trace
+    class CACTO_PHYSICS_API Trace
+        : public virtual sf::Drawable
     {
 
     public:
-        const SharedGeometry &getGeometry() const;
+        const Geometry &getGeometry() const;
         szt getPrecision() const;
+
         const sf::Transform &getTransform() const;
         const sf::FloatRect &getBounds() const;
 
-        szt getPointCount() const;
         const sf::Vector2f &getPoint(szt index) const;
+        szt getPointCount() const;
 
         bool checkCollision(const Trace &other) const;
 
-        Trace(const SharedGeometry &geometry = nullptr, const sf::Transform &transform = sf::Transform::Identity, szt precision = 1);
+        Trace(const Geometry &geometry, const sf::Transform &transform = sf::Transform::Identity, szt precision = 1);
         virtual ~Trace();
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         bool checkCollisionPart(const Trace &other) const;
 
-        SharedGeometry m_geometry;
+        const Geometry *m_geometry;
         sf::Transform m_transform;
         szt m_precision;
 
@@ -40,6 +45,9 @@ namespace cacto
         sf::FloatRect m_bounds;
 
         mutable std::vector<sf::Vector2f> m_points;
+        mutable bool m_invalid;
+        mutable sf::VertexArray m_geometryArray;
+        mutable sf::VertexArray m_boundsArray;
     };
 
 }

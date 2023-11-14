@@ -9,7 +9,7 @@
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Utils.hpp>
-#include <Cacto/Collisions/Trace.hpp>
+#include <Cacto/Physics/Trace.hpp>
 
 int main()
 {
@@ -23,7 +23,7 @@ int main()
     transformable.setPosition({100, 100});
     auto geometry = std::make_shared<cacto::Rectangle>(sf::Vector2f{0, 0}, sf::Vector2f{50, 50});
 
-    cacto::Trace trace{geometry, transformable.getTransform()};
+    cacto::Trace trace{*geometry, transformable.getTransform()};
 
     std::cout << "Trace size: " << sizeof(cacto::Trace) << "\n";
 
@@ -42,7 +42,7 @@ int main()
         }
 
         transformable2.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
-        cacto::Trace dynamic{geometry2, transformable2.getTransform()};
+        cacto::Trace dynamic{*geometry2, transformable2.getTransform()};
 
         if (cacto::zoneWith(trace.getBounds(), dynamic.getBounds()))
         {
@@ -53,27 +53,8 @@ int main()
         else
             window.clear(sf::Color::Black);
 
-        cacto::setPoints(array, *geometry);
-        cacto::setColor(array, sf::Color::Red);
-        array.append(array[0]);
-        window.draw(array, transformable.getTransform());
-
-        cacto::setPoints(array, *dynamic.getGeometry());
-        cacto::setColor(array, sf::Color::Red);
-        array.append(array[0]);
-        window.draw(array, dynamic.getTransform());
-
-        auto bBounds = trace.getBounds();
-        cacto::setPoints(array, cacto::Rectangle({bBounds.left, bBounds.top}, {bBounds.width, bBounds.height}));
-        cacto::setColor(array, sf::Color::Blue);
-        array.append(array[0]);
-        window.draw(array);
-
-        auto dBounds = dynamic.getBounds();
-        cacto::setPoints(array, cacto::Rectangle({dBounds.left, dBounds.top}, {dBounds.width, dBounds.height}));
-        cacto::setColor(array, sf::Color::Blue);
-        array.append(array[0]);
-        window.draw(array);
+        window.draw(trace);
+        window.draw(dynamic);
 
         window.display();
     }

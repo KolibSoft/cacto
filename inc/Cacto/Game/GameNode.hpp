@@ -7,7 +7,7 @@
 #include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/InflatableNode.hpp>
 #include <Cacto/Animations/UpdateNode.hpp>
-#include <Cacto/Collisions/CollisionNode.hpp>
+#include <Cacto/Physics/CollisionNode.hpp>
 #include <Cacto/Game/Export.hpp>
 
 namespace cacto
