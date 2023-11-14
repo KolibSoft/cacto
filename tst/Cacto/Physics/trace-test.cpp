@@ -10,6 +10,7 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Physics/Trace.hpp>
+#include <Cacto/Physics/TraceViewer.hpp>
 
 int main()
 {
@@ -32,6 +33,8 @@ int main()
 
     sf::VertexArray array(sf::PrimitiveType::LineStrip);
 
+    cacto::TraceViewer viewer{};
+
     while (window.isOpen())
     {
         sf::Event event{};
@@ -53,8 +56,11 @@ int main()
         else
             window.clear(sf::Color::Black);
 
-        window.draw(trace);
-        window.draw(dynamic);
+        viewer.setTrace(&trace);
+        window.draw(viewer);
+        
+        viewer.setTrace(&dynamic);
+        window.draw(viewer);
 
         window.display();
     }
