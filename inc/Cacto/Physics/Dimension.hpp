@@ -11,6 +11,7 @@ namespace cacto
 {
 
     class Trace;
+    class TraceViewer;
     class Collisionable;
     class Dimension;
 
@@ -73,9 +74,7 @@ namespace cacto
             Collisionable *body;
             const Trace *trace;
 
-            mutable bool invalid;
-            mutable sf::VertexArray boundsArray;
-            mutable sf::VertexArray geometryArray;
+            mutable TraceViewer *viewer;
         };
     };
 

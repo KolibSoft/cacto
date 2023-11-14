@@ -3,6 +3,8 @@
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Physics/Collisionable.hpp>
+#include <Cacto/Physics/Trace.hpp>
+#include <Cacto/Physics/TraceViewer.hpp>
 #include <Cacto/Physics/Dimension.hpp>
 
 namespace cacto
@@ -35,9 +37,7 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
-        holder.invalid = true;
-        holder.boundsArray = {};
-        holder.geometryArray = {};
+        holder.viewer = nullptr;
         append(holder);
     }
 
@@ -46,9 +46,7 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
-        holder.invalid = true;
-        holder.boundsArray = {};
-        holder.geometryArray = {};
+        holder.viewer = nullptr;
         collisions(holder);
     }
 
@@ -57,9 +55,7 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
-        holder.invalid = true;
-        holder.boundsArray = {};
-        holder.geometryArray = {};
+        holder.viewer = nullptr;
         collisionsChildren(holder);
     }
 
@@ -68,9 +64,7 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
-        holder.invalid = true;
-        holder.boundsArray = {};
-        holder.geometryArray = {};
+        holder.viewer = nullptr;
         auto &target = Dimension::locateCollisions(*this, holder);
         return target;
     }
@@ -127,6 +121,11 @@ namespace cacto
             delete m_bottomRight;
             m_subdimensions = false;
         }
+        for (auto &holder : m_holders)
+        {
+            if (holder.viewer)
+                delete holder.viewer;
+        }
     }
 
     Dimension::Dimension(const Dimension &other)
@@ -174,26 +173,12 @@ namespace cacto
         }
         for (auto &holder : m_holders)
         {
-            if (holder.invalid)
+            if (!holder.viewer)
             {
-                auto bounds = holder.trace->getBounds();
-                holder.boundsArray.setPrimitiveType(sf::PrimitiveType::LineStrip);
-                setPoints(holder.boundsArray, Rectangle({bounds.left, bounds.top}, {bounds.width, bounds.height}));
-                holder.boundsArray.append(holder.boundsArray[0]);
-                setColor(holder.boundsArray, sf::Color::Blue);
-
-                holder.geometryArray.setPrimitiveType(sf::PrimitiveType::LineStrip);
-                setPoints(holder.geometryArray, holder.trace->getGeometry());
-                holder.geometryArray.append(holder.geometryArray[0]);
-                setColor(holder.geometryArray, sf::Color::Red);
-
-                holder.invalid = false;
+                holder.viewer = new TraceViewer();
+                holder.viewer->setTrace(holder.trace);
             }
-
-            target.draw(holder.boundsArray, states);
-            auto _states = states;
-            _states.transform *= holder.trace->getTransform();
-            target.draw(holder.geometryArray, _states);
+            target.draw(*holder.viewer, states);
         }
     }
 
