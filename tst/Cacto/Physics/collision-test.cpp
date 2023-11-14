@@ -134,7 +134,6 @@ int main()
 
         dynamic.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
         window.clear(color);
-        window.draw(dimension);
         window.display();
         auto dt = clock.restart();
         if ((frames += 1) % 100 == 0)
