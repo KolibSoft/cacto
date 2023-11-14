@@ -54,39 +54,12 @@ namespace cacto
           m_precision(precision),
           m_iTransform(transform.getInverse()),
           m_bounds(),
-          m_points(),
-          m_invalid(true),
-          m_geometryArray(),
-          m_boundsArray()
+          m_points()
     {
         m_bounds = m_transform.transformRect(m_geometry->getBounds());
     }
 
     Trace::~Trace() = default;
-
-    void Trace::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_invalid)
-        {
-            m_boundsArray.setPrimitiveType(sf::PrimitiveType::LineStrip);
-            setPoints(m_boundsArray, Rectangle({m_bounds.left, m_bounds.top}, {m_bounds.width, m_bounds.height}));
-            m_boundsArray.append(m_boundsArray[0]);
-            setColor(m_boundsArray, sf::Color::Blue);
-
-            m_geometryArray.setPrimitiveType(sf::PrimitiveType::LineStrip);
-            setPoints(m_geometryArray, *m_geometry);
-            m_geometryArray.append(m_geometryArray[0]);
-            setColor(m_geometryArray, sf::Color::Red);
-
-            m_invalid = false;
-        }
-
-        target.draw(m_boundsArray, states);
-
-        auto _states = states;
-        _states.transform *= m_transform;
-        target.draw(m_geometryArray, _states);
-    }
 
     bool Trace::checkCollisionPart(const Trace &other) const
     {

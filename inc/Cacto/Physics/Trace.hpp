@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 #include <SFML/Graphics/Transform.hpp>
-#include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Physics/Export.hpp>
 
 namespace cacto
@@ -13,7 +12,6 @@ namespace cacto
     class Geometry;
 
     class CACTO_PHYSICS_API Trace
-        : public virtual sf::Drawable
     {
 
     public:
@@ -31,9 +29,6 @@ namespace cacto
         Trace(const Geometry &geometry, const sf::Transform &transform = sf::Transform::Identity, szt precision = 1);
         virtual ~Trace();
 
-    protected:
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
     private:
         bool checkCollisionPart(const Trace &other) const;
 
@@ -45,9 +40,6 @@ namespace cacto
         sf::FloatRect m_bounds;
 
         mutable std::vector<sf::Vector2f> m_points;
-        mutable bool m_invalid;
-        mutable sf::VertexArray m_geometryArray;
-        mutable sf::VertexArray m_boundsArray;
     };
 
 }

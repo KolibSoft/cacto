@@ -35,6 +35,9 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
+        holder.invalid = true;
+        holder.boundsArray = {};
+        holder.geometryArray = {};
         append(holder);
     }
 
@@ -43,6 +46,9 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
+        holder.invalid = true;
+        holder.boundsArray = {};
+        holder.geometryArray = {};
         collisions(holder);
     }
 
@@ -51,6 +57,9 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
+        holder.invalid = true;
+        holder.boundsArray = {};
+        holder.geometryArray = {};
         collisionsChildren(holder);
     }
 
@@ -59,6 +68,9 @@ namespace cacto
         Holder holder;
         holder.body = &body;
         holder.trace = &trace;
+        holder.invalid = true;
+        holder.boundsArray = {};
+        holder.geometryArray = {};
         auto &target = Dimension::locateCollisions(*this, holder);
         return target;
     }
@@ -161,7 +173,28 @@ namespace cacto
             m_bottomRight->draw(target, states);
         }
         for (auto &holder : m_holders)
-            target.draw(*holder.trace, states);
+        {
+            if (holder.invalid)
+            {
+                auto bounds = holder.trace->getBounds();
+                holder.boundsArray.setPrimitiveType(sf::PrimitiveType::LineStrip);
+                setPoints(holder.boundsArray, Rectangle({bounds.left, bounds.top}, {bounds.width, bounds.height}));
+                holder.boundsArray.append(holder.boundsArray[0]);
+                setColor(holder.boundsArray, sf::Color::Blue);
+
+                holder.geometryArray.setPrimitiveType(sf::PrimitiveType::LineStrip);
+                setPoints(holder.geometryArray, holder.trace->getGeometry());
+                holder.geometryArray.append(holder.geometryArray[0]);
+                setColor(holder.geometryArray, sf::Color::Red);
+
+                holder.invalid = false;
+            }
+
+            target.draw(holder.boundsArray, states);
+            auto _states = states;
+            _states.transform *= holder.trace->getTransform();
+            target.draw(holder.geometryArray, _states);
+        }
     }
 
     void Dimension::append(const Holder &holder)
