@@ -150,7 +150,7 @@ int main()
     auto straightMovement = [&](const sf::Time &lifetime) -> sf::Vector2f
     {
         auto index = animation.getIndex(lifetime, precision);
-        auto position = straight.getPoint(index, precision / straight.getSideCount());
+        auto position = straight.getPoint(index, precision / straight.getPointCount());
         return position;
     };
     auto geometryMovement = [&](const sf::Time &lifetime) -> sf::Vector2f
@@ -162,7 +162,7 @@ int main()
     auto bezierMovement = [&](const sf::Time &lifetime) -> sf::Vector2f
     {
         auto index = animation.getIndex(lifetime, precision);
-        auto position = bezier.getPoint(index, precision / bezier.getSideCount());
+        auto position = bezier.getPoint(index, precision / bezier.getPointCount());
         return position;
     };
 

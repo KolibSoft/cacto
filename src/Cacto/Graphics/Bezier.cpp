@@ -4,9 +4,9 @@
 namespace cacto
 {
 
-    szt Bezier::getSideCount() const
+    szt Bezier::getPointCount() const
     {
-        return 1;
+        return 2;
     }
 
     sf::Vector2f Bezier::getPoint(szt index, szt precision) const

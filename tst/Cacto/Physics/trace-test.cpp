@@ -53,8 +53,8 @@ int main()
         else
             window.clear(sf::Color::Black);
 
-        window.draw(trace);
-        window.draw(dynamic);
+        // window.draw(trace);
+        // window.draw(dynamic);
 
         window.display();
     }

@@ -3,9 +3,9 @@
 namespace cacto
 {
 
-    szt Straight::getSideCount() const
+    szt Straight::getPointCount() const
     {
-        return 1;
+        return 2;
     }
 
     sf::Vector2f Straight::getPoint(szt index, szt precision) const
