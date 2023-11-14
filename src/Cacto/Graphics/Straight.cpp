@@ -12,7 +12,7 @@ namespace cacto
     {
         if (precision < 1)
             precision = 1;
-        index %= precision;
+        index %= 2 * precision;
         auto step = (m_end - m_begin) / f32t(precision);
         auto point = m_begin + step * f32t(index);
         return point;
