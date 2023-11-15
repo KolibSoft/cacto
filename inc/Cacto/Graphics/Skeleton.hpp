@@ -71,10 +71,10 @@ namespace cacto
 
         public:
             const sf::Vector2f &getCoord() const;
-            Holder& setCoord(const sf::Vector2f &value);
+            Holder &setCoord(const sf::Vector2f &value);
 
             Skeleton::Relation getRelation() const;
-            Holder& setRelation(Skeleton::Relation value);
+            Holder &setRelation(Skeleton::Relation value);
 
             Holder(Node &node);
             virtual ~Holder();
