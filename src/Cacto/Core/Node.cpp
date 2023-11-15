@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    i32t Node::getChildIndex(Node &child) const
+    i32t Node::getChildIndex(const Node &child) const
     {
         for (szt i = 0; i < getChildCount(); i++)
         {

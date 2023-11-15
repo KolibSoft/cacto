@@ -4,95 +4,173 @@
 namespace cacto
 {
 
-    Box::Anchor AnchorLayout::getHorizontalAnchor(const Node &child) const
+    Node *const AnchorLayout::getParent() const
     {
-        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
-            throw std::runtime_error("The node is not a child");
-        return holder->hAnchor;
+        return m_parent;
     }
 
-    void AnchorLayout::setHorizontalAnchor(Node &child, Anchor value)
+    szt AnchorLayout::getChildCount() const
     {
-        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        return m_holders.size();
+    }
+
+    Node *const AnchorLayout::getChild(szt index) const
+    {
+        if (index >= m_holders.size())
+            return nullptr;
+        auto &holder = m_holders.at(index);
+        return &holder.getNode();
+    }
+
+    Box::Anchor AnchorLayout::getHorizontalAnchor(const Node &child) const
+    {
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->hAnchor = value;
+        auto &holder = m_holders.at(index);
+        return holder.getHorizontalAnchor();
+    }
+
+    AnchorLayout &AnchorLayout::setHorizontalAnchor(Node &child, Anchor value)
+    {
+        auto index = getChildIndex(child);
+        if (index < 0)
+            throw std::runtime_error("The node is not a child");
+        auto &holder = m_holders.at(index);
+        holder.setHorizontalAnchor(value);
+        return *this;
     }
 
     Box::Anchor AnchorLayout::getVerticalAnchor(const Node &child) const
     {
-        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        return holder->vAnchor;
+        auto &holder = m_holders.at(index);
+        return holder.getVerticalAnchor();
     }
 
-    void AnchorLayout::setVerticalAnchor(Node &child, Anchor value)
+    AnchorLayout &AnchorLayout::setVerticalAnchor(Node &child, Anchor value)
     {
-        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->vAnchor = value;
+        auto &holder = m_holders.at(index);
+        holder.setVerticalAnchor(value);
+        return *this;
     }
 
     f32t AnchorLayout::getHorizontalWeight(const Node &child) const
     {
-        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        return holder->hWeight;
+        auto &holder = m_holders.at(index);
+        return holder.getHorizonatalWeight();
     }
 
-    void AnchorLayout::setHorizontalWeight(Node &child, f32t value)
+    AnchorLayout &AnchorLayout::setHorizontalWeight(Node &child, f32t value)
     {
-        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->hWeight = value;
+        auto &holder = m_holders.at(index);
+        holder.setHorizonatalWeight(value);
+        return *this;
     }
 
     f32t AnchorLayout::getVerticalWeight(const Node &child) const
     {
-        auto holder = dynamic_cast<const AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        return holder->vWeight;
+        auto &holder = m_holders.at(index);
+        return holder.getVerticalWeight();
     }
 
-    void AnchorLayout::setVerticalWeight(Node &child, f32t value)
+    AnchorLayout &AnchorLayout::setVerticalWeight(Node &child, f32t value)
     {
-        auto holder = dynamic_cast<AnchorHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->vWeight = value;
+        auto &holder = m_holders.at(index);
+        holder.setVerticalWeight(value);
+        return *this;
     }
 
-    AnchorLayout::AnchorLayout() = default;
-    AnchorLayout::~AnchorLayout() = default;
-
-    AnchorLayout::AnchorLayout(const AnchorLayout &other) = default;
-    AnchorLayout &AnchorLayout::operator=(const AnchorLayout &other) = default;
-
-    AnchorLayout::AnchorHolder *AnchorLayout::onHold(Node &child) const
+    AnchorLayout::Holder &AnchorLayout::append(Node &child)
     {
-        auto holder = new AnchorHolder(child);
-        return holder;
+        Node::link(*this, child);
+        return m_holders.back();
+    }
+
+    void AnchorLayout::remove(Node &child)
+    {
+        Node::unlink(*this, child);
+    }
+
+    AnchorLayout::AnchorLayout()
+        : m_parent(nullptr),
+          m_holders()
+    {
+    }
+
+    AnchorLayout::~AnchorLayout()
+    {
+        while (m_holders.size() > 0)
+            Node::unlink(*this, m_holders.back().getNode());
+    }
+
+    AnchorLayout::AnchorLayout(const AnchorLayout &other)
+        : Block(other),
+          m_parent(nullptr),
+          m_holders()
+    {
+    }
+
+    AnchorLayout &AnchorLayout::operator=(const AnchorLayout &other)
+    {
+        Block::operator=(other);
+        return *this;
+    }
+
+    void AnchorLayout::onAttach(Node &parent)
+    {
+        m_parent = &parent;
+    }
+
+    void AnchorLayout::onDetach(Node &parent)
+    {
+        m_parent = nullptr;
+    }
+
+    void AnchorLayout::onAppend(Node &child)
+    {
+        Holder holder{child};
+        m_holders.push_back(holder);
+    }
+
+    void AnchorLayout::onRemove(Node &child)
+    {
+        auto index = getChildIndex(child);
+        m_holders.erase(m_holders.begin() + index);
+    }
+
+    void AnchorLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        drawChildren(target, states);
     }
 
     sf::Vector2f AnchorLayout::onInflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
-        if (getChildCount() > 0)
+        if (m_holders.size() > 0)
         {
             auto contentBox = getContentBox();
             sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            for (szt i = 0; i < getChildCount(); i++)
-            {
-                auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
-                auto childSize = InflatableNode::inflate(holder->child, {contentSize.x * holder->hWeight, contentSize.y * holder->vWeight});
-                holder->size = childSize;
-            }
+            for (auto &holder : m_holders)
+                holder.inflate({contentSize.x * holder.getHorizonatalWeight(), contentSize.y * holder.getVerticalWeight()});
         }
         return size;
     }
@@ -100,30 +178,78 @@ namespace cacto
     void AnchorLayout::onPlace(const sf::Vector2f &position)
     {
         placeBlock(position);
-        if (getChildCount() > 0)
+        if (m_holders.size() > 0)
         {
             auto contentBox = getContentBox();
-            for (szt i = 0; i < getChildCount(); i++)
+            for (auto &holder : m_holders)
             {
-                auto holder = dynamic_cast<AnchorHolder *>(getHolder(i));
                 auto _contentBox = contentBox;
-                _contentBox.setWidth(holder->size.x, holder->hAnchor);
-                _contentBox.setHeight(holder->size.y, holder->vAnchor);
-                InflatableNode::place(holder->child, {_contentBox.getLeft(), _contentBox.getTop()});
+                auto &childBox = holder.getBox();
+                _contentBox.setWidth(childBox.getWidth(), holder.getHorizontalAnchor());
+                _contentBox.setHeight(childBox.getHeight(), holder.getVerticalAnchor());
+                holder.place({_contentBox.getLeft(), _contentBox.getTop()});
             }
         }
     }
 
-    AnchorLayout::AnchorHolder::AnchorHolder(Node &child)
-        : Holder(child),
-          hAnchor(Start),
-          vAnchor(Start),
-          hWeight(1),
-          vWeight(1),
-          size()
+    namespace anchor_layout
     {
-    }
 
-    AnchorLayout::AnchorHolder::~AnchorHolder() {}
+        AnchorLayout::Anchor Holder::getHorizontalAnchor() const
+        {
+            return m_hAnchor;
+        }
+
+        Holder &Holder::setHorizontalAnchor(AnchorLayout::Anchor value)
+        {
+            m_hAnchor = value;
+            return *this;
+        }
+
+        AnchorLayout::Anchor Holder::getVerticalAnchor() const
+        {
+            return m_vAnchor;
+        }
+
+        Holder &Holder::setVerticalAnchor(AnchorLayout::Anchor value)
+        {
+            m_vAnchor = value;
+            return *this;
+        }
+
+        f32t Holder::getHorizonatalWeight() const
+        {
+            return m_hWeight;
+        }
+
+        Holder &Holder::setHorizonatalWeight(f32t value)
+        {
+            m_hWeight = value;
+            return *this;
+        }
+
+        f32t Holder::getVerticalWeight() const
+        {
+            return m_vWeight;
+        }
+
+        Holder &Holder::setVerticalWeight(f32t value)
+        {
+            m_vWeight = value;
+            return *this;
+        }
+
+        Holder::Holder(Node &node)
+            : layout::Holder(node),
+              m_hAnchor(AnchorLayout::Start),
+              m_vAnchor(AnchorLayout::Start),
+              m_hWeight(1),
+              m_vWeight(1)
+        {
+        }
+
+        Holder::~Holder() = default;
+
+    }
 
 }

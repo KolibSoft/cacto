@@ -142,7 +142,8 @@ namespace cacto
     }
 
     Block::Block(const Block &other)
-        : m_parent(),
+        : Box(other),
+          m_parent(),
           m_background(nullptr),
           m_margin(other.m_margin),
           m_padding(other.m_padding),
@@ -153,6 +154,7 @@ namespace cacto
 
     Block &Block::operator=(const Block &other)
     {
+        Box::operator=(other);
         m_margin = other.m_margin;
         m_padding = other.m_padding;
         m_minWidth = other.m_minWidth;

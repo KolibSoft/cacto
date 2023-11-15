@@ -20,7 +20,8 @@ namespace cacto
         virtual szt getChildCount() const = 0;
         virtual Node *const getChild(szt index = 0) const = 0;
 
-        i32t getChildIndex(Node &child) const;
+        i32t getChildIndex(const Node &child) const;
+        i32t getChildIndex(Node &&child) const = delete;
 
         Node() = default;
         virtual ~Node() = default;

@@ -73,6 +73,7 @@ namespace cacto
 
     FrameLayout &FrameLayout::operator=(const FrameLayout &other)
     {
+        Block::operator=(other);
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
         return *this;
