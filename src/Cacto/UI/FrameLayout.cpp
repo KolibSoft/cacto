@@ -7,12 +7,14 @@ namespace cacto
 
     szt FrameLayout::getChildCount() const
     {
-        return m_child != nullptr ? 1 : 0;
+        return m_holder != nullptr ? 1 : 0;
     }
 
     Node *const FrameLayout::getChild(szt index) const
     {
-        return index == 0 ? m_child : nullptr;
+        if (index >= 1 || !m_holder)
+            return nullptr;
+        return &m_holder->getNode();
     }
 
     FrameLayout::Anchor FrameLayout::getHorizontalAnchor() const
@@ -49,25 +51,23 @@ namespace cacto
 
     FrameLayout::FrameLayout()
         : Block(),
-          m_child(nullptr),
           m_hAnchor(Start),
           m_vAnchor(Start),
-          m_childSize()
+          m_holder()
     {
     }
 
     FrameLayout::~FrameLayout()
     {
-        if (m_child)
-            Node::unlink(*this, *m_child);
+        if (m_holder)
+            Node::unlink(*this, m_holder->getNode());
     }
 
     FrameLayout::FrameLayout(const FrameLayout &other)
         : Block(other),
-          m_child(nullptr),
           m_hAnchor(other.m_hAnchor),
           m_vAnchor(other.m_vAnchor),
-          m_childSize()
+          m_holder(nullptr)
     {
     }
 
@@ -78,34 +78,35 @@ namespace cacto
         return *this;
     }
 
-    const sf::Vector2f &FrameLayout::getChildSize() const
+    const Box &FrameLayout::getChildBox() const
     {
-        return m_childSize;
+        return m_holder != nullptr ? m_holder->getBox() : *this;
     }
 
     void FrameLayout::onAppend(Node &child)
     {
-        if (m_child != nullptr)
+        if (m_holder != nullptr)
             throw std::runtime_error("This node has another child already");
-        m_child = &child;
+        m_holder = new Holder(child);
     }
 
     void FrameLayout::onRemove(Node &child)
     {
-        if (m_child != &child)
+        if (!m_holder || &m_holder->getNode() != &child)
             throw std::runtime_error("This node has another child already");
-        m_child = nullptr;
+        delete m_holder;
     }
 
     void FrameLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
-        target.draw(dynamic_cast<const DrawNode &>(*m_child), states);
+        if (m_holder)
+            DrawNode::draw(m_holder->getNode(), target, states);
     }
 
     sf::Vector2f FrameLayout::onCompact()
     {
-        auto contentSize = m_child ? InflatableNode::compact(*m_child) : sf::Vector2f{0, 0};
+        auto contentSize = m_holder ? m_holder->compact() : sf::Vector2f{0, 0};
         auto size = compactBlock(contentSize);
         return size;
     }
@@ -113,10 +114,10 @@ namespace cacto
     sf::Vector2f FrameLayout::onInflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
-        if (m_child)
+        if (m_holder)
         {
             auto contentBox = getContentBox();
-            m_childSize = InflatableNode::inflate(*m_child, {contentBox.getWidth(), contentBox.getHeight()});
+            m_holder->inflate({contentBox.getWidth(), contentBox.getHeight()});
         }
         return size;
     }
@@ -124,12 +125,13 @@ namespace cacto
     void FrameLayout::onPlace(const sf::Vector2f &position)
     {
         placeBlock(position);
-        if (m_child)
+        if (m_holder)
         {
             auto contentBox = getContentBox();
-            contentBox.setWidth(m_childSize.x, m_hAnchor);
-            contentBox.setHeight(m_childSize.y, m_vAnchor);
-            InflatableNode::place(*m_child, {contentBox.getLeft(), contentBox.getTop()});
+            auto &childBox = m_holder->getBox();
+            contentBox.setWidth(childBox.getWidth(), m_hAnchor);
+            contentBox.setHeight(childBox.getHeight(), m_vAnchor);
+            m_holder->place({contentBox.getLeft(), contentBox.getTop()});
         }
     }
 
