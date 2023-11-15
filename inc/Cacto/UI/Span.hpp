@@ -3,8 +3,7 @@
 
 #include <SFML/Graphics/Text.hpp>
 #include <Cacto/Core/LeafNode.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
-#include <Cacto/UI/InflatableNode.hpp>
+#include <Cacto/UI/UINode.hpp>
 
 namespace cacto
 {
@@ -12,8 +11,7 @@ namespace cacto
     class CACTO_UI_API Span
         : public sf::Text,
           public virtual LeafNode,
-          public virtual DrawNode,
-          public virtual InflatableNode
+          public virtual UINode
     {
 
     public:

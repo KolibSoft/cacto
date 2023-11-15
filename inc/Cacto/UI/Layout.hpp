@@ -1,71 +1,34 @@
 #ifndef CACTO_LAYOUT_HPP
 #define CACTO_LAYOUT_HPP
 
-#include <vector>
-#include <Cacto/UI/Block.hpp>
+#include <Cacto/Core/Node.hpp>
+#include <Cacto/UI/Box.hpp>
 
 namespace cacto
 {
 
-    class CACTO_UI_API Layout
-        : public Block
+    namespace layout
     {
 
-    public:
-        enum Direction
-        {
-            Forward,
-            Reverse
-        };
-
-        szt getChildCount() const override;
-        Node *const getChild(szt index = 0) const override;
-
-        void append(Node &child);
-        void remove(Node &child);
-
-        Layout();
-        virtual ~Layout();
-
-        Layout(const Layout &other);
-        Layout &operator=(const Layout &other);
-
-    protected:
-        class Holder;
-
-        Holder *const getHolder(szt index = 0);
-        const Holder *const getHolder(szt index = 0) const;
-
-        Holder *const getHolder(const Node &child);
-        Holder *const getHolder(Node &&child) = delete;
-
-        const Holder *const getHolder(const Node &child) const;
-        const Holder *const getHolder(Node &&child) const = delete;
-
-        virtual Holder *onHold(Node &child) const;
-
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
-
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
-        sf::Vector2f onCompact() override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
-        void onPlace(const sf::Vector2f &position = {0, 0}) override;
-
-        class Holder
+        class CACTO_UI_API Holder
+            : public node::Holder
         {
 
         public:
-            Holder(Node &child);
+            const Box &getBox() const;
+
+            sf::Vector2f compact();
+            sf::Vector2f inflate(const sf::Vector2f &containerSize);
+            void place(const sf::Vector2f &place);
+
+            Holder(Node &node);
             virtual ~Holder();
 
-            Node &child;
+        private:
+            Box m_box;
         };
 
-    private:
-        std::vector<Holder *> m_holders;
-    };
+    }
 
 }
 

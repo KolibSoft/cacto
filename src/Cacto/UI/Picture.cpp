@@ -11,9 +11,10 @@ namespace cacto
         return m_scale;
     }
 
-    void Picture::setScale(Scale value)
+    Picture &Picture::setScale(Scale value)
     {
         m_scale = value;
+        return *this;
     }
 
     const sf::FloatRect &Picture::getTextureRect() const
@@ -21,9 +22,10 @@ namespace cacto
         return m_textureRect;
     }
 
-    void Picture::setTextureRect(const sf::FloatRect &value)
+    Picture &Picture::setTextureRect(const sf::FloatRect &value)
     {
         m_textureRect = value;
+        return *this;
     }
 
     Picture::Anchor Picture::getHorizontalAnchor() const
@@ -31,9 +33,10 @@ namespace cacto
         return m_hAnchor;
     }
 
-    void Picture::setHorizontalAnchor(Anchor value)
+    Picture &Picture::setHorizontalAnchor(Anchor value)
     {
         m_hAnchor = value;
+        return *this;
     }
 
     Picture::Anchor Picture::getVerticalAnchor() const
@@ -41,9 +44,10 @@ namespace cacto
         return m_vAnchor;
     }
 
-    void Picture::setVerticalAnchor(Anchor value)
+    Picture &Picture::setVerticalAnchor(Anchor value)
     {
         m_vAnchor = value;
+        return *this;
     }
 
     const Surface &Picture::getSurface() const

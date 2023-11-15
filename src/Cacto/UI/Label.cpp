@@ -19,9 +19,10 @@ namespace cacto
         return m_hAnchor;
     }
 
-    void Label::setHorizontalAnchor(Anchor value)
+    Label &Label::setHorizontalAnchor(Anchor value)
     {
         m_hAnchor = value;
+        return *this;
     }
 
     Label::Anchor Label::getVerticalAnchor() const
@@ -29,9 +30,10 @@ namespace cacto
         return m_vAnchor;
     }
 
-    void Label::setVerticalAnchor(Anchor value)
+    Label &Label::setVerticalAnchor(Anchor value)
     {
         m_vAnchor = value;
+        return *this;
     }
 
     Label::Label(const sf::Font &font, const sf::String &string, u32t characterSize)

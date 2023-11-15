@@ -1,7 +1,7 @@
 #ifndef CACTO_FRAME_LAYOUT_HPP
 #define CACTO_FRAME_LAYOUT_HPP
 
-#include <Cacto/UI/Span.hpp>
+#include <Cacto/UI/Layout.hpp>
 #include <Cacto/UI/Block.hpp>
 
 namespace cacto
@@ -16,10 +16,10 @@ namespace cacto
         Node *const getChild(szt index = 0) const override;
 
         Anchor getHorizontalAnchor() const;
-        void setHorizontalAnchor(Anchor value);
+        FrameLayout &setHorizontalAnchor(Anchor value);
 
         Anchor getVerticalAnchor() const;
-        void setVerticalAnchor(Anchor value);
+        FrameLayout &setVerticalAnchor(Anchor value);
 
         void append(Node &child);
         void remove(Node &child);
@@ -31,7 +31,10 @@ namespace cacto
         FrameLayout &operator=(const FrameLayout &other);
 
     protected:
-        const sf::Vector2f& getChildSize() const;
+        using Holder = layout::Holder;
+
+        const Holder *const getHolder() const;
+        Holder *const getHolder();
 
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
@@ -43,10 +46,9 @@ namespace cacto
         void onPlace(const sf::Vector2f &position) override;
 
     private:
-        Node *m_child;
         Anchor m_hAnchor;
         Anchor m_vAnchor;
-        sf::Vector2f m_childSize;
+        Holder *m_holder;
     };
 
 }

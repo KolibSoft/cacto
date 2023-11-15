@@ -16,10 +16,10 @@ namespace cacto
         Span &getSpan();
 
         Anchor getHorizontalAnchor() const;
-        void setHorizontalAnchor(Anchor value);
+        Label& setHorizontalAnchor(Anchor value);
 
         Anchor getVerticalAnchor() const;
-        void setVerticalAnchor(Anchor value);
+        Label& setVerticalAnchor(Anchor value);
 
         Label(const sf::Font &font, const sf::String &string = "", u32t characterSize = 30);
         Label(sf::Font &&font, const sf::String &string = "", u32t characterSize = 30) = delete;

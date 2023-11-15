@@ -2,7 +2,6 @@
 #define CACTO_VIRTUAL_LAYOUT_HPP
 
 #include <SFML/Graphics/RenderTexture.hpp>
-#include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/FrameLayout.hpp>
 
 namespace cacto
@@ -23,8 +22,6 @@ namespace cacto
         VirtualLayout &operator=(const VirtualLayout &other);
 
     protected:
-        const sf::Vector2f& getChildPlace() const;
-
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f onCompact() override;
@@ -36,7 +33,6 @@ namespace cacto
 
     private:
         sf::Transformable m_transformable;
-        sf::Vector2f m_childPlace;
 
         mutable Surface m_surface;
         mutable sf::RenderTexture m_texture;

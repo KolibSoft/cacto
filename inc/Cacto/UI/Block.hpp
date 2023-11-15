@@ -3,11 +3,9 @@
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
-#include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/Thickness.hpp>
 #include <Cacto/UI/Box.hpp>
-#include <Cacto/UI/InflatableNode.hpp>
+#include <Cacto/UI/UINode.hpp>
 
 namespace sf
 {
@@ -20,37 +18,35 @@ namespace cacto
     class CACTO_UI_API Block
         : public Box,
           public virtual LeafNode,
-          public virtual DrawNode,
-          public virtual EventNode,
-          public virtual InflatableNode
+          public virtual UINode
     {
 
     public:
         Node *const getParent() const override;
 
         Node *const getBackground() const;
-        void setBackground(Node *const value);
+        Block& setBackground(Node *const value);
 
         const Thickness &getMargin() const;
-        void setMargin(const Thickness &value);
+        Block& setMargin(const Thickness &value);
 
         const Thickness &getPadding() const;
-        void setPadding(const Thickness &value);
+        Block& setPadding(const Thickness &value);
 
         f32t getMinWidth() const;
-        void setMinWidth(f32t value);
+        Block& setMinWidth(f32t value);
 
         f32t getMaxWidth() const;
-        void setMaxWidth(f32t value);
+        Block& setMaxWidth(f32t value);
 
         f32t getMinHeight() const;
-        void setMinHeight(f32t value);
+        Block& setMinHeight(f32t value);
 
         f32t getMaxHeight() const;
-        void setMaxHeight(f32t value);
+        Block& setMaxHeight(f32t value);
 
-        void setFixedWidth(f32t value);
-        void setFixedHeight(f32t value);
+        Block& setFixedWidth(f32t value);
+        Block& setFixedHeight(f32t value);
 
         Box getContainerBox() const;
         Box getContentBox() const;
@@ -63,7 +59,7 @@ namespace cacto
 
     protected:
         void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
-        void eventBlock(const sf::Event& event);
+        void eventBlock(const sf::Event &event);
         sf::Vector2f compactBlock(const sf::Vector2f &contentSize);
         sf::Vector2f inflateBlock(const sf::Vector2f &containerSize);
         void placeBlock(const sf::Vector2f &position);
@@ -72,12 +68,12 @@ namespace cacto
         void onDetach(Node &parent) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-        
-        bool onEvent(const sf::Event& event) override;
 
         sf::Vector2f onCompact() override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
+
+        bool onEvent(const sf::Event &event) override;
 
     private:
         Node *m_parent;

@@ -7,4 +7,5 @@
 #include "Cacto/Graphics/Rectangle.cpp"
 #include "Cacto/Graphics/Ellipse.cpp"
 #include "Cacto/Graphics/Triangle.cpp"
+#include "Cacto/Graphics/Skeleton.cpp"
 #include "Cacto/Graphics/Utils.cpp"

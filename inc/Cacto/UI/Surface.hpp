@@ -3,9 +3,8 @@
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/UI/Box.hpp>
-#include <Cacto/UI/InflatableNode.hpp>
+#include <Cacto/UI/UINode.hpp>
 
 namespace sf
 {
@@ -20,27 +19,26 @@ namespace cacto
     class CACTO_UI_API Surface
         : public Box,
           public virtual LeafNode,
-          public virtual DrawNode,
-          public virtual InflatableNode
+          public virtual UINode
     {
 
     public:
         Node *const getParent() const override;
 
         Geometry &getGeometry() const;
-        void setGeometry(Geometry &value);
+        Surface& setGeometry(Geometry &value);
 
         szt getPrecision() const;
-        void setPrecision(szt value);
+        Surface& setPrecision(szt value);
 
         const sf::Color &getColor() const;
-        void setColor(const sf::Color &value);
+        Surface& setColor(const sf::Color &value);
 
         const sf::Texture *const getTexture() const;
-        void setTexture(const sf::Texture *const value, bool resetRect = true);
+        Surface& setTexture(const sf::Texture *const value, bool resetRect = true);
 
         const sf::FloatRect &getTextureRect() const;
-        void setTextureRect(const sf::FloatRect &value);
+        Surface& setTextureRect(const sf::FloatRect &value);
 
         void update(bool force = false) const;
 
@@ -54,7 +52,7 @@ namespace cacto
         static const Surface Ellipse;
 
     protected:
-        sf::VertexArray& getArray() const;
+        sf::VertexArray &getArray() const;
         void invalidate();
 
         void onAttach(Node &parent) override;

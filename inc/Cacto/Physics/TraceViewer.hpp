@@ -3,7 +3,7 @@
 
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/LineViewer.hpp>
-#include <Cacto/Graphics/Export.hpp>
+#include <Cacto/Physics/Export.hpp>
 
 namespace cacto
 {

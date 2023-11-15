@@ -2,7 +2,6 @@
 #define CACTO_TRIANGLE_HPP
 
 #include <Cacto/Graphics/Geometry.hpp>
-#include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
 {

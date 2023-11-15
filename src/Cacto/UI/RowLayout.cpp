@@ -5,20 +5,36 @@
 namespace cacto
 {
 
-    RowLayout::Anchor RowLayout::getVerticalAnchor(const Node &child) const
+    szt RowLayout::getChildCount() const
     {
-        auto holder = dynamic_cast<const RowHolder *>(getHolder(child));
-        if (holder == nullptr)
-            throw std::runtime_error("The node is not a child");
-        return holder->vAnchor;
+        return m_holders.size();
     }
 
-    void RowLayout::setVerticalAnchor(Node &child, Anchor value)
+    Node *const RowLayout::getChild(szt index) const
     {
-        auto holder = dynamic_cast<RowHolder *>(getHolder(child));
-        if (holder == nullptr)
+        if (index >= m_holders.size())
+            return nullptr;
+        auto &holder = m_holders.at(index);
+        return &holder.getNode();
+    }
+
+    RowLayout::Anchor RowLayout::getVerticalAnchor(const Node &child) const
+    {
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->vAnchor = value;
+        auto &holder = m_holders.at(index);
+        return holder.getVerticalAnchor();
+    }
+
+    RowLayout &RowLayout::setVerticalAnchor(Node &child, Anchor value)
+    {
+        auto index = getChildIndex(child);
+        if (index < 0)
+            throw std::runtime_error("The node is not a child");
+        auto &holder = m_holders.at(index);
+        holder.setVerticalAnchor(value);
+        return *this;
     }
 
     RowLayout::Anchor RowLayout::getHorizontalAnchor() const
@@ -26,9 +42,10 @@ namespace cacto
         return m_hAnchor;
     }
 
-    void RowLayout::setHorizontalAnchor(Anchor value)
+    RowLayout &RowLayout::setHorizontalAnchor(Anchor value)
     {
         m_hAnchor = value;
+        return *this;
     }
 
     RowLayout::Direction RowLayout::getDirection() const
@@ -36,70 +53,111 @@ namespace cacto
         return m_direction;
     }
 
-    void RowLayout::setDirection(Direction value)
+    RowLayout &RowLayout::setDirection(Direction value)
     {
         m_direction = value;
+        return *this;
     }
 
     f32t RowLayout::getHorizontalWeight(const Node &child) const
     {
-        auto holder = dynamic_cast<const RowHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        return holder->hWeight;
+        auto &holder = m_holders.at(index);
+        return holder.getHorizontalWeight();
     }
 
-    void RowLayout::setHorizontalWeight(Node &child, f32t value)
+    RowLayout &RowLayout::setHorizontalWeight(Node &child, f32t value)
     {
-        auto holder = dynamic_cast<RowHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->hWeight = value;
+        auto &holder = m_holders.at(index);
+        holder.setHorizontalWeight(value);
+        return *this;
     }
 
     f32t RowLayout::getVerticalWeight(const Node &child) const
     {
-        auto holder = dynamic_cast<const RowHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        return holder->vWeight;
+        auto &holder = m_holders.at(index);
+        return holder.getVerticalWeight();
     }
 
-    void RowLayout::setVerticalWeight(Node &child, f32t value)
+    RowLayout &RowLayout::setVerticalWeight(Node &child, f32t value)
     {
-        auto holder = dynamic_cast<RowHolder *>(getHolder(child));
-        if (holder == nullptr)
+        auto index = getChildIndex(child);
+        if (index < 0)
             throw std::runtime_error("The node is not a child");
-        holder->vWeight = value;
+        auto &holder = m_holders.at(index);
+        holder.setVerticalWeight(value);
+        return *this;
+    }
+
+    RowLayout::Holder &RowLayout::append(Node &child)
+    {
+        Holder holder{child};
+        m_holders.push_back(holder);
+        return m_holders.back();
+    }
+
+    void RowLayout::remove(Node &child)
+    {
+        auto index = getChildIndex(child);
+        m_holders.erase(m_holders.begin() + index);
     }
 
     RowLayout::RowLayout()
         : m_hAnchor(Start),
-          m_direction(Forward) {}
+          m_direction(Forward),
+          m_length(0),
+          m_holders()
+    {
+    }
 
-    RowLayout::~RowLayout() = default;
+    RowLayout::~RowLayout()
+    {
+        while (m_holders.size() > 0)
+            Node::unlink(*this, m_holders.back().getNode());
+    }
 
     RowLayout::RowLayout(const RowLayout &other)
-        : Layout(other),
+        : Block(other),
           m_hAnchor(other.m_hAnchor),
           m_direction(other.m_direction),
-          m_length(0)
+          m_length(0),
+          m_holders()
     {
     }
 
     RowLayout &RowLayout::operator=(const RowLayout &other)
     {
-        Layout::operator=(other);
+        Block::operator=(other);
         m_hAnchor = other.m_hAnchor;
         m_direction = other.m_direction;
         m_length = other.m_length;
         return *this;
     }
 
-    RowLayout::RowHolder *RowLayout::onHold(Node &child) const
+    void RowLayout::onAppend(Node &child)
     {
-        auto holder = new RowHolder(child);
-        return holder;
+        Holder holder{child};
+        m_holders.push_back(holder);
+    }
+
+    void RowLayout::onRemove(Node &child)
+    {
+        auto index = getChildIndex(child);
+        m_holders.erase(m_holders.begin() + index);
+    }
+
+    void RowLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        drawChildren(target, states);
     }
 
     sf::Vector2f RowLayout::onCompact()
@@ -108,10 +166,9 @@ namespace cacto
         if (getChildCount() > 0)
         {
             f32t length = 0;
-            for (szt i = 0; i < getChildCount(); i++)
+            for (auto &holder : m_holders)
             {
-                auto holder = getHolder(i);
-                auto childSize = InflatableNode::compact(holder->child);
+                auto childSize = holder.compact();
                 length += childSize.x;
                 contentSize.y = std::max(childSize.y, contentSize.y);
             }
@@ -125,16 +182,14 @@ namespace cacto
     sf::Vector2f RowLayout::onInflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
-        if (getChildCount() > 0)
+        if (m_holders.size() > 0)
         {
             f32t length = 0;
             auto contentBox = getContentBox();
             sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
-            for (szt i = 0; i < getChildCount(); i++)
+            for (auto &holder : m_holders)
             {
-                auto holder = dynamic_cast<RowHolder *>(getHolder(i));
-                auto childSize = InflatableNode::inflate(holder->child, {contentSize.x * holder->hWeight, contentSize.y * holder->vWeight});
-                holder->size = childSize;
+                auto childSize = holder.inflate({contentSize.x * holder.getHorizontalWeight(), contentSize.y * holder.getVerticalWeight()});
                 length += childSize.x;
             }
             m_length = length;
@@ -149,23 +204,20 @@ namespace cacto
         {
             auto contentBox = getContentBox();
             f32t offset = 0;
-            auto place = [&](RowHolder *holder)
+            auto place = [&](Holder &holder)
             {
                 auto _contentBox = contentBox;
                 _contentBox.setLeft(_contentBox.getLeft() + offset);
-                _contentBox.setHeight(holder->size.y, holder->vAnchor);
-                InflatableNode::place(holder->child, {_contentBox.getLeft(), _contentBox.getTop()});
-                offset += holder->size.x;
+                _contentBox.setHeight(holder.getBox().getHeight(), holder.getVerticalAnchor());
+                holder.place({_contentBox.getLeft(), _contentBox.getTop()});
+                offset += holder.getBox().getWidth();
             };
             switch (m_direction)
             {
             case Forward:
                 contentBox.setWidth(m_length, m_hAnchor);
-                for (szt i = 0; i < getChildCount(); i++)
-                {
-                    auto holder = dynamic_cast<RowHolder *>(getHolder(i));
-                    place(holder);
-                }
+                for (auto it = m_holders.begin(); it != m_holders.end(); ++it)
+                    place(*it);
                 break;
             case Reverse:
                 switch (m_hAnchor)
@@ -180,25 +232,59 @@ namespace cacto
                     contentBox.setWidth(m_length, Center);
                     break;
                 }
-                for (szt i = getChildCount(); i > 0; i--)
-                {
-                    auto holder = dynamic_cast<RowHolder *>(getHolder(i - 1));
-                    place(holder);
-                }
+                for (auto it = m_holders.rbegin(); it != m_holders.rend(); ++it)
+                    place(*it);
                 break;
             }
         }
     }
 
-    RowLayout::RowHolder::RowHolder(Node &child)
-        : Holder(child),
-          vAnchor(Start),
-          hWeight(0),
-          vWeight(1),
-          size()
+    namespace row_layout
     {
-    }
 
-    RowLayout::RowHolder::~RowHolder() = default;
+        RowLayout::Anchor Holder::getVerticalAnchor() const
+        {
+            return m_vAnchor;
+        }
+
+        Holder &Holder::setVerticalAnchor(RowLayout::Anchor value)
+        {
+            m_vAnchor = value;
+            return *this;
+        }
+
+        f32t Holder::getHorizontalWeight() const
+        {
+            return m_hWeight;
+        }
+
+        Holder &Holder::setHorizontalWeight(f32t value)
+        {
+            m_hWeight = value;
+            return *this;
+        }
+
+        f32t Holder::getVerticalWeight() const
+        {
+            return m_vWeight;
+        }
+
+        Holder &Holder::setVerticalWeight(f32t value)
+        {
+            m_vWeight = value;
+            return *this;
+        }
+
+        Holder::Holder(Node &node)
+            : layout::Holder(node),
+              m_vAnchor(RowLayout::Start),
+              m_hWeight(0),
+              m_vWeight(1)
+        {
+        }
+
+        Holder::~Holder() = default;
+
+    }
 
 }

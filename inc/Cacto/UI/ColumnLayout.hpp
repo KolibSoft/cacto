@@ -3,35 +3,55 @@
 
 #include <vector>
 #include <Cacto/UI/Layout.hpp>
+#include <Cacto/UI/Block.hpp>
 
 namespace cacto
 {
 
+    namespace column_layout
+    {
+        class Holder;
+    }
+
     class CACTO_UI_API ColumnLayout
-        : public Layout
+        : public Block
     {
 
     public:
+        using Holder = column_layout::Holder;
+
+        enum Direction
+        {
+            Forward,
+            Reverse
+        };
+
+        szt getChildCount() const override;
+        Node *const getChild(szt index = 0) const override;
+
         Anchor getHorizontalAnchor(const Node &child) const;
         Anchor getHorizontalAnchor(Node &&child) const = delete;
 
-        void setHorizontalAnchor(Node &child, Anchor value);
+        ColumnLayout &setHorizontalAnchor(Node &child, Anchor value);
 
         Anchor getVerticalAnchor() const;
-        void setVerticalAnchor(Anchor value);
+        ColumnLayout &setVerticalAnchor(Anchor value);
 
         Direction getDirection() const;
-        void setDirection(Direction value);
+        ColumnLayout &setDirection(Direction value);
 
         f32t getHorizontalWeight(const Node &child) const;
         f32t getHorizontalWeight(Node &&child) const = delete;
 
-        void setHorizontalWeight(Node &child, f32t value);
+        ColumnLayout &setHorizontalWeight(Node &child, f32t value);
 
         f32t getVerticalWeight(const Node &child) const;
         f32t getVerticalWeight(Node &&child) const = delete;
 
-        void setVerticalWeight(Node &child, f32t value);
+        ColumnLayout &setVerticalWeight(Node &child, f32t value);
+
+        Holder &append(Node &child);
+        void remove(Node &child);
 
         ColumnLayout();
         virtual ~ColumnLayout();
@@ -40,20 +60,10 @@ namespace cacto
         ColumnLayout &operator=(const ColumnLayout &other);
 
     protected:
-        class ColumnHolder
-            : public Holder
-        {
-        public:
-            ColumnHolder(Node &child);
-            virtual ~ColumnHolder();
+        void onAppend(Node &child) override;
+        void onRemove(Node &child) override;
 
-            Anchor hAnchor;
-            f32t hWeight;
-            f32t vWeight;
-            sf::Vector2f size;
-        };
-
-        ColumnHolder *onHold(Node &child) const override;
+        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f onCompact() override;
         sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -63,7 +73,33 @@ namespace cacto
         Anchor m_vAnchor;
         Direction m_direction;
         f32t m_length;
+        std::vector<Holder> m_holders;
     };
+
+    namespace column_layout
+    {
+        class Holder
+            : public layout::Holder
+        {
+        public:
+            ColumnLayout::Anchor getHorizontalAnchor() const;
+            Holder &setHorizontalAnchor(ColumnLayout::Anchor value);
+
+            f32t getHorizontalWeight() const;
+            Holder &setHorizontalWeight(f32t value);
+
+            f32t getVerticalWeight() const;
+            Holder &setVerticalWeight(f32t value);
+
+            Holder(Node &node);
+            virtual ~Holder();
+
+        private:
+            RowLayout::Anchor m_hAnchor;
+            f32t m_hWeight;
+            f32t m_vWeight;
+        };
+    }
 
 }
 
