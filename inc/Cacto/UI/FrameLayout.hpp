@@ -31,7 +31,10 @@ namespace cacto
         FrameLayout &operator=(const FrameLayout &other);
 
     protected:
-        const Box &getChildBox() const;
+        using Holder = layout::Holder;
+
+        const Holder *const getHolder() const;
+        Holder *const getHolder();
 
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
@@ -43,8 +46,6 @@ namespace cacto
         void onPlace(const sf::Vector2f &position) override;
 
     private:
-        using Holder = layout::Holder;
-
         Anchor m_hAnchor;
         Anchor m_vAnchor;
         Holder *m_holder;

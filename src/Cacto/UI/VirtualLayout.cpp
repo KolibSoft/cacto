@@ -18,7 +18,6 @@ namespace cacto
     VirtualLayout::VirtualLayout()
         : FrameLayout(),
           m_transformable(),
-          m_childPlace(),
           m_surface(Surface::Rectangle),
           m_texture()
     {
@@ -30,7 +29,6 @@ namespace cacto
     VirtualLayout::VirtualLayout(const VirtualLayout &other)
         : FrameLayout(other),
           m_transformable(other.m_transformable),
-          m_childPlace(),
           m_surface(other.m_surface),
           m_texture()
     {
@@ -42,11 +40,6 @@ namespace cacto
         m_transformable = other.m_transformable;
         m_surface = other.m_surface;
         return *this;
-    }
-
-    const sf::Vector2f &VirtualLayout::getChildPlace() const
-    {
-        return m_childPlace;
     }
 
     void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -93,16 +86,15 @@ namespace cacto
         placeBlock(position);
         auto contentBox = getContentBox();
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
-        auto child = getChild();
-        if (child)
+        auto holder = getHolder();
+        if (holder)
         {
-            auto childSize = getChildSize();
+            auto &childBox = holder->getBox();
             contentBox.setLeft(0);
             contentBox.setTop(0);
-            contentBox.setWidth(childSize.x, getHorizontalAnchor());
-            contentBox.setHeight(childSize.y, getVerticalAnchor());
-            m_childPlace = {contentBox.getLeft(), contentBox.getTop()};
-            InflatableNode::place(*child, m_childPlace);
+            contentBox.setWidth(childBox.getWidth(), getHorizontalAnchor());
+            contentBox.setHeight(childBox.getHeight(), getVerticalAnchor());
+            holder->place({contentBox.getLeft(), contentBox.getTop()});
         }
     }
 

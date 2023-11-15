@@ -28,21 +28,26 @@ namespace cacto
 
     bool ScrollLayout::canScroll(f32t delta) const
     {
-        auto contentBox = getContentBox();
-        auto childSize = getChildSize();
-        if (!m_shift && contentBox.getHeight() < childSize.y)
+        auto holder = getHolder();
+        if (holder)
         {
-            auto childPlace = getChildPlace();
-            childPlace.y += getTransformable().getPosition().y + delta;
-            auto result = childPlace.y < 0 && childPlace.y + childSize.y > contentBox.getHeight();
-            return result;
-        }
-        if (m_shift && contentBox.getWidth() < childSize.x)
-        {
-            auto childPlace = getChildPlace();
-            childPlace.x += getTransformable().getPosition().x + delta;
-            auto result = childPlace.x < 0 && childPlace.x + childSize.x > contentBox.getWidth();
-            return result;
+            auto contentBox = getContentBox();
+            auto &childBox = holder->getBox();
+            sf::Vector2f childSize{childBox.getWidth(), childBox.getHeight()};
+            if (!m_shift && contentBox.getHeight() < childSize.y)
+            {
+                sf::Vector2f childPlace{childBox.getLeft(), childBox.getTop()};
+                childPlace.y += getTransformable().getPosition().y + delta;
+                auto result = childPlace.y < 0 && childPlace.y + childSize.y > contentBox.getHeight();
+                return result;
+            }
+            if (m_shift && contentBox.getWidth() < childSize.x)
+            {
+                sf::Vector2f childPlace{childBox.getLeft(), childBox.getTop()};
+                childPlace.x += getTransformable().getPosition().x + delta;
+                auto result = childPlace.x < 0 && childPlace.x + childSize.x > contentBox.getWidth();
+                return result;
+            }
         }
         return false;
     }

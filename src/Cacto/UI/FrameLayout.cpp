@@ -78,9 +78,14 @@ namespace cacto
         return *this;
     }
 
-    const Box &FrameLayout::getChildBox() const
+    const FrameLayout::Holder *const FrameLayout::getHolder() const
     {
-        return m_holder != nullptr ? m_holder->getBox() : *this;
+        return m_holder;
+    }
+
+    FrameLayout::Holder *const FrameLayout::getHolder()
+    {
+        return m_holder;
     }
 
     void FrameLayout::onAppend(Node &child)
@@ -95,6 +100,7 @@ namespace cacto
         if (!m_holder || &m_holder->getNode() != &child)
             throw std::runtime_error("This node has another child already");
         delete m_holder;
+        m_holder = nullptr;
     }
 
     void FrameLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
