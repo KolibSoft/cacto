@@ -18,9 +18,9 @@ namespace cacto
         return m_background;
     }
 
-    void Block::setBackground(Node *const value)
+    Block &Block::setBackground(Node *const value)
     {
-        Node* current = this;
+        Node *current = this;
         while (current)
         {
             if (current == value)
@@ -28,6 +28,7 @@ namespace cacto
             current = current->getParent();
         }
         m_background = value;
+        return *this;
     }
 
     const Thickness &Block::getMargin() const
@@ -35,9 +36,10 @@ namespace cacto
         return m_margin;
     }
 
-    void Block::setMargin(const Thickness &value)
+    Block &Block::setMargin(const Thickness &value)
     {
         m_margin = value;
+        return *this;
     }
 
     const Thickness &Block::getPadding() const
@@ -45,9 +47,10 @@ namespace cacto
         return m_padding;
     }
 
-    void Block::setPadding(const Thickness &value)
+    Block &Block::setPadding(const Thickness &value)
     {
         m_padding = value;
+        return *this;
     }
 
     f32t Block::getMinWidth() const
@@ -55,9 +58,10 @@ namespace cacto
         return m_minWidth;
     }
 
-    void Block::setMinWidth(f32t value)
+    Block &Block::setMinWidth(f32t value)
     {
         m_minWidth = value;
+        return *this;
     }
 
     f32t Block::getMaxWidth() const
@@ -65,9 +69,10 @@ namespace cacto
         return m_maxWidth;
     }
 
-    void Block::setMaxWidth(f32t value)
+    Block &Block::setMaxWidth(f32t value)
     {
         m_maxWidth = value;
+        return *this;
     }
 
     f32t Block::getMinHeight() const
@@ -75,9 +80,10 @@ namespace cacto
         return m_minHeight;
     }
 
-    void Block::setMinHeight(f32t value)
+    Block &Block::setMinHeight(f32t value)
     {
         m_minHeight = value;
+        return *this;
     }
 
     f32t Block::getMaxHeight() const
@@ -85,21 +91,24 @@ namespace cacto
         return m_maxHeight;
     }
 
-    void Block::setMaxHeight(f32t value)
+    Block &Block::setMaxHeight(f32t value)
     {
         m_maxHeight = value;
+        return *this;
     }
 
-    void Block::setFixedWidth(f32t value)
+    Block &Block::setFixedWidth(f32t value)
     {
         m_minWidth = value;
         m_maxWidth = value;
+        return *this;
     }
 
-    void Block::setFixedHeight(f32t value)
+    Block &Block::setFixedHeight(f32t value)
     {
         m_minHeight = value;
         m_maxHeight = value;
+        return *this;
     }
 
     Box Block::getContainerBox() const

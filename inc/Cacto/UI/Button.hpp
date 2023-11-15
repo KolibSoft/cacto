@@ -1,7 +1,6 @@
 #ifndef CACTO_BUTTON_HPP
 #define CACTO_BUTTON_HPP
 
-#include <Cacto/Window/EventNode.hpp>
 #include <Cacto/Window/Clickable.hpp>
 #include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
@@ -11,14 +10,13 @@ namespace cacto
 
     class CACTO_UI_API Button
         : public Label,
-          public virtual EventNode,
           public virtual Clickable,
           public virtual Focusable
     {
 
     public:
         const EventListener &getOnClickListener() const;
-        void setOnClickListener(const EventListener &value);
+        Button &setOnClickListener(const EventListener &value);
 
         Button(const sf::Font &font, const sf::String &string = "", u32t characterSize = 30);
         Button(sf::Font &&font, const sf::String &string = "", u32t characterSize = 30) = delete;

@@ -20,9 +20,10 @@ namespace cacto
         return m_hAnchor;
     }
 
-    void FrameLayout::setHorizontalAnchor(Anchor value)
+    FrameLayout &FrameLayout::setHorizontalAnchor(Anchor value)
     {
         m_hAnchor = value;
+        return *this;
     }
 
     FrameLayout::Anchor FrameLayout::getVerticalAnchor() const
@@ -30,9 +31,10 @@ namespace cacto
         return m_vAnchor;
     }
 
-    void FrameLayout::setVerticalAnchor(Anchor value)
+    FrameLayout &FrameLayout::setVerticalAnchor(Anchor value)
     {
         m_vAnchor = value;
+        return *this;
     }
 
     void FrameLayout::append(Node &child)
@@ -75,7 +77,7 @@ namespace cacto
         m_vAnchor = other.m_vAnchor;
         return *this;
     }
-    
+
     const sf::Vector2f &FrameLayout::getChildSize() const
     {
         return m_childSize;

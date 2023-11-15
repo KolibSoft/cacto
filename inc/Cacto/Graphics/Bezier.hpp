@@ -2,7 +2,6 @@
 #define CACTO_BEZIER_HPP
 
 #include <vector>
-#include <Cacto/Graphics/Export.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace cacto

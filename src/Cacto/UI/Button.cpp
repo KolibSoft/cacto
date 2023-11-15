@@ -9,9 +9,10 @@ namespace cacto
         return m_onClick;
     }
 
-    void Button::setOnClickListener(const EventListener &value)
+    Button &Button::setOnClickListener(const EventListener &value)
     {
         m_onClick = value;
+        return *this;
     }
 
     Button::Button(const sf::Font &font, const sf::String &string, u32t characterSize)

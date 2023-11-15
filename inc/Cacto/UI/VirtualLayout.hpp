@@ -2,7 +2,6 @@
 #define CACTO_VIRTUAL_LAYOUT_HPP
 
 #include <SFML/Graphics/RenderTexture.hpp>
-#include <Cacto/Window/EventNode.hpp>
 #include <Cacto/UI/FrameLayout.hpp>
 
 namespace cacto

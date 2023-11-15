@@ -9,9 +9,10 @@ namespace cacto
         return m_onInput;
     }
 
-    void Input::setOnInputListener(const EventListener &value)
+    Input &Input::setOnInputListener(const EventListener &value)
     {
         m_onInput = value;
+        return *this;
     }
 
     Input::Input(const sf::Font &font, const sf::String &string, u32t characterSize)

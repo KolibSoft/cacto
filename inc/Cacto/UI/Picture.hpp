@@ -20,16 +20,16 @@ namespace cacto
         };
 
         Scale getScale() const;
-        void setScale(Scale value);
+        Picture& setScale(Scale value);
 
         const sf::FloatRect& getTextureRect() const;
-        void setTextureRect(const sf::FloatRect& value);
+        Picture& setTextureRect(const sf::FloatRect& value);
 
         Anchor getHorizontalAnchor() const;
-        void setHorizontalAnchor(Anchor value);
+        Picture& setHorizontalAnchor(Anchor value);
 
         Anchor getVerticalAnchor() const;
-        void setVerticalAnchor(Anchor value);
+        Picture& setVerticalAnchor(Anchor value);
 
         const Surface &getSurface() const;
         Surface &getSurface();

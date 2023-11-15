@@ -27,42 +27,48 @@ int main()
     background.setColor(sf::Color::Red);
 
     cacto::ScrollLayout root{};
-    root.setBackground(&background);
-    root.setMargin(10);
-    root.setPadding(10);
+    root
+        .setBackground(&background)
+        .setMargin(10)
+        .setPadding(10);
 
     cacto::ScrollLayout subscroll{};
     auto bgSubscroll = background;
     bgSubscroll.setColor(sf::Color::Yellow);
-    subscroll.setBackground(&bgSubscroll);
-    subscroll.setMargin(10);
-    subscroll.setPadding(10);
+    subscroll
+        .setBackground(&bgSubscroll)
+        .setMargin(10)
+        .setPadding(10);
 
     cacto::Button button{font, "It Works"};
     auto bgBlock = background;
     bgBlock.setColor(sf::Color::Blue);
-    button.setBackground(&bgBlock);
-    button.setMargin(10);
-    button.setFixedWidth(400);
-    button.setFixedHeight(400);
-    button.setPadding(10);
-    button.setHorizontalAnchor(cacto::Box::Center);
-    button.setVerticalAnchor(cacto::Box::Center);
-
-    button.setOnClickListener([](auto &node, auto &event)
-                              { std::cout << "Clicked\n"; });
+    button
+        .setOnClickListener([](auto &node, auto &event)
+                            { std::cout << "Clicked\n"; })
+        .setHorizontalAnchor(cacto::Box::Center)
+        .setVerticalAnchor(cacto::Box::Center)
+        .setBackground(&bgBlock)
+        .setMargin(10)
+        .setFixedWidth(400)
+        .setFixedHeight(400)
+        .setPadding(10);
 
     subscroll.append(button);
-    subscroll.setHorizontalAnchor(cacto::Block::Center);
-    subscroll.setVerticalAnchor(cacto::Block::Center);
-    subscroll.setFixedWidth(300);
-    subscroll.setFixedHeight(300);
+
+    subscroll
+        .setHorizontalAnchor(cacto::Block::Center)
+        .setVerticalAnchor(cacto::Block::Center)
+        .setFixedWidth(300)
+        .setFixedHeight(300);
 
     root.append(subscroll);
-    root.setHorizontalAnchor(cacto::Block::Center);
-    root.setVerticalAnchor(cacto::Block::Center);
-    root.setFixedWidth(200);
-    root.setFixedHeight(200);
+
+    root
+        .setHorizontalAnchor(cacto::Block::Center)
+        .setVerticalAnchor(cacto::Block::Center)
+        .setFixedWidth(200)
+        .setFixedHeight(200);
 
     while (window.isOpen())
     {

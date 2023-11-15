@@ -4,7 +4,6 @@
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
-#include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
 {

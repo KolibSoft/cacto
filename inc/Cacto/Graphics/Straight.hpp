@@ -1,7 +1,6 @@
 #ifndef CACTO_STRAIGHT_HPP
 #define CACTO_STRAIGHT_HPP
 
-#include <Cacto/Graphics/Export.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace cacto

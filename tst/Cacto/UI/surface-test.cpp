@@ -11,24 +11,23 @@
 #include <Cacto/UI/Surface.hpp>
 auto _ = false;
 
-enum Textures
+namespace R
 {
-    SurfaceTexture
-};
-
-cacto::Loader<sf::Texture> textures;
+    auto texture = cacto::Loader<sf::Texture>::fromFile("res/fondo.png");
+}
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    textures.setLoadFromFile(SurfaceTexture, "res/fondo.png");
-    auto texture = textures.get(SurfaceTexture);
+    auto texture = R::texture.get();
     texture->setRepeated(true);
 
-    auto root = cacto::textureSurface(*texture.get());
-    root.setTextureRect({{-100, -100}, {1000, 1000}});
+    auto root = cacto::colorSurface(sf::Color::White);
+
+    root.setTexture(texture.get())
+        .setTextureRect({{-100, -100}, {1000, 1000}});
 
     while (window.isOpen())
     {

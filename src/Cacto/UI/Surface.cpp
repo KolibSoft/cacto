@@ -19,10 +19,11 @@ namespace cacto
         return *m_geometry;
     }
 
-    void Surface::setGeometry(Geometry &value)
+    Surface &Surface::setGeometry(Geometry &value)
     {
         m_geometry = &value;
         m_invalid = true;
+        return *this;
     }
 
     szt Surface::getPrecision() const
@@ -30,12 +31,13 @@ namespace cacto
         return m_precision;
     }
 
-    void Surface::setPrecision(szt value)
+    Surface &Surface::setPrecision(szt value)
     {
         if (value < 1)
             value = 1;
         m_precision = value;
         m_invalid = true;
+        return *this;
     }
 
     const sf::Color &Surface::getColor() const
@@ -43,10 +45,11 @@ namespace cacto
         return m_color;
     }
 
-    void Surface::setColor(const sf::Color &value)
+    Surface &Surface::setColor(const sf::Color &value)
     {
         m_color = value;
         m_invalid = true;
+        return *this;
     }
 
     const sf::Texture *const Surface::getTexture() const
@@ -54,7 +57,7 @@ namespace cacto
         return m_texture;
     }
 
-    void Surface::setTexture(const sf::Texture *const value, bool resetRect)
+    Surface &Surface::setTexture(const sf::Texture *const value, bool resetRect)
     {
         m_texture = value;
         m_invalid = true;
@@ -65,6 +68,7 @@ namespace cacto
             else
                 setTextureRect({{0, 0}, {0, 0}});
         }
+        return *this;
     }
 
     const sf::FloatRect &Surface::getTextureRect() const
@@ -72,10 +76,11 @@ namespace cacto
         return m_textureRect;
     }
 
-    void Surface::setTextureRect(const sf::FloatRect &value)
+    Surface &Surface::setTextureRect(const sf::FloatRect &value)
     {
         m_textureRect = value;
         m_invalid = true;
+        return *this;
     }
 
     void Surface::update(bool force) const
