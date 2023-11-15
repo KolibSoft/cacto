@@ -20,8 +20,6 @@ namespace cacto
     public:
         using Holder = anchor_layout::Holder;
 
-        Node *const getParent() const override;
-
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
@@ -55,9 +53,6 @@ namespace cacto
         AnchorLayout &operator=(const AnchorLayout &other);
 
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
-
         void onAppend(Node &child) override;
         void onRemove(Node &child) override;
 
@@ -67,7 +62,6 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        Node *m_parent;
         std::vector<Holder> m_holders;
     };
 
@@ -85,8 +79,8 @@ namespace cacto
             AnchorLayout::Anchor getVerticalAnchor() const;
             Holder &setVerticalAnchor(AnchorLayout::Anchor value);
 
-            f32t getHorizonatalWeight() const;
-            Holder &setHorizonatalWeight(f32t value);
+            f32t getHorizontalWeight() const;
+            Holder &setHorizontalWeight(f32t value);
 
             f32t getVerticalWeight() const;
             Holder &setVerticalWeight(f32t value);

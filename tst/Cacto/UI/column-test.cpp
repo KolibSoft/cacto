@@ -106,7 +106,7 @@ int main()
     root.setBackground(&background);
     root.setMargin(10);
     root.setPadding(10);
-    root.setDirection(cacto::Layout::Reverse);
+    root.setDirection(cacto::ColumnLayout::Reverse);
 
     root.append(picture);
     root.setHorizontalAnchor(picture, cacto::Box::Start);

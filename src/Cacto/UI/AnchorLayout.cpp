@@ -4,11 +4,6 @@
 namespace cacto
 {
 
-    Node *const AnchorLayout::getParent() const
-    {
-        return m_parent;
-    }
-
     szt AnchorLayout::getChildCount() const
     {
         return m_holders.size();
@@ -66,7 +61,7 @@ namespace cacto
         if (index < 0)
             throw std::runtime_error("The node is not a child");
         auto &holder = m_holders.at(index);
-        return holder.getHorizonatalWeight();
+        return holder.getHorizontalWeight();
     }
 
     AnchorLayout &AnchorLayout::setHorizontalWeight(Node &child, f32t value)
@@ -75,7 +70,7 @@ namespace cacto
         if (index < 0)
             throw std::runtime_error("The node is not a child");
         auto &holder = m_holders.at(index);
-        holder.setHorizonatalWeight(value);
+        holder.setHorizontalWeight(value);
         return *this;
     }
 
@@ -110,8 +105,7 @@ namespace cacto
     }
 
     AnchorLayout::AnchorLayout()
-        : m_parent(nullptr),
-          m_holders()
+        : m_holders()
     {
     }
 
@@ -123,7 +117,6 @@ namespace cacto
 
     AnchorLayout::AnchorLayout(const AnchorLayout &other)
         : Block(other),
-          m_parent(nullptr),
           m_holders()
     {
     }
@@ -132,16 +125,6 @@ namespace cacto
     {
         Block::operator=(other);
         return *this;
-    }
-
-    void AnchorLayout::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void AnchorLayout::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
     }
 
     void AnchorLayout::onAppend(Node &child)
@@ -170,7 +153,7 @@ namespace cacto
             auto contentBox = getContentBox();
             sf::Vector2f contentSize{contentBox.getWidth(), contentBox.getHeight()};
             for (auto &holder : m_holders)
-                holder.inflate({contentSize.x * holder.getHorizonatalWeight(), contentSize.y * holder.getVerticalWeight()});
+                holder.inflate({contentSize.x * holder.getHorizontalWeight(), contentSize.y * holder.getVerticalWeight()});
         }
         return size;
     }
@@ -217,12 +200,12 @@ namespace cacto
             return *this;
         }
 
-        f32t Holder::getHorizonatalWeight() const
+        f32t Holder::getHorizontalWeight() const
         {
             return m_hWeight;
         }
 
-        Holder &Holder::setHorizonatalWeight(f32t value)
+        Holder &Holder::setHorizontalWeight(f32t value)
         {
             m_hWeight = value;
             return *this;
