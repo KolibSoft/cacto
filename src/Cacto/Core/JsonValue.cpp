@@ -282,12 +282,12 @@ namespace cacto
         return equals(other);
     }
 
-    const JsonValue JsonValue::NumberValue{0.f};
-    const JsonValue JsonValue::StringValue{std::string()};
-    const JsonValue JsonValue::BooleanValue{false};
-    const JsonValue JsonValue::NullValue{nullptr};
-    const JsonValue JsonValue::ArrayValue{std::vector<JsonValue>()};
-    const JsonValue JsonValue::ObjectValue{std::unordered_map<std::string, JsonValue>()};
+    const JsonValue JsonValue::NumberValue = 0.0;
+    const JsonValue JsonValue::StringValue = std::string();
+    const JsonValue JsonValue::BooleanValue = false;
+    const JsonValue JsonValue::NullValue = nullptr;
+    const JsonValue JsonValue::ArrayValue = std::vector<JsonValue>();
+    const JsonValue JsonValue::ObjectValue = std::unordered_map<std::string, JsonValue>();
 
     void JsonValue::drop()
     {

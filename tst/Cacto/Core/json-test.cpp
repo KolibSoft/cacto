@@ -38,5 +38,13 @@ int main()
     comparison = json == cacto::JsonValue{std::pair{"number", 25.0}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}};
     auto object = json.asObject();
 
+    json = cacto::JsonValue::ArrayValue;
+    json.asArray().push_back(25.0);
+    json.asArray().push_back("String");
+    json.asArray().push_back(true);
+    json.asArray().push_back(nullptr);
+    json.asArray().push_back(cacto::JsonValue::ArrayValue.asArray());
+    json.asArray().push_back(cacto::JsonValue::ObjectValue.asObject());
+
     return 0;
 }
