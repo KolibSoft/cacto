@@ -107,6 +107,85 @@ namespace cacto
         return *m_object;
     }
 
+    void JsonValue::scan(JsonScanner &scanner)
+    {
+        drop();
+        scanner.dropBlank();
+        if (scanner.scanNumber())
+        {
+            auto token = scanner.take();
+            m_kind = Number;
+            m_number = std::stod(token);
+            return;
+        }
+        if (scanner.scanString())
+        {
+            auto token = scanner.take();
+            m_kind = String;
+            m_string = new std::string(token.substr(1, token.size() - 2));
+            return;
+        }
+        if (scanner.scanBoolean())
+        {
+            auto token = scanner.take();
+            m_kind = Boolean;
+            m_boolean = token == "true";
+            return;
+        }
+        if (scanner.scanNull())
+        {
+            scanner.drop();
+            m_kind = Null;
+            m_number = 0;
+            return;
+        }
+        if (scanner.dropToken("["))
+        {
+            m_kind = Array;
+            m_array = new std::vector<JsonValue>();
+            scanner.dropBlank();
+            if (!scanner.dropToken("]"))
+            {
+            array_item:
+                m_array->push_back(nullptr);
+                m_array->back().scan(scanner);
+                scanner.dropBlank();
+                if (scanner.dropToken(","))
+                    goto array_item;
+                if (!scanner.dropToken("]"))
+                    throw std::runtime_error("JSON parse error: unclosed array");
+            }
+            return;
+        }
+        if (scanner.dropToken("{"))
+        {
+            m_kind = Object;
+            m_object = new std::unordered_map<std::string, JsonValue>();
+            scanner.dropBlank();
+            if (!scanner.dropToken("}"))
+            {
+            property_item:
+                scanner.dropBlank();
+                if (!scanner.scanString())
+                    throw std::runtime_error("JSON parse error: expected property name");
+                auto token = scanner.take();
+                auto name = token.substr(1, token.size() - 2);
+                scanner.dropBlank();
+                if (!scanner.dropToken(":"))
+                    throw std::runtime_error("JSON parse error: expected ':'");
+                m_object->operator[](name) = nullptr;
+                m_object->at(name).scan(scanner);
+                scanner.dropBlank();
+                if (scanner.dropToken(","))
+                    goto property_item;
+                if (!scanner.dropToken("}"))
+                    throw std::runtime_error("JSON parse error: unclosed object");
+            }
+            return;
+        }
+        throw std::runtime_error("JSON parse error: unknown value");
+    }
+
     std::string JsonValue::toString(szt ident, szt offset) const
     {
         auto string = std::string(offset, ' ');
@@ -171,87 +250,11 @@ namespace cacto
         return string;
     }
 
-    i32t JsonValue::fromString(const std::string &string, i32t start)
+    void JsonValue::fromString(const std::string &string)
     {
-        drop();
         JsonScanner scanner{};
-        scanner.setSource(&string, start);
-        scanner.dropBlank();
-        if (scanner.scanNumber())
-        {
-            auto token = scanner.take();
-            m_kind = Number;
-            m_number = std::stod(token);
-            return scanner.getStart() - start;
-        }
-        if (scanner.scanString())
-        {
-            auto token = scanner.take();
-            m_kind = String;
-            m_string = new std::string(token.substr(1, token.size() - 2));
-            return scanner.getStart() - start;
-        }
-        if (scanner.scanBoolean())
-        {
-            auto token = scanner.take();
-            m_kind = Boolean;
-            m_boolean = token == "true";
-            return scanner.getStart() - start;
-        }
-        if (scanner.scanNull())
-        {
-            scanner.drop();
-            m_kind = Null;
-            m_number = 0;
-            return scanner.getStart() - start;
-        }
-        if (scanner.dropToken("["))
-        {
-            m_kind = Array;
-            m_array = new std::vector<JsonValue>();
-            scanner.dropBlank();
-            if (!scanner.dropToken("]"))
-            {
-            array_item:
-                m_array->push_back(nullptr);
-                auto index = m_array->back().fromString(string, scanner.getStart());
-                scanner.setStart(scanner.getStart() + index);
-                scanner.dropBlank();
-                if (scanner.dropToken(","))
-                    goto array_item;
-                if (!scanner.dropToken("]"))
-                    throw std::runtime_error("JSON parse error: unclosed array");
-            }
-            return scanner.getStart() - start;
-        }
-        if (scanner.dropToken("{"))
-        {
-            m_kind = Object;
-            m_object = new std::unordered_map<std::string, JsonValue>();
-            scanner.dropBlank();
-            if (!scanner.dropToken("}"))
-            {
-            property_item:
-                scanner.dropBlank();
-                if (!scanner.scanString())
-                    throw std::runtime_error("JSON parse error: expected property name");
-                auto token = scanner.take();
-                auto name = token.substr(1, token.size() - 2);
-                scanner.dropBlank();
-                if (!scanner.dropToken(":"))
-                    throw std::runtime_error("JSON parse error: expected ':'");
-                m_object->operator[](name) = nullptr;
-                auto index = m_object->at(name).fromString(string, scanner.getStart());
-                scanner.setStart(scanner.getStart() + index);
-                scanner.dropBlank();
-                if (scanner.dropToken(","))
-                    goto property_item;
-                if (!scanner.dropToken("}"))
-                    throw std::runtime_error("JSON parse error: unclosed object");
-            }
-            return scanner.getStart() - start;
-        }
-        throw std::runtime_error("JSON parse error: unknown value");
+        scanner.setSource(&string);
+        scan(scanner);
     }
 
     bool JsonValue::equals(const JsonValue &other) const
