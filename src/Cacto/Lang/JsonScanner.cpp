@@ -105,12 +105,6 @@ namespace cacto
         return index;
     }
 
-    i32t JsonScanner::scanNull()
-    {
-        auto index = scanToken("null");
-        return index;
-    }
-
     i32t JsonScanner::scanBoolean()
     {
         auto index = scanGroup({[&]
@@ -121,6 +115,12 @@ namespace cacto
                                 {
                                     return scanToken("true");
                                 }});
+        return index;
+    }
+
+    i32t JsonScanner::scanNull()
+    {
+        auto index = scanToken("null");
         return index;
     }
 

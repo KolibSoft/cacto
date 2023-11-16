@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <Cacto/Lang/JsonPrinter.hpp>
+#include <Cacto/Lang/JsonScanner.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 
 namespace cacto
@@ -107,6 +109,83 @@ namespace cacto
         return *m_object;
     }
 
+    void JsonValue::print(JsonPrinter &printer) const
+    {
+        switch (m_kind)
+        {
+        case Number:
+            printer.printNumber(m_number);
+            break;
+        case String:
+            printer.printString(*m_string);
+            break;
+        case Boolean:
+            printer.printBoolean(m_boolean);
+            break;
+        case Null:
+            printer.printNull();
+            break;
+        case Array:
+            printer.print("[");
+            if (m_array->size() > 0)
+            {
+                if (printer.getIdentation() > 0)
+                {
+                    printer.ident();
+                    printer.println();
+                }
+                for (auto &value : *m_array)
+                {
+                    value.print(printer);
+                    printer.print(",");
+                    if (printer.getIdentation() > 0)
+                        printer.println();
+                }
+                if (printer.getIdentation() > 0)
+                    printer.backspaceln();
+                printer.backspace();
+                if (printer.getIdentation() > 0)
+                {
+                    printer.dedent();
+                    printer.println();
+                }
+            }
+            printer.print("]");
+            break;
+        case Object:
+            printer.print("{");
+            if (m_object->size() > 0)
+            {
+                if (printer.getIdentation() > 0)
+                {
+                    printer.ident();
+                    printer.println();
+                }
+                for (auto &pair : *m_object)
+                {
+                    printer.print('"' + pair.first + "\":");
+                    if (printer.getIdentation() > 0)
+                        printer.print(" ");
+
+                    pair.second.print(printer);
+                    printer.print(",");
+                    if (printer.getIdentation() > 0)
+                        printer.println();
+                }
+                if (printer.getIdentation() > 0)
+                    printer.backspaceln();
+                printer.backspace();
+                if (printer.getIdentation() > 0)
+                {
+                    printer.dedent();
+                    printer.println();
+                }
+            }
+            printer.print("}");
+            break;
+        }
+    }
+
     void JsonValue::scan(JsonScanner &scanner)
     {
         drop();
@@ -186,67 +265,13 @@ namespace cacto
         throw std::runtime_error("JSON parse error: unknown value");
     }
 
-    std::string JsonValue::toString(szt ident, szt offset) const
+    std::string JsonValue::toString(szt identation) const
     {
-        auto string = std::string(offset, ' ');
-        switch (m_kind)
-        {
-        case Number:
-            string += std::to_string(m_number);
-            break;
-        case String:
-            string += '"' + *m_string + '"';
-            break;
-        case Boolean:
-            string += m_boolean ? "true" : "false";
-            break;
-        case Null:
-            string += "null";
-            break;
-        case Array:
-            string += '[';
-            if (m_array->size() > 0)
-            {
-                if (ident > 0)
-                    string += '\n';
-                for (auto &value : *m_array)
-                {
-                    string += value.toString(ident, offset + ident) + ',';
-                    if (ident > 0)
-                        string += '\n';
-                }
-                string.pop_back();
-                if (ident > 0)
-                    string.pop_back();
-                if (ident > 0)
-                    string += '\n' + std::string(offset, ' ');
-            }
-            string += ']';
-            break;
-        case Object:
-            string += '{';
-            if (m_object->size() > 0)
-            {
-                if (ident > 0)
-                    string += '\n';
-                for (auto &pair : *m_object)
-                {
-                    string += std::string(offset + ident, ' ') + '"' + pair.first + "\":";
-                    if (ident > 0)
-                        string += ' ';
-                    string += pair.second.toString(ident, offset + ident).substr(offset + ident) + ',';
-                    if (ident > 0)
-                        string += '\n';
-                }
-                string.pop_back();
-                if (ident > 0)
-                    string.pop_back();
-                if (ident > 0)
-                    string += '\n' + std::string(offset, ' ');
-            }
-            string += '}';
-            break;
-        }
+        std::string string;
+        JsonPrinter printer{};
+        printer.setTarget(&string);
+        printer.setIdentation(identation);
+        print(printer);
         return string;
     }
 

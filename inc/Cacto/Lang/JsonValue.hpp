@@ -9,6 +9,7 @@
 namespace cacto
 {
 
+    class JsonPrinter;
     class JsonScanner;
 
     class CACTO_LANG_API JsonValue final
@@ -48,9 +49,10 @@ namespace cacto
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
 
+        void print(JsonPrinter &printer) const;
         void scan(JsonScanner &scanner);
 
-        std::string toString(szt ident = 0, szt offset = 0) const;
+        std::string toString(szt identation = 0) const;
         void fromString(const std::string &string);
 
         bool equals(const JsonValue &other) const;
