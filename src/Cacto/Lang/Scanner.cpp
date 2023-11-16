@@ -52,9 +52,17 @@ namespace cacto
         if (!m_source)
             throw std::runtime_error("Not source");
         auto token = m_source->substr(m_start, m_cursor);
-        m_start = m_cursor;
+        m_start += m_cursor;
         m_cursor = 0;
         return token;
+    }
+
+    void Scanner::drop()
+    {
+        if (!m_source)
+            throw std::runtime_error("Not source");
+        m_start += m_cursor;
+        m_cursor = 0;
     }
 
     i32t Scanner::scanClass(const std::string &set)
@@ -147,9 +155,47 @@ namespace cacto
         return index;
     }
 
+    i32t Scanner::scanBlank()
+    {
+        auto index = scanClass(" \t\n");
+        return index;
+    }
+
     i32t Scanner::scanDigit()
     {
         auto index = scanClass("0123456789");
+        return index;
+    }
+
+    i32t Scanner::scanWord()
+    {
+        auto index = scanClass("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        return index;
+    }
+
+    i32t Scanner::scanIdentifier()
+    {
+        auto under = [&]
+        {
+            return scanToken("_");
+        };
+        auto word = [&]
+        {
+            return scanWord();
+        };
+        auto digit = [&]
+        {
+            return scanDigit();
+        };
+        auto index = scanSequence({[&]
+                                   {
+                                       return scanGroup({under, word});
+                                   },
+                                   [&]
+                                   {
+                                       return scanWhile([&]
+                                                        { return scanGroup({under, word, digit}); });
+                                   }});
         return index;
     }
 

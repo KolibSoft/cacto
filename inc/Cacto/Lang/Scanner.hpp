@@ -23,6 +23,7 @@ namespace cacto
 
         c8t available(i32t index = 0) const;
         std::string take();
+        void drop();
 
         i32t scanClass(const std::string &set);
         i32t scanToken(const std::string &set);
@@ -33,7 +34,10 @@ namespace cacto
         i32t scanNot(std::function<i32t()> set);
         i32t scanWhile(std::function<i32t()> set);
 
+        i32t scanBlank();
         i32t scanDigit();
+        i32t scanWord();
+        i32t scanIdentifier();
 
         Scanner();
         virtual ~Scanner();

@@ -173,7 +173,112 @@ namespace cacto
 
     i32t JsonValue::fromString(const std::string &string, i32t start)
     {
-        throw std::runtime_error("Not implemented");
+        drop();
+        JsonScanner scanner{};
+        scanner.setSource(&string);
+        scanner.setStart(start);
+        scanner.scanBlank();
+        scanner.drop();
+        if (scanner.scanNumber())
+        {
+            auto token = scanner.take();
+            m_kind = Number;
+            m_number = std::stod(token);
+            return scanner.getStart() - start;
+        }
+        if (scanner.scanString())
+        {
+            auto token = scanner.take();
+            m_kind = String;
+            m_string = new std::string(token.substr(1, token.size() - 2));
+            return scanner.getStart() - start;
+        }
+        if (scanner.scanBoolean())
+        {
+            auto token = scanner.take();
+            m_kind = Boolean;
+            m_boolean = token == "true";
+            return scanner.getStart() - start;
+        }
+        if (scanner.scanNull())
+        {
+            scanner.drop();
+            m_kind = Null;
+            m_number = 0;
+            return scanner.getStart() - start;
+        }
+        if (scanner.scanToken("["))
+        {
+            m_kind = Array;
+            m_array = new std::vector<JsonValue>();
+            scanner.drop();
+            scanner.scanBlank();
+            scanner.drop();
+            if (scanner.scanToken("]"))
+            {
+                scanner.drop();
+            }
+            else
+            {
+            array_item:
+                m_array->push_back(nullptr);
+                auto index = m_array->back().fromString(string, scanner.getStart());
+                scanner.setStart(scanner.getStart() + index);
+                scanner.scanBlank();
+                scanner.drop();
+                if (scanner.scanToken(","))
+                {
+                    scanner.drop();
+                    goto array_item;
+                }
+                if (!scanner.scanToken("]"))
+                    throw std::runtime_error("JSON parse error: unclosed array");
+                scanner.drop();
+            }
+            return scanner.getStart() - start;
+        }
+        if (scanner.scanToken("{"))
+        {
+            m_kind = Object;
+            m_object = new std::unordered_map<std::string, JsonValue>();
+            scanner.drop();
+            scanner.scanBlank();
+            scanner.drop();
+            if (scanner.scanToken("}"))
+            {
+                scanner.drop();
+            }
+            else
+            {
+            property_item:
+                scanner.scanBlank();
+                scanner.drop();
+                if (!scanner.scanString())
+                    throw std::runtime_error("JSON parse error: expected property name");
+                auto token = scanner.take();
+                auto name = token.substr(1, token.size() - 2);
+                scanner.scanBlank();
+                scanner.drop();
+                if (!scanner.scanToken(":"))
+                    throw std::runtime_error("JSON parse error: expected ':'");
+                scanner.drop();
+                m_object->operator[](name) = nullptr;
+                auto index = m_object->at(name).fromString(string, scanner.getStart());
+                scanner.setStart(scanner.getStart() + index);
+                scanner.scanBlank();
+                scanner.drop();
+                if (scanner.scanToken(","))
+                {
+                    scanner.drop();
+                    goto property_item;
+                }
+                if (!scanner.scanToken("}"))
+                    throw std::runtime_error("JSON parse error: unclosed object");
+                scanner.drop();
+            }
+            return scanner.getStart() - start;
+        }
+        throw std::runtime_error("JSON parse error: unknown value");
     }
 
     bool JsonValue::equals(const JsonValue &other) const
@@ -277,15 +382,8 @@ namespace cacto
     }
 
     JsonValue::JsonValue(const JsonValue &other)
-        : JsonValue(nullptr)
+        : m_kind(other.m_kind)
     {
-        *this = other;
-    }
-
-    JsonValue &JsonValue::operator=(const JsonValue &other)
-    {
-        drop();
-        m_kind = other.m_kind;
         switch (m_kind)
         {
         case Number:
@@ -307,6 +405,12 @@ namespace cacto
             m_object = new std::unordered_map<std::string, JsonValue>(*other.m_object);
             break;
         }
+    }
+
+    JsonValue &JsonValue::operator=(const JsonValue &other)
+    {
+        auto copy = JsonValue(other);
+        *this = std::move(copy);
         return *this;
     }
 

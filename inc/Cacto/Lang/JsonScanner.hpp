@@ -17,6 +17,10 @@ namespace cacto
         i32t scanEscape();
         i32t scanString();
 
+        i32t scanNull();
+
+        i32t scanBoolean();
+
         JsonScanner();
         virtual ~JsonScanner();
     };
