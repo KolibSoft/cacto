@@ -113,7 +113,7 @@ namespace cacto
         switch (m_kind)
         {
         case Number:
-            string += '"' + std::to_string(m_number) + '"';
+            string += std::to_string(m_number);
             break;
         case String:
             string += '"' + *m_string + '"';
@@ -173,7 +173,7 @@ namespace cacto
 
     i32t JsonValue::fromString(const std::string &string, i32t start)
     {
-
+        throw std::runtime_error("Not implemented");
     }
 
     bool JsonValue::equals(const JsonValue &other) const

@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <Cacto/Core/JsonValue.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 
 int main()
 {
@@ -47,7 +47,7 @@ int main()
     json.asArray().push_back({std::pair{"number", 25.0}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}});
     auto &value = json[5]["object"];
     // value = cacto::JsonValue(json);
-    std::cout << json.toString(0);
+    std::cout << json.toString(2);
 
     return 0;
 }
