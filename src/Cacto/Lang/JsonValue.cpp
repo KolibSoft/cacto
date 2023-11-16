@@ -1,5 +1,5 @@
 #include <stdexcept>
-#include <Cacto/Core/JsonValue.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 
 namespace cacto
 {
@@ -171,8 +171,9 @@ namespace cacto
         return string;
     }
 
-    void JsonValue::fromString(const std::string &string)
+    i32t JsonValue::fromString(const std::string &string, i32t start)
     {
+
     }
 
     bool JsonValue::equals(const JsonValue &other) const

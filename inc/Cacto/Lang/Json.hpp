@@ -1,7 +1,7 @@
 #ifndef CACTO_JSON_HPP
 #define CACTO_JSON_HPP
 
-#include <Cacto/Core/JsonValue.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 
 namespace cacto
 {

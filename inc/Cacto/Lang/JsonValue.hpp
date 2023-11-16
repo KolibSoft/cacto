@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <Cacto/Core/Export.hpp>
+#include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
 
-    class CACTO_CORE_API JsonValue final
+    class CACTO_LANG_API JsonValue final
     {
 
     public:
@@ -47,7 +47,7 @@ namespace cacto
         std::unordered_map<std::string, JsonValue> &asObject();
 
         std::string toString(szt ident = 0, szt offset = 0) const;
-        void fromString(const std::string &string);
+        i32t fromString(const std::string &string, i32t start = 0);
 
         bool equals(const JsonValue &other) const;
 
