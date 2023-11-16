@@ -9,11 +9,11 @@ namespace cacto
         return m_source;
     }
 
-    void Scanner::setSource(const std::string *value)
+    void Scanner::setSource(const std::string *value, i32t start, i32t cursor)
     {
         m_source = value;
-        m_start = 0;
-        m_cursor = 0;
+        m_start = start;
+        m_cursor = cursor;
     }
 
     i32t Scanner::getStart() const
@@ -196,6 +196,20 @@ namespace cacto
                                        return scanWhile([&]
                                                         { return scanGroup({under, word, digit}); });
                                    }});
+        return index;
+    }
+
+    i32t Scanner::dropBlank()
+    {
+        auto index = scanBlank();
+        drop();
+        return index;
+    }
+
+    i32t Scanner::dropToken(const std::string &set)
+    {
+        auto index = scanToken(set);
+        drop();
         return index;
     }
 

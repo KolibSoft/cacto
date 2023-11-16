@@ -13,7 +13,7 @@ namespace cacto
 
     public:
         const std::string *getSource() const;
-        void setSource(const std::string *value);
+        void setSource(const std::string *value, i32t start = 0, i32t cursor = 0);
 
         i32t getStart() const;
         void setStart(i32t value);
@@ -38,6 +38,9 @@ namespace cacto
         i32t scanDigit();
         i32t scanWord();
         i32t scanIdentifier();
+
+        i32t dropBlank();
+        i32t dropToken(const std::string& set);
 
         Scanner();
         virtual ~Scanner();
