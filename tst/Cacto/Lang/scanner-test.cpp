@@ -13,7 +13,7 @@ int main()
         if (string == "exit")
             break;
         scanner.setSource(&string);
-        auto index = scanner.scanNumber();
+        auto index = scanner.scanString();
         auto token = scanner.take();
         std::cout << "Token: " << token << '\n';
     }

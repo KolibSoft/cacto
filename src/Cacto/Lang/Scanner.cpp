@@ -125,6 +125,28 @@ namespace cacto
         return index;
     }
 
+    i32t Scanner::scanNot(std::function<i32t()> set)
+    {
+        i32t index = 0;
+        i32t step = 0;
+        while ((step = set()) <= 0)
+        {
+            index += 1;
+            m_cursor += 1;
+        }
+        m_cursor -= step;
+        return index;
+    }
+
+    i32t Scanner::scanWhile(std::function<i32t()> set)
+    {
+        i32t index = 0;
+        i32t step = 0;
+        while (available(0) && (step = set()) > 0)
+            index += step;
+        return index;
+    }
+
     i32t Scanner::scanDigit()
     {
         auto index = scanClass("0123456789");

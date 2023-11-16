@@ -63,6 +63,48 @@ namespace cacto
         return index;
     }
 
+    i32t JsonScanner::scanEscape()
+    {
+        auto eScan = [&]
+        {
+            return scanToken("\\");
+        };
+        auto cScan = [&]
+        {
+            return scanRange(1, 1, [&]
+                             { return scanClass("\"\\/bfnrt"); });
+        };
+        auto index = scanSequence({eScan, cScan});
+        return index;
+    }
+
+    i32t JsonScanner::scanString()
+    {
+        auto eScan = [&]
+        {
+            return scanOption([&]
+                              { return scanEscape(); });
+        };
+        auto cScan = [&]
+        {
+            return scanOption([&]
+                              { return scanNot([&]
+                                               { return scanClass("\"\\"); }); });
+        };
+        auto sScan = [&]
+        {
+            return scanOption([&]
+                              { return scanWhile([&]
+                                                 { return scanGroup({eScan, cScan}); }); });
+        };
+        auto qScan = [&]
+        {
+            return scanToken("\"");
+        };
+        auto index = scanSequence({qScan, sScan, qScan});
+        return index;
+    }
+
     JsonScanner::JsonScanner() = default;
     JsonScanner::~JsonScanner() = default;
 

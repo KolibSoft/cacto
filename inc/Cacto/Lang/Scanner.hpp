@@ -30,6 +30,8 @@ namespace cacto
         i32t scanSequence(std::initializer_list<std::function<i32t()>> set);
         i32t scanOption(std::function<i32t()> set);
         i32t scanRange(i32t min, i32t max, std::function<i32t()> set);
+        i32t scanNot(std::function<i32t()> set);
+        i32t scanWhile(std::function<i32t()> set);
 
         i32t scanDigit();
 
