@@ -43,8 +43,11 @@ int main()
     json.asArray().push_back("String");
     json.asArray().push_back(true);
     json.asArray().push_back(nullptr);
-    json.asArray().push_back(cacto::JsonValue::ArrayValue.asArray());
-    json.asArray().push_back(cacto::JsonValue::ObjectValue.asObject());
+    json.asArray().push_back({25.0, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()});
+    json.asArray().push_back({std::pair{"number", 25.0}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}});
+    auto &value = json[5]["object"];
+    // value = cacto::JsonValue(json);
+    std::cout << json.toString(0);
 
     return 0;
 }

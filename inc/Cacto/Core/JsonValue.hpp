@@ -46,6 +46,9 @@ namespace cacto
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
 
+        std::string toString(szt ident = 0, szt offset = 0) const;
+        void fromString(const std::string &string);
+
         bool equals(const JsonValue &other) const;
 
         JsonValue(f64t number);

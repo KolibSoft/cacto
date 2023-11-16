@@ -107,6 +107,74 @@ namespace cacto
         return *m_object;
     }
 
+    std::string JsonValue::toString(szt ident, szt offset) const
+    {
+        auto string = std::string(offset, ' ');
+        switch (m_kind)
+        {
+        case Number:
+            string += '"' + std::to_string(m_number) + '"';
+            break;
+        case String:
+            string += '"' + *m_string + '"';
+            break;
+        case Boolean:
+            string += m_boolean ? "true" : "false";
+            break;
+        case Null:
+            string += "null";
+            break;
+        case Array:
+            string += '[';
+            if (m_array->size() > 0)
+            {
+                if (ident > 0)
+                    string += '\n';
+                for (auto &value : *m_array)
+                {
+                    string += value.toString(ident, offset + ident) + ',';
+                    if (ident > 0)
+                        string += '\n';
+                }
+                string.pop_back();
+                if (ident > 0)
+                    string.pop_back();
+                if (ident > 0)
+                    string += '\n' + std::string(offset, ' ');
+            }
+            string += ']';
+            break;
+        case Object:
+            string += '{';
+            if (m_object->size() > 0)
+            {
+                if (ident > 0)
+                    string += '\n';
+                for (auto &pair : *m_object)
+                {
+                    string += std::string(offset + ident, ' ') + '"' + pair.first + "\":";
+                    if (ident > 0)
+                        string += ' ';
+                    string += pair.second.toString(ident, offset + ident).substr(offset + ident) + ',';
+                    if (ident > 0)
+                        string += '\n';
+                }
+                string.pop_back();
+                if (ident > 0)
+                    string.pop_back();
+                if (ident > 0)
+                    string += '\n' + std::string(offset, ' ');
+            }
+            string += '}';
+            break;
+        }
+        return string;
+    }
+
+    void JsonValue::fromString(const std::string &string)
+    {
+    }
+
     bool JsonValue::equals(const JsonValue &other) const
     {
         if (m_kind == other.m_kind)
