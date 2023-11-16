@@ -14,9 +14,9 @@ int main()
     comparison = json == 25.0;
     auto number = json.asNumber();
 
-    json = std::string("String");
+    json = "String";
     kind = json.getKind();
-    comparison = json == std::string("String");
+    comparison = json == "String";
     auto string = json.asString();
 
     json = true;
@@ -28,14 +28,14 @@ int main()
     kind = json.getKind();
     comparison = json == nullptr;
 
-    json = std::vector<cacto::JsonValue>{25.0, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()};
+    json = {25.0, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()};
     kind = json.getKind();
-    comparison = json == std::vector<cacto::JsonValue>{25.0, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()};
+    comparison = json == cacto::JsonValue{25.0, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()};
     auto array = json.asArray();
 
-    json = std::unordered_map<std::string, cacto::JsonValue>{{"number", 25.0}, {"string", std::string("String")}, {"boolean", true}, {"null", nullptr}, {"array", std::vector<cacto::JsonValue>()}, {"object", std::unordered_map<std::string, cacto::JsonValue>()}};
+    json = {std::pair{"number", 25.0}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}};
     kind = json.getKind();
-    comparison = json == std::unordered_map<std::string, cacto::JsonValue>{{"number", 25.0}, {"string", std::string("String")}, {"boolean", true}, {"null", nullptr}, {"array", std::vector<cacto::JsonValue>()}, {"object", std::unordered_map<std::string, cacto::JsonValue>()}};
+    comparison = json == cacto::JsonValue{std::pair{"number", 25.0}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}};
     auto object = json.asObject();
 
     return 0;

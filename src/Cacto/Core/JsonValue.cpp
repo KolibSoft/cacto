@@ -140,6 +140,12 @@ namespace cacto
     {
     }
 
+    JsonValue::JsonValue(const s8t &string)
+        : m_kind(String),
+          m_string(new std::string(string))
+    {
+    }
+
     JsonValue::JsonValue(bool boolean)
         : m_kind(Boolean),
           m_boolean(boolean)
@@ -158,7 +164,19 @@ namespace cacto
     {
     }
 
+    JsonValue::JsonValue(std::initializer_list<JsonValue> array)
+        : m_kind(Array),
+          m_array(new std::vector<JsonValue>(array))
+    {
+    }
+
     JsonValue::JsonValue(const std::unordered_map<std::string, JsonValue> &object)
+        : m_kind(Object),
+          m_object(new std::unordered_map<std::string, JsonValue>(object))
+    {
+    }
+
+    JsonValue::JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object)
         : m_kind(Object),
           m_object(new std::unordered_map<std::string, JsonValue>(object))
     {

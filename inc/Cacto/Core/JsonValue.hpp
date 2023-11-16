@@ -50,10 +50,13 @@ namespace cacto
 
         JsonValue(f64t number);
         JsonValue(const std::string &string);
+        JsonValue(const s8t &string);
         JsonValue(bool boolean);
         JsonValue(std::nullptr_t = 0);
         JsonValue(const std::vector<JsonValue> &array);
+        JsonValue(std::initializer_list<JsonValue> array);
         JsonValue(const std::unordered_map<std::string, JsonValue> &object);
+        JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object);
         virtual ~JsonValue();
 
         const JsonValue &operator[](szt index) const;
