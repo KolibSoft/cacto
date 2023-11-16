@@ -11,10 +11,10 @@ namespace cacto
 
     public:
         virtual JsonValue toJson() const = 0;
-        virtual void fromJson(const JsonValue &string) = 0;
+        virtual void fromJson(const JsonValue &json) = 0;
 
         Json() = default;
-        virtual ~Json();
+        virtual ~Json() = default;
     };
 
 }

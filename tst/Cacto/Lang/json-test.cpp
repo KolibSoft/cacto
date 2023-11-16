@@ -1,6 +1,27 @@
 #include <iostream>
 
 #include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Lang/Json.hpp>
+
+class ModelExample
+    : public virtual cacto::Json
+{
+
+public:
+    cacto::JsonValue toJson() const override
+    {
+        auto json = cacto::JsonValue::ObjectValue;
+        json["value"] = double(value);
+        return json;
+    }
+
+    void fromJson(const cacto::JsonValue &json) override
+    {
+        value = int(json["value"].asNumber());
+    }
+
+    int value{};
+};
 
 int main()
 {
@@ -75,6 +96,13 @@ int main()
 
     json.fromString(doc);
     std::cout << json.toString(2) << '\n';
+
+    ModelExample model;
+    model.value = 23;
+    json = model.toJson();
+    std::cout << json.toString(2) << '\n';
+    model.value = 0;
+    model.fromJson(json);
 
     return 0;
 }

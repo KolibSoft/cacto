@@ -29,14 +29,14 @@ namespace cacto
     {
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
-        return m_object->at(key);
+        return m_object->operator[](key);
     }
 
     JsonValue &JsonValue::at(const std::string &key)
     {
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
-        return m_object->at(key);
+        return m_object->operator[](key);
     }
 
     const f64t &JsonValue::asNumber() const
