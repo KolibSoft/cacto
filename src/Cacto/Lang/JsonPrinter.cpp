@@ -5,7 +5,14 @@ namespace cacto
 
     void JsonPrinter::printNumber(f64t value)
     {
-        print(std::to_string(value));
+        auto string = std::to_string(value);
+        if (string.find('.') != std::string::npos && string.find('E') == std::string::npos && string.find('e') == std::string::npos)
+        {
+            while (string.back() == '0')
+                string.pop_back();
+            string.pop_back();
+        }
+        print(string);
     }
 
     void JsonPrinter::printString(const std::string &value)
