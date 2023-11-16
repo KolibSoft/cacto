@@ -34,11 +34,11 @@ namespace cacto
         virtual ~GameNode();
 
     protected:
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
-
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;
+
+        void onAppend(Node &child) override;
+        void onRemove(Node &child) override;
 
     private:
         Node *m_parent;

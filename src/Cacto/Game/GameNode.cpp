@@ -43,16 +43,6 @@ namespace cacto
 
     GameNode::~GameNode() = default;
 
-    void GameNode::onAppend(Node &child)
-    {
-        m_children.push_back(&child);
-    }
-
-    void GameNode::onRemove(Node &child)
-    {
-        std::remove(m_children.begin(), m_children.end(), &child);
-    }
-
     void GameNode::onAttach(Node &parent)
     {
         m_parent = &parent;
@@ -61,6 +51,16 @@ namespace cacto
     void GameNode::onDetach(Node &parent)
     {
         m_parent = nullptr;
+    }
+
+    void GameNode::onAppend(Node &child)
+    {
+        m_children.push_back(&child);
+    }
+
+    void GameNode::onRemove(Node &child)
+    {
+        m_children.erase(m_children.begin() + getChildIndex(child));
     }
 
 }
