@@ -8,4 +8,5 @@
 #include "Cacto/Graphics/Ellipse.cpp"
 #include "Cacto/Graphics/Triangle.cpp"
 #include "Cacto/Graphics/Skeleton.cpp"
+#include "Cacto/Graphics/TileMap.cpp"
 #include "Cacto/Graphics/Utils.cpp"
