@@ -1,13 +1,15 @@
 #ifndef CACTO_ELLIPSE_HPP
 #define CACTO_ELLIPSE_HPP
 
+#include <Cacto/Lang/Json.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
     class CACTO_GRAPHICS_API Ellipse final
-        : public virtual Geometry
+        : public virtual Geometry,
+          public virtual Json
     {
 
     public:
@@ -16,6 +18,9 @@ namespace cacto
 
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
+
+        JsonValue toJson() const override;
+        void fromJson(const JsonValue &json) override;
 
         Ellipse(const sf::Vector2f &center = {0, 0}, const sf::Vector2f &diameters = {1, 1});
         virtual ~Ellipse();

@@ -1,7 +1,10 @@
 #ifndef CACTO_GRAPHICS_UTILS_HPP
 #define CACTO_GRAPHICS_UTILS_HPP
 
+#include <string>
 #include <vector>
+#include <unordered_map>
+#include <filesystem>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -42,6 +45,12 @@ namespace cacto
     bool CACTO_GRAPHICS_API zoneWith(const sf::FloatRect &rect, const sf::FloatRect &zone);
 
     sf::Vector2f CACTO_GRAPHICS_API fitSize(const sf::Vector2f &contentSize, const sf::Vector2f &containerSize);
+
+    void CACTO_GRAPHICS_API rectMapToFile(const std::unordered_map<std::string, sf::FloatRect> &map, const std::filesystem::path &path);
+    std::unordered_map<std::string, sf::FloatRect> CACTO_GRAPHICS_API rectMapFromFile(const std::filesystem::path &path);
+
+    void CACTO_GRAPHICS_API vertexArrayToFile(const sf::VertexArray &array, const std::filesystem::path &path);
+    sf::VertexArray CACTO_GRAPHICS_API vertexArrayFromFile(const std::filesystem::path &path);
 
 }
 

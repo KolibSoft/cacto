@@ -42,6 +42,29 @@ namespace cacto
         return false;
     }
 
+    JsonValue Ellipse::toJson() const
+    {
+        auto json = JsonValue::ObjectValue;
+        json["type"] = "Ellipse";
+        json["center"] = {f64t(m_centerX), f64t(m_centerY)};
+        json["diameters"] = {f64t(m_radiusX * 2), f64t(m_radiusY * 2)};
+        return json;
+    }
+
+    void Ellipse::fromJson(const JsonValue &json)
+    {
+        auto &center = json["center"];
+        auto &diameters = json["diameters"];
+        m_centerX = f32t(center[0].asNumber());
+        m_centerY = f32t(center[1].asNumber());
+        m_radiusX = f32t(diameters[0].asNumber() / 2);
+        m_radiusY = f32t(diameters[1].asNumber() / 2);
+        m_left = m_centerX - m_radiusX;
+        m_right = m_centerX + m_radiusX;
+        m_top = m_centerY - m_radiusY;
+        m_bottom = m_centerY + m_radiusY;
+    }
+
     Ellipse::Ellipse(const sf::Vector2f &center, const sf::Vector2f &diameters)
         : m_centerX(center.x), m_centerY(center.y),
           m_radiusX(diameters.x / 2), m_radiusY(diameters.y / 2),

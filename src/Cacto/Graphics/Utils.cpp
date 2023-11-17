@@ -1,5 +1,6 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
 namespace cacto
@@ -138,6 +139,100 @@ namespace cacto
             size = containerSize;
         }
         return size;
+    }
+
+    void rectMapToFile(const std::unordered_map<std::string, sf::FloatRect> &map, const std::filesystem::path &path)
+    {
+        auto json = JsonValue::ObjectValue;
+        for (auto &pair : map)
+            json[pair.first] = {pair.second.left, pair.second.top, pair.second.width, pair.second.height};
+        json.toFile(path);
+    }
+
+    std::unordered_map<std::string, sf::FloatRect> rectMapFromFile(const std::filesystem::path &path)
+    {
+        JsonValue json = nullptr;
+        json.fromFile(path);
+        std::unordered_map<std::string, sf::FloatRect> map{};
+        for (auto &pair : json.asObject())
+        {
+            sf::FloatRect rect{{f32t(pair.second[0].asNumber()), f32t(pair.second[1].asNumber())},
+                               {f32t(pair.second[2].asNumber()), f32t(pair.second[3].asNumber())}};
+            map[pair.first] = rect;
+        }
+        return map;
+    }
+
+    void vertexArrayToFile(const sf::VertexArray &array, const std::filesystem::path &path)
+    {
+        auto json = JsonValue::ObjectValue;
+        switch (array.getPrimitiveType())
+        {
+        case sf::PrimitiveType::Points:
+            json["primitive"] = "Points";
+            break;
+        case sf::PrimitiveType::Lines:
+            json["primitive"] = "Lines";
+            break;
+        case sf::PrimitiveType::LineStrip:
+            json["primitive"] = "LineStrip";
+            break;
+        case sf::PrimitiveType::Triangles:
+            json["primitive"] = "Triangles";
+            break;
+        case sf::PrimitiveType::TriangleStrip:
+            json["primitive"] = "TriangleStrip";
+            break;
+        case sf::PrimitiveType::TriangleFan:
+            json["primitive"] = "TriangleFan";
+            break;
+        };
+        auto &vertexes = (json["vertexes"] = JsonValue::ArrayValue).asArray();
+        for (szt i = 0; i < array.getVertexCount(); i++)
+        {
+            auto &vertex = array[i];
+            auto item = JsonValue::ObjectValue;
+            item["position"] = {f64t(vertex.position.x), f64t(vertex.position.y)};
+            item["color"] = {f64t(vertex.color.r), f64t(vertex.color.g), f64t(vertex.color.b), f64t(vertex.color.a)};
+            item["texCoords"] = {f64t(vertex.texCoords.x), f64t(vertex.texCoords.y)};
+            vertexes.push_back(item);
+        }
+        json.toFile(path);
+    }
+
+    sf::VertexArray vertexArrayFromFile(const std::filesystem::path &path)
+    {
+        JsonValue json = nullptr;
+        json.fromFile(path);
+        sf::VertexArray array{};
+        auto &primitive = json["primitive"].asString();
+        if (primitive == "Points")
+            array.setPrimitiveType(sf::PrimitiveType::Points);
+        else if (primitive == "Lines")
+            array.setPrimitiveType(sf::PrimitiveType::Lines);
+        else if (primitive == "LineStrip")
+            array.setPrimitiveType(sf::PrimitiveType::LineStrip);
+        else if (primitive == "Triangles")
+            array.setPrimitiveType(sf::PrimitiveType::Triangles);
+        else if (primitive == "TriangleStrip")
+            array.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
+        else if (primitive == "TriangleFan")
+            array.setPrimitiveType(sf::PrimitiveType::TriangleFan);
+        else
+            throw std::runtime_error("Unsupported primitive type");
+        auto &vertexes = json["vertexes"].asArray();
+        for (auto &item : vertexes)
+        {
+            auto &position = item["position"];
+            auto &color = item["color"];
+            auto &texCoords = item["texCoords"];
+            sf::Vertex vertex{};
+            vertex.position = {f32t(position[0].asNumber()), f32t(position[1].asNumber())};
+            vertex.color = {u8t(color[0].asNumber()), u8t(color[1].asNumber()), u8t(color[2].asNumber()), u8t(color[3].asNumber())};
+            vertex.texCoords = {f32t(texCoords[0].asNumber()), f32t(texCoords[1].asNumber())};
+            array.append(vertex);
+        }
+        return array;
     }
 
 }

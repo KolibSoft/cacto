@@ -52,6 +52,30 @@ namespace cacto
         return false;
     }
 
+    JsonValue Triangle::toJson() const
+    {
+        auto json = JsonValue::ObjectValue;
+        json["type"] = "Triangle";
+        json["pointA"] = {f64t(m_pointA.x), f64t(m_pointA.y)};
+        json["pointB"] = {f64t(m_pointB.x), f64t(m_pointB.y)};
+        json["pointC"] = {f64t(m_pointC.x), f64t(m_pointC.y)};
+        return json;
+    }
+
+    void Triangle::fromJson(const JsonValue &json)
+    {
+        auto &pointA = json["pointA"];
+        auto &pointB = json["pointB"];
+        auto &pointC = json["pointC"];
+        m_pointA = {f32t(pointA[0].asNumber()), f32t(pointA[1].asNumber())};
+        m_pointB = {f32t(pointB[0].asNumber()), f32t(pointB[1].asNumber())};
+        m_pointC = {f32t(pointC[0].asNumber()), f32t(pointC[1].asNumber())};
+        m_left = std::min(m_pointA.x, std::min(m_pointB.x, m_pointC.x));
+        m_right = std::max(m_pointA.x, std::max(m_pointB.x, m_pointC.x));
+        m_top = std::min(m_pointA.y, std::min(m_pointB.y, m_pointC.y));
+        m_bottom = std::max(m_pointA.y, std::max(m_pointB.y, m_pointC.y));
+    }
+
     Triangle::Triangle(const sf::Vector2f &pointA, const sf::Vector2f &pointB, const sf::Vector2f &pointC)
         : m_pointA(pointA), m_pointB(pointB), m_pointC(pointC),
           m_left(std::min(pointA.x, std::min(pointB.x, pointC.x))), m_top(std::min(pointA.y, std::min(pointB.y, pointC.y))),

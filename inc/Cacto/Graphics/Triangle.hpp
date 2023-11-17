@@ -1,13 +1,15 @@
 #ifndef CACTO_TRIANGLE_HPP
 #define CACTO_TRIANGLE_HPP
 
+#include <Cacto/Lang/Json.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
     class CACTO_GRAPHICS_API Triangle final
-        : public virtual Geometry
+        : public virtual Geometry,
+          public virtual Json
     {
 
     public:
@@ -17,7 +19,10 @@ namespace cacto
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
 
-        Triangle(const sf::Vector2f &pointA, const sf::Vector2f &pointB, const sf::Vector2f &pointC);
+        JsonValue toJson() const override;
+        void fromJson(const JsonValue &json) override;
+
+        Triangle(const sf::Vector2f &pointA = {0, 0}, const sf::Vector2f &pointB = {0, 0}, const sf::Vector2f &pointC = {0, 0});
         Triangle();
         virtual ~Triangle();
 

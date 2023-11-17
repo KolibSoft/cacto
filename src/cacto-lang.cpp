@@ -5,3 +5,4 @@
 #include "Cacto/Lang/JsonScanner.cpp"
 #include "Cacto/Lang/JsonValue.cpp"
 #include "Cacto/Lang/Json.cpp"
+#include "Cacto/Lang/Utils.cpp"

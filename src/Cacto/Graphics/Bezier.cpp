@@ -33,6 +33,24 @@ namespace cacto
         return point;
     }
 
+    JsonValue Bezier::toJson() const
+    {
+        auto json = JsonValue::ObjectValue;
+        json["type"] = "Bezier";
+        auto &points = (json["points"] = JsonValue::ArrayValue).asArray();
+        for (auto &point : m_points)
+            points.push_back({f64t(point.x), f64t(point.y)});
+        return json;
+    }
+
+    void Bezier::fromJson(const JsonValue &json)
+    {
+        m_points.clear();
+        auto &points = json["points"].asArray();
+        for (auto &point : points)
+            m_points.push_back({f32t(point[0].asNumber()), f32t(point[1].asNumber())});
+    }
+
     Bezier::Bezier(const std::vector<sf::Vector2f> &points)
         : m_points(points)
     {
