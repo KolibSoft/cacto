@@ -1,6 +1,8 @@
 #ifndef CACTO_TILE_MAP_HPP
 #define CACTO_TILE_MAP_HPP
 
+#include <unordered_map>
+#include <filesystem>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Graphics/Export.hpp>
@@ -48,6 +50,8 @@ namespace cacto
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
+
+    std::unordered_map<std::string, sf::FloatRect> CACTO_GRAPHICS_API loadTileSetFromFile(const std::filesystem::path &path);
 
 }
 

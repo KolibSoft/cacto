@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <filesystem>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto
@@ -54,6 +55,9 @@ namespace cacto
 
         std::string toString(szt identation = 0) const;
         void fromString(const std::string &string);
+
+        void toFile(const std::filesystem::path &path, szt identation = 0) const;
+        void fromFile(const std::filesystem::path &path);
 
         bool equals(const JsonValue &other) const;
 

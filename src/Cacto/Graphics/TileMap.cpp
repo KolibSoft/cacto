@@ -1,4 +1,5 @@
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 
 namespace cacto
@@ -115,6 +116,21 @@ namespace cacto
         _states.texture = m_texture;
         _states.transform *= getTransform();
         target.draw(m_array, _states);
+    }
+
+    std::unordered_map<std::string, sf::FloatRect> loadTileSetFromFile(const std::filesystem::path &path)
+    {
+        JsonValue json = nullptr;
+        json.fromFile(path);
+        sf::Vector2f size{f32t(json["size"][0].asNumber()), f32t(json["size"][1].asNumber())};
+        std::unordered_map<std::string, sf::FloatRect> tiles{};
+        for (auto &entry : json["tiles"].asObject())
+        {
+            sf::Vector2i position{i32t(entry.second[0].asNumber()), i32t(entry.second[1].asNumber())};
+            auto tile = TileMap::createTile(position, size);
+            tiles[entry.first] = tile;
+        }
+        return tiles;
     }
 
 }

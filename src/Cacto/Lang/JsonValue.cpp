@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <fstream>
 #include <Cacto/Lang/JsonPrinter.hpp>
 #include <Cacto/Lang/JsonScanner.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
@@ -280,6 +281,24 @@ namespace cacto
         JsonScanner scanner{};
         scanner.setSource(&string);
         scan(scanner);
+    }
+
+    void JsonValue::toFile(const std::filesystem::path &path, szt identation) const
+    {
+        std::ofstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        std::string string = toString(identation);
+        stream << string;
+    }
+
+    void JsonValue::fromFile(const std::filesystem::path &path)
+    {
+        std::ifstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        std::string string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
+        fromString(string);
     }
 
     bool JsonValue::equals(const JsonValue &other) const
