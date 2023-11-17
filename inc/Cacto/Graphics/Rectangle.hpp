@@ -1,13 +1,15 @@
 #ifndef CACTO_RECTANGLE_HPP
 #define CACTO_RECTANGLE_HPP
 
+#include <Cacto/Lang/Json.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
     class CACTO_GRAPHICS_API Rectangle final
-        : public virtual Geometry
+        : public virtual Geometry,
+          public virtual Json
     {
 
     public:
@@ -16,6 +18,9 @@ namespace cacto
 
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
+
+        JsonValue toJson() const override;
+        void fromJson(const JsonValue &json) override;
 
         Rectangle(const sf::Vector2f &position = {0, 0}, const sf::Vector2f &size = {1, 1});
         virtual ~Rectangle();
