@@ -51,7 +51,8 @@ namespace cacto
         mutable sf::VertexArray m_array;
     };
 
-    std::unordered_map<std::string, sf::FloatRect> CACTO_GRAPHICS_API loadTileSetFromFile(const std::filesystem::path &path);
+    std::unordered_map<std::string, sf::FloatRect> CACTO_GRAPHICS_API tileSetFromFile(const std::filesystem::path &path);
+    TileMap CACTO_GRAPHICS_API tileMapFromFile(const std::filesystem::path &path);
 
 }
 

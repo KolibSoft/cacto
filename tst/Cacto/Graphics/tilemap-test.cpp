@@ -70,8 +70,8 @@ int main()
     tileMap.setTile({1, 10}, tiles[Tile::BottomLeft]);
     tileMap.setTile({10, 10}, tiles[Tile::BottomRight]);
 
-    auto tileSet = cacto::loadTileSetFromFile("res/tile_set.json");
-    auto tile = tileSet["wall"];
+    tileMap = cacto::tileMapFromFile("res/tile_map.json");
+    tileMap.setTexture(texture.get());
 
     while (window.isOpen())
     {
