@@ -1,5 +1,6 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
 namespace cacto
@@ -138,6 +139,28 @@ namespace cacto
             size = containerSize;
         }
         return size;
+    }
+
+    void rectMapToFile(const std::filesystem::path &path, const std::unordered_map<std::string, sf::FloatRect> &map)
+    {
+        auto json = JsonValue::ObjectValue;
+        for (auto &pair : map)
+            json[pair.first] = {pair.second.left, pair.second.top, pair.second.width, pair.second.height};
+        json.toFile(path);
+    }
+
+    std::unordered_map<std::string, sf::FloatRect> rectMapFromFile(const std::filesystem::path &path)
+    {
+        JsonValue json = nullptr;
+        json.fromFile(path);
+        std::unordered_map<std::string, sf::FloatRect> map{};
+        for (auto &pair : json.asObject())
+        {
+            sf::FloatRect rect{{f32t(pair.second[0].asNumber()), f32t(pair.second[1].asNumber())},
+                               {f32t(pair.second[2].asNumber()), f32t(pair.second[3].asNumber())}};
+            map[pair.first] = rect;
+        }
+        return map;
     }
 
 }
