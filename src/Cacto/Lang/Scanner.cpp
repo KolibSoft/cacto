@@ -193,8 +193,9 @@ namespace cacto
                                    },
                                    [&]
                                    {
-                                       return scanWhile([&]
-                                                        { return scanGroup({under, word, digit}); });
+                                       return scanOption([&]
+                                                         { return scanWhile([&]
+                                                                            { return scanGroup({under, word, digit}); }); });
                                    }});
         return index;
     }

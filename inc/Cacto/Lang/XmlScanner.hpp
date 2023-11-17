@@ -11,6 +11,14 @@ namespace cacto
     {
 
     public:
+        i32t scanEscape();
+        i32t scanText();
+
+        i32t scanXmlIdentifier();
+        i32t scanName();
+        i32t scanAttribute();
+        i32t scanValue();
+
         XmlScanner();
         virtual ~XmlScanner();
     };

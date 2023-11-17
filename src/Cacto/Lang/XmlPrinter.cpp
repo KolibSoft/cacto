@@ -13,9 +13,14 @@ namespace cacto
         print(name);
     }
 
-    void XmlPrinter::printAttribute(const std::string &attribute, const std::string &value)
+    void XmlPrinter::printAttribute(const std::string &attribute)
     {
-        print(attribute + "=\"" + value + '"');
+        print(attribute);
+    }
+
+    void XmlPrinter::printValue(const std::string &value)
+    {
+        print('"' + value + '"');
     }
 
     XmlPrinter::XmlPrinter() = default;

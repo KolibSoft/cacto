@@ -13,7 +13,8 @@ namespace cacto
     public:
         void printText(const std::string &text);
         void printName(const std::string &name);
-        void printAttribute(const std::string &attribute, const std::string &value);
+        void printAttribute(const std::string &attribute);
+        void printValue(const std::string &value);
 
         XmlPrinter();
         virtual ~XmlPrinter();
