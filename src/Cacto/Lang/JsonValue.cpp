@@ -273,27 +273,6 @@ namespace cacto
         fromString(string);
     }
 
-    bool JsonValue::equals(const JsonValue &other) const
-    {
-        if (m_kind == other.m_kind)
-            switch (m_kind)
-            {
-            case Number:
-                return m_number == other.m_number;
-            case String:
-                return *m_string == *other.m_string;
-            case Boolean:
-                return m_boolean == other.m_boolean;
-            case Null:
-                return true;
-            case Array:
-                return *m_array == *other.m_array;
-            case Object:
-                return *m_object == *other.m_object;
-            }
-        return false;
-    }
-
     JsonValue::JsonValue(f64t number)
         : m_kind(Number),
           m_number(number)
@@ -468,7 +447,23 @@ namespace cacto
 
     bool JsonValue::operator==(const JsonValue &other) const
     {
-        return equals(other);
+        if (m_kind == other.m_kind)
+            switch (m_kind)
+            {
+            case Number:
+                return m_number == other.m_number;
+            case String:
+                return *m_string == *other.m_string;
+            case Boolean:
+                return m_boolean == other.m_boolean;
+            case Null:
+                return true;
+            case Array:
+                return *m_array == *other.m_array;
+            case Object:
+                return *m_object == *other.m_object;
+            }
+        return false;
     }
 
     const JsonValue JsonValue::NumberValue = 0.0;

@@ -53,8 +53,6 @@ namespace cacto
         void toFile(const std::filesystem::path &path, szt identation = 0) const;
         void fromFile(const std::filesystem::path &path);
 
-        bool equals(const JsonValue &other) const;
-
         JsonValue(f64t number);
         JsonValue(f32t number);
         JsonValue(i64t number);
