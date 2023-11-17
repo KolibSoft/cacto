@@ -1,5 +1,4 @@
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 
 namespace cacto
