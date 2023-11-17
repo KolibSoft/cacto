@@ -22,7 +22,7 @@ namespace cacto
         JsonValue toJson() const override;
         void fromJson(const JsonValue &json) override;
 
-        Triangle(const sf::Vector2f &pointA, const sf::Vector2f &pointB, const sf::Vector2f &pointC);
+        Triangle(const sf::Vector2f &pointA = {0, 0}, const sf::Vector2f &pointB = {0, 0}, const sf::Vector2f &pointC = {0, 0});
         Triangle();
         virtual ~Triangle();
 
