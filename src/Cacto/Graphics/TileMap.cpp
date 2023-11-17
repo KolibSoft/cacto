@@ -118,40 +118,4 @@ namespace cacto
         target.draw(m_array, _states);
     }
 
-    std::unordered_map<std::string, sf::FloatRect> tileSetFromFile(const std::filesystem::path &path)
-    {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        sf::Vector2f size{f32t(json["size"][0].asNumber()), f32t(json["size"][1].asNumber())};
-        std::unordered_map<std::string, sf::FloatRect> tiles{};
-        for (auto &entry : json["tiles"].asObject())
-        {
-            sf::Vector2i position{i32t(entry.second[0].asNumber()), i32t(entry.second[1].asNumber())};
-            auto tile = TileMap::createTile(position, size);
-            tiles[entry.first] = tile;
-        }
-        return tiles;
-    }
-
-    TileMap tileMapFromFile(const std::filesystem::path &path)
-    {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        auto tileSet = tileSetFromFile(json["tileSet"].asString());
-        sf::Vector2f size{f32t(json["size"][0].asNumber()), f32t(json["size"][1].asNumber())};
-        sf::IntRect area{{i32t(json["area"][0].asNumber()), i32t(json["area"][1].asNumber())}, {i32t(json["area"][2].asNumber()), i32t(json["area"][3].asNumber())}};
-        auto fill = tileSet[json["fill"].asString()];
-        TileMap tileMap{};
-        tileMap.setTileSize(size);
-        tileMap.setArea(area);
-        tileMap.fill(fill);
-        for (auto &item : json["tiles"].asArray())
-        {
-            sf::IntRect tArea{{i32t(item["area"][0].asNumber()), i32t(item["area"][1].asNumber())}, {i32t(item["area"][2].asNumber()), i32t(item["area"][3].asNumber())}};
-            auto tile = tileSet[item["tile"].asString()];
-            tileMap.setTiles(tArea, tile);
-        }
-        return tileMap;
-    }
-
 }
