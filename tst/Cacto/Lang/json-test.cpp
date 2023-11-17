@@ -2,6 +2,7 @@
 
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/Json.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 class ModelExample
     : public virtual cacto::Json
@@ -103,6 +104,10 @@ int main()
     std::cout << json.toString(2) << '\n';
     model.value = 0;
     model.fromJson(json);
+
+    auto stringMap = cacto::stringMapFromFile("res/string_map.json");
+    for(auto& pair: stringMap) 
+        std::cout << pair.first << ": " << pair.second << "\n";
 
     return 0;
 }
