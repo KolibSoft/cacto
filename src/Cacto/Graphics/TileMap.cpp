@@ -63,6 +63,11 @@ namespace cacto
                 setTile({x, y}, tile);
     }
 
+    void TileMap::fill(const sf::FloatRect &tile)
+    {
+        setTiles(m_area, tile);
+    }
+
     TileMap::TileMap()
         : m_texture(nullptr),
           m_tileSize(),
