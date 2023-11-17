@@ -58,8 +58,8 @@ namespace cacto
 
     void TileMap::setTiles(const sf::IntRect &area, const sf::FloatRect &tile)
     {
-        for (i32t y = area.top; y < area.height; y++)
-            for (i32t x = area.left; x < area.width; x++)
+        for (i32t y = area.top; y < area.top + area.height; y++)
+            for (i32t x = area.left; x < area.left + area.width; x++)
                 setTile({x, y}, tile);
     }
 
@@ -78,6 +78,16 @@ namespace cacto
     }
 
     TileMap::~TileMap() = default;
+
+    sf::FloatRect TileMap::createTile(const sf::Vector2i &position, const sf::Vector2f &size)
+    {
+        sf::FloatRect tile{};
+        tile.left = f32t(position.x) * size.x;
+        tile.top = f32t(position.y) * size.y;
+        tile.width = size.x;
+        tile.height = size.y;
+        return tile;
+    }
 
     void TileMap::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {

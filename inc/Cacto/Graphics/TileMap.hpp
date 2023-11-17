@@ -35,6 +35,8 @@ namespace cacto
         TileMap();
         virtual ~TileMap();
 
+        static sf::FloatRect createTile(const sf::Vector2i &position, const sf::Vector2f &size);
+
     protected:
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
