@@ -68,6 +68,43 @@ namespace cacto
         setTiles(m_area, tile);
     }
 
+    JsonValue TileMap::toJson() const
+    {
+        auto json = JsonValue::ObjectValue;
+        json["tileSize"] = {f64t(m_tileSize.x), f64t(m_tileSize.y)};
+        json["area"] = {f64t(m_area.left), f64t(m_area.top), f64t(m_area.width), f64t(m_area.height)};
+        auto &tiles = (json["tiles"] = JsonValue::ArrayValue).asArray();
+        for (i32t y = 0; y < m_area.height; y++)
+            for (i32t x = 0; x < m_area.width; x++)
+            {
+                auto base = (y * m_area.width + x) * 6;
+                tiles.push_back({f64t(m_array[base + 0].texCoords.x),
+                                 f64t(m_array[base + 0].texCoords.y),
+                                 f64t(m_array[base + 2].texCoords.x),
+                                 f64t(m_array[base + 2].texCoords.y)});
+            }
+        return json;
+    }
+
+    void TileMap::fromJson(const JsonValue &json)
+    {
+        auto &tileSize = json["tileSize"];
+        auto &area = json["area"];
+        auto &tiles = json["tiles"];
+        m_tileSize = {f32t(tileSize[0].asNumber()), f32t(tileSize[1].asNumber())};
+        m_area = {{i32t(area[0].asNumber()), i32t(area[1].asNumber())},
+                  {i32t(area[2].asNumber()), i32t(area[3].asNumber())}};
+        m_array.resize(m_area.width * m_area.height * 6);
+        for (i32t y = 0; y < m_area.height; y++)
+            for (i32t x = 0; x < m_area.width; x++)
+            {
+                auto base = y * m_area.width + x;
+                auto &tile = tiles[base];
+                sf::FloatRect rect{{f32t(tile[0].asNumber()), f32t(tile[1].asNumber())},
+                                   {f32t(tile[2].asNumber()), f32t(tile[3].asNumber())}};
+            }
+    }
+
     TileMap::TileMap()
         : m_texture(nullptr),
           m_tileSize(),

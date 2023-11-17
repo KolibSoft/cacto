@@ -20,7 +20,7 @@ int main()
     auto texture = R::texture.get();
 
     auto tiles = cacto::rectMapFromFile("res/rect_map.json");
-    cacto::rectMapToFile("res/rect_map.json", tiles);
+    cacto::rectMapToFile(tiles, "res/rect_map.json");
 
     cacto::TileMap tileMap{};
     tileMap.setTexture(texture.get());
@@ -35,6 +35,9 @@ int main()
     tileMap.setTile({10, 1}, tiles["TopRight"]);
     tileMap.setTile({1, 10}, tiles["BottomLeft"]);
     tileMap.setTile({10, 10}, tiles["BottomRight"]);
+
+    tileMap.toFile("res/tile_map.json");
+    tileMap.fromFile("res/tile_map.json");
 
     while (window.isOpen())
     {
