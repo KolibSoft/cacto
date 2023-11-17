@@ -18,16 +18,29 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Straight straight{{10, 10}, {100, 200}};
+    straight.toFile("res/lines/straight.json");
+    straight.fromFile("res/lines/straight.json");
+
     cacto::Bezier bezier{{
         {100, 300},
         {200, 100},
         {300, 500},
         {400, 300},
     }};
+    bezier.toFile("res/lines/bezier.json");
+    bezier.fromFile("res/lines/bezier.json");
 
     cacto::Rectangle rectangle{{100, 10}, {100, 100}};
+    rectangle.toFile("res/geometries/rectangle.json");
+    rectangle.fromFile("res/geometries/rectangle.json");
+
     cacto::Ellipse ellipse{{200, 200}, {100, 50}};
+    ellipse.toFile("res/geometries/ellipse.json");
+    ellipse.fromFile("res/geometries/ellipse.json");
+
     cacto::Triangle triangle{{300, 300}, {400, 350}, {350, 400}};
+    triangle.toFile("res/geometries/triangle.json");
+    triangle.fromFile("res/geometries/triangle.json");
 
     cacto::LineViewer viewer{};
 
