@@ -12,34 +12,6 @@ namespace cacto
         return m_kind;
     }
 
-    const JsonValue &JsonValue::at(szt index) const
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
-        return m_array->at(index);
-    }
-
-    JsonValue &JsonValue::at(szt index)
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
-        return m_array->at(index);
-    }
-
-    const JsonValue &JsonValue::at(const std::string &key) const
-    {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return m_object->operator[](key);
-    }
-
-    JsonValue &JsonValue::at(const std::string &key)
-    {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return m_object->operator[](key);
-    }
-
     const f64t &JsonValue::asNumber() const
     {
         if (m_kind != Number)
@@ -383,22 +355,30 @@ namespace cacto
 
     const JsonValue &JsonValue::operator[](szt index) const
     {
-        return at(index);
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        return m_array->operator[](index);
     }
 
     JsonValue &JsonValue::operator[](szt index)
     {
-        return at(index);
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        return m_array->operator[](index);
     }
 
     const JsonValue &JsonValue::operator[](const std::string &key) const
     {
-        return at(key);
+        if (m_kind != Object)
+            throw std::runtime_error("Json is not an object value");
+        return m_object->operator[](key);
     }
 
     JsonValue &JsonValue::operator[](const std::string &key)
     {
-        return at(key);
+        if (m_kind != Object)
+            throw std::runtime_error("Json is not an object value");
+        return m_object->operator[](key);
     }
 
     JsonValue::JsonValue(const JsonValue &other)

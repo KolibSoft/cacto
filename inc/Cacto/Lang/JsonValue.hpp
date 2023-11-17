@@ -29,12 +29,6 @@ namespace cacto
 
         Kind getKind() const;
 
-        const JsonValue &at(szt index) const;
-        JsonValue &at(szt index);
-
-        const JsonValue &at(const std::string &key) const;
-        JsonValue &at(const std::string &key);
-
         const f64t &asNumber() const;
         f64t &asNumber();
 
