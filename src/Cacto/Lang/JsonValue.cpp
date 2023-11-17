@@ -300,6 +300,22 @@ namespace cacto
     {
     }
 
+    JsonValue::JsonValue(f32t number)
+        : m_kind(Number),
+          m_number(number)
+    {
+    }
+    JsonValue::JsonValue(i64t number)
+        : m_kind(Number),
+          m_number(number)
+    {
+    }
+    JsonValue::JsonValue(i32t number)
+        : m_kind(Number),
+          m_number(number)
+    {
+    }
+
     JsonValue::JsonValue(const std::string &string)
         : m_kind(String),
           m_string(new std::string(string))

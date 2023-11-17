@@ -56,6 +56,9 @@ namespace cacto
         bool equals(const JsonValue &other) const;
 
         JsonValue(f64t number);
+        JsonValue(f32t number);
+        JsonValue(i64t number);
+        JsonValue(i32t number);
         JsonValue(const std::string &string);
         JsonValue(const s8t &string);
         JsonValue(bool boolean);
