@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    void stringMapToFile(const std::filesystem::path &path, const std::unordered_map<std::string, std::string> &map)
+    void stringMapToFile(const std::unordered_map<std::string, std::string> &map, const std::filesystem::path &path)
     {
         auto json = JsonValue::ObjectValue;
         for (auto &pair : map)

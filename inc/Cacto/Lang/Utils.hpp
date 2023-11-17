@@ -9,7 +9,7 @@
 namespace cacto
 {
 
-    void CACTO_LANG_API stringMapToFile(const std::filesystem::path &path, const std::unordered_map<std::string, std::string> &map);
+    void CACTO_LANG_API stringMapToFile(const std::unordered_map<std::string, std::string> &map, const std::filesystem::path &path);
     std::unordered_map<std::string, std::string> CACTO_LANG_API stringMapFromFile(const std::filesystem::path &path);
 
 }

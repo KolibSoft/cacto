@@ -10,6 +10,7 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Triangle.hpp>
 #include <Cacto/Graphics/LineViewer.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 
 int main()
 {
@@ -29,6 +30,9 @@ int main()
     cacto::Triangle triangle{{300, 300}, {400, 350}, {350, 400}};
 
     cacto::LineViewer viewer{};
+
+    auto array = cacto::vertexArrayFromFile("res/vertex_array.json");
+    cacto::vertexArrayToFile(array, "res/vertex_array.json");
 
     while (window.isOpen())
     {
@@ -70,6 +74,8 @@ int main()
         viewer.setColor(sf::Color::Cyan);
         viewer.setClosed(true);
         window.draw(viewer);
+
+        window.draw(array);
 
         window.display();
     }
