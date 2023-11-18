@@ -7,15 +7,12 @@ namespace cacto
     {
         auto eScan = [&]
         {
-            return scanRange(1, 1, [&]
-                             { return scanClass("Ee"); });
+            return scanClass("Ee", false, 1, 1);
         };
 
         auto sScan = [&]
         {
-            return scanOption([&]
-                              { return scanRange(1, 1, [&]
-                                                 { return scanClass("+-"); }); });
+            return scanClass("+-", true, 1, 1);
         };
 
         auto dScan = [&]
@@ -32,9 +29,7 @@ namespace cacto
 
         auto sScan = [&]
         {
-            return scanOption([&]
-                              { return scanRange(1, 1, [&]
-                                                 { return scanClass("+-"); }); });
+            return scanClass("+-", true, 1, 1);
         };
 
         auto dScan = [&]
@@ -71,8 +66,7 @@ namespace cacto
         };
         auto cScan = [&]
         {
-            return scanRange(1, 1, [&]
-                             { return scanClass("\"\\/bfnrt"); });
+            return scanClass("\"\\/bfnrt", false, 1, 1);
         };
         auto index = scanSequence({eScan, cScan});
         return index;

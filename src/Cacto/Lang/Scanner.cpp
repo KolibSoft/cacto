@@ -47,6 +47,11 @@ namespace cacto
         return c;
     }
 
+    void Scanner::discard(szt times)
+    {
+        m_cursor -= times;
+    }
+
     std::string Scanner::take()
     {
         if (!m_source)
@@ -65,24 +70,26 @@ namespace cacto
         m_cursor = 0;
     }
 
-    i32t Scanner::scanClass(const std::string &set)
+    i32t Scanner::scanClass(const std::string &set, bool optional, szt min, szt max)
     {
         i32t index = 0;
         c8t c = 0;
         while ((c = available(index)) && set.find(c) != std::string::npos)
             index += 1;
+        if (index < min || index > max)
+            return optional ? -1 : 0;
         m_cursor += index;
         return index;
     }
 
-    i32t Scanner::scanToken(const std::string &set)
+    i32t Scanner::scanToken(const std::string &set, bool optional)
     {
         i32t index = 0;
         c8t c = 0;
         while ((c = available(index)) && index < set.size() && set[index] == c)
             index += 1;
         if (index != set.size())
-            return 0;
+            return optional ? -1 : 0;
         m_cursor += index;
         return index;
     }

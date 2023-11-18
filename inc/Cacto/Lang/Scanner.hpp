@@ -1,6 +1,7 @@
 #ifndef CACTO_SCANNER_HPP
 #define CACTO_SCANNER_HPP
 
+#include <limits>
 #include <string>
 #include <functional>
 #include <Cacto/Lang/Export.hpp>
@@ -22,11 +23,13 @@ namespace cacto
         void setCursor(i32t value);
 
         c8t available(i32t index = 0) const;
+
+        void discard(szt times = 1);
         std::string take();
         void drop();
 
-        i32t scanClass(const std::string &set);
-        i32t scanToken(const std::string &set);
+        i32t scanClass(const std::string &set, bool optional = false, szt min = 1, szt max = std::numeric_limits<szt>::max());
+        i32t scanToken(const std::string &set, bool optional = false);
         i32t scanGroup(std::initializer_list<std::function<i32t()>> set);
         i32t scanSequence(std::initializer_list<std::function<i32t()>> set);
         i32t scanOption(std::function<i32t()> set);
@@ -40,7 +43,7 @@ namespace cacto
         i32t scanIdentifier();
 
         i32t dropBlank();
-        i32t dropToken(const std::string& set);
+        i32t dropToken(const std::string &set);
 
         Scanner();
         virtual ~Scanner();
