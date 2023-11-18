@@ -180,33 +180,6 @@ namespace cacto
         return index;
     }
 
-    i32t Scanner::scanIdentifier()
-    {
-        auto under = [&]
-        {
-            return scanToken("_");
-        };
-        auto word = [&]
-        {
-            return scanWord();
-        };
-        auto digit = [&]
-        {
-            return scanDigit();
-        };
-        auto index = scanSequence({[&]
-                                   {
-                                       return scanGroup({under, word});
-                                   },
-                                   [&]
-                                   {
-                                       return scanOption([&]
-                                                         { return scanWhile([&]
-                                                                            { return scanGroup({under, word, digit}); }); });
-                                   }});
-        return index;
-    }
-
     i32t Scanner::dropBlank()
     {
         auto index = scanBlank();

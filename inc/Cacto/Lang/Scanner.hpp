@@ -40,7 +40,6 @@ namespace cacto
         i32t scanBlank();
         i32t scanDigit();
         i32t scanWord();
-        i32t scanIdentifier();
 
         i32t dropBlank();
         i32t dropToken(const std::string &set);

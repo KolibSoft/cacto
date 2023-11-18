@@ -49,7 +49,7 @@ namespace cacto
         return index;
     }
 
-    i32t XmlScanner::scanXmlIdentifier()
+    i32t XmlScanner::scanIdentifier()
     {
         auto under = [&]
         {
@@ -88,12 +88,12 @@ namespace cacto
 
     i32t XmlScanner::scanName()
     {
-        return scanXmlIdentifier();
+        return scanIdentifier();
     }
 
     i32t XmlScanner::scanAttribute()
     {
-        return scanXmlIdentifier();
+        return scanIdentifier();
     }
 
     i32t XmlScanner::scanValue()
