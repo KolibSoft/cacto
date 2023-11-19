@@ -99,14 +99,17 @@ namespace cacto
         return index;
     }
 
-    i32t Scanner::discardClass(const std::string &set)
+    i32t Scanner::option(szt count)
     {
-        i32t index = 0;
-        c8t c = 0;
-        while ((c = available(index)) && set.find(c) != std::string::npos)
-            index -= 1;
-        m_cursor += index;
-        return index;
+        if (count == 0)
+            count = -1;
+        return count;
+    }
+
+    i32t Scanner::discard(szt count)
+    {
+        m_cursor -= count;
+        return count;
     }
 
     i32t Scanner::scanBlank()

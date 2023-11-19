@@ -24,12 +24,8 @@ namespace cacto
     i32t JsonScanner::scanNumber()
     {
         auto cursor = getCursor();
-        if (scanClass("+-", true, 1, 1) && scanDigit())
-        {
-            scanFraction();
-            scanExponent();
+        if (scanClass("+-", true, 1, 1) && scanDigit() && option(scanFraction()) && option(scanExponent()))
             return getCursor() - cursor;
-        }
         setCursor(cursor);
         return 0;
     }
@@ -69,7 +65,7 @@ namespace cacto
     i32t JsonScanner::scanNull()
     {
         auto cursor = getCursor();
-        if (scanToken("nullptr"))
+        if (scanToken("null"))
             return getCursor() - cursor;
         setCursor(cursor);
         return 0;
