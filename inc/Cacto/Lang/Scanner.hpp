@@ -30,8 +30,8 @@ namespace cacto
         i32t scanClass(const std::string &set, bool optional = false, szt min = 1, szt max = std::numeric_limits<szt>::max());
         i32t scanToken(const std::string &set, bool optional = false);
         i32t scanNotClass(const std::string &set);
+        i32t discardClass(const std::string &set);
         i32t option(szt count);
-        i32t discard(szt count);
 
         i32t scanBlank();
         i32t scanDigit();
