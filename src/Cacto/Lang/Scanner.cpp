@@ -47,11 +47,6 @@ namespace cacto
         return c;
     }
 
-    void Scanner::discard(szt times)
-    {
-        m_cursor -= times;
-    }
-
     std::string Scanner::take()
     {
         if (!m_source)
@@ -94,71 +89,23 @@ namespace cacto
         return index;
     }
 
-    i32t Scanner::scanGroup(std::initializer_list<std::function<i32t()>> set)
+    i32t Scanner::scanNotClass(const std::string &set)
     {
         i32t index = 0;
-        for (auto &scan : set)
-        {
-            index = scan();
-            if (index > 0)
-                return index;
-        }
-        return index;
-    }
-
-    i32t Scanner::scanSequence(std::initializer_list<std::function<i32t()>> set)
-    {
-        i32t index = 0;
-        for (auto &scan : set)
-        {
-            auto step = scan();
-            if (step == 0)
-            {
-                m_cursor -= index;
-                return 0;
-            }
-            if (step == -1)
-                continue;
-            index += step;
-        }
-        return index;
-    }
-
-    i32t Scanner::scanOption(std::function<i32t()> set)
-    {
-        auto index = set();
-        if (index == 0)
-            return -1;
-        return index;
-    }
-
-    i32t Scanner::scanRange(i32t min, i32t max, std::function<i32t()> set)
-    {
-        auto index = set();
-        if (index < min || index > max)
-            return 0;
-        return index;
-    }
-
-    i32t Scanner::scanNot(std::function<i32t()> set)
-    {
-        i32t index = 0;
-        i32t step = 0;
-        while ((step = set()) <= 0)
-        {
+        c8t c = 0;
+        while ((c = available(index)) && set.find(c) == std::string::npos)
             index += 1;
-            m_cursor += 1;
-        }
-        m_cursor -= step;
+        m_cursor += index;
         return index;
     }
 
-    i32t Scanner::scanWhile(std::function<i32t()> set)
+    i32t Scanner::discardClass(const std::string &set)
     {
         i32t index = 0;
-        i32t step = 0;
-        while (available(0) && (step = set()) > 0)
-            index += step;
+        c8t c = 0;
+        while ((c = available(index)) && set.find(c) != std::string::npos)
+            index -= 1;
+        m_cursor += index;
         return index;
     }
 

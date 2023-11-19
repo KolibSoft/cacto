@@ -12,6 +12,7 @@ namespace cacto
 
     public:
         i32t scanExponent();
+        i32t scanFraction();
         i32t scanNumber();
 
         i32t scanEscape();

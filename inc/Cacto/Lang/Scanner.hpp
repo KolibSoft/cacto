@@ -24,18 +24,13 @@ namespace cacto
 
         c8t available(i32t index = 0) const;
 
-        void discard(szt times = 1);
         std::string take();
         void drop();
 
         i32t scanClass(const std::string &set, bool optional = false, szt min = 1, szt max = std::numeric_limits<szt>::max());
         i32t scanToken(const std::string &set, bool optional = false);
-        i32t scanGroup(std::initializer_list<std::function<i32t()>> set);
-        i32t scanSequence(std::initializer_list<std::function<i32t()>> set);
-        i32t scanOption(std::function<i32t()> set);
-        i32t scanRange(i32t min, i32t max, std::function<i32t()> set);
-        i32t scanNot(std::function<i32t()> set);
-        i32t scanWhile(std::function<i32t()> set);
+        i32t scanNotClass(const std::string &set);
+        i32t discardClass(const std::string &set);
 
         i32t scanBlank();
         i32t scanDigit();

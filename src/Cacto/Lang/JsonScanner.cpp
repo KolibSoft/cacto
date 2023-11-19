@@ -5,120 +5,76 @@ namespace cacto
 
     i32t JsonScanner::scanExponent()
     {
-        auto eScan = [&]
-        {
-            return scanClass("Ee", false, 1, 1);
-        };
+        auto cursor = getCursor();
+        if (scanClass("Ee", false, 1, 1) && scanClass("+-", true, 1, 1) && scanDigit())
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
+    }
 
-        auto sScan = [&]
-        {
-            return scanClass("+-", true, 1, 1);
-        };
-
-        auto dScan = [&]
-        {
-            return scanDigit();
-        };
-
-        auto index = scanSequence({eScan, sScan, dScan});
-        return index;
+    i32t JsonScanner::scanFraction()
+    {
+        auto cursor = getCursor();
+        if (scanToken(".") && scanDigit())
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
     }
 
     i32t JsonScanner::scanNumber()
     {
-
-        auto sScan = [&]
+        auto cursor = getCursor();
+        if (scanClass("+-", true, 1, 1) && scanDigit())
         {
-            return scanClass("+-", true, 1, 1);
-        };
-
-        auto dScan = [&]
-        {
-            return scanDigit();
-        };
-
-        auto pScan = [&]
-        {
-            return scanToken(".");
-        };
-
-        auto fScan = [&]
-        {
-            return scanOption([&]
-                              { return scanSequence({pScan, dScan}); });
-        };
-
-        auto eScan = [&]
-        {
-            return scanOption([&]
-                              { return scanExponent(); });
-        };
-
-        auto index = scanSequence({sScan, dScan, fScan, eScan});
-        return index;
+            scanFraction();
+            scanExponent();
+            return getCursor() - cursor;
+        }
+        setCursor(cursor);
+        return 0;
     }
 
     i32t JsonScanner::scanEscape()
     {
-        auto eScan = [&]
-        {
-            return scanToken("\\");
-        };
-        auto cScan = [&]
-        {
-            return scanClass("\"\\/bfnrt", false, 1, 1);
-        };
-        auto index = scanSequence({eScan, cScan});
-        return index;
+        auto cursor = getCursor();
+        if (scanToken("\\") && scanClass("\"\\/bfnrt", false, 1, 1))
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
     }
 
     i32t JsonScanner::scanString()
     {
-        auto eScan = [&]
+        auto cursor = getCursor();
+        if (scanToken("\""))
         {
-            return scanOption([&]
-                              { return scanEscape(); });
-        };
-        auto cScan = [&]
-        {
-            return scanOption([&]
-                              { return scanNot([&]
-                                               { return scanClass("\"\\"); }); });
-        };
-        auto sScan = [&]
-        {
-            return scanOption([&]
-                              { return scanWhile([&]
-                                                 { return scanGroup({eScan, cScan}); }); });
-        };
-        auto qScan = [&]
-        {
-            return scanToken("\"");
-        };
-        auto index = scanSequence({qScan, sScan, qScan});
-        return index;
+            while (scanEscape() || scanNotClass("\"\\"))
+                continue;
+            if (scanToken("\""))
+                return getCursor() - cursor;
+        }
+        setCursor(cursor);
+        return 0;
     }
 
     i32t JsonScanner::scanBoolean()
     {
-        auto index = scanGroup({[&]
-                                {
-                                    return scanToken("false");
-                                },
-                                [&]
-                                {
-                                    return scanToken("true");
-                                }});
-        return index;
+        auto cursor = getCursor();
+        if (scanToken("true") || scanToken("false"))
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
     }
 
     i32t JsonScanner::scanNull()
     {
-        auto index = scanToken("null");
-        return index;
+        auto cursor = getCursor();
+        if (scanToken("nullptr"))
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
     }
 
     JsonScanner::JsonScanner() = default;
     JsonScanner::~JsonScanner() = default;
-
 }
