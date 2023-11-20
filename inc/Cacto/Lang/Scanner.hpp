@@ -27,21 +27,22 @@ namespace cacto
         std::string take();
         void drop();
 
-        i32t scanClass(const std::string &set, bool optional = false, szt min = 1, szt max = std::numeric_limits<szt>::max());
-        i32t scanToken(const std::string &set, bool optional = false);
-        i32t scanNotClass(const std::string &set);
-        i32t discardClass(const std::string &set);
-        i32t option(szt count);
+        bool scanClass(const std::string &set, bool optional = false, szt min = 1, szt max = std::numeric_limits<szt>::max());
+        bool scanToken(const std::string &set, bool optional = false);
+        bool scanNotClass(const std::string &set);
+        bool discardClass(const std::string &set);
 
-        i32t scanBlank();
-        i32t scanDigit();
-        i32t scanWord();
+        bool scanBlank();
+        bool scanDigit();
+        bool scanWord();
 
-        i32t dropBlank();
-        i32t dropToken(const std::string &set);
+        bool dropBlank();
+        bool dropToken(const std::string &set);
 
         Scanner();
         virtual ~Scanner();
+
+        static bool option(bool result);
 
     private:
         const std::string *m_source;

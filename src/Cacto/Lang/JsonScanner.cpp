@@ -3,43 +3,43 @@
 namespace cacto
 {
 
-    i32t JsonScanner::scanExponent()
+    bool JsonScanner::scanExponent()
     {
         auto cursor = getCursor();
         if (scanClass("Ee", false, 1, 1) && scanClass("+-", true, 1, 1) && scanDigit())
-            return getCursor() - cursor;
+            return true;
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
-    i32t JsonScanner::scanFraction()
+    bool JsonScanner::scanFraction()
     {
         auto cursor = getCursor();
         if (scanToken(".") && scanDigit())
-            return getCursor() - cursor;
+            return true;
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
-    i32t JsonScanner::scanNumber()
+    bool JsonScanner::scanNumber()
     {
         auto cursor = getCursor();
         if (scanClass("+-", true, 1, 1) && scanDigit() && option(scanFraction()) && option(scanExponent()))
-            return getCursor() - cursor;
+            return true;
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
-    i32t JsonScanner::scanEscape()
+    bool JsonScanner::scanEscape()
     {
         auto cursor = getCursor();
         if (scanToken("\\") && scanClass("\"\\/bfnrt", false, 1, 1))
-            return getCursor() - cursor;
+            return true;
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
-    i32t JsonScanner::scanString()
+    bool JsonScanner::scanString()
     {
         auto cursor = getCursor();
         if (scanToken("\""))
@@ -47,28 +47,28 @@ namespace cacto
             while (scanEscape() || scanNotClass("\"\\"))
                 continue;
             if (scanToken("\""))
-                return getCursor() - cursor;
+                return true;
         }
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
-    i32t JsonScanner::scanBoolean()
+    bool JsonScanner::scanBoolean()
     {
         auto cursor = getCursor();
         if (scanToken("true") || scanToken("false"))
-            return getCursor() - cursor;
+            return true;
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
-    i32t JsonScanner::scanNull()
+    bool JsonScanner::scanNull()
     {
         auto cursor = getCursor();
         if (scanToken("null"))
-            return getCursor() - cursor;
+            return true;
         setCursor(cursor);
-        return 0;
+        return false;
     }
 
     JsonScanner::JsonScanner() = default;

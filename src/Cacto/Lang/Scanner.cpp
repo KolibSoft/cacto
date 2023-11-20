@@ -65,87 +65,80 @@ namespace cacto
         m_cursor = 0;
     }
 
-    i32t Scanner::scanClass(const std::string &set, bool optional, szt min, szt max)
+    bool Scanner::scanClass(const std::string &set, bool optional, szt min, szt max)
     {
         i32t index = 0;
         c8t c = 0;
         while ((c = available(index)) && set.find(c) != std::string::npos)
             index += 1;
         if (index < min || index > max)
-            return optional ? -1 : 0;
+            return optional;
         m_cursor += index;
-        return index;
+        return true;
     }
 
-    i32t Scanner::scanToken(const std::string &set, bool optional)
+    bool Scanner::scanToken(const std::string &set, bool optional)
     {
         i32t index = 0;
         c8t c = 0;
         while ((c = available(index)) && index < set.size() && set[index] == c)
             index += 1;
         if (index != set.size())
-            return optional ? -1 : 0;
+            return optional;
         m_cursor += index;
-        return index;
+        return true;
     }
 
-    i32t Scanner::scanNotClass(const std::string &set)
+    bool Scanner::scanNotClass(const std::string &set)
     {
         i32t index = 0;
         c8t c = 0;
         while ((c = available(index)) && set.find(c) == std::string::npos)
             index += 1;
         m_cursor += index;
-        return index;
+        return index > 0;
     }
 
-    i32t Scanner::discardClass(const std::string &set)
+    bool Scanner::discardClass(const std::string &set)
     {
         i32t index = 0;
         c8t c = 0;
         while ((c = available(index)) && set.find(c) != std::string::npos)
             index -= 1;
         m_cursor += index;
-        return index;
+        return index > 0;
     }
 
-    i32t Scanner::option(szt count)
+    bool Scanner::scanBlank()
     {
-        if (count == 0)
-            count = -1;
-        return count;
+        auto result = scanClass(" \t\n");
+        return result;
     }
 
-    i32t Scanner::scanBlank()
+    bool Scanner::scanDigit()
     {
-        auto index = scanClass(" \t\n");
-        return index;
+        auto result = scanClass("0123456789");
+        return result;
     }
 
-    i32t Scanner::scanDigit()
+    bool Scanner::scanWord()
     {
-        auto index = scanClass("0123456789");
-        return index;
+        auto result = scanClass("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+        return result;
     }
 
-    i32t Scanner::scanWord()
+    bool Scanner::dropBlank()
     {
-        auto index = scanClass("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
-        return index;
-    }
-
-    i32t Scanner::dropBlank()
-    {
-        auto index = scanBlank();
+        auto result = scanBlank();
         drop();
-        return index;
+        return result;
     }
 
-    i32t Scanner::dropToken(const std::string &set)
+    bool Scanner::dropToken(const std::string &set)
     {
-        auto index = scanToken(set);
+        auto result = scanToken(set);
         drop();
-        return index;
+        return result;
     }
 
     Scanner::Scanner()
@@ -156,5 +149,10 @@ namespace cacto
     }
 
     Scanner::~Scanner() = default;
+
+    bool Scanner::option(bool result)
+    {
+        return true;
+    }
 
 }

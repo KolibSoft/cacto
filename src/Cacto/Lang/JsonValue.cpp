@@ -2,6 +2,7 @@
 #include <fstream>
 #include <Cacto/Lang/JsonPrinter.hpp>
 #include <Cacto/Lang/JsonScanner.hpp>
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 
 namespace cacto
@@ -175,6 +176,14 @@ namespace cacto
             auto token = scanner.take();
             m_kind = String;
             m_string = new std::string(token.substr(1, token.size() - 2));
+            replaceAll(*m_string, "\\\"", "\"");
+            replaceAll(*m_string, "\\/", "/");
+            replaceAll(*m_string, "\\b", "\b");
+            replaceAll(*m_string, "\\f", "\f");
+            replaceAll(*m_string, "\\n", "\n");
+            replaceAll(*m_string, "\\r", "\r");
+            replaceAll(*m_string, "\\t", "\t");
+            replaceAll(*m_string, "\\\\", "\\");
             return;
         }
         if (scanner.scanBoolean())
