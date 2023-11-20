@@ -11,14 +11,15 @@ namespace cacto
     {
 
     public:
-        i32t scanExponent();
-        i32t scanNumber();
+        bool scanExponent();
+        bool scanFraction();
+        bool scanNumber();
 
-        i32t scanEscape();
-        i32t scanString();
+        bool scanEscape();
+        bool scanString();
 
-        i32t scanBoolean();
-        i32t scanNull();
+        bool scanBoolean();
+        bool scanNull();
 
         JsonScanner();
         virtual ~JsonScanner();

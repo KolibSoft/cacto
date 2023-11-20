@@ -105,8 +105,15 @@ int main()
     model.value = 0;
     model.fromJson(json);
 
+    json = "String with \" escapes";
+    std::cout << json.asString() << '\n';
+    std::cout << json.toString() << '\n';
+    string = json.toString();
+    json.fromString(string);
+    std::cout << json.toString() << '\n';
+
     auto stringMap = cacto::stringMapFromFile("res/string_map.json");
-    for(auto& pair: stringMap) 
+    for (auto &pair : stringMap)
         std::cout << pair.first << ": " << pair.second << "\n";
 
     return 0;

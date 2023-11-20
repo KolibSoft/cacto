@@ -140,6 +140,11 @@ namespace cacto
             auto token = scanner.take();
             m_kind = Text;
             m_text = new std::string(token);
+            replaceAll(*m_text, "&lt;", "<");
+            replaceAll(*m_text, "&gt;", ">");
+            replaceAll(*m_text, "&quot;", "\"");
+            replaceAll(*m_text, "&pos;", "\'");
+            replaceAll(*m_text, "&amp;", "&");
             return;
         }
         if (scanner.dropToken("<"))

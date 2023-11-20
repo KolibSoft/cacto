@@ -6,109 +6,52 @@ namespace cacto
 
     i32t XmlScanner::scanEscape()
     {
-        auto eScan = [&]
-        {
-            return scanToken("&");
-        };
-        auto cScan = [&]
-        {
-            return scanGroup({[&]
-                              { return scanToken("lt"); },
-                              [&]
-                              { return scanToken("gt"); },
-                              [&]
-                              { return scanToken("amp"); },
-                              [&]
-                              { return scanToken("quot"); },
-                              [&]
-                              { return scanToken("apos"); }});
-        };
-        auto dScan = [&]
-        {
-            return scanToken(";");
-        };
-        auto index = scanSequence({eScan, cScan, dScan});
-        return index;
+        auto cursor = getCursor();
+        if (scanToken("&") && (scanToken("lt") || scanToken("gt") || scanToken("amp") || scanToken("quot") || scanToken("pos")) && scanToken(";"))
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
     }
 
     i32t XmlScanner::scanText()
     {
-        auto eScan = [&]
-        {
-            return scanOption([&]
-                              { return scanEscape(); });
-        };
-        auto cScan = [&]
-        {
-            return scanOption([&]
-                              { return scanNot([&]
-                                               { return scanClass("&<>\"'\n"); }); });
-        };
-        auto index = scanWhile([&]
-                               { return scanGroup({eScan, cScan}); });
-        return index;
+        auto cursor = getCursor();
+        while (scanEscape() || scanNotClass("&<>\"'\n"))
+            continue;
+        return getCursor() - cursor;
     }
 
-    i32t XmlScanner::scanXmlIdentifier()
+    i32t XmlScanner::scanIdentifier()
     {
-        auto under = [&]
+        auto cursor = getCursor();
+        if (scanClass("_") || scanWord())
         {
-            return scanToken("_");
-        };
-        auto word = [&]
-        {
-            return scanWord();
-        };
-        auto digit = [&]
-        {
-            return scanDigit();
-        };
-        auto specials = [&]
-        {
-            return scanClass(":-.");
-        };
-        auto index = scanSequence({[&]
-                                   {
-                                       return scanGroup({under, word});
-                                   },
-                                   [&]
-                                   {
-                                       return scanOption([&]
-                                                         { return scanWhile([&]
-                                                                            { return scanGroup({under, word, digit, specials}); }); });
-                                   }});
-        auto deny = std::string(":-.");
-        while (deny.find(available(-1)) != std::string::npos)
-        {
-            index -= 1;
-            setCursor(getCursor() - 1);
+            while (scanClass("_") || scanWord() || scanDigit() || scanClass(":-."))
+                continue;
+            discardClass(":-.");
+            return getCursor() - cursor;
         }
-        return index;
+        setCursor(cursor);
+        return 0;
     }
 
     i32t XmlScanner::scanName()
     {
-        return scanXmlIdentifier();
+        return scanIdentifier();
     }
 
     i32t XmlScanner::scanAttribute()
     {
-        return scanXmlIdentifier();
+        return scanIdentifier();
     }
 
     i32t XmlScanner::scanValue()
     {
-        auto tScan = [&]
-        {
-            return scanOption([&]
-                              { return scanText(); });
-        };
-        auto qScan = [&]
-        {
-            return scanToken("\"");
-        };
-        auto index = scanSequence({qScan, tScan, qScan});
-        return index;
+        auto cursor = getCursor();
+        if (scanClass("\"") && scanText() && scanClass("\""))
+            return getCursor() - cursor;
+        setCursor(cursor);
+        return 0;
     }
 
     XmlScanner::XmlScanner() = default;

@@ -7,6 +7,7 @@ int main()
 
     cacto::JsonScanner scanner;
     std::string string;
+
     while (true)
     {
         std::cin >> string;

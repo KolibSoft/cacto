@@ -14,7 +14,7 @@ namespace cacto
         i32t scanEscape();
         i32t scanText();
 
-        i32t scanXmlIdentifier();
+        i32t scanIdentifier();
         i32t scanName();
         i32t scanAttribute();
         i32t scanValue();

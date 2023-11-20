@@ -1,3 +1,4 @@
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Lang/JsonPrinter.hpp>
 
 namespace cacto
@@ -17,7 +18,16 @@ namespace cacto
 
     void JsonPrinter::printString(const std::string &value)
     {
-        print('"' + value + '"');
+        auto string = value;
+        replaceAll(string, "\\", "\\\\");
+        replaceAll(string, "\"", "\\\"");
+        replaceAll(string, "/", "\\/");
+        replaceAll(string, "\b", "\\b");
+        replaceAll(string, "\f", "\\f");
+        replaceAll(string, "\n", "\\n");
+        replaceAll(string, "\r", "\\r");
+        replaceAll(string, "\t", "\\t");
+        print('"' + string + '"');
     }
 
     void JsonPrinter::printBoolean(bool value)
