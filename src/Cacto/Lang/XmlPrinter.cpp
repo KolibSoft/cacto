@@ -1,3 +1,4 @@
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Lang/XmlPrinter.hpp>
 
 namespace cacto
@@ -5,7 +6,13 @@ namespace cacto
 
     void XmlPrinter::printText(const std::string &text)
     {
-        print(text);
+        std::string string = text;
+        replaceAll(string, "&", "&amp;");
+        replaceAll(string, "<", "&lt;");
+        replaceAll(string, ">", "&gt;");
+        replaceAll(string, "\"", "&quot;");
+        replaceAll(string, "\'", "&pos;");
+        print(string);
     }
 
     void XmlPrinter::printName(const std::string &name)
