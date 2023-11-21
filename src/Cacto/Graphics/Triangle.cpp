@@ -55,10 +55,9 @@ namespace cacto
     JsonValue Triangle::toJson() const
     {
         auto json = JsonValue::ObjectValue;
-        json["type"] = "Triangle";
-        json["pointA"] = {f64t(m_pointA.x), f64t(m_pointA.y)};
-        json["pointB"] = {f64t(m_pointB.x), f64t(m_pointB.y)};
-        json["pointC"] = {f64t(m_pointC.x), f64t(m_pointC.y)};
+        json["pointA"] = {m_pointA.x, m_pointA.y};
+        json["pointB"] = {m_pointB.x, m_pointB.y};
+        json["pointC"] = {m_pointC.x, m_pointC.y};
         return json;
     }
 

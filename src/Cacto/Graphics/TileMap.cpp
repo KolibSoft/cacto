@@ -71,17 +71,17 @@ namespace cacto
     JsonValue TileMap::toJson() const
     {
         auto json = JsonValue::ObjectValue;
-        json["tileSize"] = {f64t(m_tileSize.x), f64t(m_tileSize.y)};
-        json["area"] = {f64t(m_area.left), f64t(m_area.top), f64t(m_area.width), f64t(m_area.height)};
+        json["tileSize"] = {m_tileSize.x, m_tileSize.y};
+        json["area"] = {m_area.left, m_area.top, m_area.width, m_area.height};
         auto &tiles = (json["tiles"] = JsonValue::ArrayValue).asArray();
         for (i32t y = 0; y < m_area.height; y++)
             for (i32t x = 0; x < m_area.width; x++)
             {
                 auto base = (y * m_area.width + x) * 6;
-                tiles.push_back({f64t(m_array[base + 0].texCoords.x),
-                                 f64t(m_array[base + 0].texCoords.y),
-                                 f64t(m_array[base + 2].texCoords.x),
-                                 f64t(m_array[base + 2].texCoords.y)});
+                tiles.push_back({m_array[base + 0].texCoords.x,
+                                 m_array[base + 0].texCoords.y,
+                                 m_array[base + 2].texCoords.x,
+                                 m_array[base + 2].texCoords.y});
             }
         return json;
     }

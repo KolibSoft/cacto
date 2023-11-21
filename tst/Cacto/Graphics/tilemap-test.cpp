@@ -21,6 +21,7 @@ int main()
 
     cacto::JsonValue json = nullptr;
     json.fromFile("res/rect_map.json");
+    json.toFile("res/rect_map.json");
 
     std::unordered_map<std::string, sf::FloatRect> tiles{};
     for (auto &pair : json.asObject())

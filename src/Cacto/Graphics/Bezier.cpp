@@ -36,10 +36,9 @@ namespace cacto
     JsonValue Bezier::toJson() const
     {
         auto json = JsonValue::ObjectValue;
-        json["type"] = "Bezier";
         auto &points = (json["points"] = JsonValue::ArrayValue).asArray();
         for (auto &point : m_points)
-            points.push_back({f64t(point.x), f64t(point.y)});
+            points.push_back({point.x, point.y});
         return json;
     }
 

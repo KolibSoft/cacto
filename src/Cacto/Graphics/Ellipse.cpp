@@ -45,9 +45,8 @@ namespace cacto
     JsonValue Ellipse::toJson() const
     {
         auto json = JsonValue::ObjectValue;
-        json["type"] = "Ellipse";
-        json["center"] = {f64t(m_centerX), f64t(m_centerY)};
-        json["diameters"] = {f64t(m_radiusX * 2), f64t(m_radiusY * 2)};
+        json["center"] = {m_centerX, m_centerY};
+        json["diameters"] = {m_radiusX * 2, m_radiusY * 2};
         return json;
     }
 

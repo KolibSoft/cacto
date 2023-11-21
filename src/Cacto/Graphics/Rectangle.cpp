@@ -46,9 +46,8 @@ namespace cacto
     JsonValue Rectangle::toJson() const
     {
         auto json = JsonValue::ObjectValue;
-        json["type"] = "Rectangle";
-        json["position"] = {f64t(m_left), f64t(m_top)};
-        json["size"] = {f64t(m_width), f64t(m_height)};
+        json["position"] = {m_left, m_top};
+        json["size"] = {m_width, m_height};
         return json;
     }
 

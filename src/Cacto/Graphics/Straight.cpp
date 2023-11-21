@@ -21,9 +21,8 @@ namespace cacto
     JsonValue Straight::toJson() const
     {
         auto json = JsonValue::ObjectValue;
-        json["type"] = "Straight";
-        json["begin"] = {f64t(m_begin.x), f64t(m_begin.y)};
-        json["end"] = {f64t(m_end.x), f64t(m_end.y)};
+        json["begin"] = {m_begin.x, m_begin.y};
+        json["end"] = {m_end.x, m_end.y};
         return json;
     }
 
