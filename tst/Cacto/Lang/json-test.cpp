@@ -2,6 +2,7 @@
 
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/Json.hpp>
+#include <Cacto/Lang/JsonResource.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 class ModelExample
@@ -115,6 +116,17 @@ int main()
     auto stringMap = cacto::stringMapFromFile("res/string_map.json");
     for (auto &pair : stringMap)
         std::cout << pair.first << ": " << pair.second << "\n";
+
+    auto &registry = cacto::JsonResource::Registry;
+    registry["Example"] = []()
+    {
+        return new ModelExample();
+    };
+
+    cacto::JsonResource resource;
+    resource.fromFile("res/resource.json");
+    ModelExample *modelExample = dynamic_cast<ModelExample *>(resource.getJson());
+    resource.toFile("res/resource.json");
 
     return 0;
 }

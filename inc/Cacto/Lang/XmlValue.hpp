@@ -67,6 +67,7 @@ namespace cacto
         XmlValue &operator=(XmlValue &&other);
 
         bool operator==(const XmlValue &other) const;
+        bool operator!=(const XmlValue &other) const;
 
     private:
         struct tag;

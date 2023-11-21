@@ -10,6 +10,9 @@ namespace cacto
     {
 
     public:
+        virtual XmlValue toXml() const = 0;
+        virtual void fromXml(const XmlValue &xml) = 0;
+
         Xml() = default;
         virtual ~Xml() = default;
     };

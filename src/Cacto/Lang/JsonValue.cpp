@@ -475,6 +475,11 @@ namespace cacto
         return false;
     }
 
+    bool JsonValue::operator!=(const JsonValue &other) const
+    {
+        return !(*this == other);
+    }
+
     const JsonValue JsonValue::NumberValue = 0.0;
     const JsonValue JsonValue::StringValue = std::string();
     const JsonValue JsonValue::BooleanValue = false;

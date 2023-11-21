@@ -377,6 +377,10 @@ namespace cacto
         return false;
     }
 
+    bool XmlValue::operator!=(const XmlValue &other) const
+    {
+        return !(*this == other);
+    }
     void XmlValue::drop()
     {
         switch (m_kind)

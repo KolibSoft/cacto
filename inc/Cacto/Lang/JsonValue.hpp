@@ -80,6 +80,7 @@ namespace cacto
         JsonValue &operator=(JsonValue &&other);
 
         bool operator==(const JsonValue &other) const;
+        bool operator!=(const JsonValue &other) const;
 
         static const JsonValue NumberValue;
         static const JsonValue StringValue;
