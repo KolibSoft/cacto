@@ -19,8 +19,15 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     auto texture = R::texture.get();
 
-    auto tiles = cacto::rectMapFromFile("res/rect_map.json");
-    cacto::rectMapToFile(tiles, "res/rect_map.json");
+    cacto::JsonValue json = nullptr;
+    json.fromFile("res/rect_map.json");
+
+    std::unordered_map<std::string, sf::FloatRect> tiles{};
+    for (auto &pair : json.asObject())
+    {
+        auto &tile = tiles[pair.first] = {};
+        cacto::rectFromJson(tile, pair.second);
+    }
 
     cacto::TileMap tileMap{};
     tileMap.setTexture(texture.get());

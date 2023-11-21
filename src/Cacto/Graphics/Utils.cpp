@@ -141,29 +141,21 @@ namespace cacto
         return size;
     }
 
-    void rectMapToFile(const std::unordered_map<std::string, sf::FloatRect> &map, const std::filesystem::path &path)
+    JsonValue rectToJson(const sf::FloatRect &rect)
     {
-        auto json = JsonValue::ObjectValue;
-        for (auto &pair : map)
-            json[pair.first] = {pair.second.left, pair.second.top, pair.second.width, pair.second.height};
-        json.toFile(path);
+        JsonValue json = {rect.left, rect.top, rect.width, rect.height};
+        return json;
     }
 
-    std::unordered_map<std::string, sf::FloatRect> rectMapFromFile(const std::filesystem::path &path)
+    void rectFromJson(sf::FloatRect &rect, const JsonValue &json)
     {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        std::unordered_map<std::string, sf::FloatRect> map{};
-        for (auto &pair : json.asObject())
-        {
-            sf::FloatRect rect{{f32t(pair.second[0].asNumber()), f32t(pair.second[1].asNumber())},
-                               {f32t(pair.second[2].asNumber()), f32t(pair.second[3].asNumber())}};
-            map[pair.first] = rect;
-        }
-        return map;
+        rect.left = f32t(json[0].asNumber());
+        rect.top = f32t(json[1].asNumber());
+        rect.width = f32t(json[2].asNumber());
+        rect.height = f32t(json[3].asNumber());
     }
 
-    void vertexArrayToFile(const sf::VertexArray &array, const std::filesystem::path &path)
+    JsonValue vertexArrayToJson(const sf::VertexArray &array)
     {
         auto json = JsonValue::ObjectValue;
         switch (array.getPrimitiveType())
@@ -197,14 +189,11 @@ namespace cacto
             item["texCoords"] = {f64t(vertex.texCoords.x), f64t(vertex.texCoords.y)};
             vertexes.push_back(item);
         }
-        json.toFile(path);
+        return json;
     }
 
-    sf::VertexArray vertexArrayFromFile(const std::filesystem::path &path)
+    void vertexArrayFromJson(sf::VertexArray &array, const JsonValue &json)
     {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        sf::VertexArray array{};
         auto &primitive = json["primitive"].asString();
         if (primitive == "Points")
             array.setPrimitiveType(sf::PrimitiveType::Points);
@@ -232,7 +221,6 @@ namespace cacto
             vertex.texCoords = {f32t(texCoords[0].asNumber()), f32t(texCoords[1].asNumber())};
             array.append(vertex);
         }
-        return array;
     }
 
 }
