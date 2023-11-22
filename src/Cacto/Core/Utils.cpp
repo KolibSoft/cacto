@@ -18,4 +18,13 @@ namespace cacto
             map[pair.first] = pair.second.asString();
     }
 
+    void loadStrings(const std::filesystem::path &path)
+    {
+        JsonValue json = nullptr;
+        json.fromFile(path);
+        stringMapFromJson(Strings, json);
+    }
+
+    StringMap Strings{};
+
 }

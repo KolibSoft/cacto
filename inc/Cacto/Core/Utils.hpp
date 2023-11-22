@@ -12,6 +12,9 @@ namespace cacto
     JsonValue CACTO_CORE_API stringMapToJson(const StringMap &map);
     void CACTO_CORE_API stringMapFromJson(StringMap &map, const JsonValue &json);
 
+    void CACTO_CORE_API loadStrings(const std::filesystem::path &path = "res/strings.json");
+    extern StringMap CACTO_CORE_API Strings;
+
 }
 
 #endif

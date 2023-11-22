@@ -4,20 +4,18 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
-
-namespace R
-{
-    auto texture = cacto::Loader<sf::Texture>::fromFile("res/WallTile.png");
-}
+#include <Cacto/Core/Utils.hpp>
 
 int main()
 {
 
+    cacto::loadStrings();
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    auto texture = R::texture.get();
+    sf::Texture texture;
+    auto _ = texture.loadFromFile(cacto::Strings["texture"]);
 
     cacto::JsonValue json = nullptr;
     json.fromFile("res/rect_map.json");
@@ -31,7 +29,7 @@ int main()
     }
 
     cacto::TileMap tileMap{};
-    tileMap.setTexture(texture.get());
+    tileMap.setTexture(&texture);
     tileMap.setTileSize({32, 32});
     tileMap.setArea({{1, 1}, {10, 10}});
 
