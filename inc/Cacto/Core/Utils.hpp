@@ -7,8 +7,10 @@
 namespace cacto
 {
 
-    JsonValue CACTO_CORE_API stringMapToJson(const std::unordered_map<std::string, std::string> &map);
-    void CACTO_CORE_API stringMapFromJson(std::unordered_map<std::string, std::string> &map, const JsonValue &json);
+    using StringMap = std::unordered_map<std::string, std::string>;
+
+    JsonValue CACTO_CORE_API stringMapToJson(const StringMap &map);
+    void CACTO_CORE_API stringMapFromJson(StringMap &map, const JsonValue &json);
 
 }
 
