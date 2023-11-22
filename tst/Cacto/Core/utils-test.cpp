@@ -13,16 +13,11 @@ int main()
 {
 
     cacto::JsonValue json = nullptr;
-    json.fromFile("res/strings.json");
+    json.fromFile("res/paths.json");
 
-    cacto::StringMap strings{};
-    cacto::stringMapFromJson(strings, json);
-
-    strings["mode"] = "DEV";
-    std::cout << strings["message"] << '\n';
-
-    json = cacto::stringMapToJson(strings);
-    json.toFile("res/strings.json");
+    cacto::PathMap map{};
+    cacto::pathMapFromJson(map, json);
+    auto path = map["stringId"];
 
     return 0;
 }
