@@ -194,6 +194,7 @@ namespace cacto
 
     void vertexArrayFromJson(sf::VertexArray &array, const JsonValue &json)
     {
+        array.clear();
         auto &primitive = json["primitive"].asString();
         if (primitive == "Points")
             array.setPrimitiveType(sf::PrimitiveType::Points);
