@@ -12,12 +12,7 @@
 int main()
 {
 
-    cacto::JsonValue json = nullptr;
-    json.fromFile("res/paths.json");
-
-    cacto::PathMap map{};
-    cacto::pathMapFromJson(map, json);
-    auto path = map["stringId"];
+    
 
     return 0;
 }
