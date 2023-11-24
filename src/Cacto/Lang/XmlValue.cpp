@@ -3,6 +3,7 @@
 #include <Cacto/Lang/XmlPrinter.hpp>
 #include <Cacto/Lang/XmlScanner.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 namespace cacto
 {
