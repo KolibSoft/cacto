@@ -6,6 +6,7 @@
 
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 
 auto makeSquare(const sf::Color &color, const sf::FloatRect &rect)
 {
@@ -18,6 +19,14 @@ auto makeSquare(const sf::Color &color, const sf::FloatRect &rect)
 
 int main()
 {
+
+    cacto::TexturePack pack{"res/textures"};
+
+    // sf::Texture texture;
+    // auto _ = texture.loadFromFile("res/fondo.png");
+    // pack.setTexture("my_texture.png", texture);
+
+    auto p = pack.getTexture("my_texture.png").getSize();
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     auto container = makeSquare(sf::Color::Red, {{10, 10}, {300, 200}});
