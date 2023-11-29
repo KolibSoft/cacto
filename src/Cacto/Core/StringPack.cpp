@@ -15,6 +15,14 @@ namespace cacto
         m_path = value;
     }
 
+    const std::string *const StringPack::getKey(const sf::String *const value) const
+    {
+        for (auto &pair : m_map)
+            if (pair.second == value)
+                return &pair.first;
+        return nullptr;
+    }
+
     const sf::String &StringPack::getString(const std::string &key, bool refresh) const
     {
         auto &string = m_map[key];
@@ -47,6 +55,34 @@ namespace cacto
             }
         }
         *string = value;
+    }
+
+    void StringPack::refreshToFiles() const
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                std::ofstream stream{m_path / pair.first};
+                if (stream.is_open())
+                {
+                    auto _string = pair.second->toAnsiString();
+                    stream << _string;
+                }
+            }
+    }
+
+    void StringPack::refreshFromFiles()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                std::ifstream stream{m_path / pair.first};
+                if (stream.is_open())
+                {
+                    std::string _string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
+                    *pair.second = _string;
+                }
+            }
     }
 
     StringPack::StringPack(const std::filesystem::path &path)

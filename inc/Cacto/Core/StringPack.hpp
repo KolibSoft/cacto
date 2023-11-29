@@ -21,8 +21,13 @@ namespace cacto
         const std::filesystem::path &getPath() const;
         void setPath(const std::filesystem::path &value);
 
+        const std::string *const getKey(const sf::String *const value) const;
+
         const sf::String &getString(const std::string &key, bool refresh = false) const;
         void setString(const std::string &key, const sf::String &value, bool refresh = false);
+
+        void refreshToFiles() const;
+        void refreshFromFiles();
 
         StringPack(const std::filesystem::path &path = ".");
         virtual ~StringPack();
