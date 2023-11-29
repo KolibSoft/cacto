@@ -1,8 +1,17 @@
 #ifndef CACTO_GEOMETRY_HPP
 #define CACTO_GEOMETRY_HPP
 
-#include <SFML/Graphics/Rect.hpp>
 #include <Cacto/Graphics/Line.hpp>
+
+namespace sf
+{
+
+    template <typename T>
+    class Rect;
+
+    using FloatRect = Rect<float>;
+
+}
 
 namespace cacto
 {

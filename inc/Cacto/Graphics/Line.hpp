@@ -1,11 +1,16 @@
 #ifndef CACTO_LINE_HPP
 #define CACTO_LINE_HPP
 
-#include <SFML/System/Vector2.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
 {
+
+    template <typename T>
+    class Vector2;
+
+    using Vector2f = Vector2<float>;
+
     class Vertex;
     class VertexArray;
 }
