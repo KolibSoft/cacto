@@ -1,3 +1,4 @@
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/Json.hpp>
 
 namespace cacto

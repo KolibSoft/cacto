@@ -1,10 +1,13 @@
 #ifndef CACTO_JSON_HPP
 #define CACTO_JSON_HPP
 
-#include <Cacto/Lang/JsonValue.hpp>
+#include <filesystem>
+#include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
+
+    class JsonValue;
 
     class CACTO_LANG_API Json
     {
