@@ -37,6 +37,11 @@ namespace cacto
         mutable std::unordered_map<std::string, sf::String *> m_map;
     };
 
+    const std::string *const CACTO_CORE_API getKey(const sf::String *const value);
+    const sf::String &CACTO_CORE_API getString(const std::string &key);
+
+    extern std::unordered_map<std::string, StringPack> CACTO_CORE_API StringPacks;
+
 }
 
 #endif

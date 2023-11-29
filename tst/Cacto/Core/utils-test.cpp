@@ -21,5 +21,8 @@ int main()
     pack.setString("my_string.txt", "My String Content");
     std::cout << "Content:" << pack.getString("my_string.txt").toAnsiString() << "\n";
 
+    cacto::StringPacks["default"] = {"res/strings"};
+    std::cout << "Global Content: " << cacto::getString("my_string.txt").toAnsiString() << "\n";
+
     return 0;
 }

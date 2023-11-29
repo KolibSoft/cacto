@@ -103,4 +103,33 @@ namespace cacto
         }
     }
 
+    const std::string *const getKey(const sf::String *const value)
+    {
+        if (StringPacks.size() == 0)
+            throw std::runtime_error("There are not string packs");
+        for (auto &pair : StringPacks)
+        {
+            auto key = pair.second.getKey(value);
+            if (key)
+                return key;
+        }
+        return nullptr;
+    }
+
+    const sf::String &getString(const std::string &key)
+    {
+        if (StringPacks.size() == 0)
+            throw std::runtime_error("There are not string packs");
+        const sf::String *string = nullptr;
+        for (auto &pair : StringPacks)
+        {
+            string = &pair.second.getString(key);
+            if (!string->isEmpty())
+                break;
+        }
+        return *string;
+    }
+
+    std::unordered_map<std::string, StringPack> StringPacks{};
+
 }
