@@ -1,4 +1,5 @@
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 
 namespace cacto
@@ -71,6 +72,8 @@ namespace cacto
     JsonValue TileMap::toJson() const
     {
         auto json = JsonValue::ObjectValue;
+        auto tKey = cacto::getKey(m_texture);
+        json["texture"] = tKey ? *tKey : nullptr;
         json["tileSize"] = {m_tileSize.x, m_tileSize.y};
         json["area"] = {m_area.left, m_area.top, m_area.width, m_area.height};
         auto &tiles = (json["tiles"] = JsonValue::ArrayValue).asArray();
@@ -78,19 +81,24 @@ namespace cacto
             for (i32t x = 0; x < m_area.width; x++)
             {
                 auto base = (y * m_area.width + x) * 6;
-                tiles.push_back({m_array[base + 0].texCoords.x,
-                                 m_array[base + 0].texCoords.y,
-                                 m_array[base + 2].texCoords.x,
-                                 m_array[base + 2].texCoords.y});
+                auto left = m_array[base + 0].texCoords.x;
+                auto top = m_array[base + 0].texCoords.y;
+                auto right = m_array[base + 2].texCoords.x;
+                auto bottom = m_array[base + 2].texCoords.y;
+                tiles.push_back({left, top, right - left, bottom - top});
             }
         return json;
     }
 
     void TileMap::fromJson(const JsonValue &json)
     {
+        auto &texture = json["texture"];
         auto &tileSize = json["tileSize"];
         auto &area = json["area"];
         auto &tiles = json["tiles"];
+        m_texture = nullptr;
+        if (texture != nullptr)
+            m_texture = &cacto::getTexture(texture.asString());
         m_tileSize = {f32t(tileSize[0].asNumber()), f32t(tileSize[1].asNumber())};
         m_area = {{i32t(area[0].asNumber()), i32t(area[1].asNumber())},
                   {i32t(area[2].asNumber()), i32t(area[3].asNumber())}};
@@ -102,6 +110,7 @@ namespace cacto
                 auto &tile = tiles[base];
                 sf::FloatRect rect{{f32t(tile[0].asNumber()), f32t(tile[1].asNumber())},
                                    {f32t(tile[2].asNumber()), f32t(tile[3].asNumber())}};
+                setTile({m_area.left + x, m_area.top + y}, rect);
             }
     }
 

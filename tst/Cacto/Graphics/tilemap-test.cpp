@@ -6,16 +6,20 @@
 
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Core/Utils.hpp>
 
 int main()
 {
 
-    cacto::loadStrings();
-
+    auto &pack = cacto::TexturePacks["tilemaps"] = {"res/textures"};
+    
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+
+    /*
     sf::Texture texture;
-    auto _ = texture.loadFromFile(cacto::Strings["texture"]);
+    auto _ = texture.loadFromFile("res/WallTile.png");
+    pack.setTexture("tiles.png", texture);
 
     cacto::JsonValue json = nullptr;
     json.fromFile("res/rect_map.json");
@@ -27,9 +31,10 @@ int main()
         auto &tile = tiles[pair.first] = {};
         cacto::rectFromJson(tile, pair.second);
     }
-
+    */
     cacto::TileMap tileMap{};
-    tileMap.setTexture(&texture);
+    /*
+    tileMap.setTexture(&pack.getTexture("tiles.png"));
     tileMap.setTileSize({32, 32});
     tileMap.setArea({{1, 1}, {10, 10}});
 
@@ -43,7 +48,9 @@ int main()
     tileMap.setTile({10, 10}, tiles["BottomRight"]);
 
     tileMap.toFile("res/tile_map.json");
+    */
     tileMap.fromFile("res/tile_map.json");
+    tileMap.toFile("res/tile_map.json");
 
     while (window.isOpen())
     {
@@ -60,5 +67,6 @@ int main()
         window.display();
     }
 
+    cacto::TexturePacks.clear();
     return 0;
 }
