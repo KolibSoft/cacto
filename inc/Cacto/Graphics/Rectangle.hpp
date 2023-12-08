@@ -1,15 +1,16 @@
 #ifndef CACTO_RECTANGLE_HPP
 #define CACTO_RECTANGLE_HPP
 
-#include <Cacto/Lang/Json.hpp>
+#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
+    class JsonValue;
+
     class CACTO_GRAPHICS_API Rectangle final
-        : public virtual Geometry,
-          public virtual Json
+        : public virtual Geometry
     {
 
     public:
@@ -19,8 +20,17 @@ namespace cacto
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
 
-        JsonValue toJson() const override;
-        void fromJson(const JsonValue &json) override;
+        f32t getLeft() const;
+        void setLeft(f32t value);
+
+        f32t getTop() const;
+        void setTop(f32t value);
+
+        f32t getWidth() const;
+        void setWidth(f32t value);
+
+        f32t getHeight() const;
+        void setHeight(f32t value);
 
         Rectangle(const sf::Vector2f &position = {0, 0}, const sf::Vector2f &size = {1, 1});
         virtual ~Rectangle();
@@ -36,6 +46,26 @@ namespace cacto
         f32t m_right;
         f32t m_bottom;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Rectangle &rectangle);
+    void CACTO_GRAPHICS_API fromJson(Rectangle &rectangle, const JsonValue &json);
+
+    namespace rectangle
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual cacto::JsonConverter<Line>,
+              public virtual cacto::JsonConverter<Geometry>
+        {
+        public:
+            JsonValue toJson(const Geometry *const value) const override;
+            Geometry *fromJson(const JsonValue &json) const override;
+
+            JsonValue toJson(const Line *const value) const override;
+
+            JsonConverter();
+            virtual ~JsonConverter();
+        } Converter{};
+    }
 
 }
 

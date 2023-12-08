@@ -16,6 +16,8 @@ namespace sf
 namespace cacto
 {
 
+    class JsonValue;
+
     class Geometry
         : public virtual Line
     {
@@ -27,6 +29,9 @@ namespace cacto
         Geometry() = default;
         virtual ~Geometry() = default;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Geometry *const &geometry);
+    void CACTO_GRAPHICS_API fromJson(Geometry *&geometry, const JsonValue &json);
 
 }
 
