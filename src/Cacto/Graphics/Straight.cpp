@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
 namespace cacto
@@ -18,20 +20,24 @@ namespace cacto
         return point;
     }
 
-    JsonValue Straight::toJson() const
+    const sf::Vector2f &Straight::getBegin() const
     {
-        auto json = JsonValue::ObjectValue;
-        json["begin"] = {m_begin.x, m_begin.y};
-        json["end"] = {m_end.x, m_end.y};
-        return json;
+        return m_begin;
     }
 
-    void Straight::fromJson(const JsonValue &json)
+    void Straight::setBegin(const sf::Vector2f &value)
     {
-        auto &begin = json["begin"];
-        auto &end = json["end"];
-        m_begin = {f32t(begin[0].asNumber()), f32t(begin[1].asNumber())};
-        m_end = {f32t(end[0].asNumber()), f32t(end[1].asNumber())};
+        m_begin = value;
+    }
+
+    const sf::Vector2f &Straight::getEnd() const
+    {
+        return m_end;
+    }
+
+    void Straight::setEnd(const sf::Vector2f &value)
+    {
+        m_end = value;
     }
 
     Straight::Straight(const sf::Vector2f &begin, const sf::Vector2f &end)
@@ -40,5 +46,61 @@ namespace cacto
     }
 
     Straight::~Straight() = default;
+
+    JsonValue toJson(const Straight &straight)
+    {
+        auto json = JsonValue::ObjectValue;
+        auto &begin = straight.getBegin();
+        auto &end = straight.getEnd();
+        json["begin"] = {begin.x, begin.y};
+        json["end"] = {end.x, end.y};
+        return json;
+    }
+
+    void fromJson(Straight &straight, const JsonValue &json)
+    {
+        auto &begin = json["begin"];
+        auto &end = json["end"];
+        straight.setBegin({f32t(begin[0].asNumber()), f32t(begin[1].asNumber())});
+        straight.setEnd({f32t(end[0].asNumber()), f32t(end[1].asNumber())});
+    }
+
+    namespace straight
+    {
+
+        JsonValue JsonConverter::toJson(const Line *const value) const
+        {
+            const Straight *straight = nullptr;
+            if (value && (straight = dynamic_cast<const Straight *>(value)))
+            {
+                auto json = cacto::toJson(*straight);
+                json["$type"] = "Straight";
+                return json;
+            }
+            return nullptr;
+        }
+
+        Line *JsonConverter::fromJson(const JsonValue &json) const
+        {
+            if (json["$type"] == "Straight")
+            {
+                auto line = new Straight();
+                cacto::fromJson(*line, json);
+                return line;
+            }
+            return nullptr;
+        }
+
+        JsonConverter::JsonConverter()
+        {
+            Converters.push_back(this);
+        }
+
+        JsonConverter::~JsonConverter()
+        {
+            Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
+        }
+
+    }
 
 }

@@ -18,7 +18,9 @@ namespace sf
 namespace cacto
 {
 
-    class Line
+    class JsonValue;
+
+    class CACTO_GRAPHICS_API Line
     {
 
     public:
@@ -31,6 +33,9 @@ namespace cacto
 
     void CACTO_GRAPHICS_API setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision = 0);
     void CACTO_GRAPHICS_API setPoints(sf::VertexArray &array, const Line &line, szt precision = 0);
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Line *const &line);
+    void CACTO_GRAPHICS_API fromJson(Line *&line, const JsonValue &json);
 
 }
 
