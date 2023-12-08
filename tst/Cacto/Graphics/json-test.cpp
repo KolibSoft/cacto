@@ -4,6 +4,7 @@
 #include <Cacto/Graphics/Bezier.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/Triangle.hpp>
 
 int main()
 {
@@ -46,6 +47,18 @@ int main()
 
     {
         cacto::Geometry *geometry = new cacto::Ellipse({{20, 20}, {200, 200}});
+        auto json = cacto::toJson(geometry);
+        std::cout << json.toString() << "\n";
+
+        delete geometry;
+        geometry = nullptr;
+        cacto::fromJson(geometry, json);
+        json = cacto::toJson(geometry);
+        std::cout << json.toString() << "\n";
+    }
+
+    {
+        cacto::Geometry *geometry = new cacto::Triangle({{20, 20}, {200, 200}, {150, 150}});
         auto json = cacto::toJson(geometry);
         std::cout << json.toString() << "\n";
 
