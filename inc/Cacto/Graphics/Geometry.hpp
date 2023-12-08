@@ -1,6 +1,7 @@
 #ifndef CACTO_GEOMETRY_HPP
 #define CACTO_GEOMETRY_HPP
 
+#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace sf
@@ -32,6 +33,17 @@ namespace cacto
 
     JsonValue CACTO_GRAPHICS_API toJson(const Geometry *const &geometry);
     void CACTO_GRAPHICS_API fromJson(Geometry *&geometry, const JsonValue &json);
+
+    namespace geometry
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual cacto::JsonConverter<Geometry>
+        {
+        public:
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
+        };
+    }
 
 }
 

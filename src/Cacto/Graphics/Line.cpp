@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
@@ -27,7 +28,7 @@ namespace cacto
     {
         if (line == nullptr)
             return nullptr;
-        for (auto &converter : JsonConverter<Line>::Converters)
+        for (auto &converter : line::JsonConverter::Converters)
         {
             auto json = converter->toJson(line);
             if (json != nullptr)
@@ -40,7 +41,7 @@ namespace cacto
     {
         if (json == nullptr)
             line = nullptr;
-        for (auto &converter : JsonConverter<Line>::Converters)
+        for (auto &converter : line::JsonConverter::Converters)
         {
             line = converter->fromJson(json);
             if (line)

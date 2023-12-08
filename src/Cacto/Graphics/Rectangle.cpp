@@ -1,4 +1,7 @@
 #include <stdexcept>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
 namespace cacto
@@ -145,18 +148,6 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Line *const value) const
         {
             return toJson(dynamic_cast<const Geometry *>(value));
-        }
-
-        JsonConverter::JsonConverter()
-        {
-            cacto::JsonConverter<Line>::Converters.push_back(this);
-            cacto::JsonConverter<Geometry>::Converters.push_back(this);
-        }
-
-        JsonConverter::~JsonConverter()
-        {
-            cacto::JsonConverter<Line>::Converters.erase(std::remove(cacto::JsonConverter<Line>::Converters.begin(), cacto::JsonConverter<Line>::Converters.end(), this), cacto::JsonConverter<Line>::Converters.end());
-            cacto::JsonConverter<Geometry>::Converters.erase(std::remove(cacto::JsonConverter<Geometry>::Converters.begin(), cacto::JsonConverter<Geometry>::Converters.end(), this), cacto::JsonConverter<Geometry>::Converters.end());
         }
 
     }

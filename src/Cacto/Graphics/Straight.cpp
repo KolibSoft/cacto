@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
@@ -89,16 +88,6 @@ namespace cacto
                 return straight;
             }
             return nullptr;
-        }
-
-        JsonConverter::JsonConverter()
-        {
-            Converters.push_back(this);
-        }
-
-        JsonConverter::~JsonConverter()
-        {
-            Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
         }
 
     }

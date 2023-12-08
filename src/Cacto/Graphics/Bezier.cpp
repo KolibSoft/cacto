@@ -1,4 +1,6 @@
 #include <math.h>
+#include <SFML/System/Vector2.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 
 namespace cacto
@@ -109,16 +111,6 @@ namespace cacto
                 return bezier;
             }
             return nullptr;
-        }
-
-        JsonConverter::JsonConverter()
-        {
-            Converters.push_back(this);
-        }
-
-        JsonConverter::~JsonConverter()
-        {
-            Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
         }
 
     }

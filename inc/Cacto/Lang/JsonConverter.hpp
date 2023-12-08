@@ -16,15 +16,14 @@ namespace cacto
         virtual JsonValue toJson(const T *const value) const = 0;
         virtual T *fromJson(const JsonValue &json) const = 0;
 
-        JsonConverter() = default;
-        virtual ~JsonConverter() = default;
+        JsonConverter();
+        virtual ~JsonConverter();
 
-        static std::vector<const JsonConverter<T>*> Converters;
+        static std::vector<const JsonConverter<T> *> Converters;
     };
 
-    template <typename T>
-    inline std::vector<const JsonConverter<T>*> JsonConverter<T>::Converters{};
-
 }
+
+#include <Cacto/Lang/JsonConverter.inl>
 
 #endif

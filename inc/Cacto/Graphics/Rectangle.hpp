@@ -53,8 +53,8 @@ namespace cacto
     namespace rectangle
     {
         class CACTO_GRAPHICS_API JsonConverter
-            : public virtual cacto::JsonConverter<Line>,
-              public virtual cacto::JsonConverter<Geometry>
+            : public virtual line::JsonConverter,
+              public virtual geometry::JsonConverter
         {
         public:
             JsonValue toJson(const Geometry *const value) const override;
@@ -62,8 +62,8 @@ namespace cacto
 
             JsonValue toJson(const Line *const value) const override;
 
-            JsonConverter();
-            virtual ~JsonConverter();
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
         } Converter{};
     }
 

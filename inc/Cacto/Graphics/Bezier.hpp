@@ -2,7 +2,6 @@
 #define CACTO_BEZIER_HPP
 
 #include <vector>
-#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace cacto
@@ -38,14 +37,14 @@ namespace cacto
     namespace bezier
     {
         class CACTO_GRAPHICS_API JsonConverter
-            : public virtual cacto::JsonConverter<Line>
+            : public virtual line::JsonConverter
         {
         public:
             JsonValue toJson(const Line *const value) const override;
             Line *fromJson(const JsonValue &json) const override;
 
-            JsonConverter();
-            virtual ~JsonConverter();
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
         } Converter{};
     }
 

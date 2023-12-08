@@ -1,6 +1,7 @@
 #ifndef CACTO_LINE_HPP
 #define CACTO_LINE_HPP
 
+#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -36,6 +37,17 @@ namespace cacto
 
     JsonValue CACTO_GRAPHICS_API toJson(const Line *const &line);
     void CACTO_GRAPHICS_API fromJson(Line *&line, const JsonValue &json);
+
+    namespace line
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual cacto::JsonConverter<Line>
+        {
+        public:
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
+        };
+    }
 
 }
 
