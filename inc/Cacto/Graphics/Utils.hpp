@@ -43,11 +43,14 @@ namespace cacto
 
     sf::Vector2f CACTO_GRAPHICS_API fitSize(const sf::Vector2f &contentSize, const sf::Vector2f &containerSize);
 
-    JsonValue CACTO_GRAPHICS_API rectToJson(const sf::FloatRect &rect);
-    void CACTO_GRAPHICS_API rectFromJson(sf::FloatRect &rect, const JsonValue &json);
+    JsonValue CACTO_GRAPHICS_API toJson(const sf::FloatRect &rect);
+    void CACTO_GRAPHICS_API fromJson(sf::FloatRect &rect, const JsonValue &json);
 
-    JsonValue CACTO_GRAPHICS_API vertexArrayToJson(const sf::VertexArray &array);
-    void CACTO_GRAPHICS_API vertexArrayFromJson(sf::VertexArray &array, const JsonValue &json);
+    JsonValue CACTO_GRAPHICS_API toJson(const sf::PrimitiveType &primitive);
+    void CACTO_GRAPHICS_API fromJson(sf::PrimitiveType &primitive, const JsonValue &json);
+
+    JsonValue CACTO_GRAPHICS_API toJson(const sf::VertexArray &array);
+    void CACTO_GRAPHICS_API fromJson(sf::VertexArray &array, const JsonValue &json);
 
 }
 

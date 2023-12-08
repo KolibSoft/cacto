@@ -141,13 +141,13 @@ namespace cacto
         return size;
     }
 
-    JsonValue rectToJson(const sf::FloatRect &rect)
+    JsonValue toJson(const sf::FloatRect &rect)
     {
         JsonValue json = {rect.left, rect.top, rect.width, rect.height};
         return json;
     }
 
-    void rectFromJson(sf::FloatRect &rect, const JsonValue &json)
+    void fromJson(sf::FloatRect &rect, const JsonValue &json)
     {
         rect.left = f32t(json[0].asNumber());
         rect.top = f32t(json[1].asNumber());
@@ -155,30 +155,48 @@ namespace cacto
         rect.height = f32t(json[3].asNumber());
     }
 
-    JsonValue vertexArrayToJson(const sf::VertexArray &array)
+    JsonValue toJson(const sf::PrimitiveType &primitive)
+    {
+        JsonValue json = nullptr;
+        if (primitive == sf::PrimitiveType::Points)
+            json = "Points";
+        else if (primitive == sf::PrimitiveType::Lines)
+            json = "Lines";
+        else if (primitive == sf::PrimitiveType::LineStrip)
+            json = "LineStrip";
+        else if (primitive == sf::PrimitiveType::Triangles)
+            json = "Triangles";
+        else if (primitive == sf::PrimitiveType::TriangleStrip)
+            json = "TriangleStrip";
+        else if (primitive == sf::PrimitiveType::TriangleFan)
+            json = "TriangleFan";
+        else
+            throw std::runtime_error("Unsupported primitive type");
+        return json;
+    }
+
+    void fromJson(sf::PrimitiveType &primitive, const JsonValue &json)
+    {
+        auto &string = json.asString();
+        if (string == "Points")
+            primitive = sf::PrimitiveType::Points;
+        else if (string == "Lines")
+            primitive = sf::PrimitiveType::Lines;
+        else if (string == "LineStrip")
+            primitive = sf::PrimitiveType::LineStrip;
+        else if (string == "Triangles")
+            primitive = sf::PrimitiveType::Triangles;
+        else if (string == "TriangleStrip")
+            primitive = sf::PrimitiveType::TriangleStrip;
+        else if (string == "TriangleFan")
+            primitive = sf::PrimitiveType::TriangleFan;
+    }
+
+    JsonValue toJson(const sf::VertexArray &array)
     {
         auto json = JsonValue::ObjectValue;
-        switch (array.getPrimitiveType())
-        {
-        case sf::PrimitiveType::Points:
-            json["primitive"] = "Points";
-            break;
-        case sf::PrimitiveType::Lines:
-            json["primitive"] = "Lines";
-            break;
-        case sf::PrimitiveType::LineStrip:
-            json["primitive"] = "LineStrip";
-            break;
-        case sf::PrimitiveType::Triangles:
-            json["primitive"] = "Triangles";
-            break;
-        case sf::PrimitiveType::TriangleStrip:
-            json["primitive"] = "TriangleStrip";
-            break;
-        case sf::PrimitiveType::TriangleFan:
-            json["primitive"] = "TriangleFan";
-            break;
-        };
+        auto primitive = array.getPrimitiveType();
+        json["primitive"] = toJson(primitive);
         auto &vertexes = (json["vertexes"] = JsonValue::ArrayValue).asArray();
         for (szt i = 0; i < array.getVertexCount(); i++)
         {
@@ -192,24 +210,12 @@ namespace cacto
         return json;
     }
 
-    void vertexArrayFromJson(sf::VertexArray &array, const JsonValue &json)
+    void fromJson(sf::VertexArray &array, const JsonValue &json)
     {
         array.clear();
-        auto &primitive = json["primitive"].asString();
-        if (primitive == "Points")
-            array.setPrimitiveType(sf::PrimitiveType::Points);
-        else if (primitive == "Lines")
-            array.setPrimitiveType(sf::PrimitiveType::Lines);
-        else if (primitive == "LineStrip")
-            array.setPrimitiveType(sf::PrimitiveType::LineStrip);
-        else if (primitive == "Triangles")
-            array.setPrimitiveType(sf::PrimitiveType::Triangles);
-        else if (primitive == "TriangleStrip")
-            array.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
-        else if (primitive == "TriangleFan")
-            array.setPrimitiveType(sf::PrimitiveType::TriangleFan);
-        else
-            throw std::runtime_error("Unsupported primitive type");
+        sf::PrimitiveType primitive;
+        fromJson(primitive, json["primitive"]);
+        array.setPrimitiveType(sf::PrimitiveType::Triangles);
         auto &vertexes = json["vertexes"].asArray();
         for (auto &item : vertexes)
         {
