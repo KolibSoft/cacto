@@ -28,7 +28,7 @@ namespace cacto
     {
         if (line == nullptr)
             return nullptr;
-        for (auto &converter : line::JsonConverter::Converters)
+        for (auto &converter : JsonConverter<Line>::Converters)
         {
             auto json = converter->toJson(line);
             if (json != nullptr)
@@ -41,7 +41,7 @@ namespace cacto
     {
         if (json == nullptr)
             line = nullptr;
-        for (auto &converter : line::JsonConverter::Converters)
+        for (auto &converter : JsonConverter<Line>::Converters)
         {
             line = converter->fromJson(json);
             if (line)

@@ -38,15 +38,4 @@ namespace cacto
         parent.onRemove(child);
     }
 
-    Node::Node() {}
-
-    Node::~Node()
-    {
-        auto node = getParent();
-        if (node)
-            Node::unlink(*node, *this);
-        while (node = getChild())
-            Node::unlink(*this, *node);
-    }
-
 }

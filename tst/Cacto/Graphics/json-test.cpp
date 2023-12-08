@@ -69,5 +69,8 @@ int main()
         std::cout << json.toString() << "\n";
     }
 
+    std::cout << "Line converters: " << cacto::JsonConverter<cacto::Line>::Converters.size() << "\n";
+    std::cout << "Line geometry: " << cacto::JsonConverter<cacto::Geometry>::Converters.size() << "\n";
+
     return 0;
 }

@@ -18,8 +18,8 @@ namespace cacto
         i32t getChildIndex(const Node &child) const;
         i32t getChildIndex(Node &&child) const = delete;
 
-        Node();
-        virtual ~Node();
+        Node() = default;
+        virtual ~Node() = default;
 
         static void link(Node &parent, Node &child);
         static void unlink(Node &parent, Node &child);
