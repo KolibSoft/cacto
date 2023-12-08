@@ -3,7 +3,6 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Lang/Json.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -14,10 +13,11 @@ namespace sf
 namespace cacto
 {
 
+    class JsonValue;
+
     class CACTO_GRAPHICS_API TileMap
         : public sf::Transformable,
-          public virtual sf::Drawable,
-          public virtual Json
+          public virtual sf::Drawable
     {
 
     public:
@@ -33,9 +33,6 @@ namespace cacto
         void setTile(const sf::Vector2i &position, const sf::FloatRect &tile);
         void setTiles(const sf::IntRect &area, const sf::FloatRect &tile);
         void fill(const sf::FloatRect &tile);
-
-        JsonValue toJson() const override;
-        void fromJson(const JsonValue &json) override;
 
         TileMap();
         virtual ~TileMap();
@@ -53,6 +50,9 @@ namespace cacto
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const TileMap &tilemap);
+    void CACTO_GRAPHICS_API toJson(TileMap &tilemap, const JsonValue &json);
 
 }
 
