@@ -36,7 +36,7 @@ namespace cacto
     namespace straight
     {
         class CACTO_GRAPHICS_API JsonConverter
-            : public cacto::JsonConverter<Line>
+            : public virtual cacto::JsonConverter<Line>
         {
 
         public:

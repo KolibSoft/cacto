@@ -3,7 +3,7 @@
 #include "Cacto/Graphics/Line.cpp"
 #include "Cacto/Graphics/LineViewer.cpp"
 #include "Cacto/Graphics/Straight.cpp"
-// #include "Cacto/Graphics/Bezier.cpp"
+#include "Cacto/Graphics/Bezier.cpp"
 // #include "Cacto/Graphics/Rectangle.cpp"
 // #include "Cacto/Graphics/Ellipse.cpp"
 // #include "Cacto/Graphics/Triangle.cpp"

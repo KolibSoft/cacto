@@ -2,23 +2,28 @@
 #define CACTO_BEZIER_HPP
 
 #include <vector>
-#include <Cacto/Lang/Json.hpp>
+#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace cacto
 {
 
+    class JsonValue;
+
     class CACTO_GRAPHICS_API Bezier final
-        : public virtual Line,
-          public virtual Json
+        : public virtual Line
     {
 
     public:
         szt getPointCount() const override final;
         sf::Vector2f getPoint(szt index, szt precision = 1) const override final;
 
-        JsonValue toJson() const override;
-        void fromJson(const JsonValue &json) override;
+        const sf::Vector2f &getControlPoint(szt index) const;
+        void setControlPoint(szt index, const sf::Vector2f &value);
+
+        void clear();
+        void append(const sf::Vector2f &point);
+        void resize(szt count);
 
         Bezier(const std::vector<sf::Vector2f> &points = {});
         virtual ~Bezier();
@@ -26,6 +31,23 @@ namespace cacto
     private:
         std::vector<sf::Vector2f> m_points;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Bezier &bezier);
+    void CACTO_GRAPHICS_API fromJson(Bezier &bezier, const JsonValue &json);
+
+    namespace bezier
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual cacto::JsonConverter<Line>
+        {
+        public:
+            JsonValue toJson(const Line *const value) const override;
+            Line *fromJson(const JsonValue &json) const override;
+
+            JsonConverter();
+            virtual ~JsonConverter();
+        } Converter{};
+    }
 
 }
 

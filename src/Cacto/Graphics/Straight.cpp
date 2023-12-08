@@ -84,9 +84,9 @@ namespace cacto
         {
             if (json["$type"] == "Straight")
             {
-                auto line = new Straight();
-                cacto::fromJson(*line, json);
-                return line;
+                auto straight = new Straight();
+                cacto::fromJson(*straight, json);
+                return straight;
             }
             return nullptr;
         }
