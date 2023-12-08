@@ -30,4 +30,14 @@ namespace cacto
         }
     }
 
+    namespace geometry
+    {
+
+        JsonValue JsonConverter::toJson(const Line *const value) const
+        {
+            return toJson(dynamic_cast<const Geometry *>(value));
+        }
+
+    }
+
 }

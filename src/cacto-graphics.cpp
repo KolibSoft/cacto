@@ -6,7 +6,7 @@
 #include "Cacto/Graphics/Bezier.cpp"
 #include "Cacto/Graphics/Geometry.cpp"
 #include "Cacto/Graphics/Rectangle.cpp"
-// #include "Cacto/Graphics/Ellipse.cpp"
+#include "Cacto/Graphics/Ellipse.cpp"
 // #include "Cacto/Graphics/Triangle.cpp"
 #include "Cacto/Graphics/Skeleton.cpp"
 // #include "Cacto/Graphics/TileMap.cpp"

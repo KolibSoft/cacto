@@ -1,7 +1,6 @@
 #ifndef CACTO_RECTANGLE_HPP
 #define CACTO_RECTANGLE_HPP
 
-#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
@@ -53,14 +52,11 @@ namespace cacto
     namespace rectangle
     {
         class CACTO_GRAPHICS_API JsonConverter
-            : public virtual line::JsonConverter,
-              public virtual geometry::JsonConverter
+            : public virtual geometry::JsonConverter
         {
         public:
             JsonValue toJson(const Geometry *const value) const override;
             Geometry *fromJson(const JsonValue &json) const override;
-
-            JsonValue toJson(const Line *const value) const override;
 
             JsonConverter() = default;
             virtual ~JsonConverter() = default;

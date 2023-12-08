@@ -37,9 +37,12 @@ namespace cacto
     namespace geometry
     {
         class CACTO_GRAPHICS_API JsonConverter
-            : public virtual cacto::JsonConverter<Geometry>
+            : public virtual line::JsonConverter,
+              public virtual cacto::JsonConverter<Geometry>
         {
         public:
+            JsonValue toJson(const Line *const value) const override;
+
             JsonConverter() = default;
             virtual ~JsonConverter() = default;
         };
