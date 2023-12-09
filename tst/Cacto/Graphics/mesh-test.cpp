@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -28,6 +30,8 @@ int main()
         window.draw((sf::VertexArray &)mesh);
         window.display();
     }
+
+    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
 
     return 0;
 }
