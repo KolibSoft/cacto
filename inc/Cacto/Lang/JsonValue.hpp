@@ -110,7 +110,7 @@ namespace cacto
     void fromJson(T &value, const JsonValue &json) = delete;
 
     template <typename T>
-    void toJsonFile(const T &value, const std::filesystem::path &path);
+    void toJsonFile(const T &value, const std::filesystem::path &path, szt identation = 0);
 
     template <typename T>
     void fromJsonFile(T &value, const std::filesystem::path &path);

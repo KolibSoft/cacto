@@ -4,10 +4,10 @@ namespace cacto
 {
 
     template <typename T>
-    inline void toXmlFile(const T &value, const std::filesystem::path &path)
+    inline void toXmlFile(const T &value, const std::filesystem::path &path, szt identation)
     {
         XmlValue xml = toXml(value);
-        xml.toFile(path);
+        xml.toFile(path, identation);
     }
 
     template <typename T>

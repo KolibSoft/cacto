@@ -143,43 +143,26 @@ namespace cacto
         return size;
     }
 
-    JsonValue toJson(const sf::FloatRect &rect)
+    std::string toString(const sf::PrimitiveType &primitive)
     {
-        JsonValue json = {rect.left, rect.top, rect.width, rect.height};
-        return json;
-    }
-
-    void fromJson(sf::FloatRect &rect, const JsonValue &json)
-    {
-        rect.left = f32t(json[0].asNumber());
-        rect.top = f32t(json[1].asNumber());
-        rect.width = f32t(json[2].asNumber());
-        rect.height = f32t(json[3].asNumber());
-    }
-
-    JsonValue toJson(const sf::PrimitiveType &primitive)
-    {
-        JsonValue json = nullptr;
         if (primitive == sf::PrimitiveType::Points)
-            json = "Points";
+            return "Points";
         else if (primitive == sf::PrimitiveType::Lines)
-            json = "Lines";
+            return "Lines";
         else if (primitive == sf::PrimitiveType::LineStrip)
-            json = "LineStrip";
+            return "LineStrip";
         else if (primitive == sf::PrimitiveType::Triangles)
-            json = "Triangles";
+            return "Triangles";
         else if (primitive == sf::PrimitiveType::TriangleStrip)
-            json = "TriangleStrip";
+            return "TriangleStrip";
         else if (primitive == sf::PrimitiveType::TriangleFan)
-            json = "TriangleFan";
+            return "TriangleFan";
         else
             throw std::runtime_error("Unsupported primitive type");
-        return json;
     }
 
-    void fromJson(sf::PrimitiveType &primitive, const JsonValue &json)
+    void fromString(sf::PrimitiveType &primitive, const std::string &string)
     {
-        auto &string = json.asString();
         if (string == "Points")
             primitive = sf::PrimitiveType::Points;
         else if (string == "Lines")
@@ -194,11 +177,25 @@ namespace cacto
             primitive = sf::PrimitiveType::TriangleFan;
     }
 
+    JsonValue toJson(const sf::FloatRect &rect)
+    {
+        JsonValue json = {rect.left, rect.top, rect.width, rect.height};
+        return json;
+    }
+
+    void fromJson(sf::FloatRect &rect, const JsonValue &json)
+    {
+        rect.left = f32t(json[0].asNumber());
+        rect.top = f32t(json[1].asNumber());
+        rect.width = f32t(json[2].asNumber());
+        rect.height = f32t(json[3].asNumber());
+    }
+
     JsonValue toJson(const sf::VertexArray &array)
     {
         auto json = JsonValue::ObjectValue;
         auto primitive = array.getPrimitiveType();
-        json["primitive"] = toJson(primitive);
+        json["primitive"] = toString(primitive);
         auto &vertexes = (json["vertexes"] = JsonValue::ArrayValue).asArray();
         for (szt i = 0; i < array.getVertexCount(); i++)
         {
@@ -216,7 +213,7 @@ namespace cacto
     {
         array.clear();
         sf::PrimitiveType primitive;
-        fromJson(primitive, json["primitive"]);
+        fromString(primitive, json["primitive"].asString());
         array.setPrimitiveType(sf::PrimitiveType::Triangles);
         auto &vertexes = json["vertexes"].asArray();
         for (auto &item : vertexes)

@@ -4,10 +4,10 @@ namespace cacto
 {
 
     template <typename T>
-    inline void toJsonFile(const T &value, const std::filesystem::path &path)
+    inline void toJsonFile(const T &value, const std::filesystem::path &path, szt identation)
     {
         JsonValue json = toJson(value);
-        json.toFile(path);
+        json.toFile(path, identation);
     }
 
     template <typename T>

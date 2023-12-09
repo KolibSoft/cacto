@@ -63,7 +63,7 @@ namespace cacto
         XmlValue xml{"Mesh", {}};
         auto &attributes = xml.asAttributes();
         auto &content = xml.asContent();
-        attributes["primitive"] = std::to_string(int(mesh.getPrimitiveType()));
+        attributes["primitive"] = cacto::toString(mesh.getPrimitiveType());
         for (szt i = 0; i < mesh.getVertexCount(); i++)
         {
             auto &vertex = mesh[i];
@@ -76,7 +76,9 @@ namespace cacto
     {
         auto &attributes = xml.asAttributes();
         auto &content = xml.asContent();
-        mesh.setPrimitiveType((sf::PrimitiveType)std::stoi(attributes.at("primitive")));
+        sf::PrimitiveType primitive;
+        cacto::fromString(primitive, attributes.at("primitive"));
+        mesh.setPrimitiveType(primitive);
         mesh.clear();
         for (auto &vertex : content)
         {

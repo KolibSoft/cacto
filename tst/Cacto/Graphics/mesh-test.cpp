@@ -14,7 +14,7 @@ int main()
 
     cacto::Mesh mesh{};
     cacto::fromXmlFile(mesh, "res/mesh.xml");
-    // cacto::toXmlFile(mesh, "res/mesh.xml");
+    cacto::toXmlFile(mesh, "res/mesh.xml", 2);
 
     while (window.isOpen())
     {
