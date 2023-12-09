@@ -50,12 +50,8 @@ int main()
     tileMap.toFile("res/tile_map.json");
     */
 
-    cacto::JsonValue json = nullptr;
-    json.fromFile("res/tile_map.json");
-    cacto::fromJson(tileMap, json);
-
-    json = cacto::toJson(tileMap);
-    json.toFile("res/tile_map.json");
+    cacto::fromJsonFile(tileMap, "res/tile_map.json");
+    cacto::toJsonFile(tileMap, "res/tile_map.json");
 
     while (window.isOpen())
     {
