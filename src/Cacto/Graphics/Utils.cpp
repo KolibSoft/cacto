@@ -177,6 +177,22 @@ namespace cacto
             primitive = sf::PrimitiveType::TriangleFan;
     }
 
+    std::string toString(const sf::Color &color)
+    {
+        std::stringstream stream{};
+        stream << '#' << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << color.toInteger();
+        return stream.str();
+    }
+
+    void fromString(sf::Color &color, const std::string &string)
+    {
+        std::stringstream stream{string};
+        stream.get();
+        u32t integer;
+        stream >> std::hex >> integer;
+        color = sf::Color(integer);
+    }
+
     JsonValue toJson(const sf::FloatRect &rect)
     {
         JsonValue json = {rect.left, rect.top, rect.width, rect.height};
@@ -202,7 +218,7 @@ namespace cacto
             auto &vertex = array[i];
             auto item = JsonValue::ObjectValue;
             item["position"] = {f64t(vertex.position.x), f64t(vertex.position.y)};
-            item["color"] = {f64t(vertex.color.r), f64t(vertex.color.g), f64t(vertex.color.b), f64t(vertex.color.a)};
+            item["color"] = cacto::toString(vertex.color);
             item["texCoords"] = {f64t(vertex.texCoords.x), f64t(vertex.texCoords.y)};
             vertexes.push_back(item);
         }
@@ -223,7 +239,7 @@ namespace cacto
             auto &texCoords = item["texCoords"];
             sf::Vertex vertex{};
             vertex.position = {f32t(position[0].asNumber()), f32t(position[1].asNumber())};
-            vertex.color = {u8t(color[0].asNumber()), u8t(color[1].asNumber()), u8t(color[2].asNumber()), u8t(color[3].asNumber())};
+            cacto::fromString(vertex.color, color.asString());
             vertex.texCoords = {f32t(texCoords[0].asNumber()), f32t(texCoords[1].asNumber())};
             array.append(vertex);
         }
@@ -234,8 +250,8 @@ namespace cacto
         XmlValue xml{"Vertex", {}};
         auto &attributes = xml.asAttributes();
         attributes["position"] = std::to_string(vertex.position.x) + "," + std::to_string(vertex.position.y);
+        attributes["color"] = cacto::toString(vertex.color);
         attributes["texCoords"] = std::to_string(vertex.texCoords.x) + "," + std::to_string(vertex.texCoords.y);
-        attributes["color"] = std::to_string(vertex.color.r) + "," + std::to_string(vertex.color.g) + "," + std::to_string(vertex.color.b) + "," + std::to_string(vertex.color.a);
         return xml;
     }
 
@@ -244,10 +260,10 @@ namespace cacto
         auto &attributes = xml.asAttributes();
         auto position = split(attributes.at("position"), ',');
         auto texCoords = split(attributes.at("texCoords"), ',');
-        auto color = split(attributes.at("color"), ',');
+        auto color = attributes.at("color");
         vertex.position = {std::stof(position[0]), std::stof(position[1])};
+        cacto::fromString(vertex.color, color);
         vertex.texCoords = {std::stof(texCoords[0]), std::stof(texCoords[1])};
-        vertex.color = {u8t(std::stoi(color[0])), u8t(std::stoi(color[1])), u8t(std::stoi(color[2])), u8t(std::stoi(color[3]))};
     }
 
 }
