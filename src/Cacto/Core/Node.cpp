@@ -15,6 +15,13 @@ namespace cacto
         return -1;
     }
 
+    Node::Node() {}
+
+    Node::~Node()
+    {
+        drop();
+    }
+
     void Node::link(Node &parent, Node &child)
     {
         if (child.getParent() != nullptr)
@@ -36,6 +43,15 @@ namespace cacto
             throw std::runtime_error("The child was linked to another parent");
         child.onDetach(parent);
         parent.onRemove(child);
+    }
+
+    void Node::drop()
+    {
+        auto node = getParent();
+        if (node)
+            Node::unlink(*node, *this);
+        while ((node = getChild()))
+            Node::unlink(*this, *node);
     }
 
 }
