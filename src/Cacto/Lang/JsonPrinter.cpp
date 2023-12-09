@@ -1,3 +1,4 @@
+#include <sstream>
 #include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Lang/JsonPrinter.hpp>
 
@@ -6,10 +7,9 @@ namespace cacto
 
     void JsonPrinter::printNumber(f64t value)
     {
-        auto string = std::to_string(value);
-        if (string.find('.') != std::string::npos && string.find('E') == std::string::npos && string.find('e') == std::string::npos)
-            dropFraction(string);
-        print(string);
+        std::stringstream stream{};
+        stream << value;
+        print(stream.str());
     }
 
     void JsonPrinter::printString(const std::string &value)

@@ -166,9 +166,9 @@ namespace cacto
         scanner.dropBlank();
         if (scanner.scanNumber())
         {
-            auto token = scanner.take();
+            std::stringstream token{scanner.take()};
             m_kind = Number;
-            m_number = std::stod(token);
+            token >> m_number;
             return;
         }
         if (scanner.scanString())

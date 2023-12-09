@@ -7,6 +7,7 @@
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Core/Utils.hpp>
 
 int main()
