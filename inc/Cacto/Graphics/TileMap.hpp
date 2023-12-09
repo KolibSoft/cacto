@@ -30,7 +30,9 @@ namespace cacto
         const sf::IntRect &getArea() const;
         void setArea(const sf::IntRect &value);
 
+        sf::FloatRect getTile(const sf::Vector2i &position) const;
         void setTile(const sf::Vector2i &position, const sf::FloatRect &tile);
+
         void setTiles(const sf::IntRect &area, const sf::FloatRect &tile);
         void fill(const sf::FloatRect &tile);
 
@@ -52,7 +54,7 @@ namespace cacto
     };
 
     JsonValue CACTO_GRAPHICS_API toJson(const TileMap &tilemap);
-    void CACTO_GRAPHICS_API toJson(TileMap &tilemap, const JsonValue &json);
+    void CACTO_GRAPHICS_API fromJson(TileMap &tilemap, const JsonValue &json);
 
 }
 

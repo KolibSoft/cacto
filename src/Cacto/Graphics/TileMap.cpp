@@ -38,6 +38,18 @@ namespace cacto
         m_invalid = true;
     }
 
+    sf::FloatRect TileMap::getTile(const sf::Vector2i &position) const
+    {
+        if (m_area.contains(position))
+        {
+            auto base = ((position.y - m_area.top) * m_area.width + (position.x - m_area.left)) * 6;
+            sf::FloatRect tile{m_array[base + 0].texCoords,
+                               m_array[base + 2].texCoords - m_array[base + 0].texCoords};
+            return tile;
+        }
+        return {};
+    }
+
     void TileMap::setTile(const sf::Vector2i &position, const sf::FloatRect &tile)
     {
         if (m_area.contains(position))
@@ -120,12 +132,50 @@ namespace cacto
 
     JsonValue toJson(const TileMap &tilemap)
     {
-        throw std::runtime_error("Not implemented");
+        auto json = JsonValue::ObjectValue;
+        auto texture = tilemap.getTexture();
+        auto tileSize = tilemap.getTileSize();
+        auto area = tilemap.getArea();
+        if (texture)
+        {
+            auto id = cacto::getId(*texture);
+            json["texture"] = id ? *id : nullptr;
+        }
+        json["tileSize"] = {tileSize.x, tileSize.y};
+        json["area"] = cacto::toJson(sf::FloatRect(area));
+        auto &tiles = (json["tiles"] = JsonValue::ArrayValue).asArray();
+        for (i32t y = 0; y < area.height; y++)
+            for (i32t x = 0; x < area.width; x++)
+            {
+                auto tile = tilemap.getTile({area.left + x, area.top + y});
+                tiles.push_back(cacto::toJson(tile));
+            }
+        return json;
     }
 
-    void toJson(TileMap &tilemap, const JsonValue &json)
+    void fromJson(TileMap &tilemap, const JsonValue &json)
     {
-        throw std::runtime_error("Not implemented");
+        auto &texture = json["texture"];
+        auto &tileSize = json["tileSize"];
+        auto &area = json["area"];
+        auto &tiles = json["tiles"].asArray();
+        if (texture != nullptr)
+        {
+            auto resource = cacto::getTexture(texture.asString());
+            tilemap.setTexture(resource);
+        }
+        tilemap.setTileSize({f32t(tileSize[0].asNumber()), f32t(tileSize[1].asNumber())});
+        sf::FloatRect _area{};
+        cacto::fromJson(_area, area);
+        tilemap.setArea(sf::IntRect(_area));
+        for (i32t y = 0; y < _area.height; y++)
+            for (i32t x = 0; x < _area.width; x++)
+            {
+                auto &tile = tiles[y * _area.width + x];
+                sf::FloatRect _tile{};
+                cacto::fromJson(_tile, tile);
+                tilemap.setTile({i32t(_area.left) + x, i32t(_area.top) + y}, _tile);
+            }
     }
 
 }

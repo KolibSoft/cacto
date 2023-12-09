@@ -12,8 +12,8 @@
 int main()
 {
 
-    auto &pack = cacto::TexturePacks["tilemaps"] = {"res/textures"};
-    
+    cacto::TexturePack pack{"res/textures"};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     /*
@@ -49,8 +49,13 @@ int main()
 
     tileMap.toFile("res/tile_map.json");
     */
-    tileMap.fromFile("res/tile_map.json");
-    tileMap.toFile("res/tile_map.json");
+
+    cacto::JsonValue json = nullptr;
+    json.fromFile("res/tile_map.json");
+    cacto::fromJson(tileMap, json);
+
+    json = cacto::toJson(tileMap);
+    json.toFile("res/tile_map.json");
 
     while (window.isOpen())
     {
@@ -67,6 +72,5 @@ int main()
         window.display();
     }
 
-    cacto::TexturePacks.clear();
     return 0;
 }
