@@ -8,7 +8,8 @@
 namespace cacto
 {
 
-    void CACTO_LANG_API replace(std::string& string, const std::string& oldStr, const std::string& newStr);
+    void CACTO_LANG_API dropFraction(std::string &string);
+    void CACTO_LANG_API replace(std::string &string, const std::string &oldStr, const std::string &newStr);
     std::vector<std::string> CACTO_LANG_API split(const std::string &str, char delimiter);
 
 }

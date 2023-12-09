@@ -4,6 +4,13 @@
 namespace cacto
 {
 
+    void dropFraction(std::string &string)
+    {
+        while (string.back() == '0')
+            string.pop_back();
+        string.pop_back();
+    }
+
     void replace(std::string &string, const std::string &oldStr, const std::string &newStr)
     {
         szt pos = 0;

@@ -48,6 +48,9 @@ namespace cacto
     std::string CACTO_GRAPHICS_API toString(const sf::PrimitiveType &primitive);
     void CACTO_GRAPHICS_API fromString(sf::PrimitiveType &primitive, const std::string &string);
 
+    std::string CACTO_GRAPHICS_API toString(const sf::Vector2f &point);
+    void CACTO_GRAPHICS_API fromString(sf::Vector2f &point, const std::string &string);
+
     std::string CACTO_GRAPHICS_API toString(const sf::Color &color);
     void CACTO_GRAPHICS_API fromString(sf::Color &color, const std::string &string);
 

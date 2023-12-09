@@ -177,6 +177,21 @@ namespace cacto
             primitive = sf::PrimitiveType::TriangleFan;
     }
 
+    std::string toString(const sf::Vector2f &point)
+    {
+        std::stringstream stream{};
+        stream << point.x << ',' << point.y;
+        return stream.str();
+    }
+
+    void fromString(sf::Vector2f &point, const std::string &string)
+    {
+        std::stringstream stream{string};
+        stream >> point.x;
+        stream.get();
+        stream >> point.y;
+    }
+
     std::string toString(const sf::Color &color)
     {
         std::stringstream stream{};
@@ -249,21 +264,21 @@ namespace cacto
     {
         XmlValue xml{"Vertex", {}};
         auto &attributes = xml.asAttributes();
-        attributes["position"] = std::to_string(vertex.position.x) + "," + std::to_string(vertex.position.y);
+        attributes["position"] = cacto::toString(vertex.position);
         attributes["color"] = cacto::toString(vertex.color);
-        attributes["texCoords"] = std::to_string(vertex.texCoords.x) + "," + std::to_string(vertex.texCoords.y);
+        attributes["texCoords"] = cacto::toString(vertex.texCoords);
         return xml;
     }
 
     void fromXml(sf::Vertex &vertex, const XmlValue &xml)
     {
         auto &attributes = xml.asAttributes();
-        auto position = split(attributes.at("position"), ',');
-        auto texCoords = split(attributes.at("texCoords"), ',');
+        auto position = attributes.at("position");
+        auto texCoords = attributes.at("texCoords");
         auto color = attributes.at("color");
-        vertex.position = {std::stof(position[0]), std::stof(position[1])};
+        cacto::fromString(vertex.position, position);
         cacto::fromString(vertex.color, color);
-        vertex.texCoords = {std::stof(texCoords[0]), std::stof(texCoords[1])};
+        cacto::fromString(vertex.texCoords, texCoords);
     }
 
 }

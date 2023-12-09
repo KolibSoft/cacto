@@ -127,7 +127,11 @@ namespace cacto
                 printer.print(">");
             }
             else
+            {
                 printer.print(" />");
+                if (printer.getIdentation() > 0)
+                    printer.dedent();
+            }
             break;
         }
     }

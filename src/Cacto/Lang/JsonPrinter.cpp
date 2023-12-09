@@ -8,11 +8,7 @@ namespace cacto
     {
         auto string = std::to_string(value);
         if (string.find('.') != std::string::npos && string.find('E') == std::string::npos && string.find('e') == std::string::npos)
-        {
-            while (string.back() == '0')
-                string.pop_back();
-            string.pop_back();
-        }
+            dropFraction(string);
         print(string);
     }
 
