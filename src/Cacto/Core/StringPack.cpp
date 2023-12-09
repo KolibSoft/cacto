@@ -5,84 +5,62 @@
 namespace cacto
 {
 
-    const std::filesystem::path &StringPack::getPath() const
-    {
-        return m_path;
-    }
-
-    void StringPack::setPath(const std::filesystem::path &value)
-    {
-        m_path = value;
-    }
-
-    const std::string *const StringPack::getKey(const sf::String *const value) const
+    const sf::String *const StringPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
-                return &pair.first;
-        return nullptr;
-    }
-
-    const sf::String &StringPack::getString(const std::string &key, bool refresh) const
-    {
-        auto &string = m_map[key];
-        if (string == nullptr)
-            refresh = string = new sf::String();
-        if (refresh)
+            if (pair.first == id)
+                return pair.second;
+        std::ifstream stream{m_path / id};
+        if (stream.is_open())
         {
-            std::ifstream stream{m_path / key};
-            if (stream.is_open())
-            {
-                std::string _string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
-                *string = _string;
-            }
+            std::string _string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
+            auto string = new sf::String(_string);
+            m_map.insert({id, string});
+            return string;
         }
-        return *string;
+        else
+        {
+            m_map.insert({id, nullptr});
+            return nullptr;
+        }
     }
 
-    void StringPack::setString(const std::string &key, const sf::String &value, bool refresh)
+    void StringPack::setResource(const std::string &id, const sf::String *const value)
     {
-        auto &string = m_map[key];
-        if (string == nullptr)
-            refresh = string = new sf::String();
-        if (refresh)
+        for (auto &pair : m_map)
+            if (pair.first == id)
+            {
+                if (pair.second && value)
+                {
+                    *pair.second = *value;
+                }
+                else if (pair.second && !value)
+                {
+                    delete pair.second;
+                    pair.second = nullptr;
+                }
+                else if (!pair.second && value)
+                {
+                    pair.second = new sf::String(*value);
+                }
+                return;
+            }
+        if (value)
         {
-            std::ofstream stream{m_path / key};
+            std::ofstream stream{m_path / id};
             if (stream.is_open())
             {
-                auto _string = value.toAnsiString();
+                auto _string = value->toAnsiString();
                 stream << _string;
+                auto string = new sf::String(*value);
+                m_map.insert({id, string});
             }
         }
-        *string = value;
-    }
-
-    void StringPack::refreshToFiles() const
-    {
-        for (auto &pair : m_map)
-            if (pair.second)
-            {
-                std::ofstream stream{m_path / pair.first};
-                if (stream.is_open())
-                {
-                    auto _string = pair.second->toAnsiString();
-                    stream << _string;
-                }
-            }
-    }
-
-    void StringPack::refreshFromFiles()
-    {
-        for (auto &pair : m_map)
-            if (pair.second)
-            {
-                std::ifstream stream{m_path / pair.first};
-                if (stream.is_open())
-                {
-                    std::string _string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
-                    *pair.second = _string;
-                }
-            }
+        else
+        {
+            if (std::filesystem::remove(m_path / id))
+                m_map.insert({id, nullptr});
+        }
     }
 
     StringPack::StringPack(const std::filesystem::path &path)
@@ -103,33 +81,15 @@ namespace cacto
         }
     }
 
-    const std::string *const getKey(const sf::String *const value)
+    const sf::String *const getString(const std::string &id)
     {
-        if (StringPacks.size() == 0)
-            throw std::runtime_error("There are not string packs");
-        for (auto &pair : StringPacks)
+        for (auto &pack : Pack<sf::String>::Packs)
         {
-            auto key = pair.second.getKey(value);
-            if (key)
-                return key;
+            auto string = pack->getResource(id);
+            if (string)
+                return string;
         }
         return nullptr;
     }
-
-    const sf::String &getString(const std::string &key)
-    {
-        if (StringPacks.size() == 0)
-            throw std::runtime_error("There are not string packs");
-        const sf::String *string = nullptr;
-        for (auto &pair : StringPacks)
-        {
-            string = &pair.second.getString(key);
-            if (!string->isEmpty())
-                break;
-        }
-        return *string;
-    }
-
-    std::unordered_map<std::string, StringPack> StringPacks{};
 
 }

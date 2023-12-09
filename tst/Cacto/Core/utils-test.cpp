@@ -14,15 +14,16 @@ int main()
 {
 
     cacto::StringPack pack{"res/strings"};
+    sf::String string = "My String Basic";
 
-    pack.setString("my_string.txt", "My String Basis");
-    std::cout << "Content:" << pack.getString("my_string.txt").toAnsiString() << "\n";
+    pack.setResource("my_string.txt", &string);
+    std::cout << "Content: " << pack.getResource("my_string.txt")->toAnsiString() << "\n";
 
-    pack.setString("my_string.txt", "My String Content");
-    std::cout << "Content:" << pack.getString("my_string.txt").toAnsiString() << "\n";
+    string = "My String Content";
+    pack.setResource("my_string.txt", &string);
+    std::cout << "Content: " << pack.getResource("my_string.txt")->toAnsiString() << "\n";
 
-    cacto::StringPacks["default"] = {"res/strings"};
-    std::cout << "Global Content: " << cacto::getString("my_string.txt").toAnsiString() << "\n";
+    std::cout << "Global Content: " << cacto::getString("my_string.txt")->toAnsiString() << "\n";
 
     return 0;
 }
