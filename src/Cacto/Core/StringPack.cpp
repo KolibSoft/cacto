@@ -5,6 +5,14 @@
 namespace cacto
 {
 
+    const std::string *const StringPack::getId(const sf::String &value) const
+    {
+        for (auto &pair : m_map)
+            if (pair.second == &value)
+                return &pair.first;
+        return nullptr;
+    }
+
     const sf::String *const StringPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
@@ -79,6 +87,17 @@ namespace cacto
                 pair.second = nullptr;
             }
         }
+    }
+
+    const std::string *const getId(const sf::String &string)
+    {
+        for (auto &pack : Pack<sf::String>::Packs)
+        {
+            auto id = pack->getId(string);
+            if (id)
+                return id;
+        }
+        return nullptr;
     }
 
     const sf::String *const getString(const std::string &id)

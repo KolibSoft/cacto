@@ -23,7 +23,9 @@ int main()
     pack.setResource("my_string.txt", &string);
     std::cout << "Content: " << pack.getResource("my_string.txt")->toAnsiString() << "\n";
 
-    std::cout << "Global Content: " << cacto::getString("my_string.txt")->toAnsiString() << "\n";
+    auto resource = cacto::getString("my_string.txt");
+    std::cout << "Global Content: " << resource->toAnsiString() << "\n";
+    std::cout << "Global Id: " << *cacto::getId(*resource) << "\n";
 
     return 0;
 }

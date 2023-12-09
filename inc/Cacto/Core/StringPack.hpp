@@ -19,6 +19,7 @@ namespace cacto
     {
 
     public:
+        const std::string *const getId(const sf::String &value) const override;
         const sf::String *const getResource(const std::string &id) const override;
         void setResource(const std::string &id, const sf::String *const value) override;
 
@@ -30,6 +31,7 @@ namespace cacto
         mutable std::unordered_map<std::string, sf::String *> m_map;
     } Strings{"."};
 
+    const std::string *const CACTO_CORE_API getId(const sf::String &string);
     const sf::String *const CACTO_CORE_API getString(const std::string &id);
 
 }
