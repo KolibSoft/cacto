@@ -42,23 +42,30 @@ namespace cacto
         return false;
     }
 
-    JsonValue Ellipse::toJson() const
+    const sf::Vector2f Ellipse::getCenter() const
     {
-        auto json = JsonValue::ObjectValue;
-        json["type"] = "Ellipse";
-        json["center"] = {f64t(m_centerX), f64t(m_centerY)};
-        json["diameters"] = {f64t(m_radiusX * 2), f64t(m_radiusY * 2)};
-        return json;
+        return {m_centerX, m_centerY};
     }
 
-    void Ellipse::fromJson(const JsonValue &json)
+    void Ellipse::setCenter(const sf::Vector2f &value)
     {
-        auto &center = json["center"];
-        auto &diameters = json["diameters"];
-        m_centerX = f32t(center[0].asNumber());
-        m_centerY = f32t(center[1].asNumber());
-        m_radiusX = f32t(diameters[0].asNumber() / 2);
-        m_radiusY = f32t(diameters[1].asNumber() / 2);
+        m_centerX = value.x;
+        m_centerY = value.y;
+        m_left = m_centerX - m_radiusX;
+        m_right = m_centerX + m_radiusX;
+        m_top = m_centerY - m_radiusY;
+        m_bottom = m_centerY + m_radiusY;
+    }
+
+    const sf::Vector2f Ellipse::getDiameters() const
+    {
+        return {m_radiusX * 2, m_radiusY * 2};
+    }
+
+    void Ellipse::setDiameters(const sf::Vector2f &value)
+    {
+        m_radiusX = value.x / 2;
+        m_radiusY = value.y / 2;
         m_left = m_centerX - m_radiusX;
         m_right = m_centerX + m_radiusX;
         m_top = m_centerY - m_radiusY;
@@ -73,10 +80,54 @@ namespace cacto
     {
     }
 
-    Ellipse::~Ellipse()
-    {
-    }
+    Ellipse::~Ellipse() = default;
 
     Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse)
+    {
+        auto json = JsonValue::ObjectValue;
+        auto center = ellipse.getCenter();
+        auto diameters = ellipse.getDiameters();
+        json["center"] = {center.x, center.y};
+        json["diameters"] = {diameters.x, diameters.y};
+        return json;
+    }
+
+    void CACTO_GRAPHICS_API fromJson(Ellipse &ellipse, const JsonValue &json)
+    {
+        auto &center = json["center"];
+        auto &diameters = json["diameters"];
+        ellipse.setCenter({f32t(center[0].asNumber()), f32t(center[1].asNumber())});
+        ellipse.setDiameters({f32t(diameters[0].asNumber()), f32t(diameters[1].asNumber())});
+    }
+
+    namespace ellipse
+    {
+
+        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        {
+            const Ellipse *ellipse = nullptr;
+            if (value && (ellipse = dynamic_cast<const Ellipse *>(value)))
+            {
+                auto json = cacto::toJson(*ellipse);
+                json["$type"] = "Ellipse";
+                return json;
+            }
+            return nullptr;
+        }
+
+        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        {
+            if (json["$type"] == "Ellipse")
+            {
+                auto ellipse = new Ellipse();
+                cacto::fromJson(*ellipse, json);
+                return ellipse;
+            }
+            return nullptr;
+        }
+
+    }
 
 }

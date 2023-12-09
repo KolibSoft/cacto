@@ -3,6 +3,7 @@
 #include <Cacto/Lang/XmlPrinter.hpp>
 #include <Cacto/Lang/XmlScanner.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 namespace cacto
 {
@@ -126,7 +127,11 @@ namespace cacto
                 printer.print(">");
             }
             else
+            {
                 printer.print(" />");
+                if (printer.getIdentation() > 0)
+                    printer.dedent();
+            }
             break;
         }
     }
@@ -140,11 +145,11 @@ namespace cacto
             auto token = scanner.take();
             m_kind = Text;
             m_text = new std::string(token);
-            replaceAll(*m_text, "&lt;", "<");
-            replaceAll(*m_text, "&gt;", ">");
-            replaceAll(*m_text, "&quot;", "\"");
-            replaceAll(*m_text, "&pos;", "\'");
-            replaceAll(*m_text, "&amp;", "&");
+            replace(*m_text, "&lt;", "<");
+            replace(*m_text, "&gt;", ">");
+            replace(*m_text, "&quot;", "\"");
+            replace(*m_text, "&pos;", "\'");
+            replace(*m_text, "&amp;", "&");
             return;
         }
         if (scanner.dropToken("<"))
@@ -377,6 +382,10 @@ namespace cacto
         return false;
     }
 
+    bool XmlValue::operator!=(const XmlValue &other) const
+    {
+        return !(*this == other);
+    }
     void XmlValue::drop()
     {
         switch (m_kind)

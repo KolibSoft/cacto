@@ -4,7 +4,14 @@
 namespace cacto
 {
 
-    void replaceAll(std::string &string, const std::string &oldStr, const std::string &newStr)
+    void dropFraction(std::string &string)
+    {
+        while (string.back() == '0')
+            string.pop_back();
+        string.pop_back();
+    }
+
+    void replace(std::string &string, const std::string &oldStr, const std::string &newStr)
     {
         szt pos = 0;
         while ((pos = string.find(oldStr, pos)) != std::string::npos)
@@ -14,22 +21,16 @@ namespace cacto
         }
     }
 
-    void stringMapToFile(const std::unordered_map<std::string, std::string> &map, const std::filesystem::path &path)
+    std::vector<std::string> split(const std::string &str, char delimiter)
     {
-        auto json = JsonValue::ObjectValue;
-        for (auto &pair : map)
-            json[pair.first] = pair.second;
-        json.toFile(path);
-    }
+        std::vector<std::string> tokens;
+        std::istringstream stream(str);
+        std::string token;
 
-    std::unordered_map<std::string, std::string> stringMapFromFile(const std::filesystem::path &path)
-    {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        std::unordered_map<std::string, std::string> map{};
-        for (auto &pair : json.asObject())
-            map[pair.first] = pair.second.asString();
-        return map;
+        while (std::getline(stream, token, delimiter))
+            tokens.push_back(token);
+
+        return tokens;
     }
 
 }

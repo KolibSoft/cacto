@@ -7,11 +7,11 @@ namespace cacto
     void XmlPrinter::printText(const std::string &text)
     {
         std::string string = text;
-        replaceAll(string, "&", "&amp;");
-        replaceAll(string, "<", "&lt;");
-        replaceAll(string, ">", "&gt;");
-        replaceAll(string, "\"", "&quot;");
-        replaceAll(string, "\'", "&pos;");
+        replace(string, "&", "&amp;");
+        replace(string, "<", "&lt;");
+        replace(string, ">", "&gt;");
+        replace(string, "\"", "&quot;");
+        replace(string, "\'", "&pos;");
         print(string);
     }
 

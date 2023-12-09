@@ -1,4 +1,7 @@
 #include <stdexcept>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
 namespace cacto
@@ -43,25 +46,48 @@ namespace cacto
         return result;
     }
 
-    JsonValue Rectangle::toJson() const
+    f32t Rectangle::getLeft() const
     {
-        auto json = JsonValue::ObjectValue;
-        json["type"] = "Rectangle";
-        json["position"] = {f64t(m_left), f64t(m_top)};
-        json["size"] = {f64t(m_width), f64t(m_height)};
-        return json;
+        return m_left;
     }
 
-    void Rectangle::fromJson(const JsonValue &json)
+    void Rectangle::setLeft(f32t value)
     {
-        auto &position = json["position"];
-        auto &size = json["size"];
-        m_left = f32t(position[0].asNumber());
-        m_top = f32t(position[1].asNumber());
-        m_width = f32t(size[0].asNumber());
-        m_height = f32t(size[1].asNumber());
-        m_right = m_left + m_width;
-        m_bottom = m_top + m_bottom;
+        m_left = value;
+        m_right = value + m_width;
+    }
+
+    f32t Rectangle::getTop() const
+    {
+        return m_top;
+    }
+
+    void Rectangle::setTop(f32t value)
+    {
+        m_top = value;
+        m_bottom = value + m_height;
+    }
+
+    f32t Rectangle::getWidth() const
+    {
+        return m_width;
+    }
+
+    void Rectangle::setWidth(f32t value)
+    {
+        m_width = value;
+        m_right = m_left + value;
+    }
+
+    f32t Rectangle::getHeight() const
+    {
+        return m_height;
+    }
+
+    void Rectangle::setHeight(f32t value)
+    {
+        m_height = value;
+        m_bottom = m_left + value;
     }
 
     Rectangle::Rectangle(const sf::Vector2f &position, const sf::Vector2f &size)
@@ -71,10 +97,54 @@ namespace cacto
     {
     }
 
-    Rectangle::~Rectangle()
-    {
-    }
+    Rectangle::~Rectangle() = default;
 
     Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
+
+    JsonValue toJson(const Rectangle &rectangle)
+    {
+        auto json = JsonValue::ObjectValue;
+        json["position"] = {rectangle.getLeft(), rectangle.getTop()};
+        json["size"] = {rectangle.getWidth(), rectangle.getHeight()};
+        return json;
+    }
+
+    void fromJson(Rectangle &rectangle, const JsonValue &json)
+    {
+        auto &position = json["position"];
+        auto &size = json["size"];
+        rectangle.setLeft(f32t(position[0].asNumber()));
+        rectangle.setTop(f32t(position[1].asNumber()));
+        rectangle.setWidth(f32t(size[0].asNumber()));
+        rectangle.setHeight(f32t(size[1].asNumber()));
+    }
+
+    namespace rectangle
+    {
+
+        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        {
+            const Rectangle *rectangle = nullptr;
+            if (value && (rectangle = dynamic_cast<const Rectangle *>(value)))
+            {
+                auto json = cacto::toJson(*rectangle);
+                json["$type"] = "Rectangle";
+                return json;
+            }
+            return nullptr;
+        }
+
+        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        {
+            if (json["$type"] == "Rectangle")
+            {
+                auto rectangle = new Rectangle();
+                cacto::fromJson(*rectangle, json);
+                return rectangle;
+            }
+            return nullptr;
+        }
+
+    }
 
 }

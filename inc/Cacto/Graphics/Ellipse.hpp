@@ -1,15 +1,13 @@
 #ifndef CACTO_ELLIPSE_HPP
 #define CACTO_ELLIPSE_HPP
 
-#include <Cacto/Lang/Json.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
     class CACTO_GRAPHICS_API Ellipse final
-        : public virtual Geometry,
-          public virtual Json
+        : public virtual Geometry
     {
 
     public:
@@ -19,8 +17,11 @@ namespace cacto
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
 
-        JsonValue toJson() const override;
-        void fromJson(const JsonValue &json) override;
+        const sf::Vector2f getCenter() const;
+        void setCenter(const sf::Vector2f &value);
+
+        const sf::Vector2f getDiameters() const;
+        void setDiameters(const sf::Vector2f &value);
 
         Ellipse(const sf::Vector2f &center = {0, 0}, const sf::Vector2f &diameters = {1, 1});
         virtual ~Ellipse();
@@ -38,6 +39,23 @@ namespace cacto
         f32t m_right;
         f32t m_bottom;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse);
+    void CACTO_GRAPHICS_API fromJson(Ellipse &ellipse, const JsonValue &json);
+
+    namespace ellipse
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual geometry::JsonConverter
+        {
+        public:
+            JsonValue toJson(const Geometry *const value) const override;
+            Geometry *fromJson(const JsonValue &json) const override;
+
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
+        } Converter{};
+    }
 
 }
 

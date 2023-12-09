@@ -4,26 +4,38 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
-
-namespace R
-{
-    auto texture = cacto::Loader<sf::Texture>::fromFile("res/WallTile.png");
-}
+#include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Core/Utils.hpp>
 
 int main()
 {
 
+    cacto::TexturePack pack{"res/textures"};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    auto texture = R::texture.get();
 
-    auto tiles = cacto::rectMapFromFile("res/rect_map.json");
-    cacto::rectMapToFile(tiles, "res/rect_map.json");
+    /*
+    sf::Texture texture;
+    auto _ = texture.loadFromFile("res/WallTile.png");
+    pack.setTexture("tiles.png", texture);
 
+    cacto::JsonValue json = nullptr;
+    json.fromFile("res/rect_map.json");
+    json.toFile("res/rect_map.json");
+
+    std::unordered_map<std::string, sf::FloatRect> tiles{};
+    for (auto &pair : json.asObject())
+    {
+        auto &tile = tiles[pair.first] = {};
+        cacto::rectFromJson(tile, pair.second);
+    }
+    */
     cacto::TileMap tileMap{};
-    tileMap.setTexture(texture.get());
+    /*
+    tileMap.setTexture(&pack.getTexture("tiles.png"));
     tileMap.setTileSize({32, 32});
     tileMap.setArea({{1, 1}, {10, 10}});
 
@@ -37,7 +49,10 @@ int main()
     tileMap.setTile({10, 10}, tiles["BottomRight"]);
 
     tileMap.toFile("res/tile_map.json");
-    tileMap.fromFile("res/tile_map.json");
+    */
+
+    cacto::fromJsonFile(tileMap, "res/tile_map.json");
+    cacto::toJsonFile(tileMap, "res/tile_map.json");
 
     while (window.isOpen())
     {

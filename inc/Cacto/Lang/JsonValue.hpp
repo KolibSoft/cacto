@@ -80,6 +80,7 @@ namespace cacto
         JsonValue &operator=(JsonValue &&other);
 
         bool operator==(const JsonValue &other) const;
+        bool operator!=(const JsonValue &other) const;
 
         static const JsonValue NumberValue;
         static const JsonValue StringValue;
@@ -102,6 +103,14 @@ namespace cacto
         };
     };
 
+    template <typename T>
+    void toJsonFile(const T &value, const std::filesystem::path &path, szt identation = 0);
+
+    template <typename T>
+    void fromJsonFile(T &value, const std::filesystem::path &path);
+
 }
+
+#include <Cacto/Lang/JsonValue.inl>
 
 #endif

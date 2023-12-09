@@ -1,11 +1,23 @@
 #ifndef CACTO_GEOMETRY_HPP
 #define CACTO_GEOMETRY_HPP
 
-#include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
+
+namespace sf
+{
+
+    template <typename T>
+    class Rect;
+
+    using FloatRect = Rect<float>;
+
+}
 
 namespace cacto
 {
+
+    class JsonValue;
 
     class Geometry
         : public virtual Line
@@ -18,6 +30,23 @@ namespace cacto
         Geometry() = default;
         virtual ~Geometry() = default;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Geometry *const &geometry);
+    void CACTO_GRAPHICS_API fromJson(Geometry *&geometry, const JsonValue &json);
+
+    namespace geometry
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual line::JsonConverter,
+              public virtual cacto::JsonConverter<Geometry>
+        {
+        public:
+            JsonValue toJson(const Line *const value) const override;
+
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
+        };
+    }
 
 }
 

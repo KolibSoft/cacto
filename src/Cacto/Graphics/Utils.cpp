@@ -1,6 +1,8 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
 namespace cacto
@@ -141,85 +143,109 @@ namespace cacto
         return size;
     }
 
-    void rectMapToFile(const std::unordered_map<std::string, sf::FloatRect> &map, const std::filesystem::path &path)
+    std::string toString(const sf::PrimitiveType &primitive)
     {
-        auto json = JsonValue::ObjectValue;
-        for (auto &pair : map)
-            json[pair.first] = {pair.second.left, pair.second.top, pair.second.width, pair.second.height};
-        json.toFile(path);
+        if (primitive == sf::PrimitiveType::Points)
+            return "Points";
+        else if (primitive == sf::PrimitiveType::Lines)
+            return "Lines";
+        else if (primitive == sf::PrimitiveType::LineStrip)
+            return "LineStrip";
+        else if (primitive == sf::PrimitiveType::Triangles)
+            return "Triangles";
+        else if (primitive == sf::PrimitiveType::TriangleStrip)
+            return "TriangleStrip";
+        else if (primitive == sf::PrimitiveType::TriangleFan)
+            return "TriangleFan";
+        else
+            throw std::runtime_error("Unsupported primitive type");
     }
 
-    std::unordered_map<std::string, sf::FloatRect> rectMapFromFile(const std::filesystem::path &path)
+    void fromString(sf::PrimitiveType &primitive, const std::string &string)
     {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        std::unordered_map<std::string, sf::FloatRect> map{};
-        for (auto &pair : json.asObject())
-        {
-            sf::FloatRect rect{{f32t(pair.second[0].asNumber()), f32t(pair.second[1].asNumber())},
-                               {f32t(pair.second[2].asNumber()), f32t(pair.second[3].asNumber())}};
-            map[pair.first] = rect;
-        }
-        return map;
+        if (string == "Points")
+            primitive = sf::PrimitiveType::Points;
+        else if (string == "Lines")
+            primitive = sf::PrimitiveType::Lines;
+        else if (string == "LineStrip")
+            primitive = sf::PrimitiveType::LineStrip;
+        else if (string == "Triangles")
+            primitive = sf::PrimitiveType::Triangles;
+        else if (string == "TriangleStrip")
+            primitive = sf::PrimitiveType::TriangleStrip;
+        else if (string == "TriangleFan")
+            primitive = sf::PrimitiveType::TriangleFan;
     }
 
-    void vertexArrayToFile(const sf::VertexArray &array, const std::filesystem::path &path)
+    std::string toString(const sf::Vector2f &point)
+    {
+        std::stringstream stream{};
+        stream << point.x << ',' << point.y;
+        return stream.str();
+    }
+
+    void fromString(sf::Vector2f &point, const std::string &string)
+    {
+        std::stringstream stream{string};
+        stream >> point.x;
+        stream.get();
+        stream >> point.y;
+    }
+
+    std::string toString(const sf::Color &color)
+    {
+        std::stringstream stream{};
+        stream << '#' << std::hex << std::setw(8) << std::setfill('0') << std::uppercase << color.toInteger();
+        return stream.str();
+    }
+
+    void fromString(sf::Color &color, const std::string &string)
+    {
+        std::stringstream stream{string};
+        stream.get();
+        u32t integer;
+        stream >> std::hex >> integer;
+        color = sf::Color(integer);
+    }
+
+    JsonValue toJson(const sf::FloatRect &rect)
+    {
+        JsonValue json = {rect.left, rect.top, rect.width, rect.height};
+        return json;
+    }
+
+    void fromJson(sf::FloatRect &rect, const JsonValue &json)
+    {
+        rect.left = f32t(json[0].asNumber());
+        rect.top = f32t(json[1].asNumber());
+        rect.width = f32t(json[2].asNumber());
+        rect.height = f32t(json[3].asNumber());
+    }
+
+    JsonValue toJson(const sf::VertexArray &array)
     {
         auto json = JsonValue::ObjectValue;
-        switch (array.getPrimitiveType())
-        {
-        case sf::PrimitiveType::Points:
-            json["primitive"] = "Points";
-            break;
-        case sf::PrimitiveType::Lines:
-            json["primitive"] = "Lines";
-            break;
-        case sf::PrimitiveType::LineStrip:
-            json["primitive"] = "LineStrip";
-            break;
-        case sf::PrimitiveType::Triangles:
-            json["primitive"] = "Triangles";
-            break;
-        case sf::PrimitiveType::TriangleStrip:
-            json["primitive"] = "TriangleStrip";
-            break;
-        case sf::PrimitiveType::TriangleFan:
-            json["primitive"] = "TriangleFan";
-            break;
-        };
+        auto primitive = array.getPrimitiveType();
+        json["primitive"] = toString(primitive);
         auto &vertexes = (json["vertexes"] = JsonValue::ArrayValue).asArray();
         for (szt i = 0; i < array.getVertexCount(); i++)
         {
             auto &vertex = array[i];
             auto item = JsonValue::ObjectValue;
             item["position"] = {f64t(vertex.position.x), f64t(vertex.position.y)};
-            item["color"] = {f64t(vertex.color.r), f64t(vertex.color.g), f64t(vertex.color.b), f64t(vertex.color.a)};
+            item["color"] = cacto::toString(vertex.color);
             item["texCoords"] = {f64t(vertex.texCoords.x), f64t(vertex.texCoords.y)};
             vertexes.push_back(item);
         }
-        json.toFile(path);
+        return json;
     }
 
-    sf::VertexArray vertexArrayFromFile(const std::filesystem::path &path)
+    void fromJson(sf::VertexArray &array, const JsonValue &json)
     {
-        JsonValue json = nullptr;
-        json.fromFile(path);
-        sf::VertexArray array{};
-        auto &primitive = json["primitive"].asString();
-        if (primitive == "Points")
-            array.setPrimitiveType(sf::PrimitiveType::Points);
-        else if (primitive == "Lines")
-            array.setPrimitiveType(sf::PrimitiveType::Lines);
-        else if (primitive == "LineStrip")
-            array.setPrimitiveType(sf::PrimitiveType::LineStrip);
-        else if (primitive == "Triangles")
-            array.setPrimitiveType(sf::PrimitiveType::Triangles);
-        else if (primitive == "TriangleStrip")
-            array.setPrimitiveType(sf::PrimitiveType::TriangleStrip);
-        else if (primitive == "TriangleFan")
-            array.setPrimitiveType(sf::PrimitiveType::TriangleFan);
-        else
-            throw std::runtime_error("Unsupported primitive type");
+        array.clear();
+        sf::PrimitiveType primitive;
+        fromString(primitive, json["primitive"].asString());
+        array.setPrimitiveType(sf::PrimitiveType::Triangles);
         auto &vertexes = json["vertexes"].asArray();
         for (auto &item : vertexes)
         {
@@ -228,11 +254,31 @@ namespace cacto
             auto &texCoords = item["texCoords"];
             sf::Vertex vertex{};
             vertex.position = {f32t(position[0].asNumber()), f32t(position[1].asNumber())};
-            vertex.color = {u8t(color[0].asNumber()), u8t(color[1].asNumber()), u8t(color[2].asNumber()), u8t(color[3].asNumber())};
+            cacto::fromString(vertex.color, color.asString());
             vertex.texCoords = {f32t(texCoords[0].asNumber()), f32t(texCoords[1].asNumber())};
             array.append(vertex);
         }
-        return array;
+    }
+
+    XmlValue toXml(const sf::Vertex &vertex)
+    {
+        XmlValue xml{"Vertex", {}};
+        auto &attributes = xml.asAttributes();
+        attributes["position"] = cacto::toString(vertex.position);
+        attributes["color"] = cacto::toString(vertex.color);
+        attributes["texCoords"] = cacto::toString(vertex.texCoords);
+        return xml;
+    }
+
+    void fromXml(sf::Vertex &vertex, const XmlValue &xml)
+    {
+        auto &attributes = xml.asAttributes();
+        auto position = attributes.at("position");
+        auto texCoords = attributes.at("texCoords");
+        auto color = attributes.at("color");
+        cacto::fromString(vertex.position, position);
+        cacto::fromString(vertex.color, color);
+        cacto::fromString(vertex.texCoords, texCoords);
     }
 
 }

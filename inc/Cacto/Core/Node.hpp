@@ -1,15 +1,11 @@
 #ifndef CACTO_NODE_HPP
 #define CACTO_NODE_HPP
 
+#include <Cacto/Lang/XmlConverter.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
 {
-
-    namespace node
-    {
-        class Holder;
-    }
 
     class CACTO_CORE_API Node
     {
@@ -30,8 +26,6 @@ namespace cacto
         static void unlink(Node &parent, Node &child);
 
     protected:
-        using Holder = node::Holder;
-
         virtual void onAttach(Node &parent) = 0;
         virtual void onDetach(Node &parent) = 0;
 
@@ -41,20 +35,13 @@ namespace cacto
 
     namespace node
     {
-
-        class CACTO_CORE_API Holder
+        class CACTO_CORE_API XmlConverter
+            : public virtual cacto::XmlConverter<Node>
         {
-
         public:
-            Node &getNode() const;
-
-            Holder(Node &node);
-            virtual ~Holder();
-
-        private:
-            Node *m_node;
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
         };
-
     }
 
 }

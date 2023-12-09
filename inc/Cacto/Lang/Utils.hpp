@@ -2,17 +2,15 @@
 #define CACTO_LANG_UTILS_HPP
 
 #include <string>
-#include <unordered_map>
-#include <filesystem>
+#include <vector>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
 
-    void CACTO_LANG_API replaceAll(std::string& string, const std::string& oldStr, const std::string& newStr);
-
-    void CACTO_LANG_API stringMapToFile(const std::unordered_map<std::string, std::string> &map, const std::filesystem::path &path);
-    std::unordered_map<std::string, std::string> CACTO_LANG_API stringMapFromFile(const std::filesystem::path &path);
+    void CACTO_LANG_API dropFraction(std::string &string);
+    void CACTO_LANG_API replace(std::string &string, const std::string &oldStr, const std::string &newStr);
+    std::vector<std::string> CACTO_LANG_API split(const std::string &str, char delimiter);
 
 }
 

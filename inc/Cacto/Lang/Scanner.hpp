@@ -3,7 +3,6 @@
 
 #include <limits>
 #include <string>
-#include <functional>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto

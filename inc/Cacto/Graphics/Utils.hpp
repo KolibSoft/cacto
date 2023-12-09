@@ -1,10 +1,6 @@
 #ifndef CACTO_GRAPHICS_UTILS_HPP
 #define CACTO_GRAPHICS_UTILS_HPP
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <filesystem>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -29,6 +25,9 @@ namespace sf
 namespace cacto
 {
 
+    class JsonValue;
+    class XmlValue;
+
     void CACTO_GRAPHICS_API setPositions(sf::Vertex *const vertexes, const sf::Vector2f *positions, szt count);
     void CACTO_GRAPHICS_API setPositions(sf::VertexArray &array, const std::vector<sf::Vector2f> &positions);
 
@@ -46,11 +45,23 @@ namespace cacto
 
     sf::Vector2f CACTO_GRAPHICS_API fitSize(const sf::Vector2f &contentSize, const sf::Vector2f &containerSize);
 
-    void CACTO_GRAPHICS_API rectMapToFile(const std::unordered_map<std::string, sf::FloatRect> &map, const std::filesystem::path &path);
-    std::unordered_map<std::string, sf::FloatRect> CACTO_GRAPHICS_API rectMapFromFile(const std::filesystem::path &path);
+    std::string CACTO_GRAPHICS_API toString(const sf::PrimitiveType &primitive);
+    void CACTO_GRAPHICS_API fromString(sf::PrimitiveType &primitive, const std::string &string);
 
-    void CACTO_GRAPHICS_API vertexArrayToFile(const sf::VertexArray &array, const std::filesystem::path &path);
-    sf::VertexArray CACTO_GRAPHICS_API vertexArrayFromFile(const std::filesystem::path &path);
+    std::string CACTO_GRAPHICS_API toString(const sf::Vector2f &point);
+    void CACTO_GRAPHICS_API fromString(sf::Vector2f &point, const std::string &string);
+
+    std::string CACTO_GRAPHICS_API toString(const sf::Color &color);
+    void CACTO_GRAPHICS_API fromString(sf::Color &color, const std::string &string);
+
+    JsonValue CACTO_GRAPHICS_API toJson(const sf::FloatRect &rect);
+    void CACTO_GRAPHICS_API fromJson(sf::FloatRect &rect, const JsonValue &json);
+
+    JsonValue CACTO_GRAPHICS_API toJson(const sf::VertexArray &array);
+    void CACTO_GRAPHICS_API fromJson(sf::VertexArray &array, const JsonValue &json);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
+    void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);
 
 }
 

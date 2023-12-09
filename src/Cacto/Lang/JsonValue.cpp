@@ -2,8 +2,8 @@
 #include <fstream>
 #include <Cacto/Lang/JsonPrinter.hpp>
 #include <Cacto/Lang/JsonScanner.hpp>
-#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 namespace cacto
 {
@@ -166,9 +166,9 @@ namespace cacto
         scanner.dropBlank();
         if (scanner.scanNumber())
         {
-            auto token = scanner.take();
+            std::stringstream token{scanner.take()};
             m_kind = Number;
-            m_number = std::stod(token);
+            token >> m_number;
             return;
         }
         if (scanner.scanString())
@@ -176,14 +176,14 @@ namespace cacto
             auto token = scanner.take();
             m_kind = String;
             m_string = new std::string(token.substr(1, token.size() - 2));
-            replaceAll(*m_string, "\\\"", "\"");
-            replaceAll(*m_string, "\\/", "/");
-            replaceAll(*m_string, "\\b", "\b");
-            replaceAll(*m_string, "\\f", "\f");
-            replaceAll(*m_string, "\\n", "\n");
-            replaceAll(*m_string, "\\r", "\r");
-            replaceAll(*m_string, "\\t", "\t");
-            replaceAll(*m_string, "\\\\", "\\");
+            replace(*m_string, "\\\"", "\"");
+            replace(*m_string, "\\/", "/");
+            replace(*m_string, "\\b", "\b");
+            replace(*m_string, "\\f", "\f");
+            replace(*m_string, "\\n", "\n");
+            replace(*m_string, "\\r", "\r");
+            replace(*m_string, "\\t", "\t");
+            replace(*m_string, "\\\\", "\\");
             return;
         }
         if (scanner.scanBoolean())
@@ -473,6 +473,11 @@ namespace cacto
                 return *m_object == *other.m_object;
             }
         return false;
+    }
+
+    bool JsonValue::operator!=(const JsonValue &other) const
+    {
+        return !(*this == other);
     }
 
     const JsonValue JsonValue::NumberValue = 0.0;

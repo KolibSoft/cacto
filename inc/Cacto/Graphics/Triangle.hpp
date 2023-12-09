@@ -1,15 +1,15 @@
 #ifndef CACTO_TRIANGLE_HPP
 #define CACTO_TRIANGLE_HPP
 
-#include <Cacto/Lang/Json.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
+    class JsonValue;
+
     class CACTO_GRAPHICS_API Triangle final
-        : public virtual Geometry,
-          public virtual Json
+        : public virtual Geometry
     {
 
     public:
@@ -19,11 +19,16 @@ namespace cacto
         sf::FloatRect getBounds() const override final;
         bool containsPoint(const sf::Vector2f &point) const override final;
 
-        JsonValue toJson() const override;
-        void fromJson(const JsonValue &json) override;
+        const sf::Vector2f &getPointA() const;
+        void setPointA(const sf::Vector2f &value);
+
+        const sf::Vector2f &getPointB() const;
+        void setPointB(const sf::Vector2f &value);
+
+        const sf::Vector2f &getPointC() const;
+        void setPointC(const sf::Vector2f &value);
 
         Triangle(const sf::Vector2f &pointA = {0, 0}, const sf::Vector2f &pointB = {0, 0}, const sf::Vector2f &pointC = {0, 0});
-        Triangle();
         virtual ~Triangle();
 
     private:
@@ -36,6 +41,23 @@ namespace cacto
         f32t m_right;
         f32t m_bottom;
     };
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Triangle &triangle);
+    void CACTO_GRAPHICS_API fromJson(Triangle &triangle, const JsonValue &json);
+
+    namespace triangle
+    {
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual geometry::JsonConverter
+        {
+        public:
+            JsonValue toJson(const Geometry *const value) const override;
+            Geometry *fromJson(const JsonValue &json) const override;
+
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
+        } Converter{};
+    }
 
 }
 

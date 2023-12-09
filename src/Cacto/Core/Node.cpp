@@ -38,21 +38,4 @@ namespace cacto
         parent.onRemove(child);
     }
 
-    namespace node
-    {
-
-        Node &Holder::getNode() const
-        {
-            return *m_node;
-        }
-
-        Holder::Holder(Node &node)
-            : m_node(&node)
-        {
-        }
-
-        Holder::~Holder() = default;
-
-    }
-
 }

@@ -44,8 +44,11 @@ int main()
 
     cacto::LineViewer viewer{};
 
-    auto array = cacto::vertexArrayFromFile("res/vertex_array.json");
-    cacto::vertexArrayToFile(array, "res/vertex_array.json");
+    cacto::JsonValue json = nullptr;
+    json.fromFile("res/vertex_array.json");
+    json.toFile("res/vertex_array.json");
+    sf::VertexArray array{};
+    cacto::vertexArrayFromJson(array, json);
 
     while (window.isOpen())
     {
