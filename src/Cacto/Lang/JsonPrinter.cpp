@@ -19,14 +19,14 @@ namespace cacto
     void JsonPrinter::printString(const std::string &value)
     {
         auto string = value;
-        replaceAll(string, "\\", "\\\\");
-        replaceAll(string, "\"", "\\\"");
-        replaceAll(string, "/", "\\/");
-        replaceAll(string, "\b", "\\b");
-        replaceAll(string, "\f", "\\f");
-        replaceAll(string, "\n", "\\n");
-        replaceAll(string, "\r", "\\r");
-        replaceAll(string, "\t", "\\t");
+        replace(string, "\\", "\\\\");
+        replace(string, "\"", "\\\"");
+        replace(string, "/", "\\/");
+        replace(string, "\b", "\\b");
+        replace(string, "\f", "\\f");
+        replace(string, "\n", "\\n");
+        replace(string, "\r", "\\r");
+        replace(string, "\t", "\\t");
         print('"' + string + '"');
     }
 

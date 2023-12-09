@@ -1,7 +1,6 @@
 #ifndef CACTO_GRAPHICS_UTILS_HPP
 #define CACTO_GRAPHICS_UTILS_HPP
 
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -25,6 +24,9 @@ namespace sf
 
 namespace cacto
 {
+
+    class JsonValue;
+    class XmlValue;
 
     void CACTO_GRAPHICS_API setPositions(sf::Vertex *const vertexes, const sf::Vector2f *positions, szt count);
     void CACTO_GRAPHICS_API setPositions(sf::VertexArray &array, const std::vector<sf::Vector2f> &positions);
@@ -51,6 +53,9 @@ namespace cacto
 
     JsonValue CACTO_GRAPHICS_API toJson(const sf::VertexArray &array);
     void CACTO_GRAPHICS_API fromJson(sf::VertexArray &array, const JsonValue &json);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
+    void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);
 
 }
 

@@ -1,6 +1,7 @@
 #ifndef CACTO_NODE_HPP
 #define CACTO_NODE_HPP
 
+#include <Cacto/Lang/XmlConverter.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
@@ -34,6 +35,17 @@ namespace cacto
     private:
         void drop();
     };
+
+    namespace node
+    {
+        class CACTO_CORE_API XmlConverter
+            : public virtual cacto::XmlConverter<Node>
+        {
+        public:
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+    }
 
 }
 

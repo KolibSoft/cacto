@@ -176,14 +176,14 @@ namespace cacto
             auto token = scanner.take();
             m_kind = String;
             m_string = new std::string(token.substr(1, token.size() - 2));
-            replaceAll(*m_string, "\\\"", "\"");
-            replaceAll(*m_string, "\\/", "/");
-            replaceAll(*m_string, "\\b", "\b");
-            replaceAll(*m_string, "\\f", "\f");
-            replaceAll(*m_string, "\\n", "\n");
-            replaceAll(*m_string, "\\r", "\r");
-            replaceAll(*m_string, "\\t", "\t");
-            replaceAll(*m_string, "\\\\", "\\");
+            replace(*m_string, "\\\"", "\"");
+            replace(*m_string, "\\/", "/");
+            replace(*m_string, "\\b", "\b");
+            replace(*m_string, "\\f", "\f");
+            replace(*m_string, "\\n", "\n");
+            replace(*m_string, "\\r", "\r");
+            replace(*m_string, "\\t", "\t");
+            replace(*m_string, "\\\\", "\\");
             return;
         }
         if (scanner.scanBoolean())

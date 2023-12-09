@@ -1,6 +1,8 @@
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
 namespace cacto
@@ -228,6 +230,27 @@ namespace cacto
             vertex.texCoords = {f32t(texCoords[0].asNumber()), f32t(texCoords[1].asNumber())};
             array.append(vertex);
         }
+    }
+
+    XmlValue toXml(const sf::Vertex &vertex)
+    {
+        XmlValue xml{"Vertex", {}};
+        auto &attributes = xml.asAttributes();
+        attributes["position"] = std::to_string(vertex.position.x) + "," + std::to_string(vertex.position.y);
+        attributes["texCoords"] = std::to_string(vertex.texCoords.x) + "," + std::to_string(vertex.texCoords.y);
+        attributes["color"] = std::to_string(vertex.color.r) + "," + std::to_string(vertex.color.g) + "," + std::to_string(vertex.color.b) + "," + std::to_string(vertex.color.a);
+        return xml;
+    }
+
+    void fromXml(sf::Vertex &vertex, const XmlValue &xml)
+    {
+        auto &attributes = xml.asAttributes();
+        auto position = split(attributes.at("position"), ',');
+        auto texCoords = split(attributes.at("texCoords"), ',');
+        auto color = split(attributes.at("color"), ',');
+        vertex.position = {std::stof(position[0]), std::stof(position[1])};
+        vertex.texCoords = {std::stof(texCoords[0]), std::stof(texCoords[1])};
+        vertex.color = {u8t(std::stoi(color[0])), u8t(std::stoi(color[1])), u8t(std::stoi(color[2])), u8t(std::stoi(color[3]))};
     }
 
 }
