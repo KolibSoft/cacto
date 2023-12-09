@@ -5,56 +5,66 @@
 namespace cacto
 {
 
-    const std::filesystem::path &ImagePack::getPath() const
-    {
-        return m_path;
-    }
-
-    void ImagePack::setPath(const std::filesystem::path &value)
-    {
-        m_path = value;
-    }
-
-    const std::string *const ImagePack::getKey(const sf::Image *const value) const
+    const std::string *const ImagePack::getId(const sf::Image &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
+            if (pair.second == &value)
                 return &pair.first;
         return nullptr;
     }
 
-    const sf::Image &ImagePack::getImage(const std::string &key, bool refresh) const
-    {
-        auto &image = m_map[key];
-        if (image == nullptr)
-            refresh = image = new sf::Image();
-        if (refresh)
-            auto _ = image->loadFromFile(m_path / key);
-        return *image;
-    }
-
-    void ImagePack::setImage(const std::string &key, const sf::Image &value, bool refresh)
-    {
-        auto &image = m_map[key];
-        if (image == nullptr)
-            refresh = image = new sf::Image();
-        if (refresh)
-            auto _ = value.saveToFile(m_path / key);
-        *image = value;
-    }
-
-    void ImagePack::refreshToFiles() const
+    const sf::Image *const ImagePack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
-            if (pair.second)
-                auto _ = pair.second->saveToFile(m_path / pair.first);
+            if (pair.first == id)
+                return pair.second;
+        auto path = m_path / id;
+        if (std::filesystem::exists(path))
+        {
+            auto image = new sf::Image();
+            auto _ = image->loadFromFile(path);
+            m_map.insert({id, image});
+            return image;
+        }
+        else
+        {
+            m_map.insert({id, nullptr});
+            return nullptr;
+        }
     }
 
-    void ImagePack::refreshFromFiles()
+    void ImagePack::setResource(const std::string &id, const sf::Image *const value)
     {
         for (auto &pair : m_map)
-            if (pair.second)
-                auto _ = pair.second->loadFromFile(m_path / pair.first);
+            if (pair.first == id)
+            {
+                if (pair.second && value)
+                {
+                    *pair.second = *value;
+                }
+                else if (pair.second && !value)
+                {
+                    delete pair.second;
+                    pair.second = nullptr;
+                }
+                else if (!pair.second && value)
+                {
+                    pair.second = new sf::Image(*value);
+                }
+                return;
+            }
+        if (value)
+        {
+            auto path = m_path / id;
+            auto image = new sf::Image(*value);
+            auto _ = image->saveToFile(path);
+            m_map.insert({id, image});
+        }
+        else
+        {
+            if (std::filesystem::remove(m_path / id))
+                m_map.insert({id, nullptr});
+        }
     }
 
     ImagePack::ImagePack(const std::filesystem::path &path)
@@ -75,33 +85,26 @@ namespace cacto
         }
     }
 
-    const std::string *const getKey(const sf::Image *const value)
+    const std::string *const getId(const sf::Image &string)
     {
-        if (ImagePacks.size() == 0)
-            throw std::runtime_error("There are not image packs");
-        for (auto &pair : ImagePacks)
+        for (auto &pack : Pack<sf::Image>::Packs)
         {
-            auto key = pair.second.getKey(value);
-            if (key)
-                return key;
+            auto id = pack->getId(string);
+            if (id)
+                return id;
         }
         return nullptr;
     }
 
-    const sf::Image &getImage(const std::string &key)
+    const sf::Image *const getImage(const std::string &id)
     {
-        if (ImagePacks.size() == 0)
-            throw std::runtime_error("There are not image packs");
-        const sf::Image *image = nullptr;
-        for (auto &pair : ImagePacks)
+        for (auto &pack : Pack<sf::Image>::Packs)
         {
-            image = &pair.second.getImage(key);
-            if (image->getSize() != sf::Vector2u{0, 0})
-                break;
+            auto string = pack->getResource(id);
+            if (string)
+                return string;
         }
-        return *image;
+        return nullptr;
     }
-
-    std::unordered_map<std::string, ImagePack> ImagePacks{};
 
 }

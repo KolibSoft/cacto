@@ -5,56 +5,66 @@
 namespace cacto
 {
 
-    const std::filesystem::path &TexturePack::getPath() const
-    {
-        return m_path;
-    }
-
-    void TexturePack::setPath(const std::filesystem::path &value)
-    {
-        m_path = value;
-    }
-
-    const std::string *const TexturePack::getKey(const sf::Texture *const value) const
+    const std::string *const TexturePack::getId(const sf::Texture &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
+            if (pair.second == &value)
                 return &pair.first;
         return nullptr;
     }
 
-    const sf::Texture &TexturePack::getTexture(const std::string &key, bool refresh) const
-    {
-        auto &texture = m_map[key];
-        if (texture == nullptr)
-            refresh = texture = new sf::Texture();
-        if (refresh)
-            auto _ = texture->loadFromFile(m_path / key);
-        return *texture;
-    }
-
-    void TexturePack::setTexture(const std::string &key, const sf::Texture &value, bool refresh)
-    {
-        auto &texture = m_map[key];
-        if (texture == nullptr)
-            refresh = texture = new sf::Texture();
-        if (refresh)
-            auto _ = value.copyToImage().saveToFile(m_path / key);
-        *texture = value;
-    }
-
-    void TexturePack::refreshToFiles() const
+    const sf::Texture *const TexturePack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
-            if (pair.second)
-                auto _ = pair.second->copyToImage().saveToFile(m_path / pair.first);
+            if (pair.first == id)
+                return pair.second;
+        auto path = m_path / id;
+        if (std::filesystem::exists(path))
+        {
+            auto texture = new sf::Texture();
+            auto _ = texture->loadFromFile(path);
+            m_map.insert({id, texture});
+            return texture;
+        }
+        else
+        {
+            m_map.insert({id, nullptr});
+            return nullptr;
+        }
     }
 
-    void TexturePack::refreshFromFiles()
+    void TexturePack::setResource(const std::string &id, const sf::Texture *const value)
     {
         for (auto &pair : m_map)
-            if (pair.second)
-                auto _ = pair.second->loadFromFile(m_path / pair.first);
+            if (pair.first == id)
+            {
+                if (pair.second && value)
+                {
+                    *pair.second = *value;
+                }
+                else if (pair.second && !value)
+                {
+                    delete pair.second;
+                    pair.second = nullptr;
+                }
+                else if (!pair.second && value)
+                {
+                    pair.second = new sf::Texture(*value);
+                }
+                return;
+            }
+        if (value)
+        {
+            auto path = m_path / id;
+            auto texture = new sf::Texture(*value);
+            auto _ = texture->copyToImage().saveToFile(path);
+            m_map.insert({id, texture});
+        }
+        else
+        {
+            if (std::filesystem::remove(m_path / id))
+                m_map.insert({id, nullptr});
+        }
     }
 
     TexturePack::TexturePack(const std::filesystem::path &path)
@@ -75,33 +85,26 @@ namespace cacto
         }
     }
 
-    const std::string *const getKey(const sf::Texture *const value)
+    const std::string *const getId(const sf::Texture &string)
     {
-        if (TexturePacks.size() == 0)
-            throw std::runtime_error("There are not texture packs");
-        for (auto &pair : TexturePacks)
+        for (auto &pack : Pack<sf::Texture>::Packs)
         {
-            auto key = pair.second.getKey(value);
-            if (key)
-                return key;
+            auto id = pack->getId(string);
+            if (id)
+                return id;
         }
         return nullptr;
     }
 
-    const sf::Texture &getTexture(const std::string &key)
+    const sf::Texture *const getTexture(const std::string &id)
     {
-        if (TexturePacks.size() == 0)
-            throw std::runtime_error("There are not texture packs");
-        const sf::Texture *texture = nullptr;
-        for (auto &pair : TexturePacks)
+        for (auto &pack : Pack<sf::Texture>::Packs)
         {
-            texture = &pair.second.getTexture(key);
-            if (texture->getSize() != sf::Vector2u{0, 0})
-                break;
+            auto string = pack->getResource(id);
+            if (string)
+                return string;
         }
-        return *texture;
+        return nullptr;
     }
-
-    std::unordered_map<std::string, TexturePack> TexturePacks{};
 
 }
