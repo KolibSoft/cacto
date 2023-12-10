@@ -38,7 +38,7 @@ namespace cacto
         Holder *const getHolder(const Node &child);
         Holder *const getHolder(Node &&child) = delete;
 
-        Holder &append(Node &child);
+        Holder &append(Node &child, bool internal = false);
         void remove(Node &child);
 
         Skeleton();

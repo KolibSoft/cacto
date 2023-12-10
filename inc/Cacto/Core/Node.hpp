@@ -26,6 +26,8 @@ namespace cacto
         i32t getChildIndex(const Node &child) const;
         i32t getChildIndex(Node &&child) const = delete;
 
+        void clearChildren();
+
         Node() = default;
         virtual ~Node() = default;
 
@@ -51,14 +53,16 @@ namespace cacto
 
         public:
             Node &getNode() const;
-            bool isInternal() const;
 
-            Holder(Node &node, bool internal);
+            bool isInternal() const;
+            void setInternal(bool value = true);
+
+            Holder(Node &node, bool internal = false);
             virtual ~Holder();
 
         private:
             mutable Node *m_node;
-            bool m_isInternal;
+            bool m_internal;
         };
 
         class CACTO_CORE_API XmlConverter

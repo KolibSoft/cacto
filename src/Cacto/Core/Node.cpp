@@ -16,6 +16,13 @@ namespace cacto
         return -1;
     }
 
+    void Node::clearChildren()
+    {
+        Node *node = nullptr;
+        while ((node = getChild()))
+            Node::unlink(*this, *node);
+    }
+
     void Node::link(Node &parent, Node &child)
     {
         if (child.getParent() != nullptr)
@@ -43,7 +50,7 @@ namespace cacto
     {
         if (node == nullptr)
             return nullptr;
-        for (auto &converter : XmlConverter<Node>::Converters)
+        for (auto &converter : node::XmlConverter::Converters)
         {
             auto json = converter->toXml(node);
             if (json != nullptr)
@@ -56,7 +63,7 @@ namespace cacto
     {
         if (xml == nullptr)
             node = nullptr;
-        for (auto &converter : XmlConverter<Node>::Converters)
+        for (auto &converter : node::XmlConverter::Converters)
         {
             node = converter->fromXml(xml);
             if (node)
@@ -74,18 +81,23 @@ namespace cacto
 
         bool Holder::isInternal() const
         {
-            return m_isInternal;
+            return m_internal;
+        }
+
+        void Holder::setInternal(bool value)
+        {
+            m_internal = value;
         }
 
         Holder::Holder(Node &node, bool internal)
             : m_node(&node),
-              m_isInternal(internal)
+              m_internal(internal)
         {
         }
 
         Holder::~Holder()
         {
-            if (m_isInternal)
+            if (m_internal)
             {
                 delete m_node;
                 m_node = nullptr;

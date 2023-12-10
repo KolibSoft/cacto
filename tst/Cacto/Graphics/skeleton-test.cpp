@@ -1,35 +1,25 @@
+#include <iostream>
+
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Graphics/Skeleton.hpp>
-#include <Cacto/UI/Surface.hpp>
+#include <Cacto/Graphics/Mesh.hpp>
 
 int main()
 {
 
+    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Skeleton skeleton{};
-
-    auto body = cacto::Surface::Rectangle;
-    body.inflate({100, 100});
-    body.setColor(sf::Color::Red);
-
-    auto bone = cacto::Surface::Rectangle;
-    bone.inflate({75, 75});
-    bone.setColor(sf::Color::Blue);
-
-    skeleton
-        .append(body)
-        .setCoord({0, 0})
-        .setRelation(cacto::Skeleton::Body);
-    skeleton
-        .append(bone)
-        .setCoord({50, 50})
-        .setRelation(cacto::Skeleton::Bone);
+    cacto::fromXmlFile(skeleton, "res/skeleton.xml");
+    cacto::toXmlFile(skeleton, "res/skeleton.xml");
 
     while (window.isOpen())
     {

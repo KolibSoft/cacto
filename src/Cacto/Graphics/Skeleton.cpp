@@ -39,10 +39,12 @@ namespace cacto
         return nullptr;
     }
 
-    Skeleton::Holder &Skeleton::append(Node &child)
+    Skeleton::Holder &Skeleton::append(Node &child, bool internal)
     {
         Node::link(*this, child);
-        return m_holders.back();
+        auto &holder = m_holders.back();
+        holder.setInternal();
+        return holder;
     }
 
     void Skeleton::remove(Node &child)
@@ -178,11 +180,12 @@ namespace cacto
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
         auto &content = xml.asContent();
-        Node *node = nullptr;
-        while ((node = skeleton.getChild()))
-            skeleton.remove(*node);
+        skeleton.clearChildren();
         for (auto &item : content)
         {
+            Node *node = nullptr;
+            cacto::fromXml(node, item);
+            skeleton.append(*node, true);
         }
     }
 
