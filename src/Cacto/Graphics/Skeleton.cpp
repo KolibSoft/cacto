@@ -185,7 +185,15 @@ namespace cacto
         {
             Node *node = nullptr;
             cacto::fromXml(node, item);
-            skeleton.append(*node, true);
+            auto &attributes = item.asAttributes();
+            sf::Vector2f coord{};
+            cacto::fromString(coord, attributes.at("holder:coord"));
+            Skeleton::Relation relation{};
+            cacto::fromString(relation, attributes.at("holder:relation"));
+            skeleton
+                .append(*node, true)
+                .setCoord(coord)
+                .setRelation(relation);
         }
     }
 

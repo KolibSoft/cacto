@@ -17,6 +17,10 @@ namespace sf
 namespace cacto
 {
 
+    class Geometry;
+
+    template class CACTO_GRAPHICS_API cacto::JsonConverter<Geometry>;
+
     class JsonValue;
 
     class Geometry

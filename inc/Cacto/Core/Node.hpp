@@ -7,6 +7,10 @@
 namespace cacto
 {
 
+    class Node;
+
+    template class CACTO_CORE_API XmlConverter<Node>;
+
     namespace node
     {
         class Holder;

@@ -19,6 +19,10 @@ namespace sf
 namespace cacto
 {
 
+    class Line;
+    
+    template class CACTO_GRAPHICS_API cacto::JsonConverter<Line>;
+
     class JsonValue;
 
     class CACTO_GRAPHICS_API Line

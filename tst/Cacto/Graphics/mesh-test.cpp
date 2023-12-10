@@ -12,11 +12,17 @@
 int main()
 {
 
+    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Mesh mesh{};
     cacto::fromXmlFile(mesh, "res/mesh.xml");
     cacto::toXmlFile(mesh, "res/mesh.xml", 2);
+
+    cacto::Node *node = nullptr;
+    cacto::fromXmlFile(node, "res/mesh.xml");
+    auto value = cacto::toXml(&mesh).toString();
 
     while (window.isOpen())
     {

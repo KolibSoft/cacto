@@ -50,7 +50,7 @@ namespace cacto
     {
         if (node == nullptr)
             return nullptr;
-        for (auto &converter : node::XmlConverter::Converters)
+        for (auto &converter : XmlConverter<Node>::Converters)
         {
             auto json = converter->toXml(node);
             if (json != nullptr)
@@ -63,7 +63,7 @@ namespace cacto
     {
         if (xml == nullptr)
             node = nullptr;
-        for (auto &converter : node::XmlConverter::Converters)
+        for (auto &converter : XmlConverter<Node>::Converters)
         {
             node = converter->fromXml(xml);
             if (node)
