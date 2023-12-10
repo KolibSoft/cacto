@@ -175,6 +175,8 @@ namespace cacto
             primitive = sf::PrimitiveType::TriangleStrip;
         else if (string == "TriangleFan")
             primitive = sf::PrimitiveType::TriangleFan;
+        else
+            throw std::runtime_error("Unsupported primitive type");
     }
 
     std::string toString(const sf::Vector2f &point)

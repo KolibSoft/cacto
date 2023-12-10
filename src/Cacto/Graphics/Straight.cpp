@@ -81,7 +81,7 @@ namespace cacto
 
         Line *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json["$type"] == "Straight")
+            if (json.getKind() == JsonValue::Object && json["$type"] == "Straight")
             {
                 auto straight = new Straight();
                 cacto::fromJson(*straight, json);

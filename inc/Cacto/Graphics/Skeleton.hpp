@@ -32,11 +32,11 @@ namespace cacto
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
-        const sf::Vector2f &getCoord(Node &child) const;
-        void setCoord(Node &child, const sf::Vector2f &value);
+        const Holder *const getHolder(const Node &child) const;
+        const Holder *const getHolder(Node &&child) const = delete;
 
-        Relation getRelation(Node &child) const;
-        void setRelation(Node &child, Relation value);
+        Holder *const getHolder(const Node &child);
+        Holder *const getHolder(Node &&child) = delete;
 
         Holder &append(Node &child);
         void remove(Node &child);
@@ -46,6 +46,9 @@ namespace cacto
 
         Skeleton(const Skeleton &other);
         Skeleton &operator=(const Skeleton &other);
+
+        Skeleton(Skeleton &&other);
+        Skeleton &operator=(Skeleton &&other);
 
     protected:
         void onAttach(Node &parent) override;
@@ -61,6 +64,12 @@ namespace cacto
         std::vector<Holder> m_holders;
     };
 
+    std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
+    void CACTO_GRAPHICS_API fromString(Skeleton::Relation relation, const std::string &string);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const Skeleton &skeleton);
+    void CACTO_GRAPHICS_API fromXml(Skeleton &skeleton, const XmlValue &xml);
+
     namespace skeleton
     {
 
@@ -75,13 +84,26 @@ namespace cacto
             Skeleton::Relation getRelation() const;
             Holder &setRelation(Skeleton::Relation value);
 
-            Holder(Node &node);
+            Holder(Node &node, bool internal);
             virtual ~Holder();
 
         private:
             sf::Vector2f m_coord;
             Skeleton::Relation m_relation;
         };
+
+        class CACTO_GRAPHICS_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+
+        } Converter{};
 
     }
 

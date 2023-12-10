@@ -104,7 +104,7 @@ namespace cacto
 
         Line *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json["$type"] == "Bezier")
+            if (json.getKind() == JsonValue::Object && json["$type"] == "Bezier")
             {
                 auto bezier = new Bezier();
                 cacto::fromJson(*bezier, json);

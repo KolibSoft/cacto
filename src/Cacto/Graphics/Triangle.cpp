@@ -142,7 +142,7 @@ namespace cacto
 
         Geometry *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json["$type"] == "Triangle")
+            if (json.getKind() == JsonValue::Object && json["$type"] == "Triangle")
             {
                 auto triangle = new Triangle();
                 cacto::fromJson(*triangle, json);

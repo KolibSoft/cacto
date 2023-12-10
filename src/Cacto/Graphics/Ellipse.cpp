@@ -119,7 +119,7 @@ namespace cacto
 
         Geometry *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json["$type"] == "Ellipse")
+            if (json.getKind() == JsonValue::Object && json["$type"] == "Ellipse")
             {
                 auto ellipse = new Ellipse();
                 cacto::fromJson(*ellipse, json);

@@ -32,7 +32,7 @@ namespace cacto
     }
 
     Mesh::Mesh(Mesh &&other)
-        : sf::VertexArray(other),
+        : sf::VertexArray(std::move(other)),
           m_parent(nullptr)
     {
     }
@@ -104,7 +104,7 @@ namespace cacto
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getName() == "Mesh")
+            if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
             {
                 auto mesh = new Mesh();
                 cacto::fromXml(*mesh, xml);

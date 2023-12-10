@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Core/Node.hpp>
 
 namespace cacto
@@ -36,6 +37,61 @@ namespace cacto
             throw std::runtime_error("The child was linked to another parent");
         child.onDetach(parent);
         parent.onRemove(child);
+    }
+
+    XmlValue toXml(const Node *const &node)
+    {
+        if (node == nullptr)
+            return nullptr;
+        for (auto &converter : XmlConverter<Node>::Converters)
+        {
+            auto json = converter->toXml(node);
+            if (json != nullptr)
+                return json;
+        }
+        return nullptr;
+    }
+
+    void fromXml(Node *&node, const XmlValue &xml)
+    {
+        if (xml == nullptr)
+            node = nullptr;
+        for (auto &converter : XmlConverter<Node>::Converters)
+        {
+            node = converter->fromXml(xml);
+            if (node)
+                return;
+        }
+    }
+
+    namespace node
+    {
+
+        Node &Holder::getNode() const
+        {
+            return *m_node;
+        }
+
+        bool Holder::isInternal() const
+        {
+            return m_isInternal;
+        }
+
+        Holder::Holder(Node &node, bool internal)
+            : m_node(&node),
+              m_isInternal(internal)
+        {
+        }
+
+        Holder::~Holder()
+        {
+            if (m_isInternal)
+            {
+                delete m_node;
+                m_node = nullptr;
+            }
+        }
+
     }
 
 }

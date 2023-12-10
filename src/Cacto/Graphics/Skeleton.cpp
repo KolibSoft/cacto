@@ -23,38 +23,20 @@ namespace cacto
         return &holder.getNode();
     }
 
-    const sf::Vector2f &Skeleton::getCoord(Node &child) const
+    const Skeleton::Holder *const Skeleton::getHolder(const Node &child) const
     {
-        auto index = getChildIndex(child);
-        if (index < 0)
-            throw std::runtime_error("The node is not a child");
-        auto &value = m_holders.at(index).getCoord();
-        return value;
+        for (auto &holder : m_holders)
+            if (&holder.getNode() == &child)
+                return &holder;
+        return nullptr;
     }
 
-    void Skeleton::setCoord(Node &child, const sf::Vector2f &value)
+    Skeleton::Holder *const Skeleton::getHolder(const Node &child)
     {
-        auto index = getChildIndex(child);
-        if (index < 0)
-            throw std::runtime_error("The node is not a child");
-        m_holders.at(index).setCoord(value);
-    }
-
-    Skeleton::Relation Skeleton::getRelation(Node &child) const
-    {
-        auto index = getChildIndex(child);
-        if (index < 0)
-            throw std::runtime_error("The node is not a child");
-        auto value = m_holders.at(index).getRelation();
-        return value;
-    }
-
-    void Skeleton::setRelation(Node &child, Relation value)
-    {
-        auto index = getChildIndex(child);
-        if (index < 0)
-            throw std::runtime_error("The node is not a child");
-        m_holders.at(index).setRelation(value);
+        for (auto &holder : m_holders)
+            if (&holder.getNode() == &child)
+                return &holder;
+        return nullptr;
     }
 
     Skeleton::Holder &Skeleton::append(Node &child)
@@ -81,13 +63,26 @@ namespace cacto
     }
 
     Skeleton::Skeleton(const Skeleton &other)
-        : Transformable(other)
+        : Transformable(other),
+          m_parent(nullptr)
     {
     }
 
     Skeleton &Skeleton::operator=(const Skeleton &other)
     {
         sf::Transformable::operator=(other);
+        return *this;
+    }
+
+    Skeleton::Skeleton(Skeleton &&other)
+        : Transformable(std::move(other)),
+          m_parent(nullptr)
+    {
+    }
+
+    Skeleton &Skeleton::operator=(Skeleton &&other)
+    {
+        sf::Transformable::operator=(std::move(other));
         return *this;
     }
 
@@ -103,7 +98,7 @@ namespace cacto
 
     void Skeleton::onAppend(Node &child)
     {
-        Holder holder{child};
+        Holder holder{child, false};
         m_holders.push_back(holder);
     }
 
@@ -143,6 +138,54 @@ namespace cacto
         }
     }
 
+    std::string toString(Skeleton::Relation relation)
+    {
+        if (relation == Skeleton::Body)
+            return "Body";
+        else if (relation == Skeleton::Bone)
+            return "Bone";
+        else
+            throw std::runtime_error("Unsupported relation");
+    }
+
+    void fromString(Skeleton::Relation relation, const std::string &string)
+    {
+        if (string == "Body")
+            relation = Skeleton::Body;
+        else if (string == "Bone")
+            relation = Skeleton::Bone;
+        else
+            throw std::runtime_error("Unsupported relation");
+    }
+
+    XmlValue toXml(const Skeleton &skeleton)
+    {
+        XmlValue xml{"Skeleton", {}};
+        auto &content = xml.asContent();
+        for (szt i = 0; i < skeleton.getChildCount(); i++)
+        {
+            auto child = skeleton.getChild(i);
+            auto holder = skeleton.getHolder(*child);
+            auto xml = cacto::toXml(child);
+            auto &attributes = xml.asAttributes();
+            attributes["holder:coord"] = cacto::toString(holder->getCoord());
+            attributes["holder:relation"] = cacto::toString(holder->getRelation());
+            content.push_back(xml);
+        }
+        return xml;
+    }
+
+    void fromXml(Skeleton &skeleton, const XmlValue &xml)
+    {
+        auto &content = xml.asContent();
+        Node *node = nullptr;
+        while ((node = skeleton.getChild()))
+            skeleton.remove(*node);
+        for (auto &item : content)
+        {
+        }
+    }
+
     namespace skeleton
     {
 
@@ -168,14 +211,36 @@ namespace cacto
             return *this;
         }
 
-        Holder::Holder(Node &node)
-            : node::Holder(node),
+        Holder::Holder(Node &node, bool internal)
+            : node::Holder(node, internal),
               m_coord(),
               m_relation(Skeleton::Body)
         {
         }
 
         Holder::~Holder() = default;
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Skeleton *skeleton = nullptr;
+            if (value && (skeleton = dynamic_cast<const Skeleton *>(value)))
+            {
+                auto xml = cacto::toXml(*skeleton);
+                return xml;
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.getKind() == XmlValue::Tag && xml.getName() == "Skeleton")
+            {
+                auto skeleton = new Skeleton();
+                cacto::fromXml(*skeleton, xml);
+                return skeleton;
+            }
+            return nullptr;
+        }
 
     }
 
