@@ -14,6 +14,8 @@ namespace sf
 namespace cacto
 {
 
+    template class CACTO_GRAPHICS_API Pack<sf::Texture>;
+
     class CACTO_GRAPHICS_API TexturePack
         : public virtual Pack<sf::Texture>
     {

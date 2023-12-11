@@ -14,6 +14,8 @@ namespace sf
 namespace cacto
 {
 
+    template class CACTO_GRAPHICS_API Pack<sf::Image>;
+
     class CACTO_GRAPHICS_API ImagePack
         : public virtual Pack<sf::Image>
     {
