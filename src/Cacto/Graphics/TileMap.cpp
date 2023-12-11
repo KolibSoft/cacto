@@ -158,13 +158,13 @@ namespace cacto
         auto &texture = json["texture"];
         auto &tileSize = json["tileSize"];
         auto &area = json["area"];
-        auto &tiles = json["tiles"].asArray();
+        auto &tiles = json["tiles"];
         if (texture != nullptr)
         {
             auto resource = cacto::getTexture(texture.asString());
             tilemap.setTexture(resource);
         }
-        tilemap.setTileSize({f32t(tileSize[0].asNumber()), f32t(tileSize[1].asNumber())});
+        tilemap.setTileSize({f32t(tileSize[0].getNumber()), f32t(tileSize[1].getNumber())});
         sf::FloatRect _area{};
         cacto::fromJson(_area, area);
         tilemap.setArea(sf::IntRect(_area));

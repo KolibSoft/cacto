@@ -42,6 +42,7 @@ namespace cacto
 
     namespace mesh
     {
+
         class CACTO_GRAPHICS_API XmlConverter
             : public virtual node::XmlConverter
         {
@@ -51,7 +52,10 @@ namespace cacto
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
-        } Converter{};
+        };
+
+        extern CACTO_GRAPHICS_API XmlConverter Converter;
+
     }
 
 }

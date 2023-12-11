@@ -114,6 +114,8 @@ namespace cacto
             return nullptr;
         }
 
+        XmlConverter Converter{};
+
     }
 
 }

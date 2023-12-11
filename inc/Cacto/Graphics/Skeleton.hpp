@@ -103,7 +103,9 @@ namespace cacto
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
 
-        } Converter{};
+        };
+
+        extern CACTO_GRAPHICS_API XmlConverter Converter;
 
     }
 
