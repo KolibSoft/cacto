@@ -45,15 +45,17 @@ namespace cacto
         bool &asBoolean();
 
         bool isArray() const;
-        const JsonValue &get(szt index) const;
         const std::vector<JsonValue> &asArray() const;
         std::vector<JsonValue> &asArray();
-
+        const JsonValue &operator[](szt index) const;
+        JsonValue &operator[](szt index);
+        
         bool isObject() const;
-        const JsonValue &get(const std::string &key) const;
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
-
+        const JsonValue &operator[](const std::string &key) const;
+        JsonValue &operator[](const std::string &key);
+        
         void print(JsonPrinter &printer) const;
         void scan(JsonScanner &scanner);
 
@@ -76,12 +78,6 @@ namespace cacto
         JsonValue(const std::unordered_map<std::string, JsonValue> &object);
         JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object);
         virtual ~JsonValue();
-
-        const JsonValue &operator[](szt index) const;
-        JsonValue &operator[](szt index);
-
-        const JsonValue &operator[](const std::string &key) const;
-        JsonValue &operator[](const std::string &key);
 
         JsonValue(const JsonValue &other);
         JsonValue &operator=(const JsonValue &other);

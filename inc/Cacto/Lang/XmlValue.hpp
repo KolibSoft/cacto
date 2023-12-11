@@ -38,10 +38,13 @@ namespace cacto
         std::string getAttribute(const std::string &name, const std::string &def = "") const;
         const std::unordered_map<std::string, std::string> &asAttributes() const;
         std::unordered_map<std::string, std::string> &asAttributes();
-
-        const XmlValue &getContent(szt index) const;
+        const std::string &operator[](const std::string &key) const;
+        std::string &operator[](const std::string &key);
+        
         const std::vector<XmlValue> &asContent() const;
         std::vector<XmlValue> &asContent();
+        const XmlValue &operator[](szt index) const;
+        XmlValue &operator[](szt index);
 
         void print(XmlPrinter &printer) const;
         void scan(XmlScanner &scanner);
@@ -58,12 +61,6 @@ namespace cacto
         XmlValue(const std::string &name, const std::unordered_map<std::string, std::string> &attributes, const std::vector<XmlValue> &content = {});
         XmlValue(const std::string &name, std::initializer_list<std::pair<const std::string, std::string>> attributes, std::initializer_list<XmlValue> content = {});
         virtual ~XmlValue();
-
-        const XmlValue &operator[](szt index) const;
-        XmlValue &operator[](szt index);
-
-        const std::string &operator[](const std::string &key) const;
-        std::string &operator[](const std::string &key);
 
         XmlValue(const XmlValue &other);
         XmlValue &operator=(const XmlValue &other);

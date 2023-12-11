@@ -75,20 +75,25 @@ namespace cacto
         return m_tag->attributes;
     }
 
+    const std::string &XmlValue::operator[](const std::string &key) const
+    {
+        if (m_kind != Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->attributes.at(key);
+    }
+
+    std::string &XmlValue::operator[](const std::string &key)
+    {
+        if (m_kind != Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->attributes[key];
+    }
+
     std::unordered_map<std::string, std::string> &XmlValue::asAttributes()
     {
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->attributes;
-    }
-
-    const XmlValue &XmlValue::getContent(szt index) const
-    {
-        if (m_kind != Tag)
-            return NoneValue;
-        if (index >= m_tag->content.size())
-            return NoneValue;
-        return m_tag->content.at(index);
     }
 
     const std::vector<XmlValue> &XmlValue::asContent() const
@@ -103,6 +108,22 @@ namespace cacto
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->content;
+    }
+
+    const XmlValue &XmlValue::operator[](szt index) const
+    {
+        if (m_kind != Tag)
+            return NoneValue;
+        if (index >= m_tag->content.size())
+            return NoneValue;
+        return m_tag->content.at(index);
+    }
+
+    XmlValue &XmlValue::operator[](szt index)
+    {
+        if (m_kind != Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->content[index];
     }
 
     void XmlValue::print(XmlPrinter &printer) const
@@ -312,34 +333,6 @@ namespace cacto
     XmlValue::~XmlValue()
     {
         drop();
-    }
-
-    const XmlValue &XmlValue::operator[](szt index) const
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->content[index];
-    }
-
-    XmlValue &XmlValue::operator[](szt index)
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->content[index];
-    }
-
-    const std::string &XmlValue::operator[](const std::string &key) const
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->attributes[key];
-    }
-
-    std::string &XmlValue::operator[](const std::string &key)
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->attributes[key];
     }
 
     XmlValue::XmlValue(const XmlValue &other)

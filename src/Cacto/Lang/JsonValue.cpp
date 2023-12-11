@@ -96,15 +96,6 @@ namespace cacto
         return m_kind == Array;
     }
 
-    const JsonValue &JsonValue::get(szt index) const
-    {
-        if (m_kind != Array)
-            return NullValue;
-        if (index >= m_array->size())
-            return NullValue;
-        return m_array->at(index);
-    }
-
     const std::vector<JsonValue> &JsonValue::asArray() const
     {
         if (m_kind != Array)
@@ -119,19 +110,25 @@ namespace cacto
         return *m_array;
     }
 
+    const JsonValue &JsonValue::operator[](szt index) const
+    {
+        if (m_kind != Array)
+            return NullValue;
+        if (index >= m_array->size())
+            return NullValue;
+        return m_array->at(index);
+    }
+
+    JsonValue &JsonValue::operator[](szt index)
+    {
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        return m_array->operator[](index);
+    }
+
     bool JsonValue::isObject() const
     {
         return m_kind == Object;
-    }
-
-    const JsonValue &JsonValue::get(const std::string& key) const
-    {
-        if (m_kind != Object)
-            return NullValue;
-        for(auto& pair: *m_object)
-            if(pair.first == key)
-                return pair.second;
-        return NullValue;;
     }
 
     const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const
@@ -146,6 +143,23 @@ namespace cacto
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
         return *m_object;
+    }
+
+    const JsonValue &JsonValue::operator[](const std::string &key) const
+    {
+        if (m_kind != Object)
+            return NullValue;
+        for (auto &pair : *m_object)
+            if (pair.first == key)
+                return pair.second;
+        return NullValue;
+    }
+
+    JsonValue &JsonValue::operator[](const std::string &key)
+    {
+        if (m_kind != Object)
+            throw std::runtime_error("Json is not an object value");
+        return m_object->operator[](key);
     }
 
     void JsonValue::print(JsonPrinter &printer) const
@@ -415,34 +429,6 @@ namespace cacto
     JsonValue::~JsonValue()
     {
         drop();
-    }
-
-    const JsonValue &JsonValue::operator[](szt index) const
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
-        return m_array->at(index);
-    }
-
-    JsonValue &JsonValue::operator[](szt index)
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
-        return m_array->at(index);
-    }
-
-    const JsonValue &JsonValue::operator[](const std::string &key) const
-    {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return m_object->at(key);
-    }
-
-    JsonValue &JsonValue::operator[](const std::string &key)
-    {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return m_object->at(key);
     }
 
     JsonValue::JsonValue(const JsonValue &other)
