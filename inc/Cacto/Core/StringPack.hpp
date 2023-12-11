@@ -14,6 +14,8 @@ namespace sf
 namespace cacto
 {
 
+    template class CACTO_CORE_API Pack<sf::String>;
+
     class CACTO_CORE_API StringPack
         : public virtual Pack<sf::String>
     {

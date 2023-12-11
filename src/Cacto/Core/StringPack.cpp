@@ -1,5 +1,6 @@
 #include <fstream>
 #include <SFML/System/String.hpp>
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Core/StringPack.hpp>
 
 namespace cacto
@@ -18,15 +19,14 @@ namespace cacto
         for (auto &pair : m_map)
             if (pair.first == id)
                 return pair.second;
-        std::ifstream stream{m_path / id};
-        if (stream.is_open())
+        try
         {
-            std::string _string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
+            auto _string = fromFile(m_path / id);
             auto string = new sf::String(_string);
             m_map.insert({id, string});
             return string;
         }
-        else
+        catch (...)
         {
             m_map.insert({id, nullptr});
             return nullptr;
@@ -55,13 +55,15 @@ namespace cacto
             }
         if (value)
         {
-            std::ofstream stream{m_path / id};
-            if (stream.is_open())
+            try
             {
                 auto _string = value->toAnsiString();
-                stream << _string;
+                toFile(_string, m_path / id);
                 auto string = new sf::String(*value);
                 m_map.insert({id, string});
+            }
+            catch (...)
+            {
             }
         }
         else
