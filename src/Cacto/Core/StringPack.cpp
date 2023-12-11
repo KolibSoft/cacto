@@ -21,7 +21,8 @@ namespace cacto
                 return pair.second;
         try
         {
-            auto _string = fromFile(m_path / id);
+            std::string _string{};
+            fromFile(_string, m_path / id);
             auto string = new sf::String(_string);
             m_map.insert({id, string});
             return string;
