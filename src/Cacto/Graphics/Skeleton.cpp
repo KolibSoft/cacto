@@ -171,7 +171,7 @@ namespace cacto
             auto _xml = cacto::toXml(child);
             _xml["holder:coord"] = cacto::toString(holder->getCoord());
             _xml["holder:relation"] = cacto::toString(holder->getRelation());
-            content.push_back(xml);
+            content.push_back(_xml);
         }
         return xml;
     }

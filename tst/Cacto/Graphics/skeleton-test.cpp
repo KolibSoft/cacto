@@ -8,7 +8,6 @@
 
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Graphics/Skeleton.hpp>
-#include <Cacto/Graphics/Mesh.hpp>
 
 int main()
 {
@@ -19,8 +18,8 @@ int main()
 
     cacto::Skeleton skeleton{};
     cacto::fromXmlFile(skeleton, "res/skeleton.xml");
-    std::cout << cacto::toXml(skeleton).toString(2) << "\n";
-    // cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
+    std::cout << cacto::toXml(skeleton).toString() << "\n";
+    cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
     while (window.isOpen())
     {
