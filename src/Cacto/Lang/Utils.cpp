@@ -34,13 +34,12 @@ namespace cacto
         stream << string;
     }
 
-    std::string fromFile(const std::filesystem::path &path)
+    void fromFile(std::string &string, const std::filesystem::path &path)
     {
         std::ifstream stream{path};
         if (!stream.is_open())
             throw std::runtime_error("Can not open the file");
-        std::string string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
-        return std::move(string);
+        string = {std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
     }
 
 }

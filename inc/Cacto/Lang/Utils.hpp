@@ -13,7 +13,7 @@ namespace cacto
     std::vector<std::string> CACTO_LANG_API split(const std::string &str, char delimiter);
 
     void CACTO_LANG_API toFile(const std::string &string, const std::filesystem::path &path);
-    std::string CACTO_LANG_API fromFile(const std::filesystem::path &path);
+    void CACTO_LANG_API fromFile(std::string &string, const std::filesystem::path &path);
 
     template <typename T>
     std::string toString(const T &value) = delete;
@@ -25,7 +25,7 @@ namespace cacto
     void toStringFile(const T &value, const std::filesystem::path &path);
 
     template <typename T>
-    T fromStringFile(const std::filesystem::path &path);
+    void fromStringFile(T &value, const std::filesystem::path &path);
 
 }
 

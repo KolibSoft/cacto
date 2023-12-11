@@ -272,7 +272,8 @@ namespace cacto
 
     void JsonValue::fromFile(const std::filesystem::path &path)
     {
-        auto string = cacto::fromFile(path);
+        std::string string{};
+        cacto::fromFile(string, path);
         fromString(string);
     }
 

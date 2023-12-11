@@ -6,16 +6,16 @@ namespace cacto
     template <typename T>
     inline void toStringFile(const T &value, const std::filesystem::path &path)
     {
-        auto string = toString<T>(value);
+        std::string string = toString(value);
         toFile(string, path);
     }
 
     template <typename T>
-    inline T fromStringFile(const std::filesystem::path &path)
+    inline void fromStringFile(T &value, const std::filesystem::path &path)
     {
-        auto string = fromFile(path);
-        auto value = fromString<T>(string);
-        return std::move(value);
+        std::string string{};
+        fromFile(string, path);
+        fromString(value, string);
     }
 
 }
