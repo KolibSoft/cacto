@@ -13,6 +13,18 @@ namespace cacto
         return m_kind;
     }
 
+    bool XmlValue::isText() const
+    {
+        return m_kind == Text;
+    }
+
+    std::string XmlValue::getText(const std::string &def) const
+    {
+        if (m_kind != Text)
+            return def;
+        return *m_text;
+    }
+
     const std::string &XmlValue::asText() const
     {
         if (m_kind != Text)
@@ -27,17 +39,33 @@ namespace cacto
         return *m_text;
     }
 
+    bool XmlValue::isTag() const
+    {
+        return m_kind == Tag;
+    }
+
     const std::string &XmlValue::getName() const
     {
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->name;
     }
+
     void XmlValue::setName(const std::string &value)
     {
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
         m_tag->name = value;
+    }
+
+    std::string XmlValue::getAttribute(const std::string &name, const std::string &def) const
+    {
+        if (m_kind != Tag)
+            return def;
+        for (auto &pair : m_tag->attributes)
+            if (pair.first == name)
+                return pair.second;
+        return def;
     }
 
     const std::unordered_map<std::string, std::string> &XmlValue::asAttributes() const
@@ -52,6 +80,15 @@ namespace cacto
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->attributes;
+    }
+
+    const XmlValue &XmlValue::getContent(szt index) const
+    {
+        if (m_kind != Tag)
+            return NoneValue;
+        if (index >= m_tag->content.size())
+            return NoneValue;
+        return m_tag->content.at(index);
     }
 
     const std::vector<XmlValue> &XmlValue::asContent() const
@@ -379,6 +416,11 @@ namespace cacto
     {
         return !(*this == other);
     }
+
+    const XmlValue XmlValue::NoneValue = nullptr;
+    const XmlValue XmlValue::TextValue = "";
+    const XmlValue XmlValue::TagValue = {"", {}};
+
     void XmlValue::drop()
     {
         switch (m_kind)

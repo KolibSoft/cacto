@@ -218,10 +218,10 @@ namespace cacto
 
     void fromJson(sf::FloatRect &rect, const JsonValue &json)
     {
-        rect.left = f32t(json[0].asNumber());
-        rect.top = f32t(json[1].asNumber());
-        rect.width = f32t(json[2].asNumber());
-        rect.height = f32t(json[3].asNumber());
+        rect.left = json.get(0).getNumber();
+        rect.top = json.get(1).getNumber();
+        rect.width = json.get(2).getNumber();
+        rect.height = json.get(3).getNumber();
     }
 
     JsonValue toJson(const sf::VertexArray &array)
@@ -234,9 +234,9 @@ namespace cacto
         {
             auto &vertex = array[i];
             auto item = JsonValue::ObjectValue;
-            item["position"] = {f64t(vertex.position.x), f64t(vertex.position.y)};
+            item["position"] = {vertex.position.x, vertex.position.y};
             item["color"] = cacto::toString(vertex.color);
-            item["texCoords"] = {f64t(vertex.texCoords.x), f64t(vertex.texCoords.y)};
+            item["texCoords"] = {vertex.texCoords.x, vertex.texCoords.y};
             vertexes.push_back(item);
         }
         return json;
@@ -246,20 +246,21 @@ namespace cacto
     {
         array.clear();
         sf::PrimitiveType primitive;
-        fromString(primitive, json["primitive"].asString());
+        fromString(primitive, json.get("primitive").getString("Points"));
         array.setPrimitiveType(sf::PrimitiveType::Triangles);
-        auto &vertexes = json["vertexes"].asArray();
-        for (auto &item : vertexes)
-        {
-            auto &position = item["position"];
-            auto &color = item["color"];
-            auto &texCoords = item["texCoords"];
-            sf::Vertex vertex{};
-            vertex.position = {f32t(position[0].asNumber()), f32t(position[1].asNumber())};
-            cacto::fromString(vertex.color, color.asString());
-            vertex.texCoords = {f32t(texCoords[0].asNumber()), f32t(texCoords[1].asNumber())};
-            array.append(vertex);
-        }
+        auto &vertexes = json.get("vertexes");
+        if (vertexes.isArray())
+            for (auto &item : vertexes.asArray())
+            {
+                auto &position = item.get("position");
+                auto &color = item.get("color");
+                auto &texCoords = item.get("texCoords");
+                sf::Vertex vertex{};
+                vertex.position = {f32t(position.get(0).getNumber()), f32t(position.get(1).getNumber())};
+                cacto::fromString(vertex.color, color.getString("#FFFFFFFF"));
+                vertex.texCoords = {f32t(texCoords.get(0).getNumber()), f32t(texCoords.get(1).getNumber())};
+                array.append(vertex);
+            }
     }
 
     XmlValue toXml(const sf::Vertex &vertex)
@@ -274,10 +275,10 @@ namespace cacto
 
     void fromXml(sf::Vertex &vertex, const XmlValue &xml)
     {
-        auto &attributes = xml.asAttributes();
-        auto position = attributes.at("position");
-        auto texCoords = attributes.at("texCoords");
-        auto color = attributes.at("color");
+        vertex = {};
+        auto position = xml.getAttribute("position", "0,0");
+        auto texCoords = xml.getAttribute("texCoords", "0,0");
+        auto color = xml.getAttribute("color", "#FFFFFFFF");
         cacto::fromString(vertex.position, position);
         cacto::fromString(vertex.color, color);
         cacto::fromString(vertex.texCoords, texCoords);

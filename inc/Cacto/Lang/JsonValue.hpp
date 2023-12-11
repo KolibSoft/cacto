@@ -29,18 +29,28 @@ namespace cacto
 
         Kind getKind() const;
 
+        bool isNumber() const;
+        f64t getNumber(f64t def = 0) const;
         const f64t &asNumber() const;
         f64t &asNumber();
 
+        bool isString() const;
+        std::string getString(const std::string &def = "") const;
         const std::string &asString() const;
         std::string &asString();
 
+        bool isBoolean() const;
+        bool getBoolean(bool def = false) const;
         const bool &asBoolean() const;
         bool &asBoolean();
 
+        bool isArray() const;
+        const JsonValue &get(szt index) const;
         const std::vector<JsonValue> &asArray() const;
         std::vector<JsonValue> &asArray();
 
+        bool isObject() const;
+        const JsonValue &get(const std::string &key) const;
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
 

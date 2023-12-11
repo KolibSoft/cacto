@@ -13,6 +13,18 @@ namespace cacto
         return m_kind;
     }
 
+    bool JsonValue::isNumber() const
+    {
+        return m_kind == Number;
+    }
+
+    f64t JsonValue::getNumber(f64t def) const
+    {
+        if (m_kind != Number)
+            return def;
+        return m_number;
+    }
+
     const f64t &JsonValue::asNumber() const
     {
         if (m_kind != Number)
@@ -25,6 +37,18 @@ namespace cacto
         if (m_kind != Number)
             throw std::runtime_error("Json is not an number value");
         return m_number;
+    }
+
+    bool JsonValue::isString() const
+    {
+        return m_kind == String;
+    }
+
+    std::string JsonValue::getString(const std::string &def) const
+    {
+        if (m_kind != String)
+            return def;
+        return *m_string;
     }
 
     const std::string &JsonValue::asString() const
@@ -41,6 +65,18 @@ namespace cacto
         return *m_string;
     }
 
+    bool JsonValue::isBoolean() const
+    {
+        return m_kind == Boolean;
+    }
+
+    bool JsonValue::getBoolean(bool def) const
+    {
+        if (m_kind != Boolean)
+            return def;
+        return m_boolean;
+    }
+
     const bool &JsonValue::asBoolean() const
     {
         if (m_kind != Boolean)
@@ -55,6 +91,20 @@ namespace cacto
         return m_boolean;
     }
 
+    bool JsonValue::isArray() const
+    {
+        return m_kind == Array;
+    }
+
+    const JsonValue &JsonValue::get(szt index) const
+    {
+        if (m_kind != Array)
+            return NullValue;
+        if (index >= m_array->size())
+            return NullValue;
+        return m_array->at(index);
+    }
+
     const std::vector<JsonValue> &JsonValue::asArray() const
     {
         if (m_kind != Array)
@@ -67,6 +117,21 @@ namespace cacto
         if (m_kind != Array)
             throw std::runtime_error("Json is not an array value");
         return *m_array;
+    }
+
+    bool JsonValue::isObject() const
+    {
+        return m_kind == Object;
+    }
+
+    const JsonValue &JsonValue::get(const std::string& key) const
+    {
+        if (m_kind != Object)
+            return NullValue;
+        for(auto& pair: *m_object)
+            if(pair.first == key)
+                return pair.second;
+        return NullValue;;
     }
 
     const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const

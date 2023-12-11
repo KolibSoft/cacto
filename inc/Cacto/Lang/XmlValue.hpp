@@ -26,15 +26,20 @@ namespace cacto
 
         Kind getKind() const;
 
+        bool isText() const;
+        std::string getText(const std::string &def = "") const;
         const std::string &asText() const;
         std::string &asText();
 
+        bool isTag() const;
         const std::string &getName() const;
         void setName(const std::string &value);
 
+        std::string getAttribute(const std::string &name, const std::string &def = "") const;
         const std::unordered_map<std::string, std::string> &asAttributes() const;
         std::unordered_map<std::string, std::string> &asAttributes();
 
+        const XmlValue &getContent(szt index) const;
         const std::vector<XmlValue> &asContent() const;
         std::vector<XmlValue> &asContent();
 
@@ -68,6 +73,10 @@ namespace cacto
 
         bool operator==(const XmlValue &other) const;
         bool operator!=(const XmlValue &other) const;
+
+        static const XmlValue NoneValue;
+        static const XmlValue TextValue;
+        static const XmlValue TagValue;
 
     private:
         struct tag;
