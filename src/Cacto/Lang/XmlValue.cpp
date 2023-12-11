@@ -129,8 +129,6 @@ namespace cacto
             else
             {
                 printer.print(" />");
-                if (printer.getIdentation() > 0)
-                    printer.dedent();
             }
             break;
         }
@@ -210,7 +208,7 @@ namespace cacto
 
     std::string XmlValue::toString(szt identation) const
     {
-        std::string string;
+        std::string string{};
         XmlPrinter printer{};
         printer.setTarget(&string);
         printer.setIdentation(identation);

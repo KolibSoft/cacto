@@ -355,28 +355,28 @@ namespace cacto
     {
         if (m_kind != Array)
             throw std::runtime_error("Json is not an array value");
-        return m_array->operator[](index);
+        return m_array->at(index);
     }
 
     JsonValue &JsonValue::operator[](szt index)
     {
         if (m_kind != Array)
             throw std::runtime_error("Json is not an array value");
-        return m_array->operator[](index);
+        return m_array->at(index);
     }
 
     const JsonValue &JsonValue::operator[](const std::string &key) const
     {
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
-        return m_object->operator[](key);
+        return m_object->at(key);
     }
 
     JsonValue &JsonValue::operator[](const std::string &key)
     {
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
-        return m_object->operator[](key);
+        return m_object->at(key);
     }
 
     JsonValue::JsonValue(const JsonValue &other)
