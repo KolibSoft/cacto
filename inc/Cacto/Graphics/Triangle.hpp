@@ -47,6 +47,7 @@ namespace cacto
 
     namespace triangle
     {
+        
         class CACTO_GRAPHICS_API JsonConverter
             : public virtual geometry::JsonConverter
         {
@@ -56,7 +57,10 @@ namespace cacto
 
             JsonConverter() = default;
             virtual ~JsonConverter() = default;
-        } Converter{};
+        };
+
+        extern CACTO_GRAPHICS_API JsonConverter Converter;
+
     }
 
 }

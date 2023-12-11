@@ -114,6 +114,8 @@ namespace cacto
             return nullptr;
         }
 
+        JsonConverter Converter{};
+
     }
 
 }
