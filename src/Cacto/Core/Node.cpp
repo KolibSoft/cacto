@@ -52,9 +52,9 @@ namespace cacto
             return nullptr;
         for (auto &converter : XmlConverter<Node>::Converters)
         {
-            auto json = converter->toXml(node);
-            if (json != nullptr)
-                return json;
+            auto xml = converter->toXml(node);
+            if (xml != nullptr)
+                return xml;
         }
         return nullptr;
     }

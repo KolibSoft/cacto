@@ -18,11 +18,12 @@ int main()
 
     cacto::Mesh mesh{};
     cacto::fromXmlFile(mesh, "res/mesh.xml");
+    std::cout << cacto::toXml(mesh).toString(2) << "\n";
     cacto::toXmlFile(mesh, "res/mesh.xml", 2);
 
     cacto::Node *node = nullptr;
     cacto::fromXmlFile(node, "res/mesh.xml");
-    auto value = cacto::toXml(&mesh).toString();
+    std::cout << cacto::toXml(node).toString(2) << "\n";
 
     while (window.isOpen())
     {

@@ -114,4 +114,6 @@ namespace cacto
         return nullptr;
     }
 
+    StringPack Strings{"."};
+
 }

@@ -9,9 +9,13 @@
 #include <SFML/Audio/Music.hpp>
 
 #include <Cacto/Core/StringPack.hpp>
+#include <Cacto/Core/Node.hpp>
 
 int main()
 {
+
+    std::cout << "String Packs: " << cacto::Pack<sf::String>::Packs.size() << "\n";
+    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
 
     cacto::StringPack pack{"res/strings"};
     sf::String string = "My String Basic";
