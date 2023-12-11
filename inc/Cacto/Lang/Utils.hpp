@@ -3,15 +3,32 @@
 
 #include <string>
 #include <vector>
+#include <filesystem>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
 
-    void CACTO_LANG_API dropFraction(std::string &string);
     void CACTO_LANG_API replace(std::string &string, const std::string &oldStr, const std::string &newStr);
     std::vector<std::string> CACTO_LANG_API split(const std::string &str, char delimiter);
 
+    void CACTO_LANG_API toFile(const std::string &string, const std::filesystem::path &path);
+    std::string CACTO_LANG_API fromFile(const std::filesystem::path &path);
+
+    template <typename T>
+    std::string toString(const T &value) = delete;
+
+    template <typename T>
+    void fromString(T &value, const std::string &string) = delete;
+
+    template <typename T>
+    void toStringFile(const T &value, const std::filesystem::path &path);
+
+    template <typename T>
+    T fromStringFile(const std::filesystem::path &path);
+
 }
+
+#include <Cacto/Lang/Utils.inl>
 
 #endif

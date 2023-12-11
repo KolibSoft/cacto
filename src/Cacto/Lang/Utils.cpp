@@ -1,15 +1,8 @@
-#include <Cacto/Lang/JsonValue.hpp>
+#include <fstream>
 #include <Cacto/Lang/Utils.hpp>
 
 namespace cacto
 {
-
-    void dropFraction(std::string &string)
-    {
-        while (string.back() == '0')
-            string.pop_back();
-        string.pop_back();
-    }
 
     void replace(std::string &string, const std::string &oldStr, const std::string &newStr)
     {
@@ -30,7 +23,24 @@ namespace cacto
         while (std::getline(stream, token, delimiter))
             tokens.push_back(token);
 
-        return tokens;
+        return std::move(tokens);
+    }
+
+    void toFile(const std::string &string, const std::filesystem::path &path)
+    {
+        std::ofstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        stream << string;
+    }
+
+    std::string fromFile(const std::filesystem::path &path)
+    {
+        std::ifstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        std::string string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
+        return std::move(string);
     }
 
 }

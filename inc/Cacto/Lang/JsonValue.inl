@@ -6,16 +6,17 @@ namespace cacto
     template <typename T>
     inline void toJsonFile(const T &value, const std::filesystem::path &path, szt identation)
     {
-        JsonValue json = toJson(value);
+        JsonValue json = toJson<T>(value);
         json.toFile(path, identation);
     }
 
     template <typename T>
-    inline void fromJsonFile(T &value, const std::filesystem::path &path)
+    inline T fromJsonFile(const std::filesystem::path &path)
     {
         JsonValue json = nullptr;
         json.fromFile(path);
-        fromJson(value, json);
+        auto value = fromJson<T>(json);
+        return std::move(value);
     }
 
 }

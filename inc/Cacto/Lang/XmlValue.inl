@@ -6,16 +6,17 @@ namespace cacto
     template <typename T>
     inline void toXmlFile(const T &value, const std::filesystem::path &path, szt identation)
     {
-        XmlValue xml = toXml(value);
+        auto xml = toXml<T>(value);
         xml.toFile(path, identation);
     }
 
     template <typename T>
-    inline void fromXmlFile(T &value, const std::filesystem::path &path)
+    inline T fromXmlFile(const std::filesystem::path &path)
     {
         XmlValue xml = nullptr;
         xml.fromFile(path);
-        fromXml(value, xml);
+        auto value = fromXml<T>(xml);
+        return std::move(value);
     }
 
 }

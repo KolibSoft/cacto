@@ -90,6 +90,12 @@ namespace cacto
     };
 
     template <typename T>
+    XmlValue toXml(const T &value) = delete;
+
+    template <typename T>
+    T fromXml(const XmlValue &xml) = delete;
+
+    template <typename T>
     void toXmlFile(const T &value, const std::filesystem::path &path, szt identation = 0);
 
     template <typename T>

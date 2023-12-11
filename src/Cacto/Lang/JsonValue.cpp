@@ -266,19 +266,13 @@ namespace cacto
 
     void JsonValue::toFile(const std::filesystem::path &path, szt identation) const
     {
-        std::ofstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        std::string string = toString(identation);
-        stream << string;
+        auto string = toString(identation);
+        cacto::toFile(string, path);
     }
 
     void JsonValue::fromFile(const std::filesystem::path &path)
     {
-        std::ifstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        std::string string{std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
+        auto string = cacto::fromFile(path);
         fromString(string);
     }
 
