@@ -16,12 +16,6 @@ namespace cacto
     void CACTO_LANG_API fromFile(std::string &string, const std::filesystem::path &path);
 
     template <typename T>
-    std::string toString(const T &value) = delete;
-
-    template <typename T>
-    void fromString(T &value, const std::string &string) = delete;
-
-    template <typename T>
     void toStringFile(const T &value, const std::filesystem::path &path);
 
     template <typename T>
