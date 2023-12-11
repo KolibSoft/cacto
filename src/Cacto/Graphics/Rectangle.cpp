@@ -113,10 +113,10 @@ namespace cacto
     {
         auto &position = json["position"];
         auto &size = json["size"];
-        rectangle.setLeft(f32t(position[0].asNumber()));
-        rectangle.setTop(f32t(position[1].asNumber()));
-        rectangle.setWidth(f32t(size[0].asNumber()));
-        rectangle.setHeight(f32t(size[1].asNumber()));
+        rectangle.setLeft(f32t(position[0].getNumber()));
+        rectangle.setTop(f32t(position[1].getNumber()));
+        rectangle.setWidth(f32t(size[0].getNumber()));
+        rectangle.setHeight(f32t(size[1].getNumber()));
     }
 
     namespace rectangle

@@ -61,9 +61,8 @@ namespace cacto
     XmlValue toXml(const Mesh &mesh)
     {
         XmlValue xml{"Mesh", {}};
-        auto &attributes = xml.asAttributes();
         auto &content = xml.asContent();
-        attributes["primitive"] = cacto::toString(mesh.getPrimitiveType());
+        xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
         for (szt i = 0; i < mesh.getVertexCount(); i++)
         {
             auto &vertex = mesh[i];
@@ -74,17 +73,19 @@ namespace cacto
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
-        auto &attributes = xml.asAttributes();
-        auto &content = xml.asContent();
-        sf::PrimitiveType primitive;
-        cacto::fromString(primitive, attributes.at("primitive"));
-        mesh.setPrimitiveType(primitive);
-        mesh.clear();
-        for (auto &vertex : content)
+        mesh = {};
+        if (xml.isTag())
         {
-            sf::Vertex _vertex{};
-            cacto::fromXml(_vertex, vertex);
-            mesh.append(_vertex);
+            sf::PrimitiveType primitive;
+            cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
+            mesh.setPrimitiveType(primitive);
+            auto &content = xml.asContent();
+            for (auto &item : content)
+            {
+                sf::Vertex vertex{};
+                cacto::fromXml(vertex, item);
+                mesh.append(vertex);
+            }
         }
     }
 

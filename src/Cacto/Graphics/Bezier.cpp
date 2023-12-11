@@ -82,9 +82,10 @@ namespace cacto
     void fromJson(Bezier &bezier, const JsonValue &json)
     {
         bezier.clear();
-        auto &points = json["points"].asArray();
-        for (auto &point : points)
-            bezier.append({f32t(point[0].asNumber()), f32t(point[1].asNumber())});
+        auto &points = json["points"];
+        if (points.isArray())
+            for (auto &point : points.asArray())
+                bezier.append({f32t(point[0].getNumber()), f32t(point[1].getNumber())});
     }
 
     namespace bezier

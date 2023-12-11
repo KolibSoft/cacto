@@ -60,8 +60,8 @@ namespace cacto
     {
         auto &begin = json["begin"];
         auto &end = json["end"];
-        straight.setBegin({f32t(begin[0].asNumber()), f32t(begin[1].asNumber())});
-        straight.setEnd({f32t(end[0].asNumber()), f32t(end[1].asNumber())});
+        straight.setBegin({f32t(begin[0].getNumber()), f32t(begin[1].getNumber())});
+        straight.setEnd({f32t(end[0].getNumber()), f32t(end[1].getNumber())});
     }
 
     namespace straight

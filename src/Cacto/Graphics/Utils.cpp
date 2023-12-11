@@ -244,7 +244,7 @@ namespace cacto
 
     void fromJson(sf::VertexArray &array, const JsonValue &json)
     {
-        array.clear();
+        array = {};
         sf::PrimitiveType primitive;
         fromString(primitive, json["primitive"].getString("Points"));
         array.setPrimitiveType(sf::PrimitiveType::Triangles);

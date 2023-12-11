@@ -120,9 +120,9 @@ namespace cacto
         auto &pointA = json["pointA"];
         auto &pointB = json["pointB"];
         auto &pointC = json["pointC"];
-        triangle.setPointA({f32t(pointA[0].asNumber()), f32t(pointA[1].asNumber())});
-        triangle.setPointB({f32t(pointB[0].asNumber()), f32t(pointB[1].asNumber())});
-        triangle.setPointC({f32t(pointC[0].asNumber()), f32t(pointC[1].asNumber())});
+        triangle.setPointA({f32t(pointA[0].getNumber()), f32t(pointA[1].getNumber())});
+        triangle.setPointB({f32t(pointB[0].getNumber()), f32t(pointB[1].getNumber())});
+        triangle.setPointC({f32t(pointC[0].getNumber()), f32t(pointC[1].getNumber())});
     }
 
     namespace triangle

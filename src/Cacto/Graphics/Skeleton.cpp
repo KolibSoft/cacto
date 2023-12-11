@@ -168,10 +168,9 @@ namespace cacto
         {
             auto child = skeleton.getChild(i);
             auto holder = skeleton.getHolder(*child);
-            auto xml = cacto::toXml(child);
-            auto &attributes = xml.asAttributes();
-            attributes["holder:coord"] = cacto::toString(holder->getCoord());
-            attributes["holder:relation"] = cacto::toString(holder->getRelation());
+            auto _xml = cacto::toXml(child);
+            _xml["holder:coord"] = cacto::toString(holder->getCoord());
+            _xml["holder:relation"] = cacto::toString(holder->getRelation());
             content.push_back(xml);
         }
         return xml;
@@ -179,22 +178,21 @@ namespace cacto
 
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
-        auto &content = xml.asContent();
-        skeleton.clearChildren();
-        for (auto &item : content)
-        {
-            Node *node = nullptr;
-            cacto::fromXml(node, item);
-            auto &attributes = item.asAttributes();
-            sf::Vector2f coord{};
-            cacto::fromString(coord, attributes.at("holder:coord"));
-            Skeleton::Relation relation{};
-            cacto::fromString(relation, attributes.at("holder:relation"));
-            skeleton
-                .append(*node, true)
-                .setCoord(coord)
-                .setRelation(relation);
-        }
+        skeleton = {};
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+            {
+                Node *node = nullptr;
+                cacto::fromXml(node, item);
+                sf::Vector2f coord{};
+                cacto::fromString(coord, item.getAttribute("holder:coord", "0,0"));
+                Skeleton::Relation relation{};
+                cacto::fromString(relation, item.getAttribute("holder:relation", "Body"));
+                skeleton
+                    .append(*node, true)
+                    .setCoord(coord)
+                    .setRelation(relation);
+            }
     }
 
     namespace skeleton

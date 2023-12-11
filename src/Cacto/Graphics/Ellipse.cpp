@@ -98,8 +98,8 @@ namespace cacto
     {
         auto &center = json["center"];
         auto &diameters = json["diameters"];
-        ellipse.setCenter({f32t(center[0].asNumber()), f32t(center[1].asNumber())});
-        ellipse.setDiameters({f32t(diameters[0].asNumber()), f32t(diameters[1].asNumber())});
+        ellipse.setCenter({f32t(center[0].getNumber()), f32t(center[1].getNumber())});
+        ellipse.setDiameters({f32t(diameters[0].getNumber()), f32t(diameters[1].getNumber())});
     }
 
     namespace ellipse
