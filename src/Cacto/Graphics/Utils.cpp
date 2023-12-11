@@ -218,10 +218,10 @@ namespace cacto
 
     void fromJson(sf::FloatRect &rect, const JsonValue &json)
     {
-        rect.left = json.get(0).getNumber();
-        rect.top = json.get(1).getNumber();
-        rect.width = json.get(2).getNumber();
-        rect.height = json.get(3).getNumber();
+        rect.left = json[0].getNumber();
+        rect.top = json[1].getNumber();
+        rect.width = json[2].getNumber();
+        rect.height = json[3].getNumber();
     }
 
     JsonValue toJson(const sf::VertexArray &array)
@@ -246,19 +246,19 @@ namespace cacto
     {
         array.clear();
         sf::PrimitiveType primitive;
-        fromString(primitive, json.get("primitive").getString("Points"));
+        fromString(primitive, json["primitive"].getString("Points"));
         array.setPrimitiveType(sf::PrimitiveType::Triangles);
-        auto &vertexes = json.get("vertexes");
+        auto &vertexes = json["vertexes"];
         if (vertexes.isArray())
             for (auto &item : vertexes.asArray())
             {
-                auto &position = item.get("position");
-                auto &color = item.get("color");
-                auto &texCoords = item.get("texCoords");
+                auto &position = item["position"];
+                auto &color = item["color"];
+                auto &texCoords = item["texCoords"];
                 sf::Vertex vertex{};
-                vertex.position = {f32t(position.get(0).getNumber()), f32t(position.get(1).getNumber())};
+                vertex.position = {f32t(position[0].getNumber()), f32t(position[1].getNumber())};
                 cacto::fromString(vertex.color, color.getString("#FFFFFFFF"));
-                vertex.texCoords = {f32t(texCoords.get(0).getNumber()), f32t(texCoords.get(1).getNumber())};
+                vertex.texCoords = {f32t(texCoords[0].getNumber()), f32t(texCoords[1].getNumber())};
                 array.append(vertex);
             }
     }
@@ -266,10 +266,9 @@ namespace cacto
     XmlValue toXml(const sf::Vertex &vertex)
     {
         XmlValue xml{"Vertex", {}};
-        auto &attributes = xml.asAttributes();
-        attributes["position"] = cacto::toString(vertex.position);
-        attributes["color"] = cacto::toString(vertex.color);
-        attributes["texCoords"] = cacto::toString(vertex.texCoords);
+        xml["position"] = cacto::toString(vertex.position);
+        xml["color"] = cacto::toString(vertex.color);
+        xml["texCoords"] = cacto::toString(vertex.texCoords);
         return xml;
     }
 
