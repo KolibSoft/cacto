@@ -16,13 +16,6 @@ namespace cacto
         return -1;
     }
 
-    void Node::clearChildren()
-    {
-        Node *node = nullptr;
-        while ((node = getChild()))
-            Node::unlink(*this, *node);
-    }
-
     void Node::link(Node &parent, Node &child)
     {
         if (child.getParent() != nullptr)
@@ -69,41 +62,6 @@ namespace cacto
             if (node)
                 return;
         }
-    }
-
-    namespace node
-    {
-
-        Node &Holder::getNode() const
-        {
-            return *m_node;
-        }
-
-        bool Holder::isInternal() const
-        {
-            return m_internal;
-        }
-
-        void Holder::setInternal(bool value)
-        {
-            m_internal = value;
-        }
-
-        Holder::Holder(Node &node, bool internal)
-            : m_node(&node),
-              m_internal(internal)
-        {
-        }
-
-        Holder::~Holder()
-        {
-            if (m_internal)
-            {
-                delete m_node;
-                m_node = nullptr;
-            }
-        }
-
     }
 
 }
