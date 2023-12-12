@@ -9,9 +9,52 @@
 #include <SFML/Audio/Music.hpp>
 
 #include <Cacto/Core/StringPack.hpp>
+#include <Cacto/Core/LeafNode.hpp>
+#include <Cacto/Core/RootNode.hpp>
+
+class IsolatedNode
+    : public virtual cacto::RootNode,
+      public virtual cacto::LeafNode
+{
+};
+
+namespace isolated
+{
+    class XmlConverter
+        : public cacto::node::XmlConverter
+    {
+
+    public:
+        cacto::XmlValue toXml(const cacto::Node *const node) const override
+        {
+            const IsolatedNode *isolated = nullptr;
+            if (node && (isolated = dynamic_cast<const IsolatedNode *>(node)))
+            {
+                cacto::XmlValue xml{"Isolated", {}};
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        cacto::Node *fromXml(const cacto::XmlValue &xml) const override
+        {
+            if (xml.isTag() && xml.getName() == "Isolated")
+            {
+                auto isolated = new IsolatedNode();
+                return isolated;
+            }
+            return nullptr;
+        }
+    } Converter{};
+}
 
 int main()
 {
+
+    cacto::XmlValue xml = nullptr;
+    xml.fromString("<Isolated/>");
+    auto node = cacto::XmlConverter<cacto::Node>::value(xml);
+    IsolatedNode &isolated = *dynamic_cast<IsolatedNode *>(node);
 
     cacto::StringPack pack{"res/strings"};
     sf::String string = "My String Basic";

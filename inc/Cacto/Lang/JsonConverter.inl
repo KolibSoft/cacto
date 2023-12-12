@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/JsonConverter.hpp>
 
 namespace cacto
