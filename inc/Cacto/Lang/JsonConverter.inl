@@ -17,6 +17,34 @@ namespace cacto
     }
 
     template <typename T>
+    inline JsonValue JsonConverter<T>::json(const T *const value)
+    {
+        if (value == nullptr)
+            return nullptr;
+        for (auto &converter : JsonConverter<T>::Converters)
+        {
+            auto json = converter->toJson(value);
+            if (json != nullptr)
+                return std::move(json);
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    inline T *JsonConverter<T>::value(const JsonValue &json)
+    {
+        if (json == nullptr)
+            return nullptr;
+        for (auto &converter : JsonConverter<T>::Converters)
+        {
+            T* value = converter->fromJson(json);
+            if (value)
+                return value;
+        }
+        return nullptr;
+    }
+
+    template <typename T>
     inline std::vector<const JsonConverter<T> *> JsonConverter<T>::Converters{};
 
 }
