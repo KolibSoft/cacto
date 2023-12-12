@@ -9,13 +9,9 @@
 #include <SFML/Audio/Music.hpp>
 
 #include <Cacto/Core/StringPack.hpp>
-#include <Cacto/Core/Node.hpp>
 
 int main()
 {
-
-    std::cout << "String Packs: " << cacto::Pack<sf::String>::Packs.size() << "\n";
-    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
 
     cacto::StringPack pack{"res/strings"};
     sf::String string = "My String Basic";
@@ -27,9 +23,9 @@ int main()
     pack.setResource("my_string.txt", &string);
     std::cout << "Content: " << pack.getResource("my_string.txt")->toAnsiString() << "\n";
 
-    auto resource = cacto::getString("my_string.txt");
+    auto resource = cacto::Pack<sf::String>::resource("my_string.txt");
     std::cout << "Global Content: " << resource->toAnsiString() << "\n";
-    std::cout << "Global Id: " << *cacto::getId(*resource) << "\n";
+    std::cout << "Global Id: " << *cacto::Pack<sf::String>::id(*resource) << "\n";
 
     return 0;
 }

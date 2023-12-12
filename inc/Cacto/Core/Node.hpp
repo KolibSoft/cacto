@@ -7,21 +7,10 @@
 namespace cacto
 {
 
-    class Node;
-
-    template class CACTO_CORE_API XmlConverter<Node>;
-
-    namespace node
-    {
-        class Holder;
-    }
-
     class CACTO_CORE_API Node
     {
 
     public:
-        using Holder = node::Holder;
-
         virtual Node *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
@@ -29,8 +18,6 @@ namespace cacto
 
         i32t getChildIndex(const Node &child) const;
         i32t getChildIndex(Node &&child) const = delete;
-
-        void clearChildren();
 
         Node() = default;
         virtual ~Node() = default;
@@ -46,28 +33,10 @@ namespace cacto
         virtual void onRemove(Node &child) = 0;
     };
 
-    XmlValue CACTO_CORE_API toXml(const Node *const &node);
-    void CACTO_CORE_API fromXml(Node *&node, const XmlValue &xml);
+    template class CACTO_CORE_API XmlConverter<Node>;
 
     namespace node
     {
-
-        class CACTO_CORE_API Holder
-        {
-
-        public:
-            Node &getNode() const;
-
-            bool isInternal() const;
-            void setInternal(bool value = true);
-
-            Holder(Node &node, bool internal = false);
-            virtual ~Holder();
-
-        private:
-            mutable Node *m_node;
-            bool m_internal;
-        };
 
         class CACTO_CORE_API XmlConverter
             : public virtual cacto::XmlConverter<Node>

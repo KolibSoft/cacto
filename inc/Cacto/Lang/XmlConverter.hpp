@@ -19,8 +19,8 @@ namespace cacto
         XmlConverter();
         virtual ~XmlConverter();
 
-        static XmlValue to(const T *const value);
-        static T *from(const XmlValue &xml);
+        static XmlValue xml(const T *const value);
+        static T *value(const XmlValue &xml);
 
     private:
         static std::vector<const XmlConverter<T> *> Converters;

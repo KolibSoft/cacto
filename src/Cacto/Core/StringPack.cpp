@@ -92,27 +92,7 @@ namespace cacto
         }
     }
 
-    const std::string *const getId(const sf::String &string)
-    {
-        for (auto &pack : Pack<sf::String>::Packs)
-        {
-            auto id = pack->getId(string);
-            if (id)
-                return id;
-        }
-        return nullptr;
-    }
 
-    const sf::String *const getString(const std::string &id)
-    {
-        for (auto &pack : Pack<sf::String>::Packs)
-        {
-            auto string = pack->getResource(id);
-            if (string)
-                return string;
-        }
-        return nullptr;
-    }
 
     StringPack Strings{"."};
 

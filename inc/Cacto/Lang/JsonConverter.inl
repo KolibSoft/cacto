@@ -17,7 +17,7 @@ namespace cacto
     }
 
     template <typename T>
-    JsonValue JsonConverter<T>::to(const T *const value)
+    JsonValue JsonConverter<T>::json(const T *const value)
     {
         if (value == nullptr)
             return nullptr;
@@ -31,7 +31,7 @@ namespace cacto
     }
 
     template <typename T>
-    T *JsonConverter<T>::from(const JsonValue &json)
+    T *JsonConverter<T>::value(const JsonValue &json)
     {
         if (json == nullptr)
             return nullptr;

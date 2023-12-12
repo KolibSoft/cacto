@@ -17,7 +17,7 @@ namespace cacto
     }
 
     template <typename T>
-    XmlValue XmlConverter<T>::to(const T *const value)
+    XmlValue XmlConverter<T>::xml(const T *const value)
     {
         if (value == nullptr)
             return nullptr;
@@ -31,7 +31,7 @@ namespace cacto
     }
 
     template <typename T>
-    T *XmlConverter<T>::from(const XmlValue &xml)
+    T *XmlConverter<T>::value(const XmlValue &xml)
     {
         if (xml == nullptr)
             return nullptr;
