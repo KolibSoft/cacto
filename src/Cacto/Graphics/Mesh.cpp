@@ -1,7 +1,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
-#include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/Mesh.hpp>
 
 namespace cacto
 {

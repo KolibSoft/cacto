@@ -31,10 +31,12 @@ namespace cacto
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, sf::Image *> m_map;
-    } Images{"."};
+    };
 
     const std::string *const CACTO_GRAPHICS_API getId(const sf::Image &string);
     const sf::Image *const CACTO_GRAPHICS_API getImage(const std::string &id);
+
+    extern ImagePack CACTO_GRAPHICS_API Images;
 
 }
 

@@ -54,7 +54,7 @@ namespace cacto
             virtual ~XmlConverter() = default;
         };
 
-        extern CACTO_GRAPHICS_API XmlConverter Converter;
+        extern XmlConverter CACTO_GRAPHICS_API Converter;
 
     }
 

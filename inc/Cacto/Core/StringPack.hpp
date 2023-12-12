@@ -36,7 +36,7 @@ namespace cacto
     const std::string *const CACTO_CORE_API getId(const sf::String &string);
     const sf::String *const CACTO_CORE_API getString(const std::string &id);
 
-    extern CACTO_CORE_API StringPack Strings;
+    extern StringPack CACTO_CORE_API Strings;
 
 }
 

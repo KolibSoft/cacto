@@ -107,4 +107,6 @@ namespace cacto
         return nullptr;
     }
 
+    ImagePack Images{"."};
+
 }
