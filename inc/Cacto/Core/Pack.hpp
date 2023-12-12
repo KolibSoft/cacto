@@ -19,6 +19,10 @@ namespace cacto
         virtual const T *const getResource(const std::string &id) const = 0;
         virtual void setResource(const std::string &id, const T *const value) = 0;
 
+        static const std::string *const id(const T &value);
+        static const T *const resource(const std::string &id);
+
+    private:
         static std::vector<const Pack<T> *> Packs;
     };
 

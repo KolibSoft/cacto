@@ -41,27 +41,14 @@ namespace cacto
 
     XmlValue toXml(const Node *const &node)
     {
-        if (node == nullptr)
-            return nullptr;
-        for (auto &converter : XmlConverter<Node>::Converters)
-        {
-            auto xml = converter->toXml(node);
-            if (xml != nullptr)
-                return xml;
-        }
-        return nullptr;
+        auto xml = XmlConverter<Node>::xml(node);
+        return std::move(xml);
     }
 
     void fromXml(Node *&node, const XmlValue &xml)
     {
-        if (xml == nullptr)
-            node = nullptr;
-        for (auto &converter : XmlConverter<Node>::Converters)
-        {
-            node = converter->fromXml(xml);
-            if (node)
-                return;
-        }
+        auto _node = XmlConverter<Node>::value(xml);
+        node = _node;
     }
 
 }

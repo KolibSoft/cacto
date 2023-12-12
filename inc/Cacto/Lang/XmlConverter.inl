@@ -23,7 +23,7 @@ namespace cacto
             return nullptr;
         for (auto &converter : XmlConverter<T>::Converters)
         {
-            auto xml = converter->toXml(value);
+            XmlValue xml = converter->toXml(value);
             if (xml != nullptr)
                 return std::move(xml);
         }

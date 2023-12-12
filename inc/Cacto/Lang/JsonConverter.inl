@@ -23,7 +23,7 @@ namespace cacto
             return nullptr;
         for (auto &converter : JsonConverter<T>::Converters)
         {
-            auto json = converter->toJson(value);
+            JsonValue json = converter->toJson(value);
             if (json != nullptr)
                 return std::move(json);
         }
