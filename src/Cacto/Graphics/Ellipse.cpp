@@ -84,24 +84,6 @@ namespace cacto
 
     Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto center = ellipse.getCenter();
-        auto diameters = ellipse.getDiameters();
-        json["center"] = {center.x, center.y};
-        json["diameters"] = {diameters.x, diameters.y};
-        return json;
-    }
-
-    void CACTO_GRAPHICS_API fromJson(Ellipse &ellipse, const JsonValue &json)
-    {
-        auto &center = json["center"];
-        auto &diameters = json["diameters"];
-        ellipse.setCenter({f32t(center[0].getNumber()), f32t(center[1].getNumber())});
-        ellipse.setDiameters({f32t(diameters[0].getNumber()), f32t(diameters[1].getNumber())});
-    }
-
     namespace ellipse
     {
 
@@ -110,19 +92,26 @@ namespace cacto
             const Ellipse *ellipse = nullptr;
             if (value && (ellipse = dynamic_cast<const Ellipse *>(value)))
             {
-                auto json = cacto::toJson(*ellipse);
+                auto json = JsonValue::ObjectValue;
+                auto center = ellipse->getCenter();
+                auto diameters = ellipse->getDiameters();
                 json["$type"] = "Ellipse";
-                return json;
+                json["center"] = {center.x, center.y};
+                json["diameters"] = {diameters.x, diameters.y};
+                return std::move(json);
             }
             return nullptr;
         }
 
         Geometry *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Ellipse")
+            if (json.isObject() && json["$type"] == "Ellipse")
             {
                 auto ellipse = new Ellipse();
-                cacto::fromJson(*ellipse, json);
+                auto &center = json["center"];
+                auto &diameters = json["diameters"];
+                ellipse->setCenter({f32t(center[0].getNumber()), f32t(center[1].getNumber())});
+                ellipse->setDiameters({f32t(diameters[0].getNumber()), f32t(diameters[1].getNumber())});
                 return ellipse;
             }
             return nullptr;

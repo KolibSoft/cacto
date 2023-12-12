@@ -17,12 +17,6 @@ namespace sf
 namespace cacto
 {
 
-    class Geometry;
-
-    template class CACTO_GRAPHICS_API cacto::JsonConverter<Geometry>;
-
-    class JsonValue;
-
     class Geometry
         : public virtual Line
     {
@@ -35,8 +29,7 @@ namespace cacto
         virtual ~Geometry() = default;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Geometry *const &geometry);
-    void CACTO_GRAPHICS_API fromJson(Geometry *&geometry, const JsonValue &json);
+    template class CACTO_GRAPHICS_API cacto::JsonConverter<Geometry>;
 
     namespace geometry
     {

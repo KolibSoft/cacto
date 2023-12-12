@@ -17,7 +17,7 @@ namespace cacto
 
     Node *const Skeleton::getChild(szt index) const
     {
-        if (m_holders.size() <= index)
+        if (index >= m_holders.size())
             return nullptr;
         auto &holder = m_holders.at(index);
         return &holder.getNode();
@@ -43,7 +43,7 @@ namespace cacto
     {
         Node::link(*this, child);
         auto &holder = m_holders.back();
-        holder.setInternal();
+        // holder.setInternal(); // <-- It Drops the Node
         return holder;
     }
 

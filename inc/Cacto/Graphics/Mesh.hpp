@@ -37,9 +37,6 @@ namespace cacto
         Node *m_parent;
     };
 
-    XmlValue CACTO_GRAPHICS_API toXml(const Mesh &mesh);
-    void CACTO_GRAPHICS_API fromXml(Mesh &mesh, const XmlValue &xml);
-
     namespace mesh
     {
 
@@ -54,7 +51,7 @@ namespace cacto
             virtual ~XmlConverter() = default;
         };
 
-        extern CACTO_GRAPHICS_API XmlConverter Converter;
+        extern XmlConverter CACTO_GRAPHICS_API Converter;
 
     }
 

@@ -29,9 +29,6 @@ namespace cacto
         sf::Vector2f m_end;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Straight &straight);
-    void CACTO_GRAPHICS_API fromJson(Straight &straight, const JsonValue &json);
-
     namespace straight
     {
 
@@ -47,7 +44,7 @@ namespace cacto
             virtual ~JsonConverter() = default;
         };
 
-        extern CACTO_GRAPHICS_API JsonConverter Converter;
+        extern JsonConverter CACTO_GRAPHICS_API Converter;
 
     }
 

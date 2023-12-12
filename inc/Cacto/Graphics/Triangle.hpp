@@ -6,8 +6,6 @@
 namespace cacto
 {
 
-    class JsonValue;
-
     class CACTO_GRAPHICS_API Triangle final
         : public virtual Geometry
     {
@@ -42,12 +40,9 @@ namespace cacto
         f32t m_bottom;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Triangle &triangle);
-    void CACTO_GRAPHICS_API fromJson(Triangle &triangle, const JsonValue &json);
-
     namespace triangle
     {
-        
+
         class CACTO_GRAPHICS_API JsonConverter
             : public virtual geometry::JsonConverter
         {
@@ -59,7 +54,7 @@ namespace cacto
             virtual ~JsonConverter() = default;
         };
 
-        extern CACTO_GRAPHICS_API JsonConverter Converter;
+        extern JsonConverter CACTO_GRAPHICS_API Converter;
 
     }
 

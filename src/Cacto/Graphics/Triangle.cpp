@@ -103,28 +103,6 @@ namespace cacto
 
     Triangle::~Triangle() = default;
 
-    JsonValue toJson(const Triangle &triangle)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto &pointA = triangle.getPointA();
-        auto &pointB = triangle.getPointB();
-        auto &pointC = triangle.getPointC();
-        json["pointA"] = {pointA.x, pointA.y};
-        json["pointB"] = {pointB.x, pointB.y};
-        json["pointC"] = {pointC.x, pointC.y};
-        return json;
-    }
-
-    void fromJson(Triangle &triangle, const JsonValue &json)
-    {
-        auto &pointA = json["pointA"];
-        auto &pointB = json["pointB"];
-        auto &pointC = json["pointC"];
-        triangle.setPointA({f32t(pointA[0].getNumber()), f32t(pointA[1].getNumber())});
-        triangle.setPointB({f32t(pointB[0].getNumber()), f32t(pointB[1].getNumber())});
-        triangle.setPointC({f32t(pointC[0].getNumber()), f32t(pointC[1].getNumber())});
-    }
-
     namespace triangle
     {
 
@@ -133,19 +111,30 @@ namespace cacto
             const Triangle *triangle = nullptr;
             if (value && (triangle = dynamic_cast<const Triangle *>(value)))
             {
-                auto json = cacto::toJson(*triangle);
+                auto json = JsonValue::ObjectValue;
+                auto &pointA = triangle->getPointA();
+                auto &pointB = triangle->getPointB();
+                auto &pointC = triangle->getPointC();
                 json["$type"] = "Triangle";
-                return json;
+                json["pointA"] = {pointA.x, pointA.y};
+                json["pointB"] = {pointB.x, pointB.y};
+                json["pointC"] = {pointC.x, pointC.y};
+                return std::move(json);
             }
             return nullptr;
         }
 
         Geometry *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Triangle")
+            if (json.isObject() && json["$type"] == "Triangle")
             {
                 auto triangle = new Triangle();
-                cacto::fromJson(*triangle, json);
+                auto &pointA = json["pointA"];
+                auto &pointB = json["pointB"];
+                auto &pointC = json["pointC"];
+                triangle->setPointA({f32t(pointA[0].getNumber()), f32t(pointA[1].getNumber())});
+                triangle->setPointB({f32t(pointB[0].getNumber()), f32t(pointB[1].getNumber())});
+                triangle->setPointC({f32t(pointC[0].getNumber()), f32t(pointC[1].getNumber())});
                 return triangle;
             }
             return nullptr;

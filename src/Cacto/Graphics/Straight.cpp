@@ -1,4 +1,3 @@
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
 namespace cacto
@@ -46,24 +45,6 @@ namespace cacto
 
     Straight::~Straight() = default;
 
-    JsonValue toJson(const Straight &straight)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto &begin = straight.getBegin();
-        auto &end = straight.getEnd();
-        json["begin"] = {begin.x, begin.y};
-        json["end"] = {end.x, end.y};
-        return json;
-    }
-
-    void fromJson(Straight &straight, const JsonValue &json)
-    {
-        auto &begin = json["begin"];
-        auto &end = json["end"];
-        straight.setBegin({f32t(begin[0].getNumber()), f32t(begin[1].getNumber())});
-        straight.setEnd({f32t(end[0].getNumber()), f32t(end[1].getNumber())});
-    }
-
     namespace straight
     {
 
@@ -72,19 +53,26 @@ namespace cacto
             const Straight *straight = nullptr;
             if (value && (straight = dynamic_cast<const Straight *>(value)))
             {
-                auto json = cacto::toJson(*straight);
+                auto json = JsonValue::ObjectValue;
+                auto &begin = straight->getBegin();
+                auto &end = straight->getEnd();
                 json["$type"] = "Straight";
-                return json;
+                json["begin"] = {begin.x, begin.y};
+                json["end"] = {end.x, end.y};
+                return std::move(json);
             }
             return nullptr;
         }
 
         Line *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Straight")
+            if (json.isObject() && json["$type"] == "Straight")
             {
                 auto straight = new Straight();
-                cacto::fromJson(*straight, json);
+                auto &begin = json["begin"];
+                auto &end = json["end"];
+                straight->setBegin({f32t(begin[0].getNumber()), f32t(begin[1].getNumber())});
+                straight->setEnd({f32t(end[0].getNumber()), f32t(end[1].getNumber())});
                 return straight;
             }
             return nullptr;

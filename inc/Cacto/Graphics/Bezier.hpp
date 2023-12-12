@@ -7,8 +7,6 @@
 namespace cacto
 {
 
-    class JsonValue;
-
     class CACTO_GRAPHICS_API Bezier final
         : public virtual Line
     {
@@ -31,12 +29,9 @@ namespace cacto
         std::vector<sf::Vector2f> m_points;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Bezier &bezier);
-    void CACTO_GRAPHICS_API fromJson(Bezier &bezier, const JsonValue &json);
-
     namespace bezier
     {
-        
+
         class CACTO_GRAPHICS_API JsonConverter
             : public virtual line::JsonConverter
         {
@@ -48,7 +43,7 @@ namespace cacto
             virtual ~JsonConverter() = default;
         };
 
-        extern CACTO_GRAPHICS_API JsonConverter Converter;
+        extern JsonConverter CACTO_GRAPHICS_API Converter;
 
     }
 

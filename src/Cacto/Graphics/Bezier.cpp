@@ -1,6 +1,5 @@
 #include <math.h>
 #include <SFML/System/Vector2.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 
 namespace cacto
@@ -67,27 +66,6 @@ namespace cacto
 
     Bezier::~Bezier() = default;
 
-    JsonValue toJson(const Bezier &bezier)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto &points = (json["points"] = JsonValue::ArrayValue).asArray();
-        for (szt i = 0; i < bezier.getPointCount(); i++)
-        {
-            auto &point = bezier.getControlPoint(i);
-            points.push_back({point.x, point.y});
-        }
-        return json;
-    }
-
-    void fromJson(Bezier &bezier, const JsonValue &json)
-    {
-        bezier.clear();
-        auto &points = json["points"];
-        if (points.isArray())
-            for (auto &point : points.asArray())
-                bezier.append({f32t(point[0].getNumber()), f32t(point[1].getNumber())});
-    }
-
     namespace bezier
     {
 
@@ -96,19 +74,28 @@ namespace cacto
             const Bezier *bezier = nullptr;
             if (value && (bezier = dynamic_cast<const Bezier *>(value)))
             {
-                auto json = cacto::toJson(*bezier);
+                auto json = JsonValue::ObjectValue;
                 json["$type"] = "Bezier";
-                return json;
+                auto &points = (json["points"] = JsonValue::ArrayValue).asArray();
+                for (szt i = 0; i < bezier->getPointCount(); i++)
+                {
+                    auto &point = bezier->getControlPoint(i);
+                    points.push_back({point.x, point.y});
+                }
+                return std::move(json);
             }
             return nullptr;
         }
 
         Line *JsonConverter::fromJson(const JsonValue &json) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Bezier")
+            if (json.isObject() && json["$type"] == "Bezier")
             {
                 auto bezier = new Bezier();
-                cacto::fromJson(*bezier, json);
+                auto &points = json["points"];
+                if (points.isArray())
+                    for (auto &point : points.asArray())
+                        bezier->append({f32t(point[0].getNumber()), f32t(point[1].getNumber())});
                 return bezier;
             }
             return nullptr;

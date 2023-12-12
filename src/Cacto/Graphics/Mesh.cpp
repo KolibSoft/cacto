@@ -1,7 +1,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
-#include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/Mesh.hpp>
 
 namespace cacto
 {
@@ -58,37 +58,6 @@ namespace cacto
         target.draw(*dynamic_cast<const sf::VertexArray *>(this), states);
     }
 
-    XmlValue toXml(const Mesh &mesh)
-    {
-        XmlValue xml{"Mesh", {}};
-        auto &content = xml.asContent();
-        xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
-        for (szt i = 0; i < mesh.getVertexCount(); i++)
-        {
-            auto &vertex = mesh[i];
-            content.push_back(cacto::toXml(vertex));
-        }
-        return xml;
-    }
-
-    void fromXml(Mesh &mesh, const XmlValue &xml)
-    {
-        mesh = {};
-        if (xml.isTag())
-        {
-            sf::PrimitiveType primitive;
-            cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
-            mesh.setPrimitiveType(primitive);
-            auto &content = xml.asContent();
-            for (auto &item : content)
-            {
-                sf::Vertex vertex{};
-                cacto::fromXml(vertex, item);
-                mesh.append(vertex);
-            }
-        }
-    }
-
     namespace mesh
     {
 
@@ -97,18 +66,34 @@ namespace cacto
             const Mesh *mesh = nullptr;
             if (value && (mesh = dynamic_cast<const Mesh *>(value)))
             {
-                auto xml = cacto::toXml(*mesh);
-                return xml;
+                XmlValue xml{"Mesh", {}};
+                auto &content = xml.asContent();
+                xml["primitive"] = cacto::toString(mesh->getPrimitiveType());
+                for (szt i = 0; i < mesh->getVertexCount(); i++)
+                {
+                    auto &vertex = (*mesh)[i];
+                    content.push_back(cacto::toXml(vertex));
+                }
+                return std::move(xml);
             }
             return nullptr;
         }
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
+            if (xml.isTag() && xml.getName() == "Mesh")
             {
                 auto mesh = new Mesh();
-                cacto::fromXml(*mesh, xml);
+                sf::PrimitiveType primitive;
+                cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
+                mesh->setPrimitiveType(primitive);
+                auto &content = xml.asContent();
+                for (auto &item : content)
+                {
+                    sf::Vertex vertex{};
+                    cacto::fromXml(vertex, item);
+                    mesh->append(vertex);
+                }
                 return mesh;
             }
             return nullptr;

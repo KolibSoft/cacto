@@ -24,29 +24,4 @@ namespace cacto
         setPoints(vertexes, line, count, precision);
     }
 
-    JsonValue toJson(const Line *const &line)
-    {
-        if (line == nullptr)
-            return nullptr;
-        for (auto &converter : JsonConverter<Line>::Converters)
-        {
-            auto json = converter->toJson(line);
-            if (json != nullptr)
-                return json;
-        }
-        return nullptr;
-    }
-
-    void fromJson(Line *&line, const JsonValue &json)
-    {
-        if (json == nullptr)
-            line = nullptr;
-        for (auto &converter : JsonConverter<Line>::Converters)
-        {
-            line = converter->fromJson(json);
-            if (line)
-                return;
-        }
-    }
-
 }

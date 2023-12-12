@@ -19,12 +19,6 @@ namespace sf
 namespace cacto
 {
 
-    class Line;
-    
-    template class CACTO_GRAPHICS_API cacto::JsonConverter<Line>;
-
-    class JsonValue;
-
     class CACTO_GRAPHICS_API Line
     {
 
@@ -36,11 +30,10 @@ namespace cacto
         virtual ~Line() = default;
     };
 
+    template class CACTO_GRAPHICS_API cacto::JsonConverter<Line>;
+
     void CACTO_GRAPHICS_API setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision = 0);
     void CACTO_GRAPHICS_API setPoints(sf::VertexArray &array, const Line &line, szt precision = 0);
-
-    JsonValue CACTO_GRAPHICS_API toJson(const Line *const &line);
-    void CACTO_GRAPHICS_API fromJson(Line *&line, const JsonValue &json);
 
     namespace line
     {
