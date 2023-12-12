@@ -19,6 +19,9 @@ int main()
     std::cout << cacto::toXml(skeleton).toString() << "\n";
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
+    auto child = skeleton.getChild();
+    auto parent = child->getParent();
+
     while (window.isOpen())
     {
         sf::Event event{};
@@ -39,5 +42,6 @@ int main()
         window.display();
     }
 
+    parent = child->getParent();
     return 0;
 }

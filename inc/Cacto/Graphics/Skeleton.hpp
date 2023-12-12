@@ -90,7 +90,7 @@ namespace cacto
     };
 
     std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
-    void CACTO_GRAPHICS_API fromString(Skeleton::Relation relation, const std::string &string);
+    void CACTO_GRAPHICS_API fromString(Skeleton::Relation& relation, const std::string &string);
 
     XmlValue CACTO_GRAPHICS_API toXml(const Skeleton &skeleton);
     void CACTO_GRAPHICS_API fromXml(Skeleton &skeleton, const XmlValue &xml);

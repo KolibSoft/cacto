@@ -196,7 +196,7 @@ namespace cacto
             throw std::runtime_error("Unsupported relation");
     }
 
-    void fromString(Skeleton::Relation relation, const std::string &string)
+    void fromString(Skeleton::Relation &relation, const std::string &string)
     {
         if (string == "Body")
             relation = Skeleton::Relation::Body;
@@ -215,8 +215,8 @@ namespace cacto
             auto child = skeleton.getChild(i);
             auto options = skeleton.getOptions(*child);
             auto _xml = cacto::toXml(child);
-            _xml["holder:coord"] = cacto::toString(options->getCoords());
-            _xml["holder:relation"] = cacto::toString(options->getRelation());
+            _xml["options:coords"] = cacto::toString(options->getCoords());
+            _xml["options:relation"] = cacto::toString(options->getRelation());
             content.push_back(_xml);
         }
         return xml;
@@ -231,9 +231,9 @@ namespace cacto
                 Node *node = nullptr;
                 cacto::fromXml(node, item);
                 sf::Vector2f coords{};
-                cacto::fromString(coords, item.getAttribute("holder:coord", "0,0"));
+                cacto::fromString(coords, item.getAttribute("options:coords", "0,0"));
                 Skeleton::Relation relation{};
-                cacto::fromString(relation, item.getAttribute("holder:relation", "Body"));
+                cacto::fromString(relation, item.getAttribute("options:relation", "Body"));
                 skeleton
                     .append(*node,
                             Skeleton::Options()
