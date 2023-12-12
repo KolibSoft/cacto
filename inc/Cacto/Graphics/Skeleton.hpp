@@ -10,7 +10,31 @@ namespace cacto
 
     namespace skeleton
     {
-        class Holder;
+
+        enum Relation
+        {
+            Body,
+            Bone
+        };
+
+        class CACTO_GRAPHICS_API Options
+        {
+
+        public:
+            const sf::Vector2f &getCoords() const;
+            Options &setCoords(const sf::Vector2f &value);
+
+            Relation getRelation() const;
+            Options &setRelation(Relation value);
+
+            Options(const sf::Vector2f &coords = {}, Relation relation = Body);
+            virtual ~Options();
+
+        private:
+            sf::Vector2f m_coords;
+            Relation m_relation;
+        };
+
     }
 
     class CACTO_GRAPHICS_API Skeleton
@@ -19,26 +43,18 @@ namespace cacto
     {
 
     public:
-        using Holder = skeleton::Holder;
-
-        enum Relation
-        {
-            Body,
-            Bone
-        };
+        using Relation = skeleton::Relation;
+        using Options = skeleton::Options;
 
         Node *const getParent() const override;
 
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
-        const Holder *const getHolder(const Node &child) const;
-        const Holder *const getHolder(Node &&child) const = delete;
+        const Options *const getOptions(Node &child) const;
+        Options *const getOptions(Node &child);
 
-        Holder *const getHolder(const Node &child);
-        Holder *const getHolder(Node &&child) = delete;
-
-        Holder &append(Node &child, bool internal = false);
+        Skeleton &append(Node &child, const Options &options = {}, bool internal = false);
         void remove(Node &child);
 
         Skeleton();
@@ -60,8 +76,17 @@ namespace cacto
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
+        struct holder;
+
         Node *m_parent;
-        std::vector<Holder> m_holders;
+        std::vector<holder> m_holders;
+
+        struct holder
+        {
+            Node *child{};
+            Options options{};
+            bool internal{};
+        };
     };
 
     std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
@@ -72,25 +97,6 @@ namespace cacto
 
     namespace skeleton
     {
-
-        class CACTO_GRAPHICS_API Holder
-            : public node::Holder
-        {
-
-        public:
-            const sf::Vector2f &getCoord() const;
-            Holder &setCoord(const sf::Vector2f &value);
-
-            Skeleton::Relation getRelation() const;
-            Holder &setRelation(Skeleton::Relation value);
-
-            Holder(Node &node, bool internal);
-            virtual ~Holder();
-
-        private:
-            sf::Vector2f m_coord;
-            Skeleton::Relation m_relation;
-        };
 
         class CACTO_GRAPHICS_API XmlConverter
             : public virtual node::XmlConverter

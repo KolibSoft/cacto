@@ -12,8 +12,6 @@
 int main()
 {
 
-    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
-
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Mesh mesh{};
@@ -37,8 +35,6 @@ int main()
         window.draw((sf::VertexArray &)mesh);
         window.display();
     }
-
-    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
 
     return 0;
 }
