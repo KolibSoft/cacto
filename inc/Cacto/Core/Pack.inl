@@ -31,7 +31,7 @@ namespace cacto
     template <typename T>
     inline const T *const Pack<T>::resource(const std::string &id)
     {
-        for (auto &pack : Pack<sf::String>::Packs)
+        for (auto &pack : Pack<T>::Packs)
         {
             const T * value = pack->getResource(id);
             if (value)

@@ -85,26 +85,16 @@ namespace cacto
         }
     }
 
-    const std::string *const getId(const sf::Image &string)
+    const std::string *const getId(const sf::Image &image)
     {
-        for (auto &pack : Pack<sf::Image>::Packs)
-        {
-            auto id = pack->getId(string);
-            if (id)
-                return id;
-        }
-        return nullptr;
+        auto id = Pack<sf::Image>::id(image);
+        return id;
     }
 
     const sf::Image *const getImage(const std::string &id)
     {
-        for (auto &pack : Pack<sf::Image>::Packs)
-        {
-            auto string = pack->getResource(id);
-            if (string)
-                return string;
-        }
-        return nullptr;
+        auto resource = Pack<sf::Image>::resource(id);
+        return resource;
     }
 
     ImagePack Images{"."};

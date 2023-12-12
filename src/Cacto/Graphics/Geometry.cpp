@@ -7,27 +7,14 @@ namespace cacto
 
     JsonValue toJson(const Geometry *const &geometry)
     {
-        if (geometry == nullptr)
-            return nullptr;
-        for (auto &converter : JsonConverter<Geometry>::Converters)
-        {
-            auto json = converter->toJson(geometry);
-            if (json != nullptr)
-                return json;
-        }
-        return nullptr;
+        auto json = JsonConverter<Geometry>::json(geometry);
+        return std::move(json);
     }
 
     void fromJson(Geometry *&geometry, const JsonValue &json)
     {
-        if (json == nullptr)
-            geometry = nullptr;
-        for (auto &converter : JsonConverter<Geometry>::Converters)
-        {
-            geometry = converter->fromJson(json);
-            if (geometry)
-                return;
-        }
+        auto _geometry = JsonConverter<Geometry>::value(json);
+        geometry = _geometry;
     }
 
     namespace geometry

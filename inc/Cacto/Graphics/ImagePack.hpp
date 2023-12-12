@@ -33,7 +33,7 @@ namespace cacto
         mutable std::unordered_map<std::string, sf::Image *> m_map;
     };
 
-    const std::string *const CACTO_GRAPHICS_API getId(const sf::Image &string);
+    const std::string *const CACTO_GRAPHICS_API getId(const sf::Image &image);
     const sf::Image *const CACTO_GRAPHICS_API getImage(const std::string &id);
 
     extern ImagePack CACTO_GRAPHICS_API Images;

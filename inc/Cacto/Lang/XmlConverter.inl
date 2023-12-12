@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Lang/XmlConverter.hpp>
 
 namespace cacto
