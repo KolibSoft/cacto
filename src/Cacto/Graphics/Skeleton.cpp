@@ -40,6 +40,16 @@ namespace cacto
 
     }
 
+    const std::string &Skeleton::getTag() const
+    {
+        return m_tag;
+    }
+
+    void Skeleton::setTag(const std::string &value)
+    {
+        m_tag = value;
+    }
+
     Node *const Skeleton::getParent() const
     {
         return m_parent;
@@ -89,7 +99,8 @@ namespace cacto
     }
 
     Skeleton::Skeleton()
-        : m_parent(nullptr),
+        : m_tag(),
+          m_parent(nullptr),
           m_holders()
     {
     }
@@ -109,6 +120,7 @@ namespace cacto
 
     Skeleton::Skeleton(const Skeleton &other)
         : Transformable(other),
+          m_tag(other.m_tag),
           m_parent(nullptr)
     {
     }
@@ -116,11 +128,13 @@ namespace cacto
     Skeleton &Skeleton::operator=(const Skeleton &other)
     {
         sf::Transformable::operator=(other);
+        m_tag = other.m_tag;
         return *this;
     }
 
     Skeleton::Skeleton(Skeleton &&other)
         : Transformable(std::move(other)),
+          m_tag(std::move(other.m_tag)),
           m_parent(nullptr)
     {
     }
@@ -128,6 +142,7 @@ namespace cacto
     Skeleton &Skeleton::operator=(Skeleton &&other)
     {
         sf::Transformable::operator=(std::move(other));
+        m_tag = std::move(other.m_tag);
         return *this;
     }
 
@@ -209,6 +224,9 @@ namespace cacto
     XmlValue toXml(const Skeleton &skeleton)
     {
         XmlValue xml{"Skeleton", {}};
+        auto &tag = skeleton.getTag();
+        if (tag.size() > 0)
+            xml["tag"] = tag;
         auto &content = xml.asContent();
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
@@ -226,6 +244,10 @@ namespace cacto
     {
         skeleton = {};
         if (xml.isTag())
+        {
+            auto tag = xml.getAttribute("tag", "");
+            if (tag.size() > 0)
+                skeleton.setTag(tag);
             for (auto &item : xml.asContent())
             {
                 Node *node = nullptr;
@@ -241,6 +263,7 @@ namespace cacto
                                 .setRelation(relation),
                             true);
             }
+        }
     }
 
     namespace skeleton
@@ -271,5 +294,4 @@ namespace cacto
         XmlConverter Converter{};
 
     }
-
 }

@@ -19,8 +19,8 @@ int main()
     std::cout << cacto::toXml(skeleton).toString() << "\n";
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
-    auto child = skeleton.getChild();
-    auto parent = child->getParent();
+    auto left = dynamic_cast<cacto::Skeleton *>(skeleton.find("left"));
+    auto right = dynamic_cast<cacto::Skeleton *>(skeleton.find("right"));
 
     while (window.isOpen())
     {
@@ -36,12 +36,18 @@ int main()
                 skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
                 skeleton.setScale(skeleton.getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
             }
+            else if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::Left)
+                    left->rotate(sf::degrees(5));
+                else if (event.key.code == sf::Keyboard::Right)
+                    right->rotate(sf::degrees(5));
+            }
         }
         window.clear();
         window.draw(skeleton);
         window.display();
     }
 
-    parent = child->getParent();
     return 0;
 }

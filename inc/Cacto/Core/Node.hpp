@@ -18,6 +18,11 @@ namespace cacto
     public:
         using Holder = node::Holder;
 
+        virtual const std::string &getTag() const;
+
+        const Node *const find(const std::string &tag) const;
+        Node *const find(const std::string &tag);
+
         virtual Node *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
@@ -31,6 +36,8 @@ namespace cacto
 
         static void link(Node &parent, Node &child);
         static void unlink(Node &parent, Node &child);
+
+        static const std::string NoTag;
 
     protected:
         virtual void onAttach(Node &parent) = 0;

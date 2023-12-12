@@ -46,6 +46,9 @@ namespace cacto
         using Relation = skeleton::Relation;
         using Options = skeleton::Options;
 
+        const std::string &getTag() const override;
+        void setTag(const std::string &value);
+
         Node *const getParent() const override;
 
         szt getChildCount() const override;
@@ -78,6 +81,7 @@ namespace cacto
     private:
         struct holder;
 
+        std::string m_tag;
         Node *m_parent;
         std::vector<holder> m_holders;
 
@@ -90,7 +94,7 @@ namespace cacto
     };
 
     std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
-    void CACTO_GRAPHICS_API fromString(Skeleton::Relation& relation, const std::string &string);
+    void CACTO_GRAPHICS_API fromString(Skeleton::Relation &relation, const std::string &string);
 
     XmlValue CACTO_GRAPHICS_API toXml(const Skeleton &skeleton);
     void CACTO_GRAPHICS_API fromXml(Skeleton &skeleton, const XmlValue &xml);
