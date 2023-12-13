@@ -10,34 +10,6 @@ namespace cacto
         return NoTag;
     }
 
-    const Node *const Node::find(const std::string &tag) const
-    {
-        if (getTag() == tag)
-            return this;
-        for (szt i = 0; i < getChildCount(); i++)
-        {
-            auto child = getChild(i);
-            auto node = child->find(tag);
-            if (node)
-                return node;
-        }
-        return nullptr;
-    }
-
-    Node *const Node::find(const std::string &tag)
-    {
-        if (getTag() == tag)
-            return this;
-        for (szt i = 0; i < getChildCount(); i++)
-        {
-            auto child = getChild(i);
-            auto node = child->find(tag);
-            if (node)
-                return node;
-        }
-        return nullptr;
-    }
-
     i32t Node::getChildIndex(const Node &child) const
     {
         for (szt i = 0; i < getChildCount(); i++)
@@ -72,7 +44,48 @@ namespace cacto
         parent.onRemove(child);
     }
 
-    const std::string Node::NoTag{""};
+    Node *const Node::firstAncestor(const NodePredicate &predicate) const
+    {
+        if (predicate(*this))
+            return const_cast<Node *const>(this);
+        auto parent = getParent();
+        if (parent)
+        {
+            auto node = parent->firstAncestor(predicate);
+            return node;
+        }
+        return nullptr;
+    }
+
+    Node *const Node::firstDescendant(const NodePredicate &predicate) const
+    {
+        if (predicate(*this))
+            return const_cast<Node *const>(this);
+        for (szt i = 0; i < getChildCount(); i++)
+        {
+            auto child = getChild(i);
+            auto node = child->firstDescendant(predicate);
+            if (node)
+                return node;
+        }
+        return nullptr;
+    }
+
+    Node *const Node::firstAncestor(const std::string &tag) const
+    {
+        auto node = firstAncestor([&](const Node &node)
+                                  { return node.getTag() == tag; });
+        return node;
+    }
+
+    Node *const Node::firstDescendant(const std::string &tag) const
+    {
+        auto node = firstDescendant([&](const Node &node)
+                                    { return node.getTag() == tag; });
+        return node;
+    }
+
+    const std::string Node::NoTag{};
 
     XmlValue toXml(const Node *const &node)
     {

@@ -1,35 +1,34 @@
 #ifndef CACTO_NODE_HPP
 #define CACTO_NODE_HPP
 
+#include <functional>
 #include <Cacto/Lang/XmlConverter.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
 {
 
-    namespace node
-    {
-        class Holder;
-    }
+    class Node;
+
+    using NodePredicate = std::function<bool(const Node &node)>;
 
     class CACTO_CORE_API Node
     {
 
     public:
-        using Holder = node::Holder;
-
         virtual const std::string &getTag() const;
-
-        const Node *const find(const std::string &tag) const;
-        Node *const find(const std::string &tag);
 
         virtual Node *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
         virtual Node *const getChild(szt index = 0) const = 0;
-
         i32t getChildIndex(const Node &child) const;
-        i32t getChildIndex(Node &&child) const = delete;
+
+        Node *const firstAncestor(const NodePredicate &predicate) const;
+        Node *const firstDescendant(const NodePredicate &predicate) const;
+
+        Node *const firstAncestor(const std::string &tag) const;
+        Node *const firstDescendant(const std::string &tag) const;
 
         Node() = default;
         virtual ~Node() = default;
