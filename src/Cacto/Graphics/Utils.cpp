@@ -219,6 +219,7 @@ namespace cacto
 
     void fromJson(sf::FloatRect &rect, const JsonValue &json)
     {
+        rect = {};
         rect.left = json[0].getNumber();
         rect.top = json[1].getNumber();
         rect.width = json[2].getNumber();
@@ -245,7 +246,7 @@ namespace cacto
 
     void fromJson(sf::VertexArray &array, const JsonValue &json)
     {
-        array.clear();
+        array = {};
         sf::PrimitiveType primitive;
         fromString(primitive, json["primitive"].getString("Points"));
         array.setPrimitiveType(sf::PrimitiveType::Triangles);
@@ -275,6 +276,7 @@ namespace cacto
 
     void fromXml(sf::Vertex &vertex, const XmlValue &xml)
     {
+        vertex = {};
         auto position = xml.getAttribute("position", "0,0");
         auto texCoords = xml.getAttribute("texCoords", "0,0");
         auto color = xml.getAttribute("color", "#FFFFFFFF");
@@ -300,6 +302,7 @@ namespace cacto
 
     void fromXml(sf::Transform &transform, const XmlValue &xml)
     {
+        transform = {};
         auto matrix = xml.getAttribute("matrix", "1,0,0,0,1,0,0,0,1");
         f32t values[9]{};
         char separator = ',';
@@ -308,14 +311,78 @@ namespace cacto
         transform = sf::Transform(values[0], values[1], values[2],
                                   values[3], values[4], values[5],
                                   values[6], values[7], values[8]);
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+                if (item.isTag())
+                {
+                    if (item.getName() == "Scale")
+                    {
+                        sf::Vector2f factors{};
+                        fromString(factors, item.getAttribute("factors", "1,1"));
+                        transform.scale(factors);
+                    }
+                    else if (item.getName() == "Translate")
+                    {
+                        sf::Vector2f offset{};
+                        fromString(offset, item.getAttribute("offset", "0,0"));
+                        transform.translate(offset);
+                    }
+                    else if (item.getName() == "Rotate")
+                    {
+                        sf::Angle angle{};
+                        angle = sf::degrees(std::stof(item.getAttribute("degrees", "0"))) + sf::radians(std::stof(xml.getAttribute("radians", "0")));
+                        transform.rotate(angle);
+                    }
+                }
     }
 
     XmlValue toXml(const sf::Transformable &transformable)
     {
+        XmlValue xml{"Transformable", {}};
+        xml["origin"] = toString(transformable.getOrigin());
+        xml["scale"] = toString(transformable.getScale());
+        xml["position"] = toString(transformable.getPosition());
+        xml["rotation"] = std::to_string(transformable.getRotation().asDegrees());
+        return std::move(xml);
     }
 
     void fromXml(sf::Transformable &transformable, const XmlValue &xml)
     {
+        sf::Vector2f origin{};
+        sf::Vector2f scale{};
+        sf::Vector2f position{};
+        f32t rotation{};
+        fromString(origin, xml.getAttribute("origin", "0,0"));
+        fromString(scale, xml.getAttribute("scale", "1,1"));
+        fromString(position, xml.getAttribute("position", "0,0"));
+        rotation = std::stof(xml.getAttribute("rotation", "0"));
+        transformable.setOrigin(origin);
+        transformable.setScale(scale);
+        transformable.setPosition(position);
+        transformable.setRotation(sf::degrees(rotation));
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+                if (item.isTag())
+                {
+                    if (item.getName() == "Scale")
+                    {
+                        sf::Vector2f factors{};
+                        fromString(factors, item.getAttribute("factors", "0,0"));
+                        transformable.scale(factors);
+                    }
+                    else if (item.getName() == "Translate" || item.getName() == "Move")
+                    {
+                        sf::Vector2f offset{};
+                        fromString(offset, item.getAttribute("offset", "0,0"));
+                        transformable.move(offset);
+                    }
+                    else if (item.getName() == "Rotate")
+                    {
+                        sf::Angle angle{};
+                        angle = sf::degrees(std::stof(item.getAttribute("degrees", "0"))) + sf::radians(std::stof(xml.getAttribute("radians", "0")));
+                        transformable.rotate(angle);
+                    }
+                }
     }
 
 }

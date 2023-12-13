@@ -223,7 +223,8 @@ namespace cacto
 
     XmlValue toXml(const Skeleton &skeleton)
     {
-        XmlValue xml{"Skeleton", {}};
+        XmlValue xml = toXml((sf::Transformable &)skeleton);
+        xml.setName("Skeleton");
         auto &tag = skeleton.getTag();
         if (tag.size() > 0)
             xml["tag"] = tag;
@@ -243,6 +244,7 @@ namespace cacto
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
         skeleton = {};
+        fromXml((sf::Transformable &)skeleton, xml);
         if (xml.isTag())
         {
             auto tag = xml.getAttribute("tag", "");
@@ -252,16 +254,19 @@ namespace cacto
             {
                 Node *node = nullptr;
                 cacto::fromXml(node, item);
-                sf::Vector2f coords{};
-                cacto::fromString(coords, item.getAttribute("options:coords", "0,0"));
-                Skeleton::Relation relation{};
-                cacto::fromString(relation, item.getAttribute("options:relation", "Body"));
-                skeleton
-                    .append(*node,
-                            Skeleton::Options()
-                                .setCoords(coords)
-                                .setRelation(relation),
-                            true);
+                if (node)
+                {
+                    sf::Vector2f coords{};
+                    cacto::fromString(coords, item.getAttribute("options:coords", "0,0"));
+                    Skeleton::Relation relation{};
+                    cacto::fromString(relation, item.getAttribute("options:relation", "Body"));
+                    skeleton
+                        .append(*node,
+                                Skeleton::Options()
+                                    .setCoords(coords)
+                                    .setRelation(relation),
+                                true);
+                }
             }
         }
     }

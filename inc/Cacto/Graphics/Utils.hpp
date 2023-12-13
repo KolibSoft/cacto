@@ -23,6 +23,7 @@ namespace sf
 
     class Transform;
     class Transformable;
+    class Angle;
 
 }
 

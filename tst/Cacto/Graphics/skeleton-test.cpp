@@ -6,8 +6,8 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
