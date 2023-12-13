@@ -95,14 +95,6 @@ namespace cacto
         };
     };
 
-    template <typename T>
-    void toXmlFile(const T &value, const std::filesystem::path &path, szt identation = 0);
-
-    template <typename T>
-    void fromXmlFile(T &value, const std::filesystem::path &path);
-
 }
-
-#include <Cacto/Lang/XmlValue.inl>
 
 #endif
