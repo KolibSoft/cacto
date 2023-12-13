@@ -226,8 +226,7 @@ namespace cacto
         XmlValue xml = toXml((sf::Transformable &)skeleton);
         xml.setName("Skeleton");
         auto &tag = skeleton.getTag();
-        if (tag.size() > 0)
-            xml["tag"] = tag;
+        xml["tag"] = tag;
         auto &content = xml.asContent();
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
@@ -245,11 +244,9 @@ namespace cacto
     {
         skeleton = {};
         fromXml((sf::Transformable &)skeleton, xml);
+        auto tag = xml.getAttribute("tag", "");
+        skeleton.setTag(tag);
         if (xml.isTag())
-        {
-            auto tag = xml.getAttribute("tag", "");
-            if (tag.size() > 0)
-                skeleton.setTag(tag);
             for (auto &item : xml.asContent())
             {
                 Node *node = nullptr;
@@ -268,7 +265,6 @@ namespace cacto
                                 true);
                 }
             }
-        }
     }
 
     namespace skeleton

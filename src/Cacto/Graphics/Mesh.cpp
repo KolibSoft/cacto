@@ -78,8 +78,7 @@ namespace cacto
         XmlValue xml{"Mesh", {}};
         auto &content = xml.asContent();
         auto &tag = mesh.getTag();
-        if (tag.size() > 0)
-            xml["tag"] = tag;
+        xml["tag"] = tag;
         xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
         for (szt i = 0; i < mesh.getVertexCount(); i++)
         {
@@ -92,22 +91,25 @@ namespace cacto
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
         mesh = {};
-        if (xml.isTag())
+        auto tag = xml.getAttribute("tag", "");
+        mesh.setTag(tag);
+        sf::PrimitiveType primitive;
+        cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
+        mesh.setPrimitiveType(primitive);
+        auto source = xml.getAttribute("source");
+        if (source.size() > 0)
         {
-            auto tag = xml.getAttribute("tag", "");
-            if (tag.size() > 0)
-                mesh.setTag(tag);
-            sf::PrimitiveType primitive;
-            cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
-            mesh.setPrimitiveType(primitive);
-            auto &content = xml.asContent();
-            for (auto &item : content)
+            JsonValue json = nullptr;
+            json.fromFile(source);
+            fromJson((sf::VertexArray &)mesh, json);
+        }
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
             {
                 sf::Vertex vertex{};
                 cacto::fromXml(vertex, item);
                 mesh.append(vertex);
             }
-        }
     }
 
     namespace mesh
