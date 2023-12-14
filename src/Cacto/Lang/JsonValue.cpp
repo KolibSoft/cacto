@@ -338,7 +338,7 @@ namespace cacto
 
     std::string JsonValue::toString(szt identation) const
     {
-        std::stringstream stream;
+        std::stringstream stream{};
         toStream(stream, identation);
         return stream.str();
     }
@@ -354,7 +354,7 @@ namespace cacto
         std::ofstream stream{path};
         if (!stream.is_open())
             throw std::runtime_error("Can not open the file");
-        toStream(stream);
+        toStream(stream, identation);
     }
 
     void JsonValue::fromFile(const std::filesystem::path &path)

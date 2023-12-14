@@ -54,7 +54,11 @@ namespace cacto
         return 0;
     }
 
-    XmlScanner::XmlScanner() = default;
+    XmlScanner::XmlScanner(std::istream &stream)
+        : Scanner(stream)
+    {
+    }
+
     XmlScanner::~XmlScanner() = default;
 
 }

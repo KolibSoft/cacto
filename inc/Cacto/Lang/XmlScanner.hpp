@@ -19,7 +19,7 @@ namespace cacto
         i32t scanAttribute();
         i32t scanValue();
 
-        XmlScanner();
+        XmlScanner(std::istream &stream);
         virtual ~XmlScanner();
     };
 

@@ -16,7 +16,7 @@ namespace cacto
         void printAttribute(const std::string &attribute);
         void printValue(const std::string &value);
 
-        XmlPrinter();
+        XmlPrinter(std::ostream &stream);
         virtual ~XmlPrinter();
     };
 
