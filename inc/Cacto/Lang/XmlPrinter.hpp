@@ -1,5 +1,4 @@
-#ifndef CACTO_XML_PRINTER_HPP
-#define CACTO_XML_PRINTER_HPP
+#pragma once
 
 #include <Cacto/Lang/Printer.hpp>
 
@@ -21,5 +20,3 @@ namespace cacto
     };
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CACTO_XML_VALUE_HPP
-#define CACTO_XML_VALUE_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -102,5 +101,3 @@ namespace cacto
     std::istream &CACTO_LANG_API operator>>(std::istream &stream, XmlValue &xml);
 
 }
-
-#endif

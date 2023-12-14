@@ -1,5 +1,4 @@
-#ifndef CACTO_JSON_CONVERTER_HPP
-#define CACTO_JSON_CONVERTER_HPP
+#pragma once
 
 #include <vector>
 
@@ -29,5 +28,3 @@ namespace cacto
 }
 
 #include <Cacto/Lang/JsonConverter.inl>
-
-#endif

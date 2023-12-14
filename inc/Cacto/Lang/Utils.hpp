@@ -1,5 +1,4 @@
-#ifndef CACTO_LANG_UTILS_HPP
-#define CACTO_LANG_UTILS_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -36,5 +35,3 @@ namespace cacto
 }
 
 #include <Cacto/Lang/Utils.inl>
-
-#endif

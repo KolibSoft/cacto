@@ -1,5 +1,4 @@
-#ifndef CACTO_XML_CONVERTER_HPP
-#define CACTO_XML_CONVERTER_HPP
+#pragma once
 
 #include <vector>
 
@@ -29,5 +28,3 @@ namespace cacto
 }
 
 #include <Cacto/Lang/XmlConverter.inl>
-
-#endif

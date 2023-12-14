@@ -1,5 +1,4 @@
-#ifndef CACTO_JSON_SCANNER_HPP
-#define CACTO_JSON_SCANNER_HPP
+#pragma once
 
 #include <Cacto/Lang/Scanner.hpp>
 
@@ -26,5 +25,3 @@ namespace cacto
     };
 
 }
-
-#endif

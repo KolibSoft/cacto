@@ -1,5 +1,4 @@
-#ifndef CACTO_JSON_VALUE_HPP
-#define CACTO_JSON_VALUE_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -118,5 +117,3 @@ namespace cacto
     std::istream &CACTO_LANG_API operator>>(std::istream &stream, JsonValue &json);
 
 }
-
-#endif

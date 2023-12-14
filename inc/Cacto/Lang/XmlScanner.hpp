@@ -1,5 +1,4 @@
-#ifndef CACTO_XML_SCANNER_HPP
-#define CACTO_XML_SCANNER_HPP
+#pragma once
 
 #include <Cacto/Lang/Scanner.hpp>
 
@@ -24,5 +23,3 @@ namespace cacto
     };
 
 }
-
-#endif
