@@ -26,10 +26,10 @@ namespace cacto
         Node *const firstAncestor(const NodePredicate &predicate) const;
         Node *const firstDescendant(const NodePredicate &predicate) const;
 
-        template <typename T>
+        template <typename T = Node>
         T *const firstAncestor(const std::string &tag) const;
 
-        template <typename T>
+        template <typename T = Node>
         T *const firstDescendant(const std::string &tag) const;
 
         Node() = default;
@@ -67,3 +67,5 @@ namespace cacto
     }
 
 }
+
+#include <Cacto/Core/Node.inl>
