@@ -1,6 +1,7 @@
 #ifndef CACTO_GRAPHICS_UTILS_HPP
 #define CACTO_GRAPHICS_UTILS_HPP
 
+#include <string>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -19,6 +20,10 @@ namespace sf
     class Color;
     class Vertex;
     class VertexArray;
+
+    class Transform;
+    class Transformable;
+    class Angle;
 
 }
 
@@ -62,6 +67,12 @@ namespace cacto
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
     void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const sf::Transform &transform);
+    void CACTO_GRAPHICS_API fromXml(sf::Transform &transform, const XmlValue &xml);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const sf::Transformable &transformable);
+    void CACTO_GRAPHICS_API fromXml(sf::Transformable &transformable, const XmlValue &xml);
 
 }
 

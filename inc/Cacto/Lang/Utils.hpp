@@ -21,6 +21,18 @@ namespace cacto
     template <typename T>
     void fromStringFile(T &value, const std::filesystem::path &path);
 
+    template <typename T>
+    void toJsonFile(const T &value, const std::filesystem::path &path, szt identation = 0);
+
+    template <typename T>
+    void fromJsonFile(T &value, const std::filesystem::path &path);
+
+    template <typename T>
+    void toXmlFile(const T &value, const std::filesystem::path &path, szt identation = 0);
+
+    template <typename T>
+    void fromXmlFile(T &value, const std::filesystem::path &path);
+
 }
 
 #include <Cacto/Lang/Utils.inl>

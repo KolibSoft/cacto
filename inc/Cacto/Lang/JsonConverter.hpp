@@ -19,6 +19,10 @@ namespace cacto
         JsonConverter();
         virtual ~JsonConverter();
 
+        static JsonValue json(const T *const value);
+        static T *value(const JsonValue &json);
+
+    private:
         static std::vector<const JsonConverter<T> *> Converters;
     };
 

@@ -5,6 +5,11 @@
 namespace cacto
 {
 
+    const std::string &Node::getTag() const
+    {
+        return NoTag;
+    }
+
     i32t Node::getChildIndex(const Node &child) const
     {
         for (szt i = 0; i < getChildCount(); i++)
@@ -14,13 +19,6 @@ namespace cacto
                 return i;
         }
         return -1;
-    }
-
-    void Node::clearChildren()
-    {
-        Node *node = nullptr;
-        while ((node = getChild()))
-            Node::unlink(*this, *node);
     }
 
     void Node::link(Node &parent, Node &child)
@@ -46,64 +44,59 @@ namespace cacto
         parent.onRemove(child);
     }
 
-    XmlValue toXml(const Node *const &node)
+    Node *const Node::firstAncestor(const NodePredicate &predicate) const
     {
-        if (node == nullptr)
-            return nullptr;
-        for (auto &converter : XmlConverter<Node>::Converters)
+        if (predicate(*this))
+            return const_cast<Node *const>(this);
+        auto parent = getParent();
+        if (parent)
         {
-            auto xml = converter->toXml(node);
-            if (xml != nullptr)
-                return xml;
+            auto node = parent->firstAncestor(predicate);
+            return node;
         }
         return nullptr;
     }
 
-    void fromXml(Node *&node, const XmlValue &xml)
+    Node *const Node::firstDescendant(const NodePredicate &predicate) const
     {
-        if (xml == nullptr)
-            node = nullptr;
-        for (auto &converter : XmlConverter<Node>::Converters)
+        if (predicate(*this))
+            return const_cast<Node *const>(this);
+        for (szt i = 0; i < getChildCount(); i++)
         {
-            node = converter->fromXml(xml);
+            auto child = getChild(i);
+            auto node = child->firstDescendant(predicate);
             if (node)
-                return;
+                return node;
         }
+        return nullptr;
     }
 
-    namespace node
+    Node *const Node::firstAncestor(const std::string &tag) const
     {
+        auto node = firstAncestor([&](const Node &node)
+                                  { return node.getTag() == tag; });
+        return node;
+    }
 
-        Node &Holder::getNode() const
-        {
-            return *m_node;
-        }
+    Node *const Node::firstDescendant(const std::string &tag) const
+    {
+        auto node = firstDescendant([&](const Node &node)
+                                    { return node.getTag() == tag; });
+        return node;
+    }
 
-        bool Holder::isInternal() const
-        {
-            return m_internal;
-        }
+    const std::string Node::NoTag{};
 
-        void Holder::setInternal(bool value)
-        {
-            m_internal = value;
-        }
+    XmlValue toXml(const Node *const &node)
+    {
+        auto xml = XmlConverter<Node>::xml(node);
+        return std::move(xml);
+    }
 
-        Holder::Holder(Node &node, bool internal)
-            : m_node(&node),
-              m_internal(internal)
-        {
-        }
-
-        Holder::~Holder()
-        {
-            if (m_internal)
-            {
-                delete m_node;
-                m_node = nullptr;
-            }
-        }
-
+    void fromXml(Node *&node, const XmlValue &xml)
+    {
+        auto _node = XmlConverter<Node>::value(xml);
+        node = _node;
     }
 
 }

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:simpleType name="PrimitiveType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Points" />
+            <xs:enumeration value="Lines" />
+            <xs:enumeration value="LineStrip" />
+            <xs:enumeration value="Triangles" />
+            <xs:enumeration value="TriangleStrip" />
+            <xs:enumeration value="TriangleFan" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:complexType name="ScaleType">
+        <xs:attribute name="factors" />
+    </xs:complexType>
+
+    <xs:complexType name="TranslateType">
+        <xs:attribute name="offset" />
+    </xs:complexType>
+
+    <xs:complexType name="RotateType">
+        <xs:attribute name="degrees" />
+        <xs:attribute name="radians" />
+    </xs:complexType>
+
+    <xs:complexType name="TransformType">
+        <xs:choice>
+            <xs:any />
+        </xs:choice>
+        <xs:attribute name="matrix" />
+    </xs:complexType>
+
+    <xs:complexType name="TransformableType">
+        <xs:choice>
+            <xs:any />
+        </xs:choice>
+        <xs:attribute name="origin" />
+        <xs:attribute name="position" />
+        <xs:attribute name="scale" />
+        <xs:attribute name="rotation" />
+    </xs:complexType>
+
+    <xs:complexType name="VertexType">
+        <xs:attribute name="position" />
+        <xs:attribute name="color" />
+        <xs:attribute name="texCoords" />
+    </xs:complexType>
+
+    <xs:complexType name="MeshType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:any />
+        </xs:choice>
+        <xs:attribute name="primitive" type="PrimitiveType" />
+        <xs:attribute name="source" />
+    </xs:complexType>
+
+    <xs:complexType name="SkeletonType">
+        <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:any />
+        </xs:choice>
+        <xs:attribute name="origin" />
+        <xs:attribute name="position" />
+        <xs:attribute name="scale" />
+        <xs:attribute name="rotation" />
+    </xs:complexType>
+
+    <xs:element name="Scale" type="ScaleType" />
+    <xs:element name="Translate" type="TranslateType" />
+    <xs:element name="Move" type="TranslateType" />
+    <xs:element name="Rotate" type="RotateType" />
+    <xs:element name="Transform" type="TransformType" />
+    <xs:element name="Transformable" type="TransformableType" />
+
+    <xs:element name="Vertex" type="VertexType" />
+    <xs:element name="Mesh" type="MeshType" />
+    <xs:element name="Skeleton" type="SkeletonType" />
+
+</xs:schema>

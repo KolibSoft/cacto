@@ -48,7 +48,7 @@ namespace cacto
     i32t XmlScanner::scanValue()
     {
         auto cursor = getCursor();
-        if (scanClass("\"") && scanText() && scanClass("\""))
+        if (scanToken("\"\"") || scanClass("\"") && scanText() && scanClass("\""))
             return getCursor() - cursor;
         setCursor(cursor);
         return 0;

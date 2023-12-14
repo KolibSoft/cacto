@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/JsonConverter.hpp>
 
 namespace cacto
@@ -14,6 +15,34 @@ namespace cacto
     inline JsonConverter<T>::~JsonConverter()
     {
         Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
+    }
+
+    template <typename T>
+    inline JsonValue JsonConverter<T>::json(const T *const value)
+    {
+        if (value == nullptr)
+            return nullptr;
+        for (auto &converter : JsonConverter<T>::Converters)
+        {
+            JsonValue json = converter->toJson(value);
+            if (json != nullptr)
+                return std::move(json);
+        }
+        return nullptr;
+    }
+
+    template <typename T>
+    inline T *JsonConverter<T>::value(const JsonValue &json)
+    {
+        if (json == nullptr)
+            return nullptr;
+        for (auto &converter : JsonConverter<T>::Converters)
+        {
+            T* value = converter->fromJson(json);
+            if (value)
+                return value;
+        }
+        return nullptr;
     }
 
     template <typename T>

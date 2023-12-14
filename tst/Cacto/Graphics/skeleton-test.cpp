@@ -6,13 +6,11 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
-
-    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::Converters.size() << "\n";
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
@@ -20,6 +18,9 @@ int main()
     cacto::fromXmlFile(skeleton, "res/skeleton.xml");
     std::cout << cacto::toXml(skeleton).toString() << "\n";
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
+
+    auto left = dynamic_cast<cacto::Skeleton *>(skeleton.firstDescendant("left"));
+    auto right = dynamic_cast<cacto::Skeleton *>(skeleton.firstDescendant("right"));
 
     while (window.isOpen())
     {
@@ -34,6 +35,13 @@ int main()
             {
                 skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
                 skeleton.setScale(skeleton.getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
+            }
+            else if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::Left)
+                    left->rotate(sf::degrees(5));
+                else if (event.key.code == sf::Keyboard::Right)
+                    right->rotate(sf::degrees(5));
             }
         }
         window.clear();
