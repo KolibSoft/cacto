@@ -39,6 +39,8 @@ namespace cacto
         bool dropBlank();
         bool dropToken(const std::string &set);
 
+        void dropBlankln();
+
         Scanner(std::istream &stream);
         virtual ~Scanner();
 

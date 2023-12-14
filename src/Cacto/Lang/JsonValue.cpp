@@ -238,7 +238,7 @@ namespace cacto
     void JsonValue::scan(JsonScanner &scanner)
     {
         drop();
-        scanner.dropBlank();
+        scanner.dropBlankln();
         if (scanner.scanNumber())
         {
             std::stringstream token{scanner.take()};
@@ -279,13 +279,13 @@ namespace cacto
         {
             m_kind = Array;
             m_array = new std::vector<JsonValue>();
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken("]"))
             {
             array_item:
                 m_array->push_back(nullptr);
                 m_array->back().scan(scanner);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (scanner.dropToken(","))
                     goto array_item;
                 if (!scanner.dropToken("]"))
@@ -297,21 +297,21 @@ namespace cacto
         {
             m_kind = Object;
             m_object = new std::unordered_map<std::string, JsonValue>();
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken("}"))
             {
             property_item:
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.scanString())
                     throw std::runtime_error("JSON parse error: expected property name");
                 auto token = scanner.take();
                 auto name = token.substr(1, token.size() - 2);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.dropToken(":"))
                     throw std::runtime_error("JSON parse error: expected ':'");
                 m_object->operator[](name) = nullptr;
                 m_object->at(name).scan(scanner);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (scanner.dropToken(","))
                     goto property_item;
                 if (!scanner.dropToken("}"))

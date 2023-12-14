@@ -146,6 +146,12 @@ namespace cacto
         return result;
     }
 
+    void Scanner::dropBlankln()
+    {
+        while (dropBlank() || (m_start == m_line.size() && scanln()))
+            ;
+    }
+
     Scanner::Scanner(std::istream &stream)
         : m_stream(&stream),
           m_line(),
