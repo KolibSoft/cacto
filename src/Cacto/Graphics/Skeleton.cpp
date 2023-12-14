@@ -1,5 +1,6 @@
 #include <stdexcept>
-#include <Cacto/Core/Utils.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Skeleton.hpp>
 
 namespace cacto

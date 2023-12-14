@@ -1,4 +1,5 @@
 #include <cmath>
+#include <SFML/Graphics/Rect.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 
 namespace cacto
