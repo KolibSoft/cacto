@@ -1,5 +1,4 @@
-#ifndef CACTO_GRAPHICS_UTILS_HPP
-#define CACTO_GRAPHICS_UTILS_HPP
+#pragma once
 
 #include <string>
 #include <Cacto/Graphics/Export.hpp>
@@ -75,5 +74,3 @@ namespace cacto
     void CACTO_GRAPHICS_API fromXml(sf::Transformable &transformable, const XmlValue &xml);
 
 }
-
-#endif

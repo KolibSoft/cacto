@@ -1,5 +1,4 @@
-#ifndef CACTO_TILE_MAP_HPP
-#define CACTO_TILE_MAP_HPP
+#pragma once
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
@@ -57,5 +56,3 @@ namespace cacto
     void CACTO_GRAPHICS_API fromJson(TileMap &tilemap, const JsonValue &json);
 
 }
-
-#endif

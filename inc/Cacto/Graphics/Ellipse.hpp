@@ -1,5 +1,4 @@
-#ifndef CACTO_ELLIPSE_HPP
-#define CACTO_ELLIPSE_HPP
+#pragma once
 
 #include <Cacto/Graphics/Geometry.hpp>
 
@@ -62,5 +61,3 @@ namespace cacto
     }
 
 }
-
-#endif

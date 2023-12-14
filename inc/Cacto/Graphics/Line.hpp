@@ -1,5 +1,4 @@
-#ifndef CACTO_LINE_HPP
-#define CACTO_LINE_HPP
+#pragma once
 
 #include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Export.hpp>
@@ -20,7 +19,7 @@ namespace cacto
 {
 
     class Line;
-    
+
     template class CACTO_GRAPHICS_API cacto::JsonConverter<Line>;
 
     class JsonValue;
@@ -54,5 +53,3 @@ namespace cacto
     }
 
 }
-
-#endif

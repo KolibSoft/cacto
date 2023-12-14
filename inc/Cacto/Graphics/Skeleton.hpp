@@ -1,5 +1,4 @@
-#ifndef CACTO_SKELETON_HPP
-#define CACTO_SKELETON_HPP
+#pragma once
 
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
@@ -119,5 +118,3 @@ namespace cacto
     }
 
 }
-
-#endif

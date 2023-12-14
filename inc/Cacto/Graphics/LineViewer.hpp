@@ -1,5 +1,4 @@
-#ifndef CACTO_LINE_VIEWER_HPP
-#define CACTO_LINE_VIEWER_HPP
+#pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Graphics/Export.hpp>
@@ -43,5 +42,3 @@ namespace cacto
     };
 
 }
-
-#endif
