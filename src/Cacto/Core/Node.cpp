@@ -71,20 +71,6 @@ namespace cacto
         return nullptr;
     }
 
-    Node *const Node::firstAncestor(const std::string &tag) const
-    {
-        auto node = firstAncestor([&](const Node &node)
-                                  { return node.getTag() == tag; });
-        return node;
-    }
-
-    Node *const Node::firstDescendant(const std::string &tag) const
-    {
-        auto node = firstDescendant([&](const Node &node)
-                                    { return node.getTag() == tag; });
-        return node;
-    }
-
     const std::string Node::NoTag{};
 
     XmlValue toXml(const Node *const &node)

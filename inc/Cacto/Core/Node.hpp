@@ -26,8 +26,11 @@ namespace cacto
         Node *const firstAncestor(const NodePredicate &predicate) const;
         Node *const firstDescendant(const NodePredicate &predicate) const;
 
-        Node *const firstAncestor(const std::string &tag) const;
-        Node *const firstDescendant(const std::string &tag) const;
+        template <typename T>
+        T *const firstAncestor(const std::string &tag) const;
+
+        template <typename T>
+        T *const firstDescendant(const std::string &tag) const;
 
         Node() = default;
         virtual ~Node() = default;
