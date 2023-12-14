@@ -270,7 +270,7 @@ namespace cacto
     {
         std::string string{};
         XmlPrinter printer{};
-        printer.setTarget(&string);
+        printer.setStream(&string);
         printer.setIdentation(identation);
         print(printer);
         return string;

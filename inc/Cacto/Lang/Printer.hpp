@@ -1,7 +1,7 @@
-#ifndef CACTO_PRINTER_HPP
-#define CACTO_PRINTER_HPP
+#pragma once
 
 #include <string>
+#include <ostream>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto
@@ -11,33 +11,35 @@ namespace cacto
     {
 
     public:
-        std::string *const getTarget() const;
-        void setTarget(std::string *const value, szt pad = 0, szt identation = 0);
+        std::ostream &getStream() const;
+        Printer &setStream(std::ostream &value);
 
         szt getPad() const;
-        void setPad(szt value);
+        Printer &setPad(szt value);
 
         szt getIdentation() const;
-        void setIdentation(szt value);
+        Printer &setIdentation(szt value);
 
-        void ident(szt times = 1);
-        void dedent(szt times = 1);
+        Printer &print(c8t character);
+        Printer &print(const s8t &string);
+        Printer &print(const std::string &string);
+        Printer &println();
+        Printer &flush();
 
-        void print(const std::string &value);
-        void println();
+        Printer &backspace(szt count);
+        Printer &backspaceln();
 
-        void backspace(szt times = 1);
-        void backspaceln(szt times = 1);
+        Printer &ident(szt times);
+        Printer &dedent(szt times);
 
-        Printer();
+        Printer(std::ostream &stream);
         virtual ~Printer();
 
     private:
-        std::string *m_target;
+        std::ostream *m_stream;
+        std::string m_line;
         szt m_pad;
         szt m_identation;
     };
 
 }
-
-#endif

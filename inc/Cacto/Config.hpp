@@ -1,5 +1,4 @@
-#ifndef CACTO_CONFIG_HPP
-#define CACTO_CONFIG_HPP
+#pragma once
 
 #include <SFML/Config.hpp>
 #include <cstdint>
@@ -42,5 +41,3 @@ namespace cacto
     using szt = std::size_t;
 
 }
-
-#endif

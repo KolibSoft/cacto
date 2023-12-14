@@ -1,5 +1,4 @@
-#ifndef CACTO_SCANNER_HPP
-#define CACTO_SCANNER_HPP
+#pragma once
 
 #include <limits>
 #include <string>
@@ -50,5 +49,3 @@ namespace cacto
     };
 
 }
-
-#endif

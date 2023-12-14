@@ -4,16 +4,15 @@
 namespace cacto
 {
 
-    std::string *const Printer::getTarget() const
+    std::ostream &Printer::getStream() const
     {
-        return m_target;
+        return *m_stream;
     }
 
-    void Printer::setTarget(std::string *const value, szt pad, szt identation)
+    Printer &Printer::setStream(std::ostream &value)
     {
-        m_target = value;
-        m_pad = pad;
-        m_identation = identation;
+        m_stream = &value;
+        return *this;
     }
 
     szt Printer::getPad() const
@@ -21,9 +20,10 @@ namespace cacto
         return m_pad;
     }
 
-    void Printer::setPad(szt value)
+    Printer &Printer::setPad(szt value)
     {
         m_pad = value;
+        return *this;
     }
 
     szt Printer::getIdentation() const
@@ -31,57 +31,75 @@ namespace cacto
         return m_identation;
     }
 
-    void Printer::setIdentation(szt value)
+    Printer &Printer::setIdentation(szt value)
     {
         m_identation = value;
+        return *this;
     }
 
-    void Printer::ident(szt times)
+    Printer &Printer::print(c8t character)
     {
-        m_pad += times * m_identation;
+        m_line += character;
+        return *this;
     }
 
-    void Printer::dedent(szt times)
+    Printer &Printer::print(const s8t &string)
     {
-        m_pad -= times * m_identation;
+        m_line += string;
+        return *this;
     }
 
-    void Printer::print(const std::string &value)
+    Printer &Printer::print(const std::string &string)
     {
-        if (!m_target)
-            throw std::runtime_error("Not target");
-        *m_target += value;
+        m_line += string;
+        return *this;
     }
 
-    void Printer::println()
+    Printer &Printer::println()
     {
-        if (!m_target)
-            throw std::runtime_error("Not target");
-        *m_target += '\n' + std::string(m_pad, ' ');
+        *m_stream << m_line << '\n';
+        m_line.clear();
+        return *this;
     }
 
-    void Printer::backspace(szt times)
+    Printer &Printer::flush()
     {
-        if (!m_target)
-            throw std::runtime_error("Not target");
-        if (times > m_target->size())
-            times = m_target->size();
-        for (szt i = 0; i < times; i++)
-            m_target->pop_back();
+        *m_stream << m_line;
+        m_line.clear();
+        return *this;
     }
 
-    void Printer::backspaceln(szt times)
+    Printer &Printer::backspace(szt count)
     {
-        if (!m_target)
-            throw std::runtime_error("Not target");
-        while (m_target->size() > 0 && m_target->back() != '\n')
-            m_target->pop_back();
-        if (m_target->size() > 0)
-            m_target->pop_back();
+        m_line.resize(m_line.size() - count);
+        return *this;
     }
 
-    Printer::Printer()
-        : m_target(nullptr)
+    Printer &Printer::backspaceln()
+    {
+        m_line.clear();
+        return *this;
+    }
+
+    Printer &Printer::ident(szt times)
+    {
+        auto pad = m_pad + times * m_identation;
+        m_pad = pad > 0 ? pad : 0;
+        return *this;
+    }
+
+    Printer &Printer::dedent(szt times)
+    {
+        auto pad = m_pad - times * m_identation;
+        m_pad = pad > 0 ? pad : 0;
+        return *this;
+    }
+
+    Printer::Printer(std::ostream &stream)
+        : m_stream(&stream),
+          m_line(),
+          m_pad(),
+          m_identation()
     {
     }
 

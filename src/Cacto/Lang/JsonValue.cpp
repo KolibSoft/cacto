@@ -330,7 +330,7 @@ namespace cacto
     {
         std::string string;
         JsonPrinter printer{};
-        printer.setTarget(&string);
+        printer.setStream(&string);
         printer.setIdentation(identation);
         print(printer);
         return string;
