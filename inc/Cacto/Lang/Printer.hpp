@@ -12,25 +12,25 @@ namespace cacto
 
     public:
         std::ostream &getStream() const;
-        Printer &setStream(std::ostream &value);
+        void setStream(std::ostream &value);
 
         szt getPad() const;
-        Printer &setPad(szt value);
+        void setPad(szt value);
 
         szt getIdentation() const;
-        Printer &setIdentation(szt value);
+        void setIdentation(szt value);
 
-        Printer &print(c8t character);
-        Printer &print(const s8t &string);
-        Printer &print(const std::string &string);
-        Printer &println();
-        Printer &flush();
+        void print(c8t character);
+        void print(const s8t &string);
+        void print(const std::string &string);
+        void println();
+        void flush();
 
-        Printer &backspace(szt count);
-        Printer &backspaceln();
+        void backspace(szt count);
+        void backspaceln();
 
-        Printer &ident(szt times);
-        Printer &dedent(szt times);
+        void ident(szt times);
+        void dedent(szt times);
 
         Printer(std::ostream &stream);
         virtual ~Printer();

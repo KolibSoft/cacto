@@ -4,16 +4,14 @@
 namespace cacto
 {
 
-    const std::string *Scanner::getSource() const
+    std::istream &Scanner::getStream() const
     {
-        return m_source;
+        return *m_stream;
     }
 
-    void Scanner::setSource(const std::string *value, i32t start, i32t cursor)
+    void Scanner::setStream(std::istream &value)
     {
-        m_source = value;
-        m_start = start;
-        m_cursor = cursor;
+        m_stream = &value;
     }
 
     i32t Scanner::getStart() const
@@ -36,22 +34,31 @@ namespace cacto
         m_cursor = value;
     }
 
+    bool Scanner::scanln()
+    {
+        m_start = 0;
+        m_cursor = 0;
+        if (!m_stream->eof())
+        {
+            m_line.clear();
+            std::getline(*m_stream, m_line);
+            return true;
+        }
+        return false;
+    }
+
     c8t Scanner::available(i32t index) const
     {
-        if (m_source == nullptr)
-            return 0;
         auto at = m_start + m_cursor + index;
-        if (at >= m_source->size())
+        if (at >= m_line.size())
             return 0;
-        auto c = m_source->at(at);
+        auto c = m_line.at(at);
         return c;
     }
 
     std::string Scanner::take()
     {
-        if (!m_source)
-            throw std::runtime_error("Not source");
-        auto token = m_source->substr(m_start, m_cursor);
+        auto token = m_line.substr(m_start, m_cursor);
         m_start += m_cursor;
         m_cursor = 0;
         return token;
@@ -59,8 +66,6 @@ namespace cacto
 
     void Scanner::drop()
     {
-        if (!m_source)
-            throw std::runtime_error("Not source");
         m_start += m_cursor;
         m_cursor = 0;
     }
@@ -141,10 +146,11 @@ namespace cacto
         return result;
     }
 
-    Scanner::Scanner()
-        : m_source(nullptr),
-          m_start(0),
-          m_cursor(0)
+    Scanner::Scanner(std::istream &stream)
+        : m_stream(&stream),
+          m_line(),
+          m_start(),
+          m_cursor()
     {
     }
 

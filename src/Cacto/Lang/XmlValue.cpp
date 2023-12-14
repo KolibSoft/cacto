@@ -279,7 +279,7 @@ namespace cacto
     void XmlValue::fromString(const std::string &string)
     {
         XmlScanner scanner{};
-        scanner.setSource(&string);
+        scanner.setStream(&string);
         scan(scanner);
     }
 

@@ -339,7 +339,7 @@ namespace cacto
     void JsonValue::fromString(const std::string &string)
     {
         JsonScanner scanner{};
-        scanner.setSource(&string);
+        scanner.setStream(&string);
         scan(scanner);
     }
 
