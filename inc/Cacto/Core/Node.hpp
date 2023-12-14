@@ -1,5 +1,4 @@
-#ifndef CACTO_NODE_HPP
-#define CACTO_NODE_HPP
+#pragma once
 
 #include <functional>
 #include <Cacto/Lang/XmlConverter.hpp>
@@ -65,5 +64,3 @@ namespace cacto
     }
 
 }
-
-#endif

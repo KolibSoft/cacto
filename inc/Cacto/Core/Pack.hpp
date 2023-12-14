@@ -1,5 +1,4 @@
-#ifndef CACTO_PACK_HPP
-#define CACTO_PACK_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -29,5 +28,3 @@ namespace cacto
 }
 
 #include <Cacto/Core/Pack.inl>
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CACTO_STRING_PACK_HPP
-#define CACTO_STRING_PACK_HPP
+#pragma once
 
 #include <unordered_map>
 #include <filesystem>
@@ -39,5 +38,3 @@ namespace cacto
     extern StringPack CACTO_CORE_API Strings;
 
 }
-
-#endif
