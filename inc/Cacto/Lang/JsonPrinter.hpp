@@ -16,7 +16,7 @@ namespace cacto
         void printBoolean(bool value);
         void printNull();
 
-        JsonPrinter();
+        JsonPrinter(std::ostream& stream);
         virtual ~JsonPrinter();
 
     };

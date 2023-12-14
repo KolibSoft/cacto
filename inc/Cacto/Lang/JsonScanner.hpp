@@ -21,7 +21,7 @@ namespace cacto
         bool scanBoolean();
         bool scanNull();
 
-        JsonScanner();
+        JsonScanner(std::istream &stream);
         virtual ~JsonScanner();
     };
 

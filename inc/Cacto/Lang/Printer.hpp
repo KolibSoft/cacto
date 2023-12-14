@@ -26,11 +26,11 @@ namespace cacto
         void println();
         void flush();
 
-        void backspace(szt count);
+        void backspace(szt count = 1);
         void backspaceln();
 
-        void ident(szt times);
-        void dedent(szt times);
+        void ident(szt times = 1);
+        void dedent(szt times = 1);
 
         Printer(std::ostream &stream);
         virtual ~Printer();

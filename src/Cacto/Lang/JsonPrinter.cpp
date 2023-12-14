@@ -36,7 +36,11 @@ namespace cacto
         print("null");
     }
 
-    JsonPrinter::JsonPrinter() = default;
+    JsonPrinter::JsonPrinter(std::ostream &stream)
+        : Printer(stream)
+    {
+    }
+
     JsonPrinter::~JsonPrinter() = default;
 
 }
