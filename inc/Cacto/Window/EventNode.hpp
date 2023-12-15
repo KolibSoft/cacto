@@ -1,5 +1,4 @@
-#ifndef CACTO_EVENT_NODE_HPP
-#define CACTO_EVENT_NODE_HPP
+#pragma once
 
 #include <functional>
 #include <Cacto/Core/Node.hpp>
@@ -12,7 +11,7 @@ namespace sf
 
 namespace cacto
 {
-    
+
     using EventListener = std::function<void(Node &target, const sf::Event &event)>;
 
     class CACTO_WINDOW_API EventNode
@@ -41,5 +40,3 @@ namespace cacto
     };
 
 }
-
-#endif

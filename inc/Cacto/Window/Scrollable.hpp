@@ -1,5 +1,4 @@
-#ifndef CACTO_SCROLLABLE_HPP
-#define CACTO_SCROLLABLE_HPP
+#pragma once
 
 #include <SFML/Window/Mouse.hpp>
 #include <Cacto/Window/Export.hpp>
@@ -26,5 +25,3 @@ namespace cacto
     };
 
 }
-
-#endif

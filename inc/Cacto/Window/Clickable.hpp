@@ -1,5 +1,4 @@
-#ifndef CACTO_CLICKABLE_HPP
-#define CACTO_CLICKABLE_HPP
+#pragma once
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Mouse.hpp>
@@ -26,5 +25,3 @@ namespace cacto
     };
 
 }
-
-#endif

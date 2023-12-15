@@ -1,5 +1,4 @@
-#ifndef CACTO_WINDOW_EXPORT_HPP
-#define CACTO_WINDOW_EXPORT_HPP
+#pragma once
 
 #include <Cacto/Config.hpp>
 
@@ -7,6 +6,4 @@
 #define CACTO_WINDOW_API CACTO_API_EXPORT
 #else
 #define CACTO_WINDOW_API CACTO_API_IMPORT
-#endif
-
 #endif
