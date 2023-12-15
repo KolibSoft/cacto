@@ -70,7 +70,7 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Line *const value) const
         {
             const Straight *straight = nullptr;
-            if (value && (straight = dynamic_cast<const Straight *>(value)))
+            if (value && typeid(*value) == typeid(Straight) && (straight = dynamic_cast<const Straight *>(value)))
             {
                 auto json = cacto::toJson(*straight);
                 json["$type"] = "Straight";

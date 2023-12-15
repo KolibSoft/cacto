@@ -1,5 +1,4 @@
-#ifndef CACTO_JSON_PRINTER_HPP
-#define CACTO_JSON_PRINTER_HPP
+#pragma once
 
 #include <Cacto/Lang/Printer.hpp>
 
@@ -12,15 +11,12 @@ namespace cacto
 
     public:
         void printNumber(f64t value);
-        void printString(const std::string& value);
+        void printString(const std::string &value);
         void printBoolean(bool value);
         void printNull();
 
-        JsonPrinter();
+        JsonPrinter(std::ostream &stream);
         virtual ~JsonPrinter();
-
     };
 
 }
-
-#endif

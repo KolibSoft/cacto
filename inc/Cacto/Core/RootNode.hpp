@@ -1,5 +1,4 @@
-#ifndef CACTO_ROOT_NODE_HPP
-#define CACTO_ROOT_NODE_HPP
+#pragma once
 
 #include <Cacto/Core/Node.hpp>
 
@@ -22,5 +21,3 @@ namespace cacto
     };
 
 }
-
-#endif

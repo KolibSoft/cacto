@@ -142,43 +142,49 @@ namespace cacto
             {
                 if (printer.getIdentation() > 0)
                 {
-                    printer.ident();
                     printer.println();
+                    printer.ident();
                 }
                 else
                     printer.print(" ");
+                auto it = m_tag->attributes.begin();
+                std::advance(it, m_tag->attributes.size() - 1);
+                auto last = &*it;
                 for (auto &pair : m_tag->attributes)
                 {
                     printer.printAttribute(pair.first);
                     printer.print("=");
                     printer.printValue(pair.second);
-                    if (printer.getIdentation() > 0)
-                        printer.println();
-                    else
+                    if (&pair.first != &last->first)
+                    {
                         printer.print(" ");
+                        if (printer.getIdentation() > 0)
+                            printer.println();
+                    }
                 }
-                if (printer.getIdentation() > 0)
-                    printer.backspaceln();
             }
             if (m_tag->content.size() > 0)
             {
-                if (m_tag->attributes.size() == 0)
-                    printer.ident();
                 printer.print(">");
                 if (printer.getIdentation() > 0)
+                {
                     printer.println();
+                    if (m_tag->attributes.size() == 0)
+                        printer.ident();
+                }
+                auto it = m_tag->content.begin();
+                std::advance(it, m_tag->content.size() - 1);
+                auto last = &*it;
                 for (auto &value : m_tag->content)
                 {
                     value.print(printer);
-                    if (printer.getIdentation() > 0)
+                    if (printer.getIdentation() > 0 && &value != last)
                         printer.println();
                 }
                 if (printer.getIdentation() > 0)
-                    printer.backspaceln();
-                if (printer.getIdentation() > 0)
                 {
-                    printer.dedent();
                     printer.println();
+                    printer.dedent();
                 }
                 printer.print("</");
                 printer.printName(m_tag->name);
@@ -188,7 +194,7 @@ namespace cacto
             {
                 printer.print(" />");
                 if (m_tag->attributes.size() > 0 && printer.getIdentation() > 0)
-                    printer.dedent();
+                    printer.dedent(1, false);
             }
             break;
         }
@@ -197,7 +203,7 @@ namespace cacto
     void XmlValue::scan(XmlScanner &scanner)
     {
         drop();
-        scanner.dropBlank();
+        scanner.dropBlankln();
         if (scanner.scanText())
         {
             auto token = scanner.take();
@@ -214,51 +220,51 @@ namespace cacto
         {
             m_kind = Tag;
             m_tag = new tag();
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.scanName())
                 throw std::runtime_error("XML parse error: expected tag name");
             auto token = scanner.take();
             m_tag->name = token;
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (scanner.dropToken("/>"))
                 return;
             if (!scanner.dropToken(">"))
             {
             attribute_item:
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.scanAttribute())
                     throw std::runtime_error("XML parse error: expected attribute name");
                 token = scanner.take();
                 auto name = token;
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.dropToken("="))
                     throw std::runtime_error("XML parse error: expected '='");
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.scanValue())
                     throw std::runtime_error("XML parse error: expected attribute value");
                 token = scanner.take();
                 auto value = token.substr(1, token.size() - 2);
                 m_tag->attributes[name] = value;
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (scanner.dropToken("/>"))
                     return;
                 if (!scanner.dropToken(">"))
                     goto attribute_item;
             }
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken("</"))
             {
             content_item:
                 m_tag->content.push_back(nullptr);
                 m_tag->content.back().scan(scanner);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.dropToken("</"))
                     goto content_item;
             }
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken(m_tag->name))
                 throw std::runtime_error("XML parse error: expected close tag name");
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken(">"))
                 throw std::runtime_error("XML parse error: expected '>'");
             return;
@@ -266,34 +272,47 @@ namespace cacto
         throw std::runtime_error("XML parse error: unknown value");
     }
 
-    std::string XmlValue::toString(szt identation) const
+    void XmlValue::toStream(std::ostream &stream, szt identation) const
     {
-        std::string string{};
-        XmlPrinter printer{};
-        printer.setTarget(&string);
+        XmlPrinter printer{stream};
         printer.setIdentation(identation);
         print(printer);
-        return string;
+        printer.flush();
+    }
+
+    void XmlValue::fromStream(std::istream &stream)
+    {
+        XmlScanner scanner{stream};
+        scan(scanner);
+    }
+
+    std::string XmlValue::toString(szt identation) const
+    {
+        std::stringstream stream{};
+        toStream(stream, identation);
+        return stream.str();
     }
 
     void XmlValue::fromString(const std::string &string)
     {
-        XmlScanner scanner{};
-        scanner.setSource(&string);
-        scan(scanner);
+        std::stringstream stream{string};
+        fromStream(stream);
     }
 
     void XmlValue::toFile(const std::filesystem::path &path, szt identation) const
     {
-        auto string = toString(identation);
-        cacto::toFile(string, path);
+        std::ofstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        toStream(stream, identation);
     }
 
     void XmlValue::fromFile(const std::filesystem::path &path)
     {
-        std::string string{};
-        cacto::fromFile(string, path);
-        fromString(string);
+        std::ifstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        fromStream(stream);
     }
 
     XmlValue::XmlValue(std::nullptr_t)
@@ -431,6 +450,18 @@ namespace cacto
         }
         m_kind = None;
         m_text = nullptr;
+    }
+
+    std::ostream &operator<<(std::ostream &stream, const XmlValue &xml)
+    {
+        xml.toStream(stream);
+        return stream;
+    }
+
+    std::istream &operator>>(std::istream &stream, XmlValue &xml)
+    {
+        xml.fromStream(stream);
+        return stream;
     }
 
 }

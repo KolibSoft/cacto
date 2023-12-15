@@ -1,5 +1,4 @@
-#ifndef CACTO_TEXTURE_PACK_HPP
-#define CACTO_TEXTURE_PACK_HPP
+#pragma once
 
 #include <unordered_map>
 #include <filesystem>
@@ -39,5 +38,3 @@ namespace cacto
     extern TexturePack CACTO_GRAPHICS_API Textures;
 
 }
-
-#endif

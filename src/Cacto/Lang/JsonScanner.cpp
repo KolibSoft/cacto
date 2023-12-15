@@ -71,6 +71,11 @@ namespace cacto
         return false;
     }
 
-    JsonScanner::JsonScanner() = default;
+    JsonScanner::JsonScanner(std::istream &stream)
+        : Scanner(stream)
+    {
+    }
+
     JsonScanner::~JsonScanner() = default;
+    
 }

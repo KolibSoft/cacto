@@ -1,5 +1,4 @@
-#ifndef CACTO_MESH_HPP
-#define CACTO_MESH_HPP
+#pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/LeafNode.hpp>
@@ -63,5 +62,3 @@ namespace cacto
     }
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CACTO_UPDATE_NODE_HPP
-#define CACTO_UPDATE_NODE_HPP
+#pragma once
 
 #include <Cacto/Core/Node.hpp>
 #include <Cacto/Animations/Export.hpp>
@@ -32,5 +31,3 @@ namespace cacto
     };
 
 }
-
-#endif

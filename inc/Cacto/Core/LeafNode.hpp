@@ -1,5 +1,4 @@
-#ifndef CACTO_LEAF_NODE_HPP
-#define CACTO_LEAF_NODE_HPP
+#pragma once
 
 #include <Cacto/Core/Node.hpp>
 
@@ -23,5 +22,3 @@ namespace cacto
     };
 
 }
-
-#endif

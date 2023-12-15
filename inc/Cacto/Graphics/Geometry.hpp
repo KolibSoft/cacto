@@ -1,5 +1,4 @@
-#ifndef CACTO_GEOMETRY_HPP
-#define CACTO_GEOMETRY_HPP
+#pragma once
 
 #include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
@@ -53,5 +52,3 @@ namespace cacto
     }
 
 }
-
-#endif

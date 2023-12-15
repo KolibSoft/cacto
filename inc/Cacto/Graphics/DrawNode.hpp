@@ -1,5 +1,4 @@
-#ifndef CACTO_DRAW_NODE_HPP
-#define CACTO_DRAW_NODE_HPP
+#pragma once
 
 #include <SFML/Graphics/Drawable.hpp>
 #include <Cacto/Core/Node.hpp>
@@ -34,5 +33,3 @@ namespace cacto
     };
 
 }
-
-#endif

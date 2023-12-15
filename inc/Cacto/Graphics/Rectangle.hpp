@@ -1,5 +1,4 @@
-#ifndef CACTO_RECTANGLE_HPP
-#define CACTO_RECTANGLE_HPP
+#pragma once
 
 #include <Cacto/Graphics/Geometry.hpp>
 
@@ -68,5 +67,3 @@ namespace cacto
     }
 
 }
-
-#endif

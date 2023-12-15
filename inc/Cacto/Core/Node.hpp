@@ -1,5 +1,4 @@
-#ifndef CACTO_NODE_HPP
-#define CACTO_NODE_HPP
+#pragma once
 
 #include <functional>
 #include <Cacto/Lang/XmlConverter.hpp>
@@ -27,8 +26,11 @@ namespace cacto
         Node *const firstAncestor(const NodePredicate &predicate) const;
         Node *const firstDescendant(const NodePredicate &predicate) const;
 
-        Node *const firstAncestor(const std::string &tag) const;
-        Node *const firstDescendant(const std::string &tag) const;
+        template <typename T = Node>
+        T *const firstAncestor(const std::string &tag) const;
+
+        template <typename T = Node>
+        T *const firstDescendant(const std::string &tag) const;
 
         Node() = default;
         virtual ~Node() = default;
@@ -66,4 +68,4 @@ namespace cacto
 
 }
 
-#endif
+#include <Cacto/Core/Node.inl>

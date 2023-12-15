@@ -1,4 +1,5 @@
 #include <cmath>
+#include <SFML/Graphics/Rect.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 
 namespace cacto
@@ -108,7 +109,7 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Geometry *const value) const
         {
             const Ellipse *ellipse = nullptr;
-            if (value && (ellipse = dynamic_cast<const Ellipse *>(value)))
+            if (value && typeid(*value) == typeid(Ellipse) && (ellipse = dynamic_cast<const Ellipse *>(value)))
             {
                 auto json = cacto::toJson(*ellipse);
                 json["$type"] = "Ellipse";

@@ -1,5 +1,4 @@
-#ifndef CACTO_BEZIER_HPP
-#define CACTO_BEZIER_HPP
+#pragma once
 
 #include <vector>
 #include <Cacto/Graphics/Line.hpp>
@@ -53,5 +52,3 @@ namespace cacto
     }
 
 }
-
-#endif

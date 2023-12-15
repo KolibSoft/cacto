@@ -1,5 +1,4 @@
-#ifndef CACTO_STRAIGHT_HPP
-#define CACTO_STRAIGHT_HPP
+#pragma once
 
 #include <SFML/System/Vector2.hpp>
 #include <Cacto/Graphics/Line.hpp>
@@ -52,5 +51,3 @@ namespace cacto
     }
 
 }
-
-#endif

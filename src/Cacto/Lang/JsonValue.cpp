@@ -184,24 +184,22 @@ namespace cacto
             {
                 if (printer.getIdentation() > 0)
                 {
-                    printer.ident();
                     printer.println();
+                    printer.ident();
                 }
+                auto it = m_array->begin();
+                std::advance(it, m_array->size() - 1);
+                auto last = &*it;
                 for (auto &value : *m_array)
                 {
                     value.print(printer);
-                    printer.print(",");
+                    if (&value != last)
+                        printer.print(",");
                     if (printer.getIdentation() > 0)
                         printer.println();
                 }
                 if (printer.getIdentation() > 0)
-                    printer.backspaceln();
-                printer.backspace();
-                if (printer.getIdentation() > 0)
-                {
                     printer.dedent();
-                    printer.println();
-                }
             }
             printer.print("]");
             break;
@@ -211,9 +209,12 @@ namespace cacto
             {
                 if (printer.getIdentation() > 0)
                 {
-                    printer.ident();
                     printer.println();
+                    printer.ident();
                 }
+                auto it = m_object->begin();
+                std::advance(it, m_object->size() - 1);
+                auto last = &*it;
                 for (auto &pair : *m_object)
                 {
                     printer.print('"' + pair.first + "\":");
@@ -221,18 +222,13 @@ namespace cacto
                         printer.print(" ");
 
                     pair.second.print(printer);
-                    printer.print(",");
+                    if (&pair.first != &last->first)
+                        printer.print(",");
                     if (printer.getIdentation() > 0)
                         printer.println();
                 }
                 if (printer.getIdentation() > 0)
-                    printer.backspaceln();
-                printer.backspace();
-                if (printer.getIdentation() > 0)
-                {
                     printer.dedent();
-                    printer.println();
-                }
             }
             printer.print("}");
             break;
@@ -242,7 +238,7 @@ namespace cacto
     void JsonValue::scan(JsonScanner &scanner)
     {
         drop();
-        scanner.dropBlank();
+        scanner.dropBlankln();
         if (scanner.scanNumber())
         {
             std::stringstream token{scanner.take()};
@@ -283,13 +279,13 @@ namespace cacto
         {
             m_kind = Array;
             m_array = new std::vector<JsonValue>();
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken("]"))
             {
             array_item:
                 m_array->push_back(nullptr);
                 m_array->back().scan(scanner);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (scanner.dropToken(","))
                     goto array_item;
                 if (!scanner.dropToken("]"))
@@ -301,21 +297,21 @@ namespace cacto
         {
             m_kind = Object;
             m_object = new std::unordered_map<std::string, JsonValue>();
-            scanner.dropBlank();
+            scanner.dropBlankln();
             if (!scanner.dropToken("}"))
             {
             property_item:
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.scanString())
                     throw std::runtime_error("JSON parse error: expected property name");
                 auto token = scanner.take();
                 auto name = token.substr(1, token.size() - 2);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (!scanner.dropToken(":"))
                     throw std::runtime_error("JSON parse error: expected ':'");
                 m_object->operator[](name) = nullptr;
                 m_object->at(name).scan(scanner);
-                scanner.dropBlank();
+                scanner.dropBlankln();
                 if (scanner.dropToken(","))
                     goto property_item;
                 if (!scanner.dropToken("}"))
@@ -326,34 +322,47 @@ namespace cacto
         throw std::runtime_error("JSON parse error: unknown value");
     }
 
-    std::string JsonValue::toString(szt identation) const
+    void JsonValue::toStream(std::ostream &stream, szt identation) const
     {
-        std::string string;
-        JsonPrinter printer{};
-        printer.setTarget(&string);
+        JsonPrinter printer{stream};
         printer.setIdentation(identation);
         print(printer);
-        return string;
+        printer.flush();
+    }
+
+    void JsonValue::fromStream(std::istream &stream)
+    {
+        JsonScanner scanner{stream};
+        scan(scanner);
+    }
+
+    std::string JsonValue::toString(szt identation) const
+    {
+        std::stringstream stream{};
+        toStream(stream, identation);
+        return stream.str();
     }
 
     void JsonValue::fromString(const std::string &string)
     {
-        JsonScanner scanner{};
-        scanner.setSource(&string);
-        scan(scanner);
+        std::stringstream stream{string};
+        fromStream(stream);
     }
 
     void JsonValue::toFile(const std::filesystem::path &path, szt identation) const
     {
-        auto string = toString(identation);
-        cacto::toFile(string, path);
+        std::ofstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        toStream(stream, identation);
     }
 
     void JsonValue::fromFile(const std::filesystem::path &path)
     {
-        std::string string{};
-        cacto::fromFile(string, path);
-        fromString(string);
+        std::ifstream stream{path};
+        if (!stream.is_open())
+            throw std::runtime_error("Can not open the file");
+        fromStream(stream);
     }
 
     JsonValue::JsonValue(f64t number)
@@ -551,6 +560,18 @@ namespace cacto
         }
         m_kind = Null;
         m_number = 0;
+    }
+
+    std::ostream &operator<<(std::ostream &stream, const JsonValue &json)
+    {
+        json.toStream(stream);
+        return stream;
+    }
+
+    std::istream &operator>>(std::istream &stream, JsonValue &json)
+    {
+        json.fromStream(stream);
+        return stream;
     }
 
 }

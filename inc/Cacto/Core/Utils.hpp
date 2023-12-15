@@ -1,5 +1,4 @@
-#ifndef CACTO_CORE_UTILS_HPP
-#define CACTO_CORE_UTILS_HPP
+#pragma once
 
 #include <Cacto/Core/Export.hpp>
 
@@ -7,5 +6,3 @@ namespace cacto
 {
 
 }
-
-#endif

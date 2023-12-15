@@ -30,7 +30,11 @@ namespace cacto
         print('"' + value + '"');
     }
 
-    XmlPrinter::XmlPrinter() = default;
+    XmlPrinter::XmlPrinter(std::ostream &stream)
+        : Printer(stream)
+    {
+    }
+
     XmlPrinter::~XmlPrinter() = default;
 
 }

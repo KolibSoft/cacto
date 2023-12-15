@@ -1,5 +1,4 @@
-#ifndef CACTO_IMAGE_PACK_HPP
-#define CACTO_IMAGE_PACK_HPP
+#pragma once
 
 #include <unordered_map>
 #include <filesystem>
@@ -39,5 +38,3 @@ namespace cacto
     extern ImagePack CACTO_GRAPHICS_API Images;
 
 }
-
-#endif

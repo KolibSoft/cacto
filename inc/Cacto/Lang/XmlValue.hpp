@@ -1,5 +1,4 @@
-#ifndef CACTO_XML_VALUE_HPP
-#define CACTO_XML_VALUE_HPP
+#pragma once
 
 #include <string>
 #include <vector>
@@ -40,7 +39,7 @@ namespace cacto
         std::unordered_map<std::string, std::string> &asAttributes();
         const std::string &operator[](const std::string &key) const;
         std::string &operator[](const std::string &key);
-        
+
         const std::vector<XmlValue> &asContent() const;
         std::vector<XmlValue> &asContent();
         const XmlValue &operator[](szt index) const;
@@ -48,6 +47,9 @@ namespace cacto
 
         void print(XmlPrinter &printer) const;
         void scan(XmlScanner &scanner);
+
+        void toStream(std::ostream &stream, szt identation = 0) const;
+        void fromStream(std::istream &stream);
 
         std::string toString(szt identation = 0) const;
         void fromString(const std::string &string);
@@ -95,6 +97,7 @@ namespace cacto
         };
     };
 
-}
+    std::ostream &CACTO_LANG_API operator<<(std::ostream &stream, const XmlValue &xml);
+    std::istream &CACTO_LANG_API operator>>(std::istream &stream, XmlValue &xml);
 
-#endif
+}

@@ -1,5 +1,4 @@
-#ifndef CACTO_XML_SCANNER_HPP
-#define CACTO_XML_SCANNER_HPP
+#pragma once
 
 #include <Cacto/Lang/Scanner.hpp>
 
@@ -19,10 +18,8 @@ namespace cacto
         i32t scanAttribute();
         i32t scanValue();
 
-        XmlScanner();
+        XmlScanner(std::istream &stream);
         virtual ~XmlScanner();
     };
 
 }
-
-#endif

@@ -1,10 +1,11 @@
-#ifndef CACTO_JSON_VALUE_HPP
-#define CACTO_JSON_VALUE_HPP
+#pragma once
 
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <filesystem>
+#include <ostream>
+#include <istream>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto
@@ -49,15 +50,18 @@ namespace cacto
         std::vector<JsonValue> &asArray();
         const JsonValue &operator[](szt index) const;
         JsonValue &operator[](szt index);
-        
+
         bool isObject() const;
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
         const JsonValue &operator[](const std::string &key) const;
         JsonValue &operator[](const std::string &key);
-        
+
         void print(JsonPrinter &printer) const;
         void scan(JsonScanner &scanner);
+
+        void toStream(std::ostream &stream, szt identation = 0) const;
+        void fromStream(std::istream &stream);
 
         std::string toString(szt identation = 0) const;
         void fromString(const std::string &string);
@@ -109,6 +113,7 @@ namespace cacto
         };
     };
 
-}
+    std::ostream &CACTO_LANG_API operator<<(std::ostream &stream, const JsonValue &json);
+    std::istream &CACTO_LANG_API operator>>(std::istream &stream, JsonValue &json);
 
-#endif
+}

@@ -1,6 +1,4 @@
-#include <math.h>
 #include <iostream>
-#include <functional>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -8,191 +6,41 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Core/LeafNode.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/Graphics/Skeleton.hpp>
 #include <Cacto/Graphics/Utils.hpp>
-#include <Cacto/Graphics/Ellipse.hpp>
-#include <Cacto/Collisions/Body.hpp>
-#include <Cacto/Collisions/CollisionNode.hpp>
-#include <Cacto/Collisions/Dimension.hpp>
-#include <Cacto/Game/GameNode.hpp>
-
-#include <Cacto/Graphics/Straight.hpp>
-#include <Cacto/Graphics/Bezier.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
-
-#include <Cacto/Animations/Animation.hpp>
 #include <Cacto/Animations/Linear.hpp>
 #include <Cacto/Animations/Coloring.hpp>
-
-auto color = sf::Color::Black;
-using Movement = std::function<sf::Vector2f(const sf::Time &lifetime)>;
-
-class Buddy
-    : public sf::Transformable,
-      public virtual cacto::LeafNode,
-      public virtual cacto::Body,
-      public virtual cacto::CollisionNode,
-      public virtual cacto::DrawNode,
-      public virtual cacto::UpdateNode
-{
-
-public:
-    mutable sf::VertexArray visual{sf::PrimitiveType::TriangleFan};
-    mutable cacto::SharedGeometry geometry{new cacto::Ellipse({0, 0}, {25, 25})};
-    mutable cacto::Trace trace{};
-    mutable sf::Color color{};
-
-    sf::Time lifetime;
-    Movement movement;
-    cacto::Linear<sf::Vector2f> scaleAnimation;
-    cacto::Coloring colorAnimation;
-
-    Node *const getParent() const override
-    {
-        return m_parent;
-    }
-
-    void onUpdate(const sf::Time &time) override
-    {
-        lifetime += time;
-        if (movement)
-        {
-            auto position = movement(lifetime);
-            setPosition(position);
-            updateChildren(time);
-        }
-        auto scale = scaleAnimation.getValue(lifetime);
-        setScale(scale);
-        color = colorAnimation.getValue(lifetime);
-        if (lifetime > sf::seconds(20))
-            lifetime = sf::Time::Zero;
-    }
-
-    void onCollision(cacto::Dimension &dimension, const sf::Transform &transform) override
-    {
-        trace = {geometry, transform * getTransform()};
-        auto &target = dimension.locateCollisions(*this, trace);
-        target.append(*this, trace);
-        collisionChildren(dimension, transform);
-    }
-
-    void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override
-    {
-        cacto::setPoints(visual, *geometry);
-        cacto::setColor(visual, color);
-        // visual.append(visual[0]);
-        auto _states = states;
-        _states.transform *= getTransform();
-        target.draw(visual, _states);
-        drawChildren(target, _states);
-    }
-
-    void collision(Body &body) override
-    {
-        color = sf::Color::White;
-    }
-
-    Buddy()
-    {
-        setScale({2, 1});
-        setRotation(sf::degrees(30));
-        scaleAnimation.setFrom({1, 2});
-        scaleAnimation.setTo({2, 1});
-        scaleAnimation.setDuration(sf::seconds(10));
-        colorAnimation.setFrom(sf::Color::Red);
-        colorAnimation.setTo(sf::Color::Green);
-        colorAnimation.setDuration(sf::seconds(10));
-    }
-
-protected:
-    void onAttach(Node &parent) override
-    {
-        m_parent = &parent;
-    }
-
-    void onDetach(Node &parent) override
-    {
-        m_parent = nullptr;
-    }
-
-private:
-    Node *m_parent{};
-};
-
-auto makeSolid(const sf::Vector2f &position)
-{
-    Buddy solid{};
-    solid.setPosition(position);
-    return solid;
-}
+#include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    window.setFramerateLimit(120);
 
-    cacto::Straight straight{{0, 0}, {300, 300}};
-    cacto::Rectangle geometry{{100, 100}, {300, 300}};
-    cacto::Bezier bezier{{
-        {100, 300},
-        {300, 100},
-        {500, 500},
-        {700, 300},
-    }};
+    cacto::Skeleton skeleton{};
+    cacto::fromXmlFile(skeleton, "res/skeleton.xml");
+    std::cout << cacto::toXml(skeleton).toString() << "\n";
+    cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
-    cacto::Animation animation;
-    animation.setDelay(sf::seconds(5));
-    animation.setDuration(sf::seconds(10));
+    auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
+    auto left_mesh = dynamic_cast<sf::VertexArray *>(left->getChild());
+    auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
+    auto right_mesh = dynamic_cast<sf::VertexArray *>(right->getChild());
 
-    auto precision = 120 * 10;
-    auto straightMovement = [&](const sf::Time &lifetime) -> sf::Vector2f
-    {
-        auto index = animation.getIndex(lifetime, precision);
-        auto position = straight.getPoint(index, precision / straight.getPointCount());
-        return position;
-    };
-    auto geometryMovement = [&](const sf::Time &lifetime) -> sf::Vector2f
-    {
-        auto index = animation.getIndex(lifetime, precision);
-        auto position = geometry.getPoint(index, precision / geometry.getSideCount());
-        return position;
-    };
-    auto bezierMovement = [&](const sf::Time &lifetime) -> sf::Vector2f
-    {
-        auto index = animation.getIndex(lifetime, precision);
-        auto position = bezier.getPoint(index, precision / bezier.getPointCount());
-        return position;
-    };
+    cacto::Linear linear{1, 2, sf::Time::Zero, sf::seconds(5), cacto::Animation::Forward, cacto::Animation::Flip};
+    cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(5), cacto::Animation::Reverse, cacto::Animation::Flip};
+    sf::Time lifetime{};
 
-    cacto::GameNode root{};
-    auto buddy1 = makeSolid({100, 50});
-    buddy1.movement = straightMovement;
+    cacto::toJsonFile(linear, "res/linear.json", 2);
+    cacto::fromJsonFile(linear, "res/linear.json");
+    std::cout << cacto::toJson(&linear) << '\n';
 
-    auto buddy2 = makeSolid({250, 100});
-    buddy2.movement = geometryMovement;
+    cacto::toJsonFile(coloring, "res/coloring.json", 2);
+    cacto::fromJsonFile(coloring, "res/coloring.json");
+    std::cout << cacto::toJson(&coloring) << '\n';
 
-    auto buddy3 = makeSolid({475, 225});
-    buddy3.movement = bezierMovement;
-
-    auto buddy4 = makeSolid({100, 225});
-
-    root.append(buddy1);
-    root.append(buddy2);
-    root.append(buddy3);
-    root.append(buddy4);
-
-    Buddy dynamic{};
-    root.append(dynamic);
-
-    cacto::Dimension dimension{sf::FloatRect{{0, 0}, sf::Vector2f(window.getSize())}, 4};
-
-    sf::VertexArray path(sf::PrimitiveType::LineStrip);
-
-    sf::Clock clock;
+    sf::Clock clock{};
     clock.start();
-    auto frames = 0;
     while (window.isOpen())
     {
         sf::Event event{};
@@ -200,46 +48,34 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::Resized)
+            else if (event.type == sf::Event::MouseButtonPressed)
+                skeleton.setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+            else if (event.type == sf::Event::MouseWheelScrolled)
             {
-                sf::FloatRect rect{sf::FloatRect{{0, 0}, sf::Vector2f{float(event.size.width), float(event.size.height)}}};
-                window.setView(sf::View(rect));
-                dimension = {rect, 4};
+                skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
+                skeleton.setScale(skeleton.getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
+            }
+            else if (event.type == sf::Event::KeyPressed)
+            {
+                if (event.key.code == sf::Keyboard::Left)
+                    left->rotate(sf::degrees(5));
+                else if (event.key.code == sf::Keyboard::Right)
+                    right->rotate(sf::degrees(5));
             }
         }
 
         auto dt = clock.restart();
-        cacto::UpdateNode::update(root, dt);
+        lifetime += dt;
 
-        color = sf::Color::Black;
-        dimension.clean();
-        cacto::CollisionNode::collision(root, dimension);
+        auto f = linear.getValue(lifetime);
+        auto c = coloring.getValue(lifetime);
+        skeleton.setScale({f, f});
+        cacto::setColor(*left_mesh, c);
+        cacto::setColor(*right_mesh, c);
 
-        dynamic.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
-        window.clear(color);
-
-        cacto::setPoints(path, straight, precision);
-        cacto::setColor(path, sf::Color::Green);
-        window.draw(path);
-
-        cacto::setPoints(path, geometry, precision);
-        cacto::setColor(path, sf::Color::Green);
-        window.draw(path);
-
-        cacto::setPoints(path, bezier, precision);
-        cacto::setColor(path, sf::Color::Green);
-        window.draw(path);
-
-        window.draw(root);
-        window.draw(dimension);
-
+        window.clear();
+        window.draw(skeleton);
         window.display();
-
-        if ((frames += 1) % 100 == 0)
-        {
-            frames = 0;
-            std::cout << "FPS: " << (1 / dt.asSeconds()) << "\n";
-        }
     }
 
     return 0;

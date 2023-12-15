@@ -1,4 +1,5 @@
 #include <fstream>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 

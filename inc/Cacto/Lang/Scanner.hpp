@@ -1,8 +1,8 @@
-#ifndef CACTO_SCANNER_HPP
-#define CACTO_SCANNER_HPP
+#pragma once
 
 #include <limits>
 #include <string>
+#include <istream>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto
@@ -12,8 +12,8 @@ namespace cacto
     {
 
     public:
-        const std::string *getSource() const;
-        void setSource(const std::string *value, i32t start = 0, i32t cursor = 0);
+        std::istream &getStream() const;
+        void setStream(std::istream &value);
 
         i32t getStart() const;
         void setStart(i32t value);
@@ -21,6 +21,7 @@ namespace cacto
         i32t getCursor() const;
         void setCursor(i32t value);
 
+        bool scanln();
         c8t available(i32t index = 0) const;
 
         std::string take();
@@ -38,17 +39,18 @@ namespace cacto
         bool dropBlank();
         bool dropToken(const std::string &set);
 
-        Scanner();
+        void dropBlankln();
+
+        Scanner(std::istream &stream);
         virtual ~Scanner();
 
         static bool option(bool result);
 
     private:
-        const std::string *m_source;
+        std::istream *m_stream;
+        std::string m_line;
         i32t m_start;
         i32t m_cursor;
     };
 
 }
-
-#endif
