@@ -40,4 +40,49 @@ namespace cacto
 
     Linear::~Linear() = default;
 
+    JsonValue toJson(const Linear &linear)
+    {
+        auto json = toJson((const Animation &)linear);
+        json["from"] = linear.getFrom();
+        json["to"] = linear.getTo();
+        return std::move(json);
+    }
+
+    void fromJson(Linear &linear, const JsonValue &json)
+    {
+        fromJson((Animation &)linear, json);
+        linear.setFrom(f32t(json["from"].getNumber()));
+        linear.setTo(f32t(json["to"].getNumber()));
+    }
+
+    namespace linear
+    {
+
+        JsonValue JsonConverter::toJson(const Animation *const value) const
+        {
+            const Linear *linear = nullptr;
+            if (value && (linear = dynamic_cast<const Linear *>(value)))
+            {
+                auto json = cacto::toJson(*linear);
+                json["$type"] = "Linear";
+                return std::move(json);
+            }
+            return nullptr;
+        }
+
+        Animation *JsonConverter::fromJson(const JsonValue &json) const
+        {
+            if (json.isObject() && json["$type"] == "Linear")
+            {
+                auto linear = new Linear();
+                cacto::fromJson(*linear, json);
+                return linear;
+            }
+            return nullptr;
+        }
+
+        JsonConverter Converter{};
+
+    }
+
 }

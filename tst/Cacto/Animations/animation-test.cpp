@@ -31,6 +31,14 @@ int main()
     cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(5), cacto::Animation::Reverse, cacto::Animation::Flip};
     sf::Time lifetime{};
 
+    cacto::toJsonFile(linear, "res/linear.json", 2);
+    cacto::fromJsonFile(linear, "res/linear.json");
+    std::cout << cacto::toJson(&linear) << '\n';
+
+    cacto::toJsonFile(coloring, "res/coloring.json", 2);
+    cacto::fromJsonFile(coloring, "res/coloring.json");
+    std::cout << cacto::toJson(&coloring) << '\n';
+
     sf::Clock clock{};
     clock.start();
     while (window.isOpen())

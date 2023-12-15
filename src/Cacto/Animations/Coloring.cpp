@@ -1,3 +1,4 @@
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Animations/Coloring.hpp>
 
 namespace cacto
@@ -46,5 +47,54 @@ namespace cacto
     }
 
     inline Coloring::~Coloring() = default;
+
+    JsonValue toJson(const Coloring &coloring)
+    {
+        auto json = toJson((const Animation &)coloring);
+        json["from"] = toString(coloring.getFrom());
+        json["to"] = toString(coloring.getTo());
+        return std::move(json);
+    }
+
+    void fromJson(Coloring &coloring, const JsonValue &json)
+    {
+        fromJson((Animation &)coloring, json);
+        sf::Color from{};
+        cacto::fromString(from, json["from"].getString("#FFFFFFFF"));
+        coloring.setFrom(from);
+        sf::Color to{};
+        cacto::fromString(to, json["to"].getString("#FFFFFFFF"));
+        coloring.setTo(to);
+    }
+
+    namespace coloring
+    {
+
+        JsonValue JsonConverter::toJson(const Animation *const value) const
+        {
+            const Coloring *coloring = nullptr;
+            if (value && (coloring = dynamic_cast<const Coloring *>(value)))
+            {
+                auto json = cacto::toJson(*coloring);
+                json["$type"] = "Coloring";
+                return std::move(json);
+            }
+            return nullptr;
+        }
+
+        Animation *JsonConverter::fromJson(const JsonValue &json) const
+        {
+            if (json.isObject() && json["$type"] == "Coloring")
+            {
+                auto coloring = new Coloring();
+                cacto::fromJson(*coloring, json);
+                return coloring;
+            }
+            return nullptr;
+        }
+
+        JsonConverter Converter{};
+
+    }
 
 }

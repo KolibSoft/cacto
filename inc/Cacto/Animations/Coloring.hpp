@@ -27,4 +27,26 @@ namespace cacto
         sf::Color m_to;
     };
 
+    JsonValue CACTO_ANIMATIONS_API toJson(const Coloring &coloring);
+    void CACTO_ANIMATIONS_API fromJson(Coloring &coloring, const JsonValue &json);
+
+    namespace coloring
+    {
+
+        class CACTO_ANIMATIONS_API JsonConverter
+            : public virtual animation::JsonConverter
+        {
+
+        public:
+            JsonValue toJson(const Animation *const value) const override;
+            Animation *fromJson(const JsonValue &json) const override;
+
+            JsonConverter() = default;
+            virtual ~JsonConverter() = default;
+        };
+
+        extern JsonConverter CACTO_ANIMATIONS_API Converter;
+
+    }
+
 }

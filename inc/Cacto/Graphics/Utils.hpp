@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <SFML/Graphics/PrimitiveType.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
