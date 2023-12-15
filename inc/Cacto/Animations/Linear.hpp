@@ -18,7 +18,7 @@ namespace cacto
 
         f32t getValue(const sf::Time &lifetime) const;
 
-        Linear(f32t from = 0, f32t to = 0, const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero);
+        Linear(f32t from = 0, f32t to = 0, const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero, Direction direction = Forward, Mode mode = Once);
         virtual ~Linear();
 
     private:

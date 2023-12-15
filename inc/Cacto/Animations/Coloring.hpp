@@ -19,7 +19,7 @@ namespace cacto
 
         sf::Color getValue(const sf::Time &lifetime) const;
 
-        Coloring(const sf::Color &from = sf::Color::White, const sf::Color &to = sf::Color::White, const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero);
+        Coloring(const sf::Color &from = sf::Color::White, const sf::Color &to = sf::Color::White, const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero, Direction direction = Forward, Mode mode = Once);
         virtual ~Coloring();
 
     private:

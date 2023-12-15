@@ -31,8 +31,10 @@ namespace cacto
         return value;
     }
 
-    Linear::Linear(f32t from, f32t to, const sf::Time &delay, const sf::Time &duration)
-        : Animation(delay, duration), m_from(from), m_to(to)
+    Linear::Linear(f32t from, f32t to, const sf::Time &delay, const sf::Time &duration, Direction direction, Mode mode)
+        : Animation(delay, duration, direction, mode),
+          m_from(from),
+          m_to(to)
     {
     }
 

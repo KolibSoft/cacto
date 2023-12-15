@@ -27,10 +27,9 @@ int main()
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
     auto right_mesh = dynamic_cast<sf::VertexArray *>(right->getChild());
 
-    cacto::Linear linear{1, 2, sf::Time::Zero, sf::seconds(10)};
-    cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(10)};
+    cacto::Linear linear{1, 2, sf::Time::Zero, sf::seconds(5), cacto::Animation::Forward, cacto::Animation::Flip};
+    cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(5), cacto::Animation::Reverse, cacto::Animation::Flip};
     sf::Time lifetime{};
-    bool direction{};
 
     sf::Clock clock{};
     clock.start();
@@ -58,16 +57,7 @@ int main()
         }
 
         auto dt = clock.restart();
-        if (direction)
-        {
-            lifetime += dt;
-            direction = lifetime < sf::seconds(10);
-        }
-        else
-        {
-            lifetime -= dt;
-            direction = lifetime < sf::seconds(0);
-        }
+        lifetime += dt;
 
         auto f = linear.getValue(lifetime);
         auto c = coloring.getValue(lifetime);

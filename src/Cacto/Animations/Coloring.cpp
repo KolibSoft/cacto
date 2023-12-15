@@ -38,8 +38,10 @@ namespace cacto
         return value;
     }
 
-    inline Coloring::Coloring(const sf::Color &from, const sf::Color &to, const sf::Time &delay, const sf::Time &duration)
-        : Animation(delay, duration), m_from(from), m_to(to)
+    inline Coloring::Coloring(const sf::Color &from, const sf::Color &to, const sf::Time &delay, const sf::Time &duration, Direction direction, Mode mode)
+        : Animation(delay, duration, direction, mode),
+          m_from(from),
+          m_to(to)
     {
     }
 
