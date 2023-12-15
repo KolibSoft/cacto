@@ -1,5 +1,4 @@
-#ifndef CACTO_ANIMATION_HPP
-#define CACTO_ANIMATION_HPP
+#pragma once
 
 #include <SFML/System/Time.hpp>
 #include <Cacto/Animations/Export.hpp>
@@ -20,7 +19,7 @@ namespace cacto
         f32t getRatio(const sf::Time &lifetime) const;
         szt getIndex(const sf::Time &lifetime, szt frameCount) const;
 
-        Animation();
+        Animation(const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero);
         virtual ~Animation();
 
     private:
@@ -29,5 +28,3 @@ namespace cacto
     };
 
 }
-
-#endif

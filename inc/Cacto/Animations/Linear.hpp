@@ -1,35 +1,29 @@
-#ifndef CACTO_LINEAR_HPP
-#define CACTO_LINEAR_HPP
+#pragma once
 
 #include <Cacto/Animations/Animation.hpp>
 
 namespace cacto
 {
 
-    template <typename T>
-    class Linear
+    class CACTO_ANIMATIONS_API Linear
         : public Animation
     {
 
     public:
-        const T &getFrom() const;
-        void setFrom(const T &value);
+        const f32t &getFrom() const;
+        void setFrom(const f32t &value);
 
-        const T &getTo() const;
-        void setTo(const T &value);
+        const f32t &getTo() const;
+        void setTo(const f32t &value);
 
-        T getValue(const sf::Time &lifetime) const;
+        f32t getValue(const sf::Time &lifetime) const;
 
-        Linear();
+        Linear(f32t from = 0, f32t to = 0, const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero);
         virtual ~Linear();
 
     private:
-        T m_from;
-        T m_to;
+        f32t m_from;
+        f32t m_to;
     };
 
 }
-
-#include <Cacto/Animations/Linear.inl>
-
-#endif

@@ -43,8 +43,8 @@ namespace cacto
         return index;
     }
 
-    Animation::Animation()
-        : m_delay(), m_duration()
+    Animation::Animation(const sf::Time &delay, const sf::Time &duration)
+        : m_delay(delay), m_duration(duration)
     {
     }
 

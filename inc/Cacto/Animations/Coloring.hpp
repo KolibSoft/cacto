@@ -1,5 +1,4 @@
-#ifndef CACTO_COLORING_HPP
-#define CACTO_COLORING_HPP
+#pragma once
 
 #include <SFML/Graphics/Color.hpp>
 #include <Cacto/Animations/Animation.hpp>
@@ -29,5 +28,3 @@ namespace cacto
     };
 
 }
-
-#endif
