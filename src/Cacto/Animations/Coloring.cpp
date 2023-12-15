@@ -73,7 +73,7 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Animation *const value) const
         {
             const Coloring *coloring = nullptr;
-            if (value && (coloring = dynamic_cast<const Coloring *>(value)))
+            if (value && typeid(*value) == typeid(Coloring) && (coloring = dynamic_cast<const Coloring *>(value)))
             {
                 auto json = cacto::toJson(*coloring);
                 json["$type"] = "Coloring";

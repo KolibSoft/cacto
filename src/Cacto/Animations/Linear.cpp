@@ -61,7 +61,7 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Animation *const value) const
         {
             const Linear *linear = nullptr;
-            if (value && (linear = dynamic_cast<const Linear *>(value)))
+            if (value && typeid(*value) == typeid(Linear) && (linear = dynamic_cast<const Linear *>(value)))
             {
                 auto json = cacto::toJson(*linear);
                 json["$type"] = "Linear";

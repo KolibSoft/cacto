@@ -132,7 +132,7 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Geometry *const value) const
         {
             const Triangle *triangle = nullptr;
-            if (value && (triangle = dynamic_cast<const Triangle *>(value)))
+            if (value && typeid(*value) == typeid(Triangle) && (triangle = dynamic_cast<const Triangle *>(value)))
             {
                 auto json = cacto::toJson(*triangle);
                 json["$type"] = "Triangle";

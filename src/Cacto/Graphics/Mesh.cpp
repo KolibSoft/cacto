@@ -119,7 +119,7 @@ namespace cacto
         XmlValue XmlConverter::toXml(const Node *const value) const
         {
             const Mesh *mesh = nullptr;
-            if (value && (mesh = dynamic_cast<const Mesh *>(value)))
+            if (value && typeid(*value) == typeid(Mesh) && (mesh = dynamic_cast<const Mesh *>(value)))
             {
                 auto xml = cacto::toXml(*mesh);
                 return xml;

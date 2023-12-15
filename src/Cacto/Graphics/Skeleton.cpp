@@ -274,7 +274,7 @@ namespace cacto
         XmlValue XmlConverter::toXml(const Node *const value) const
         {
             const Skeleton *skeleton = nullptr;
-            if (value && (skeleton = dynamic_cast<const Skeleton *>(value)))
+            if (value && typeid(*value) == typeid(Skeleton) && (skeleton = dynamic_cast<const Skeleton *>(value)))
             {
                 auto xml = cacto::toXml(*skeleton);
                 return xml;

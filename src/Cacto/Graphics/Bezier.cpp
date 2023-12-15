@@ -94,7 +94,7 @@ namespace cacto
         JsonValue JsonConverter::toJson(const Line *const value) const
         {
             const Bezier *bezier = nullptr;
-            if (value && (bezier = dynamic_cast<const Bezier *>(value)))
+            if (value && typeid(*value) == typeid(Bezier) && (bezier = dynamic_cast<const Bezier *>(value)))
             {
                 auto json = cacto::toJson(*bezier);
                 json["$type"] = "Bezier";
