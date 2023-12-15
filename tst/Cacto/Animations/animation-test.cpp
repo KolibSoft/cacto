@@ -7,7 +7,9 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Animations/Linear.hpp>
+#include <Cacto/Animations/Coloring.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
@@ -21,10 +23,14 @@ int main()
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
+    auto left_mesh = dynamic_cast<sf::VertexArray *>(left->getChild());
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
+    auto right_mesh = dynamic_cast<sf::VertexArray *>(right->getChild());
 
     cacto::Linear linear{1, 2, sf::Time::Zero, sf::seconds(10)};
+    cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(10)};
     sf::Time lifetime{};
+    bool direction{};
 
     sf::Clock clock{};
     clock.start();
@@ -52,11 +58,22 @@ int main()
         }
 
         auto dt = clock.restart();
-        lifetime += dt;
-        if (lifetime > sf::seconds(10))
-            lifetime = sf::Time::Zero;
+        if (direction)
+        {
+            lifetime += dt;
+            direction = lifetime < sf::seconds(10);
+        }
+        else
+        {
+            lifetime -= dt;
+            direction = lifetime < sf::seconds(0);
+        }
+
         auto f = linear.getValue(lifetime);
+        auto c = coloring.getValue(lifetime);
         skeleton.setScale({f, f});
+        cacto::setColor(*left_mesh, c);
+        cacto::setColor(*right_mesh, c);
 
         window.clear();
         window.draw(skeleton);

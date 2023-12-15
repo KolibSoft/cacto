@@ -3,31 +3,26 @@
 namespace cacto
 {
 
-    
     inline const sf::Color &Coloring::getFrom() const
     {
         return m_from;
     }
 
-    
     inline void Coloring::setFrom(const sf::Color &value)
     {
         m_from = value;
     }
 
-    
     inline const sf::Color &Coloring::getTo() const
     {
         return m_to;
     }
 
-    
     inline void Coloring::setTo(const sf::Color &value)
     {
         m_to = value;
     }
 
-    
     inline sf::Color Coloring::getValue(const sf::Time &lifetime) const
     {
         auto t = getRatio(lifetime);
@@ -43,10 +38,11 @@ namespace cacto
         return value;
     }
 
-    
-    inline Coloring::Coloring() = default;
+    inline Coloring::Coloring(const sf::Color &from, const sf::Color &to, const sf::Time &delay, const sf::Time &duration)
+        : Animation(delay, duration), m_from(from), m_to(to)
+    {
+    }
 
-    
     inline Coloring::~Coloring() = default;
 
 }
