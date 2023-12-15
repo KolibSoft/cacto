@@ -70,18 +70,20 @@ namespace cacto
         m_line.clear();
     }
 
-    void Printer::ident(szt times)
+    void Printer::ident(szt times, bool apply)
     {
         auto pad = m_pad + times * m_identation;
         m_pad = pad > 0 ? pad : 0;
-        m_line.insert(0, std::string(times * m_identation, ' '));
+        if (apply)
+            m_line.insert(0, std::string(times * m_identation, ' '));
     }
 
-    void Printer::dedent(szt times)
+    void Printer::dedent(szt times, bool apply)
     {
         auto pad = m_pad - times * m_identation;
         m_pad = pad > 0 ? pad : 0;
-        m_line.erase(m_line.begin(), m_line.begin() + times * m_identation);
+        if (apply)
+            m_line.erase(m_line.begin(), m_line.begin() + times * m_identation);
     }
 
     Printer::Printer(std::ostream &stream)

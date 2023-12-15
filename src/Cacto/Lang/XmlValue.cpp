@@ -194,7 +194,7 @@ namespace cacto
             {
                 printer.print(" />");
                 if (m_tag->attributes.size() > 0 && printer.getIdentation() > 0)
-                    printer.dedent();
+                    printer.dedent(1, false);
             }
             break;
         }

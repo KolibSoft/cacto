@@ -29,8 +29,8 @@ namespace cacto
         void backspace(szt count = 1);
         void backspaceln();
 
-        void ident(szt times = 1);
-        void dedent(szt times = 1);
+        void ident(szt times = 1, bool apply = true);
+        void dedent(szt times = 1, bool apply = true);
 
         Printer(std::ostream &stream);
         virtual ~Printer();
