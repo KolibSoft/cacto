@@ -6,28 +6,24 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Core/Loader.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/UI/Surface.hpp>
-auto _ = false;
-
-namespace R
-{
-    auto texture = cacto::Loader<sf::Texture>::fromFile("res/fondo.png");
-}
 
 int main()
 {
 
+    cacto::TexturePack pack{"res"};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-
-    auto texture = R::texture.get();
-    texture->setRepeated(true);
-
     auto root = cacto::colorSurface(sf::Color::White);
 
-    root.setTexture(texture.get())
+    root.setTexture(cacto::getTexture("fondo.png"))
         .setTextureRect({{-100, -100}, {1000, 1000}});
+
+    // cacto::toXmlFile(root, "res/surface.xml", 2);
+    cacto::fromXmlFile(root, "res/surface.xml");
 
     while (window.isOpen())
     {

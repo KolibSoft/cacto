@@ -99,7 +99,7 @@ namespace cacto
 
     Rectangle::~Rectangle() = default;
 
-    Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
+    const Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
 
     JsonValue toJson(const Rectangle &rectangle)
     {

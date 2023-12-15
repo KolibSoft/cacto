@@ -25,7 +25,7 @@ namespace cacto
         Ellipse(const sf::Vector2f &center = {0, 0}, const sf::Vector2f &diameters = {1, 1});
         virtual ~Ellipse();
 
-        static Ellipse Identity;
+        static const Ellipse Identity;
 
     private:
         f32t m_centerX;

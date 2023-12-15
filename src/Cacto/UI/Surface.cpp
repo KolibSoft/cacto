@@ -1,25 +1,35 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/UI/Surface.hpp>
 
 namespace cacto
 {
 
+    const std::string &Surface::getTag() const
+    {
+        return m_tag;
+    }
+
+    void Surface::setTag(const std::string &value)
+    {
+        m_tag = value;
+    }
+
     Node *const Surface::getParent() const
     {
         return m_parent;
     }
 
-    Geometry &Surface::getGeometry() const
+    const Geometry &Surface::getGeometry() const
     {
         return *m_geometry;
     }
 
-    Surface &Surface::setGeometry(Geometry &value)
+    Surface &Surface::setGeometry(const Geometry &value)
     {
         m_geometry = &value;
         m_invalid = true;
@@ -92,7 +102,7 @@ namespace cacto
         }
     }
 
-    Surface::Surface(Geometry &geometry, const sf::Color &color, const sf::Texture *texture)
+    Surface::Surface(const Geometry &geometry, const sf::Color &color, const sf::Texture *texture)
         : m_parent(),
           m_geometry(&geometry),
           m_precision(1),
@@ -135,10 +145,6 @@ namespace cacto
         m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
         return *this;
     }
-
-    const Surface Surface::Rectangle{Rectangle::Identity};
-
-    const Surface Surface::Ellipse{Ellipse::Identity};
 
     sf::VertexArray &Surface::getArray() const
     {
@@ -206,14 +212,14 @@ namespace cacto
 
     Surface colorSurface(const sf::Color &color)
     {
-        auto surface = Surface::Rectangle;
+        Surface surface{};
         surface.setColor(color);
         return surface;
     }
 
     Surface textureSurface(const sf::Texture &texture, const sf::FloatRect &textureRect)
     {
-        auto surface = Surface::Rectangle;
+        Surface surface{};
         if (textureRect == sf::FloatRect{})
         {
             surface.setTexture(&texture, true);
@@ -224,6 +230,86 @@ namespace cacto
             surface.setTextureRect(textureRect);
         }
         return surface;
+    }
+
+    XmlValue toXml(const Surface &surface)
+    {
+        XmlValue xml{"Surface", {}};
+        xml["tag"] = surface.getTag();
+        auto &geometry = surface.getGeometry();
+        if (typeid(geometry) == typeid(Rectangle))
+            xml["geometry"] = "Rectangle";
+        else if (typeid(geometry) == typeid(Ellipse))
+            xml["geometry"] = "Ellipse";
+        else
+            throw std::runtime_error("Not supported geometry");
+        xml["precision"] = std::to_string(surface.getPrecision());
+        xml["color"] = toString(surface.getColor());
+        auto texture = surface.getTexture();
+        if (texture)
+        {
+            auto id = getId(*texture);
+            if (id)
+                xml["texture"] = *id;
+        }
+        xml["textureRect"] = toString(surface.getTextureRect());
+        return std::move(xml);
+    }
+
+    void fromXml(Surface &surface, const XmlValue &xml)
+    {
+        surface = {};
+        surface.setTag(xml.getAttribute("tag"));
+        auto geometry = xml.getAttribute("geometry", "Rectangle");
+        if (geometry == "Rectangle")
+            surface.setGeometry(Rectangle::Identity);
+        else if (geometry == "Ellipse")
+            surface.setGeometry(Ellipse::Identity);
+        else
+            throw std::runtime_error("Not supported geometry");
+        surface.setPrecision(std::stoi(xml.getAttribute("precision", "0")));
+        sf::Color color{};
+        cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
+        surface.setColor(color);
+        auto id = xml.getAttribute("texture");
+        if (id.size())
+        {
+            auto texture = getTexture(id);
+            if (texture)
+                surface.setTexture(texture);
+        }
+        sf::FloatRect rect{};
+        cacto::fromString(rect, xml.getAttribute("textureRect", "0,0,0,0"));
+        surface.setTextureRect(rect);
+    }
+
+    namespace surface
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Surface *surface = nullptr;
+            if (value && typeid(*value) == typeid(Surface) && (surface = dynamic_cast<const Surface *>(value)))
+            {
+                auto xml = cacto::toXml(*surface);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Surface")
+            {
+                auto surface = new Surface();
+                cacto::fromXml(*surface, xml);
+                return surface;
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

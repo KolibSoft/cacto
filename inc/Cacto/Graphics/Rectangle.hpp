@@ -33,7 +33,7 @@ namespace cacto
         Rectangle(const sf::Vector2f &position = {0, 0}, const sf::Vector2f &size = {1, 1});
         virtual ~Rectangle();
 
-        static Rectangle Identity;
+        static const Rectangle Identity;
 
     private:
         f32t m_width;

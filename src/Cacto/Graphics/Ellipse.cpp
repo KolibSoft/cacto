@@ -83,7 +83,7 @@ namespace cacto
 
     Ellipse::~Ellipse() = default;
 
-    Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
+    const Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
 
     JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse)
     {

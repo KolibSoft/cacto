@@ -1,5 +1,4 @@
-#ifndef CACTO_BOX_HPP
-#define CACTO_BOX_HPP
+#pragma once
 
 #include <SFML/Graphics/Rect.hpp>
 #include <Cacto/UI/Export.hpp>
@@ -53,5 +52,3 @@ namespace cacto
     };
 
 }
-
-#endif

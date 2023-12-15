@@ -183,16 +183,31 @@ namespace cacto
     std::string toString(const sf::Vector2f &point)
     {
         std::stringstream stream{};
-        stream << point.x << ',' << point.y;
+        char separator = ',';
+        stream << point.x << separator << point.y;
         return stream.str();
     }
 
     void fromString(sf::Vector2f &point, const std::string &string)
     {
         std::stringstream stream{string};
-        stream >> point.x;
-        stream.get();
-        stream >> point.y;
+        char separator = ',';
+        stream >> point.x >> separator >> point.y;
+    }
+
+    std::string toString(const sf::FloatRect &rect)
+    {
+        std::stringstream stream{};
+        char separator = ',';
+        stream << rect.left << separator << rect.top << separator << rect.width << separator << rect.height;
+        return stream.str();
+    }
+
+    void fromString(sf::FloatRect &rect, const std::string &string)
+    {
+        std::stringstream stream{string};
+        char separator = ',';
+        stream >> rect.left >> separator >> rect.top >> separator >> rect.width >> separator >> rect.height;
     }
 
     std::string toString(const sf::Color &color)
