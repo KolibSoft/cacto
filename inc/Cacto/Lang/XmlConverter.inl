@@ -46,6 +46,13 @@ namespace cacto
     }
 
     template <typename T>
+    inline szt XmlConverter<T>::getConverterCount()
+    {
+        auto count = XmlConverter<T>::Converters.size();
+        return count;
+    }
+
+    template <typename T>
     inline std::vector<const XmlConverter<T> *> XmlConverter<T>::Converters{};
 
 }

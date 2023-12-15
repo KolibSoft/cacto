@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include <Cacto/Config.hpp>
+
 namespace cacto
 {
 
@@ -20,6 +22,8 @@ namespace cacto
 
         static XmlValue xml(const T *const value);
         static T *value(const XmlValue &xml);
+
+        static szt getConverterCount();
 
     private:
         static std::vector<const XmlConverter<T> *> Converters;

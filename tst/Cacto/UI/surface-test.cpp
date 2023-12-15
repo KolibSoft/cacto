@@ -1,4 +1,5 @@
 #include <limits>
+#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -14,6 +15,8 @@
 int main()
 {
 
+    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
+
     cacto::TexturePack pack{"res"};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
@@ -22,8 +25,10 @@ int main()
     root.setTexture(cacto::getTexture("fondo.png"))
         .setTextureRect({{-100, -100}, {1000, 1000}});
 
-    // cacto::toXmlFile(root, "res/surface.xml", 2);
     cacto::fromXmlFile(root, "res/surface.xml");
+    cacto::toXmlFile(root, "res/surface.xml", 2);
+
+    std::cout << cacto::toXml(&root).toString(2) << '\n';
 
     while (window.isOpen())
     {

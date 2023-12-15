@@ -7,13 +7,18 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Animations/Linear.hpp>
 #include <Cacto/Animations/Coloring.hpp>
+#include <Cacto/UI/Surface.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
+
+    cacto::TexturePack pack{"res"};
+    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
@@ -26,6 +31,11 @@ int main()
     auto left_mesh = dynamic_cast<sf::VertexArray *>(left->getChild());
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
     auto right_mesh = dynamic_cast<sf::VertexArray *>(right->getChild());
+    auto surface = skeleton.firstDescendant<cacto::Surface>("surface");
+    surface->setWidth(100);
+    surface->setHeight(100);
+
+    std::cout << "Child count: " << skeleton.getChildCount() << '\n';
 
     cacto::Linear linear{1, 2, sf::Time::Zero, sf::seconds(5), cacto::Animation::Forward, cacto::Animation::Flip};
     cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(5), cacto::Animation::Reverse, cacto::Animation::Flip};
