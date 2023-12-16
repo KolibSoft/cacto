@@ -169,9 +169,6 @@ namespace cacto
     void Skeleton::onRemove(Node &child)
     {
         auto index = getChildIndex(child);
-        auto &holder = m_holders[index];
-        if (holder.internal)
-            delete holder.child;
         m_holders.erase(m_holders.begin() + index);
     }
 
