@@ -43,7 +43,7 @@ namespace cacto
     {
         auto xml = XmlConverter<Node>::xml(node);
         if (xml.isTag())
-            xml["pool:tag"] = node::XmlConverter::Bag.getTag(*const_cast<Node *>(node));
+            xml["bag:tag"] = node::XmlConverter::Bag.getTag(*const_cast<Node *>(node));
         return std::move(xml);
     }
 
@@ -51,7 +51,7 @@ namespace cacto
     {
         auto _node = XmlConverter<Node>::value(xml);
         if (_node)
-            node::XmlConverter::Bag.set(*_node, xml.getAttribute("pool:tag"));
+            node::XmlConverter::Bag.set(*_node, xml.getAttribute("bag:tag"));
         node = _node;
     }
 
