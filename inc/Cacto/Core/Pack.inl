@@ -21,7 +21,7 @@ namespace cacto
     {
         for (auto &pack : Pack<T>::Packs)
         {
-            const std::string * id = pack->getId(value);
+            const std::string *id = pack->getId(value);
             if (id)
                 return id;
         }
@@ -33,7 +33,7 @@ namespace cacto
     {
         for (auto &pack : Pack<T>::Packs)
         {
-            const T * value = pack->getResource(id);
+            const T *value = pack->getResource(id);
             if (value)
                 return value;
         }
