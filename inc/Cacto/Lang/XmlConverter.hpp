@@ -26,7 +26,7 @@ namespace cacto
         static szt getConverterCount();
 
     private:
-        static std::vector<const XmlConverter<T> *> Converters;
+        static std::vector<const XmlConverter<T> *> s_Converters;
     };
 
 }

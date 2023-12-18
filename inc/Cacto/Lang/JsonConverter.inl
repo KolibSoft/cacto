@@ -8,13 +8,13 @@ namespace cacto
     template <typename T>
     inline JsonConverter<T>::JsonConverter()
     {
-        Converters.push_back(this);
+        s_Converters.push_back(this);
     }
 
     template <typename T>
     inline JsonConverter<T>::~JsonConverter()
     {
-        Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
+        s_Converters.erase(std::remove(s_Converters.begin(), s_Converters.end(), this), s_Converters.end());
     }
 
     template <typename T>
@@ -22,7 +22,7 @@ namespace cacto
     {
         if (value == nullptr)
             return nullptr;
-        for (auto &converter : JsonConverter<T>::Converters)
+        for (auto &converter : JsonConverter<T>::s_Converters)
         {
             JsonValue json = converter->toJson(value);
             if (json != nullptr)
@@ -36,7 +36,7 @@ namespace cacto
     {
         if (json == nullptr)
             return nullptr;
-        for (auto &converter : JsonConverter<T>::Converters)
+        for (auto &converter : JsonConverter<T>::s_Converters)
         {
             T* value = converter->fromJson(json);
             if (value)
@@ -46,6 +46,13 @@ namespace cacto
     }
 
     template <typename T>
-    inline std::vector<const JsonConverter<T> *> JsonConverter<T>::Converters{};
+    inline szt JsonConverter<T>::getConverterCount()
+    {
+        auto count = JsonConverter<T>::s_Converters.size();
+        return count;
+    }
+
+    template <typename T>
+    inline std::vector<const JsonConverter<T> *> JsonConverter<T>::s_Converters{};
 
 }
