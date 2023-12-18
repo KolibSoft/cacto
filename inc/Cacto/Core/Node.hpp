@@ -53,6 +53,9 @@ namespace cacto
 
             szt getCount() const;
 
+            template <typename T>
+            T *const getNodeAs(const std::string &tag) const;
+
             Bag();
             virtual ~Bag();
 

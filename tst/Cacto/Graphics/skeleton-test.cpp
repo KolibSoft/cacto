@@ -22,8 +22,8 @@ int main()
     std::cout << "Bag taken: " << bag.getCount() << '\n';
     std::cout << "Bag cleaned: " << cacto::node::XmlConverter::Bag.getCount() << '\n';
 
-    cacto::Skeleton *left = dynamic_cast<cacto::Skeleton *>(bag.getNode("left"));
-    cacto::Skeleton *right = dynamic_cast<cacto::Skeleton *>(bag.getNode("right"));
+    auto *left = bag.getNodeAs<cacto::Skeleton>("left");
+    auto *right = bag.getNodeAs<cacto::Skeleton>("right");
 
     while (window.isOpen())
     {
