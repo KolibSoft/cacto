@@ -3,6 +3,7 @@
 #include <filesystem>
 
 #include <Dylib/dylib.hpp>
+#include <Cacto/Core/Object.hpp>
 
 int main()
 {
@@ -13,6 +14,11 @@ int main()
     std::string message = "Message";
     auto result = dynamicTest(&message);
     std::cout << *result << '\n';
+
+    // cacto::Object object{};
+    auto ptr = std::make_shared<cacto::Object>();
+    auto _ptr = ptr->as();
+    auto cast = ptr->as<std::string>();
 
     return 0;
 }
