@@ -5,11 +5,6 @@
 namespace cacto
 {
 
-    const std::string &Node::getTag() const
-    {
-        return NoTag;
-    }
-
     i32t Node::getChildIndex(const Node &child) const
     {
         for (szt i = 0; i < getChildCount(); i++)
@@ -44,45 +39,30 @@ namespace cacto
         parent.onRemove(child);
     }
 
-    Node *const Node::firstAncestor(const NodePredicate &predicate) const
-    {
-        if (predicate(*this))
-            return const_cast<Node *const>(this);
-        auto parent = getParent();
-        if (parent)
-        {
-            auto node = parent->firstAncestor(predicate);
-            return node;
-        }
-        return nullptr;
-    }
-
-    Node *const Node::firstDescendant(const NodePredicate &predicate) const
-    {
-        if (predicate(*this))
-            return const_cast<Node *const>(this);
-        for (szt i = 0; i < getChildCount(); i++)
-        {
-            auto child = getChild(i);
-            auto node = child->firstDescendant(predicate);
-            if (node)
-                return node;
-        }
-        return nullptr;
-    }
-
-    const std::string Node::NoTag{};
-
     XmlValue toXml(const Node *const &node)
     {
         auto xml = XmlConverter<Node>::xml(node);
+        if (xml.isTag())
+        {
+            auto &tag = node::XmlConverter::Pool[const_cast<Node *>(node)];
+            xml["pool:tag"] = tag;
+        }
         return std::move(xml);
     }
 
     void fromXml(Node *&node, const XmlValue &xml)
     {
         auto _node = XmlConverter<Node>::value(xml);
+        auto tag = xml.getAttribute("pool:tag");
+        node::XmlConverter::Pool[_node] = tag;
         node = _node;
+    }
+
+    namespace node
+    {
+
+        std::unordered_map<Node *, std::string> XmlConverter::Pool{};
+
     }
 
 }

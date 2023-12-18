@@ -45,9 +45,6 @@ namespace cacto
         using Relation = skeleton::Relation;
         using Options = skeleton::Options;
 
-        const std::string &getTag() const override;
-        void setTag(const std::string &value);
-
         Node *const getParent() const override;
 
         szt getChildCount() const override;
@@ -56,7 +53,7 @@ namespace cacto
         const Options *const getOptions(Node &child) const;
         Options *const getOptions(Node &child);
 
-        Skeleton &append(Node &child, const Options &options = {}, bool internal = false);
+        Skeleton &append(Node &child, const Options &options = {});
         void remove(Node &child);
 
         Skeleton();
@@ -80,7 +77,6 @@ namespace cacto
     private:
         struct holder;
 
-        std::string m_tag;
         Node *m_parent;
         std::vector<holder> m_holders;
 
@@ -88,7 +84,6 @@ namespace cacto
         {
             Node *child{};
             Options options{};
-            bool internal{};
         };
     };
 

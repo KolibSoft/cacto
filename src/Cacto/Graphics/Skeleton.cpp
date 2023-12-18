@@ -41,16 +41,6 @@ namespace cacto
 
     }
 
-    const std::string &Skeleton::getTag() const
-    {
-        return m_tag;
-    }
-
-    void Skeleton::setTag(const std::string &value)
-    {
-        m_tag = value;
-    }
-
     Node *const Skeleton::getParent() const
     {
         return m_parent;
@@ -85,12 +75,11 @@ namespace cacto
         return nullptr;
     }
 
-    Skeleton &Skeleton::append(Node &child, const Options &options, bool internal)
+    Skeleton &Skeleton::append(Node &child, const Options &options)
     {
         Node::link(*this, child);
         auto &holder = m_holders.back();
         holder.options = options;
-        holder.internal = internal;
         return *this;
     }
 
@@ -100,8 +89,7 @@ namespace cacto
     }
 
     Skeleton::Skeleton()
-        : m_tag(),
-          m_parent(nullptr),
+        : m_parent(nullptr),
           m_holders()
     {
     }
@@ -109,19 +97,11 @@ namespace cacto
     Skeleton::~Skeleton()
     {
         while (m_holders.size() > 0)
-        {
-            auto &holder = m_holders.back();
-            auto child = holder.child;
-            auto internal = holder.internal;
-            Node::unlink(*this, *child);
-            if (internal)
-                delete child;
-        }
+            Node::unlink(*this, *m_holders.back().child);
     }
 
     Skeleton::Skeleton(const Skeleton &other)
         : Transformable(other),
-          m_tag(other.m_tag),
           m_parent(nullptr)
     {
     }
@@ -129,13 +109,11 @@ namespace cacto
     Skeleton &Skeleton::operator=(const Skeleton &other)
     {
         sf::Transformable::operator=(other);
-        m_tag = other.m_tag;
         return *this;
     }
 
     Skeleton::Skeleton(Skeleton &&other)
         : Transformable(std::move(other)),
-          m_tag(std::move(other.m_tag)),
           m_parent(nullptr)
     {
     }
@@ -143,7 +121,6 @@ namespace cacto
     Skeleton &Skeleton::operator=(Skeleton &&other)
     {
         sf::Transformable::operator=(std::move(other));
-        m_tag = std::move(other.m_tag);
         return *this;
     }
 
@@ -162,7 +139,6 @@ namespace cacto
         holder holder{};
         holder.child = &child;
         holder.options = {};
-        holder.internal = false;
         m_holders.push_back(holder);
     }
 
@@ -226,8 +202,6 @@ namespace cacto
     {
         XmlValue xml = toXml((sf::Transformable &)skeleton);
         xml.setName("Skeleton");
-        auto &tag = skeleton.getTag();
-        xml["tag"] = tag;
         auto &content = xml.asContent();
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
@@ -245,8 +219,6 @@ namespace cacto
     {
         skeleton = {};
         fromXml((sf::Transformable &)skeleton, xml);
-        auto tag = xml.getAttribute("tag", "");
-        skeleton.setTag(tag);
         if (xml.isTag())
             for (auto &item : xml.asContent())
             {
@@ -262,8 +234,7 @@ namespace cacto
                         .append(*node,
                                 Skeleton::Options()
                                     .setCoords(coords)
-                                    .setRelation(relation),
-                                true);
+                                    .setRelation(relation));
                 }
             }
     }

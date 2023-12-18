@@ -15,14 +15,14 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
+    cacto::Node *node = nullptr;
+    cacto::fromXmlFile(node, "res/mesh.xml");
+    cacto::toXmlFile(node, "res/mesh.xml", 2);
+
     cacto::Mesh mesh{};
     cacto::fromXmlFile(mesh, "res/mesh.xml");
     std::cout << cacto::toXml(mesh).toString(2) << "\n";
     cacto::toXmlFile(mesh, "res/mesh.xml", 2);
-
-    cacto::Node *node = nullptr;
-    cacto::fromXmlFile(node, "res/mesh.xml");
-    std::cout << cacto::toXml(node).toString(2) << "\n";
 
     mesh.setPrimitiveType(sf::PrimitiveType::LineStrip);
     mesh.append(mesh[0]);

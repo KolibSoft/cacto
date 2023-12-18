@@ -15,9 +15,6 @@ namespace cacto
     {
 
     public:
-        const std::string &getTag() const override;
-        void setTag(const std::string &value);
-
         Node *const getParent() const override;
 
         Mesh(sf::PrimitiveType primitive = sf::PrimitiveType::Points, szt count = 0);
@@ -36,7 +33,6 @@ namespace cacto
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        std::string m_tag;
         Node *m_parent;
     };
 

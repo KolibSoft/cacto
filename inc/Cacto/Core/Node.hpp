@@ -15,30 +15,17 @@ namespace cacto
     {
 
     public:
-        virtual const std::string &getTag() const;
-
         virtual Node *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
         virtual Node *const getChild(szt index = 0) const = 0;
         i32t getChildIndex(const Node &child) const;
 
-        Node *const firstAncestor(const NodePredicate &predicate) const;
-        Node *const firstDescendant(const NodePredicate &predicate) const;
-
-        template <typename T = Node>
-        T *const firstAncestor(const std::string &tag) const;
-
-        template <typename T = Node>
-        T *const firstDescendant(const std::string &tag) const;
-
         Node() = default;
         virtual ~Node() = default;
 
         static void link(Node &parent, Node &child);
         static void unlink(Node &parent, Node &child);
-
-        static const std::string NoTag;
 
     protected:
         virtual void onAttach(Node &parent) = 0;
@@ -62,6 +49,8 @@ namespace cacto
         public:
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
+
+            static std::unordered_map<Node *, std::string> Pool;
         };
 
     }

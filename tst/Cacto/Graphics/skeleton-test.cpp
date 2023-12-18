@@ -19,8 +19,14 @@ int main()
     std::cout << cacto::toXml(skeleton).toString() << "\n";
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
-    auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
-    auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
+    cacto::Skeleton *left = nullptr;
+    cacto::Skeleton *right = nullptr;
+
+    for (auto &pair : cacto::node::XmlConverter::Pool)
+        if (pair.second == "left")
+            left = dynamic_cast<cacto::Skeleton *>(pair.first);
+        else if (pair.second == "right")
+            right = dynamic_cast<cacto::Skeleton *>(pair.first);
 
     while (window.isOpen())
     {
