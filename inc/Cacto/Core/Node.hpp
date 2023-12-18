@@ -1,6 +1,5 @@
 #pragma once
 
-#include <functional>
 #include <Cacto/Lang/XmlConverter.hpp>
 #include <Cacto/Core/Export.hpp>
 
@@ -8,8 +7,6 @@ namespace cacto
 {
 
     class Node;
-
-    using NodePredicate = std::function<bool(const Node &node)>;
 
     class CACTO_CORE_API Node
     {
@@ -43,42 +40,12 @@ namespace cacto
     namespace node
     {
 
-        class CACTO_CORE_API Bag
-        {
-
-        public:
-            const std::string &getTag(const Node &node) const;
-            Node *const getNode(const std::string &tag) const;
-            void set(Node &node, const std::string &tag = "");
-
-            szt getCount() const;
-
-            template <typename T>
-            T *const getNodeAs(const std::string &tag) const;
-
-            Bag();
-            virtual ~Bag();
-
-            Bag(const Bag &other) = delete;
-            Bag &operator=(const Bag &other) = delete;
-
-            Bag(Bag &&other);
-            Bag &operator=(Bag &&other);
-
-            static const std::string NoTag;
-
-        private:
-            std::unordered_map<Node *, std::string> m_map;
-        };
-
         class CACTO_CORE_API XmlConverter
             : public virtual cacto::XmlConverter<Node>
         {
         public:
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
-
-            static Bag Bag;
         };
 
     }
