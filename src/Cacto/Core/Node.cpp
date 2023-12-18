@@ -5,6 +5,16 @@
 namespace cacto
 {
 
+    const std::string &Node::getId() const
+    {
+        return NoId;
+    }
+
+    bool Node::isInternal() const
+    {
+        return false;
+    }
+
     i32t Node::getChildIndex(const Node &child) const
     {
         for (szt i = 0; i < getChildCount(); i++)
@@ -37,7 +47,11 @@ namespace cacto
             throw std::runtime_error("The child was linked to another parent");
         child.onDetach(parent);
         parent.onRemove(child);
+        if (child.isInternal())
+            delete &child;
     }
+
+    const std::string Node::NoId;
 
     XmlValue toXml(const Node *const &node)
     {
