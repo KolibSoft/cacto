@@ -96,6 +96,8 @@ namespace cacto
 
     Skeleton::~Skeleton()
     {
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
         while (m_holders.size() > 0)
             Node::unlink(*this, *m_holders.back().child);
     }

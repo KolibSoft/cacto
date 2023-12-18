@@ -18,7 +18,11 @@ namespace cacto
     {
     }
 
-    Mesh::~Mesh() = default;
+    Mesh::~Mesh()
+    {
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
+    }
 
     Mesh::Mesh(const Mesh &other)
         : sf::VertexArray(other),
