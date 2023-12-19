@@ -45,6 +45,12 @@ namespace cacto
         using Relation = skeleton::Relation;
         using Options = skeleton::Options;
 
+        const std::string &getId() const override;
+        Skeleton& setId(const std::string &value);
+
+        bool isInternal() const override;
+        Skeleton& setInternal(bool value);
+
         Node *const getParent() const override;
 
         szt getChildCount() const override;
@@ -77,6 +83,8 @@ namespace cacto
     private:
         struct holder;
 
+        std::string m_id;
+        bool m_internal;
         Node *m_parent;
         std::vector<holder> m_holders;
 

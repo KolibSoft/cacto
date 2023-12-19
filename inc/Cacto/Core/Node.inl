@@ -7,7 +7,7 @@ namespace cacto
     inline T *const Node::firstDescendant(const std::string &id) const
     {
         if (this->getId() == id)
-            return const_cast<T *>(this);
+            return dynamic_cast<T *>(const_cast<Node *>(this));
         for (szt i = 0; i < getChildCount(); i++)
         {
             auto child = getChild(i);
@@ -25,7 +25,7 @@ namespace cacto
     inline T *const Node::firstAncestor(const std::string &id) const
     {
         if (this->getId() == id)
-            return const_cast<T *>(this);
+            return dynamic_cast<T *>(const_cast<Node *>(this));
         auto parent = getParent();
         if (parent)
         {

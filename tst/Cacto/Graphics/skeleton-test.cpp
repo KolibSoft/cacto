@@ -15,15 +15,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Skeleton skeleton{};
-    cacto::node::XmlConverter::Bag = {};
     cacto::fromXmlFile(skeleton, "res/skeleton.xml");
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
-    auto bag = std::move(cacto::node::XmlConverter::Bag);
-    std::cout << "Bag taken: " << bag.getCount() << '\n';
-    std::cout << "Bag cleaned: " << cacto::node::XmlConverter::Bag.getCount() << '\n';
 
-    auto *left = bag.getNodeAs<cacto::Skeleton>("left");
-    auto *right = bag.getNodeAs<cacto::Skeleton>("right");
+    auto *left = skeleton.firstDescendant<cacto::Skeleton>("left");
+    auto *right = skeleton.firstDescendant<cacto::Skeleton>("right");
 
     while (window.isOpen())
     {

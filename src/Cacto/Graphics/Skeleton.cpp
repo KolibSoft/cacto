@@ -41,6 +41,28 @@ namespace cacto
 
     }
 
+    const std::string &Skeleton::getId() const
+    {
+        return m_id;
+    }
+
+    Skeleton &Skeleton::setId(const std::string &value)
+    {
+        m_id = value;
+        return *this;
+    }
+
+    bool Skeleton::isInternal() const
+    {
+        return m_internal;
+    }
+
+    Skeleton &Skeleton::setInternal(bool value)
+    {
+        m_internal = value;
+        return *this;
+    }
+
     Node *const Skeleton::getParent() const
     {
         return m_parent;
@@ -89,7 +111,9 @@ namespace cacto
     }
 
     Skeleton::Skeleton()
-        : m_parent(nullptr),
+        : m_id(),
+          m_internal(),
+          m_parent(nullptr),
           m_holders()
     {
     }
@@ -104,6 +128,8 @@ namespace cacto
 
     Skeleton::Skeleton(const Skeleton &other)
         : Transformable(other),
+          m_id(),
+          m_internal(),
           m_parent(nullptr)
     {
     }
@@ -116,6 +142,8 @@ namespace cacto
 
     Skeleton::Skeleton(Skeleton &&other)
         : Transformable(std::move(other)),
+          m_id(),
+          m_internal(),
           m_parent(nullptr)
     {
     }
@@ -204,6 +232,7 @@ namespace cacto
     {
         XmlValue xml = toXml((sf::Transformable &)skeleton);
         xml.setName("Skeleton");
+        xml["id"] = skeleton.getId();
         auto &content = xml.asContent();
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
@@ -221,6 +250,7 @@ namespace cacto
     {
         skeleton = {};
         fromXml((sf::Transformable &)skeleton, xml);
+        skeleton.setId(xml.getAttribute("id"));
         if (xml.isTag())
             for (auto &item : xml.asContent())
             {
@@ -261,6 +291,7 @@ namespace cacto
             {
                 auto skeleton = new Skeleton();
                 cacto::fromXml(*skeleton, xml);
+                skeleton->setInternal(true);
                 return skeleton;
             }
             return nullptr;

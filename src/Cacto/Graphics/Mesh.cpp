@@ -7,6 +7,28 @@
 namespace cacto
 {
 
+    const std::string &Mesh::getId() const
+    {
+        return m_id;
+    }
+
+    Mesh &Mesh::setId(const std::string &value)
+    {
+        m_id = value;
+        return *this;
+    }
+
+    bool Mesh::isInternal() const
+    {
+        return m_internal;
+    }
+
+    Mesh &Mesh::setInternal(bool value)
+    {
+        m_internal = value;
+        return *this;
+    }
+
     Node *const Mesh::getParent() const
     {
         return m_parent;
@@ -14,6 +36,8 @@ namespace cacto
 
     Mesh::Mesh(sf::PrimitiveType primitive, szt count)
         : sf::VertexArray(primitive, count),
+          m_id(),
+          m_internal(),
           m_parent(nullptr)
     {
     }
@@ -26,6 +50,8 @@ namespace cacto
 
     Mesh::Mesh(const Mesh &other)
         : sf::VertexArray(other),
+          m_id(),
+          m_internal(),
           m_parent(nullptr)
     {
     }
@@ -67,6 +93,7 @@ namespace cacto
     {
         XmlValue xml{"Mesh", {}};
         auto &content = xml.asContent();
+        xml["id"] = mesh.getId();
         xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
         for (szt i = 0; i < mesh.getVertexCount(); i++)
         {
@@ -79,6 +106,7 @@ namespace cacto
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
         mesh = {};
+        mesh.setId(xml.getAttribute("id"));
         sf::PrimitiveType primitive;
         cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
         mesh.setPrimitiveType(primitive);
@@ -118,6 +146,7 @@ namespace cacto
             {
                 auto mesh = new Mesh();
                 cacto::fromXml(*mesh, xml);
+                mesh->setInternal(true);
                 return mesh;
             }
             return nullptr;

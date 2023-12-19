@@ -15,6 +15,12 @@ namespace cacto
     {
 
     public:
+        const std::string &getId() const override;
+        Mesh& setId(const std::string &value);
+
+        bool isInternal() const override;
+        Mesh& setInternal(bool value);
+
         Node *const getParent() const override;
 
         Mesh(sf::PrimitiveType primitive = sf::PrimitiveType::Points, szt count = 0);
@@ -33,6 +39,8 @@ namespace cacto
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
+        std::string m_id;
+        bool m_internal;
         Node *m_parent;
     };
 
