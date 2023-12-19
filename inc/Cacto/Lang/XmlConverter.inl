@@ -38,7 +38,7 @@ namespace cacto
             return nullptr;
         for (auto &converter : XmlConverter<T>::s_Converters)
         {
-            T *value = converter->fromXml(xml);
+            Shared<T> value = converter->fromXml(xml);
             if (value)
                 return std::move(value);
         }

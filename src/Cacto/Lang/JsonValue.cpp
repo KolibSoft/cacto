@@ -131,14 +131,14 @@ namespace cacto
         return m_kind == Object;
     }
 
-    const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const
+    const std::map<std::string, JsonValue> &JsonValue::asObject() const
     {
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
         return *m_object;
     }
 
-    std::unordered_map<std::string, JsonValue> &JsonValue::asObject()
+    std::map<std::string, JsonValue> &JsonValue::asObject()
     {
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
@@ -296,7 +296,7 @@ namespace cacto
         if (scanner.dropToken("{"))
         {
             m_kind = Object;
-            m_object = new std::unordered_map<std::string, JsonValue>();
+            m_object = new std::map<std::string, JsonValue>();
             scanner.dropBlankln();
             if (!scanner.dropToken("}"))
             {
@@ -423,15 +423,15 @@ namespace cacto
     {
     }
 
-    JsonValue::JsonValue(const std::unordered_map<std::string, JsonValue> &object)
+    JsonValue::JsonValue(const std::map<std::string, JsonValue> &object)
         : m_kind(Object),
-          m_object(new std::unordered_map<std::string, JsonValue>(object))
+          m_object(new std::map<std::string, JsonValue>(object))
     {
     }
 
     JsonValue::JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object)
         : m_kind(Object),
-          m_object(new std::unordered_map<std::string, JsonValue>(object))
+          m_object(new std::map<std::string, JsonValue>(object))
     {
     }
 
@@ -461,7 +461,7 @@ namespace cacto
             m_array = new std::vector<JsonValue>(*other.m_array);
             break;
         case Object:
-            m_object = new std::unordered_map<std::string, JsonValue>(*other.m_object);
+            m_object = new std::map<std::string, JsonValue>(*other.m_object);
             break;
         }
     }
@@ -540,7 +540,7 @@ namespace cacto
     const JsonValue JsonValue::BooleanValue = false;
     const JsonValue JsonValue::NullValue = nullptr;
     const JsonValue JsonValue::ArrayValue = std::vector<JsonValue>();
-    const JsonValue JsonValue::ObjectValue = std::unordered_map<std::string, JsonValue>();
+    const JsonValue JsonValue::ObjectValue = std::map<std::string, JsonValue>();
 
     void JsonValue::drop()
     {

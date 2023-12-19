@@ -9,17 +9,17 @@ namespace cacto
         return 0;
     }
 
-    Node *const LeafNode::getChild(szt index) const
+    Shared<Node> LeafNode::getChild(szt index) const
     {
         return nullptr;
     }
 
-    void LeafNode::onAppend(Node &child)
+    void LeafNode::onAppend(const Shared<Node> &child)
     {
         throw std::runtime_error("Leaf nodes can not hold children");
     }
 
-    void LeafNode::onRemove(Node &child)
+    void LeafNode::onRemove(const Shared<Node> &child)
     {
         throw std::runtime_error("Leaf nodes can not hold children");
     }

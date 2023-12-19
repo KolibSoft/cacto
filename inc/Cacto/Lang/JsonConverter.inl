@@ -38,7 +38,7 @@ namespace cacto
             return nullptr;
         for (auto &converter : JsonConverter<T>::s_Converters)
         {
-            T *value = converter->fromJson(json);
+            Shared<T> value = converter->fromJson(json);
             if (value)
                 return std::move(value);
         }
