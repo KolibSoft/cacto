@@ -141,7 +141,7 @@ namespace cacto
         if (texture)
         {
             auto id = cacto::getId(*texture);
-            json["texture"] = id ? *id : nullptr;
+            json["texture"] = id;
         }
         json["tileSize"] = {tileSize.x, tileSize.y};
         json["area"] = cacto::toJson(sf::FloatRect(area));
@@ -164,7 +164,7 @@ namespace cacto
         if (texture != nullptr)
         {
             auto resource = cacto::getTexture(texture.asString());
-            tilemap.setTexture(resource);
+            tilemap.setTexture(resource.get());
         }
         tilemap.setTileSize({f32t(tileSize[0].getNumber()), f32t(tileSize[1].getNumber())});
         sf::FloatRect _area{};

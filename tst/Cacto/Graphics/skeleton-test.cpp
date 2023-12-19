@@ -7,19 +7,22 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
 
+    cacto::Textures = {"res"};
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Skeleton skeleton{};
-    cacto::fromXmlFile(skeleton, "res/skeleton.xml");
-    cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
+    cacto::Shared<cacto::Node> root = nullptr;
+    cacto::fromXmlFile(root, "res/skeleton.xml");
+    cacto::toXmlFile(root, "res/skeleton.xml", 2);
 
-    auto *left = skeleton.firstDescendant<cacto::Skeleton>("left");
-    auto *right = skeleton.firstDescendant<cacto::Skeleton>("right");
+    auto skeleton = std::dynamic_pointer_cast<cacto::Skeleton>(root);
+    auto left = skeleton->firstDescendant<cacto::Skeleton>("left");
+    auto right = skeleton->firstDescendant<cacto::Skeleton>("right");
 
     while (window.isOpen())
     {
@@ -29,11 +32,11 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
-                skeleton.setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                skeleton->setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
-                skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
-                skeleton.setScale(skeleton.getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
+                skeleton->rotate(sf::degrees(event.mouseWheelScroll.delta));
+                skeleton->setScale(skeleton->getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
             }
             else if (event.type == sf::Event::KeyPressed)
             {
@@ -44,7 +47,7 @@ int main()
             }
         }
         window.clear();
-        window.draw(skeleton);
+        window.draw(*skeleton);
         window.display();
     }
 

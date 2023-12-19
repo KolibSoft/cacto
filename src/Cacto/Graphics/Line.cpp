@@ -24,16 +24,16 @@ namespace cacto
         setPoints(vertexes, line, count, precision);
     }
 
-    JsonValue toJson(const Line *const &line)
+    JsonValue toJson(const Shared<const Line> &line)
     {
         auto json = JsonConverter<Line>::json(line);
         return std::move(json);
     }
 
-    void fromJson(Line *&line, const JsonValue &json)
+    void fromJson(Shared<Line> &line, const JsonValue &json)
     {
         auto _line = JsonConverter<Line>::value(json);
-        line = _line;
+        line = std::move(_line);
     }
 
 }

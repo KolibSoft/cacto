@@ -67,25 +67,26 @@ namespace cacto
     namespace straight
     {
 
-        JsonValue JsonConverter::toJson(const Line *const value) const
+        JsonValue JsonConverter::toJson(const Shared<const Line> &value) const
         {
-            const Straight *straight = nullptr;
-            if (value && typeid(*value) == typeid(Straight) && (straight = dynamic_cast<const Straight *>(value)))
+            Shared<const Straight> straight = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Straight) && (straight = std::dynamic_pointer_cast<const Straight>(value)))
             {
                 auto json = cacto::toJson(*straight);
                 json["$type"] = "Straight";
-                return json;
+                return std::move(json);
             }
             return nullptr;
         }
 
-        Line *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Line> JsonConverter::fromJson(const JsonValue &json) const
         {
             if (json.getKind() == JsonValue::Object && json["$type"] == "Straight")
             {
-                auto straight = new Straight();
+                auto straight = std::make_shared<Straight>();
                 cacto::fromJson(*straight, json);
-                return straight;
+                return std::move(straight);
             }
             return nullptr;
         }

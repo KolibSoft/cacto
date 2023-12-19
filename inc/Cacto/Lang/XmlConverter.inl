@@ -18,7 +18,7 @@ namespace cacto
     }
 
     template <typename T>
-    inline XmlValue XmlConverter<T>::xml(const T *const value)
+    inline XmlValue XmlConverter<T>::xml(const Shared<const T> &value)
     {
         if (value == nullptr)
             return nullptr;
@@ -32,15 +32,15 @@ namespace cacto
     }
 
     template <typename T>
-    inline T *XmlConverter<T>::value(const XmlValue &xml)
+    inline Shared<T> XmlConverter<T>::value(const XmlValue &xml)
     {
         if (xml == nullptr)
             return nullptr;
         for (auto &converter : XmlConverter<T>::s_Converters)
         {
-            T *value = converter->fromXml(xml);
+            Shared<T> value = converter->fromXml(xml);
             if (value)
-                return value;
+                return std::move(value);
         }
         return nullptr;
     }

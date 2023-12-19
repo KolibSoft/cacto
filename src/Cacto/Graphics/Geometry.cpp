@@ -5,25 +5,42 @@
 namespace cacto
 {
 
-    JsonValue toJson(const Geometry *const &geometry)
+    JsonValue toJson(const Shared<const Geometry> &geometry)
     {
         auto json = JsonConverter<Geometry>::json(geometry);
         return std::move(json);
     }
 
-    void fromJson(Geometry *&geometry, const JsonValue &json)
+    void fromJson(Shared<Geometry> &geometry, const JsonValue &json)
     {
         auto _geometry = JsonConverter<Geometry>::value(json);
-        geometry = _geometry;
+        geometry = std::move(_geometry);
     }
 
     namespace geometry
     {
 
-        JsonValue JsonConverter::toJson(const Line *const value) const
+        JsonValue LineJsonConverter::toJson(const Shared<const Line> &value) const
         {
-            return toJson(dynamic_cast<const Geometry *>(value));
+            try
+            {
+                auto cast = std::dynamic_pointer_cast<const Geometry>(value);
+                auto json = cacto::JsonConverter<Geometry>::json(cast);
+                return std::move(json);
+            }
+            catch (std::bad_cast)
+            {
+                return nullptr;
+            }
         }
+
+        Shared<Line> LineJsonConverter::fromJson(const JsonValue &json) const
+        {
+            auto value = cacto::JsonConverter<Geometry>::value(json);
+            return std::move(value);
+        }
+
+        LineJsonConverter LineConverter;
 
     }
 

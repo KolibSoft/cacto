@@ -122,25 +122,26 @@ namespace cacto
     namespace rectangle
     {
 
-        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        JsonValue JsonConverter::toJson(const Shared<const Geometry> &value) const
         {
-            const Rectangle *rectangle = nullptr;
-            if (value && typeid(*value) == typeid(Rectangle) && (rectangle = dynamic_cast<const Rectangle *>(value)))
+            Shared<const Rectangle> rectangle = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Rectangle) && (rectangle = std::dynamic_pointer_cast<const Rectangle>(value)))
             {
                 auto json = cacto::toJson(*rectangle);
                 json["$type"] = "Rectangle";
-                return json;
+                return std::move(json);
             }
             return nullptr;
         }
 
-        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Geometry> JsonConverter::fromJson(const JsonValue &json) const
         {
             if (json.getKind() == JsonValue::Object && json["$type"] == "Rectangle")
             {
-                auto rectangle = new Rectangle();
+                auto rectangle = std::make_shared<Rectangle>();
                 cacto::fromJson(*rectangle, json);
-                return rectangle;
+                return std::move(rectangle);
             }
             return nullptr;
         }

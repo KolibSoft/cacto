@@ -6,15 +6,15 @@
 namespace cacto
 {
 
-    const std::string *const StringPack::getId(const sf::String &value) const
+    const std::string &StringPack::getId(const sf::String &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == &value)
-                return &pair.first;
-        return nullptr;
+            if (pair.second.get() == &value)
+                return pair.first;
+        return NoId;
     }
 
-    const sf::String *const StringPack::getResource(const std::string &id) const
+    Shared<const sf::String> StringPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
             if (pair.first == id)
@@ -23,7 +23,7 @@ namespace cacto
         {
             std::string _string{};
             fromFile(_string, m_path / id);
-            auto string = new sf::String(_string);
+            auto string = std::make_shared<sf::String>(_string);
             m_map.insert({id, string});
             return string;
         }
@@ -34,24 +34,12 @@ namespace cacto
         }
     }
 
-    void StringPack::setResource(const std::string &id, const sf::String *const value)
+    void StringPack::setResource(const std::string &id, const Shared<const sf::String> &value)
     {
         for (auto &pair : m_map)
             if (pair.first == id)
             {
-                if (pair.second && value)
-                {
-                    *pair.second = *value;
-                }
-                else if (pair.second && !value)
-                {
-                    delete pair.second;
-                    pair.second = nullptr;
-                }
-                else if (!pair.second && value)
-                {
-                    pair.second = new sf::String(*value);
-                }
+                pair.second = value;
                 return;
             }
         if (value)
@@ -60,8 +48,7 @@ namespace cacto
             {
                 auto _string = value->toAnsiString();
                 toFile(_string, m_path / id);
-                auto string = new sf::String(*value);
-                m_map.insert({id, string});
+                m_map.insert({id, value});
             }
             catch (...)
             {
@@ -80,28 +67,18 @@ namespace cacto
     {
     }
 
-    StringPack::~StringPack()
-    {
-        for (auto &pair : m_map)
-        {
-            if (pair.second)
-            {
-                delete pair.second;
-                pair.second = nullptr;
-            }
-        }
-    }
+    StringPack::~StringPack() = default;
 
-    const std::string *const getId(const sf::String &string)
+    const std::string &getId(const sf::String &string)
     {
-        auto id = Pack<sf::String>::id(string);
+        auto &id = Pack<sf::String>::id(string);
         return id;
     }
 
-    const sf::String *const getString(const std::string &id)
+    Shared<const sf::String> getString(const std::string &id)
     {
-        auto string = Pack<sf::String>::resource(id);
-        return string;
+        auto resource = Pack<sf::String>::resource(id);
+        return std::move(resource);
     }
 
     StringPack Strings{"."};

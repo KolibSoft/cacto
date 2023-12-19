@@ -106,25 +106,26 @@ namespace cacto
     namespace ellipse
     {
 
-        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        JsonValue JsonConverter::toJson(const Shared<const Geometry> &value) const
         {
-            const Ellipse *ellipse = nullptr;
-            if (value && typeid(*value) == typeid(Ellipse) && (ellipse = dynamic_cast<const Ellipse *>(value)))
+            Shared<const Ellipse> ellipse = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Ellipse) && (ellipse = std::dynamic_pointer_cast<const Ellipse>(value)))
             {
                 auto json = cacto::toJson(*ellipse);
                 json["$type"] = "Ellipse";
-                return json;
+                return std::move(json);
             }
             return nullptr;
         }
 
-        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Geometry> JsonConverter::fromJson(const JsonValue &json) const
         {
             if (json.getKind() == JsonValue::Object && json["$type"] == "Ellipse")
             {
-                auto ellipse = new Ellipse();
+                auto ellipse = std::make_shared<Ellipse>();
                 cacto::fromJson(*ellipse, json);
-                return ellipse;
+                return std::move(ellipse);
             }
             return nullptr;
         }

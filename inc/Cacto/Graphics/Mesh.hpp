@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Lang/Object.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
@@ -10,38 +11,29 @@ namespace cacto
 
     class CACTO_GRAPHICS_API Mesh
         : public sf::VertexArray,
+          public Object,
           public virtual LeafNode,
           public virtual DrawNode
     {
 
     public:
         const std::string &getId() const override;
-        Mesh& setId(const std::string &value);
+        Mesh &setId(const std::string &value);
 
-        bool isInternal() const override;
-        Mesh& setInternal(bool value);
-
-        Node *const getParent() const override;
+        Shared<Node> getParent() const override;
 
         Mesh(sf::PrimitiveType primitive = sf::PrimitiveType::Points, szt count = 0);
         virtual ~Mesh();
 
-        Mesh(const Mesh &other);
-        Mesh &operator=(const Mesh &other);
-
-        Mesh(Mesh &&other);
-        Mesh &operator=(Mesh &&other);
-
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const Shared<Node> &parent) override;
+        void onDetach(const Shared<Node> &parent) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         std::string m_id;
-        bool m_internal;
-        Node *m_parent;
+        Weak<Node> m_parent;
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Mesh &mesh);
@@ -54,8 +46,8 @@ namespace cacto
             : public virtual node::XmlConverter
         {
         public:
-            XmlValue toXml(const Node *const value) const override;
-            Node *fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Shared<const Node> &value) const override;
+            Shared<Node> fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;

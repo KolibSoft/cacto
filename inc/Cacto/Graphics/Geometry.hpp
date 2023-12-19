@@ -16,10 +16,6 @@ namespace sf
 namespace cacto
 {
 
-    class Geometry;
-
-    template class CACTO_GRAPHICS_API cacto::JsonConverter<Geometry>;
-
     class JsonValue;
 
     class Geometry
@@ -34,21 +30,35 @@ namespace cacto
         virtual ~Geometry() = default;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Geometry *const &geometry);
-    void CACTO_GRAPHICS_API fromJson(Geometry *&geometry, const JsonValue &json);
+    template class CACTO_GRAPHICS_API cacto::JsonConverter<Geometry>;
+
+    JsonValue CACTO_GRAPHICS_API toJson(const Shared<const Geometry> &geometry);
+    void CACTO_GRAPHICS_API fromJson(Shared<Geometry> &geometry, const JsonValue &json);
 
     namespace geometry
     {
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual line::JsonConverter,
-              public virtual cacto::JsonConverter<Geometry>
+
+        class CACTO_GRAPHICS_API LineJsonConverter
+            : public virtual line::JsonConverter
         {
         public:
-            JsonValue toJson(const Line *const value) const override;
+            JsonValue toJson(const Shared<const Line> &value) const override;
+            Shared<Line> fromJson(const JsonValue &json) const override;
 
+            LineJsonConverter() = default;
+            virtual ~LineJsonConverter() = default;
+        };
+
+        extern LineJsonConverter CACTO_GRAPHICS_API LineConverter;
+
+        class CACTO_GRAPHICS_API JsonConverter
+            : public virtual cacto::JsonConverter<Geometry>
+        {
+        public:
             JsonConverter() = default;
             virtual ~JsonConverter() = default;
         };
+
     }
 
 }

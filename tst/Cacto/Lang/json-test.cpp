@@ -34,15 +34,15 @@ int main()
     comparison = json == nullptr;
     std::cout << json << '\n';
 
-    json = {25, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()};
+    json = {25, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::map<std::string, cacto::JsonValue>()};
     kind = json.getKind();
-    comparison = json == cacto::JsonValue{25, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()};
+    comparison = json == cacto::JsonValue{25, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::map<std::string, cacto::JsonValue>()};
     auto array = json.asArray();
     std::cout << json << '\n';
 
-    json = {std::pair{"number", 25}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}};
+    json = {std::pair{"number", 25}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::map<std::string, cacto::JsonValue>()}};
     kind = json.getKind();
-    comparison = json == cacto::JsonValue{std::pair{"number", 25}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}};
+    comparison = json == cacto::JsonValue{std::pair{"number", 25}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::map<std::string, cacto::JsonValue>()}};
     auto object = json.asObject();
     std::cout << json << '\n';
 
@@ -51,8 +51,8 @@ int main()
     json.asArray().push_back("String");
     json.asArray().push_back(true);
     json.asArray().push_back(nullptr);
-    json.asArray().push_back({25, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::unordered_map<std::string, cacto::JsonValue>()});
-    json.asArray().push_back({std::pair{"number", 25}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}});
+    json.asArray().push_back({25, std::string("String"), true, nullptr, std::vector<cacto::JsonValue>(), std::map<std::string, cacto::JsonValue>()});
+    json.asArray().push_back({std::pair{"number", 25}, std::pair{"string", std::string("String")}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::map<std::string, cacto::JsonValue>()}});
     json[5]["object"] = json;
     json.toStream(std::cout, 2);
 

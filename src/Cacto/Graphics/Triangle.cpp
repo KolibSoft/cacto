@@ -129,25 +129,26 @@ namespace cacto
     namespace triangle
     {
 
-        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        JsonValue JsonConverter::toJson(const Shared<const Geometry> &value) const
         {
-            const Triangle *triangle = nullptr;
-            if (value && typeid(*value) == typeid(Triangle) && (triangle = dynamic_cast<const Triangle *>(value)))
+            Shared<const Triangle> triangle = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Triangle) && (triangle = std::dynamic_pointer_cast<const Triangle>(value)))
             {
                 auto json = cacto::toJson(*triangle);
                 json["$type"] = "Triangle";
-                return json;
+                return std::move(json);
             }
             return nullptr;
         }
 
-        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Geometry> JsonConverter::fromJson(const JsonValue &json) const
         {
             if (json.getKind() == JsonValue::Object && json["$type"] == "Triangle")
             {
-                auto triangle = new Triangle();
+                auto triangle = std::make_shared<Triangle>();
                 cacto::fromJson(*triangle, json);
-                return triangle;
+                return std::move(triangle);
             }
             return nullptr;
         }

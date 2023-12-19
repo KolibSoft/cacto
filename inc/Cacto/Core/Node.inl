@@ -1,13 +1,18 @@
+#include <Cacto/Lang/Object.hpp>
 #include <Cacto/Core/Node.hpp>
 
 namespace cacto
 {
 
     template <typename T>
-    inline T *const Node::firstDescendant(const std::string &id) const
+    inline Shared<T> Node::firstDescendant(const std::string &id) const
     {
         if (this->getId() == id)
-            return dynamic_cast<T *>(const_cast<Node *>(this));
+        {
+            auto object = dynamic_cast<Object *>(const_cast<Node *>(this));
+            if (object)
+                return object->as<T>();
+        }
         for (szt i = 0; i < getChildCount(); i++)
         {
             auto child = getChild(i);
@@ -15,22 +20,26 @@ namespace cacto
             {
                 auto node = child->firstDescendant<T>(id);
                 if (node)
-                    return node;
+                    return std::move(node);
             }
         }
         return nullptr;
     }
 
     template <typename T>
-    inline T *const Node::firstAncestor(const std::string &id) const
+    inline Shared<T> Node::firstAncestor(const std::string &id) const
     {
         if (this->getId() == id)
-            return dynamic_cast<T *>(const_cast<Node *>(this));
+        {
+            auto object = dynamic_cast<Object *>(const_cast<Node *>(this));
+            if (object)
+                return object->as<T>();
+        }
         auto parent = getParent();
         if (parent)
         {
             auto node = parent->firstAncestor<T>(id);
-            return node;
+            return std::move(node);
         }
         return nullptr;
     }

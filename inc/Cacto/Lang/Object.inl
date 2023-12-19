@@ -8,7 +8,8 @@ namespace cacto
     {
         try
         {
-            auto cast = std::dynamic_pointer_cast<const T>(this);
+            auto self = shared_from_this();
+            auto cast = std::dynamic_pointer_cast<const T>(self);
             return cast;
         }
         catch (std::bad_cast)
@@ -22,7 +23,8 @@ namespace cacto
     {
         try
         {
-            auto cast = std::dynamic_pointer_cast<T>(this);
+            auto self = shared_from_this();
+            auto cast = std::dynamic_pointer_cast<T>(self);
             return cast;
         }
         catch (std::bad_cast)

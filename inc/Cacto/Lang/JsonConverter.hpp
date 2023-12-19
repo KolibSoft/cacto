@@ -13,14 +13,14 @@ namespace cacto
     {
 
     public:
-        virtual JsonValue toJson(const T *const value) const = 0;
-        virtual T *fromJson(const JsonValue &json) const = 0;
+        virtual JsonValue toJson(const Shared<const T> &value) const = 0;
+        virtual Shared<T> fromJson(const JsonValue &json) const = 0;
 
         JsonConverter();
         virtual ~JsonConverter();
 
-        static JsonValue json(const T *const value);
-        static T *value(const JsonValue &json);
+        static JsonValue json(const Shared<const T> &value);
+        static Shared<T> value(const JsonValue &json);
 
         static szt getConverterCount();
 
