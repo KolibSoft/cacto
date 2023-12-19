@@ -22,4 +22,16 @@ namespace cacto
         setPoints(vertexes, line, count, precision);
     }
 
+    XmlValue toXml(const Shared<const Line> &line)
+    {
+        auto xml = XmlConverter<Line>::xml(line);
+        return std::move(xml);
+    }
+
+    void fromXml(Shared<Line> &line, const XmlValue &xml)
+    {
+        auto value = XmlConverter<Line>::value(xml);
+        line = std::move(value);
+    }
+
 }
