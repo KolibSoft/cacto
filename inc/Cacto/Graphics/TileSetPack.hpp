@@ -29,7 +29,7 @@ namespace cacto
         mutable std::unordered_map<std::string, Shared<const TileSet>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const Shared<const TileSet> &texture);
+    const std::string &CACTO_GRAPHICS_API getId(const Shared<const TileSet> &tileSet);
     Shared<const TileSet> CACTO_GRAPHICS_API getTileSet(const std::string &id);
 
 }
