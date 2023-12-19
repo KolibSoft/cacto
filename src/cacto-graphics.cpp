@@ -13,5 +13,4 @@
 #include "Cacto/Graphics/TileMap.cpp"
 #include "Cacto/Graphics/ImagePack.cpp"
 #include "Cacto/Graphics/TexturePack.cpp"
-#include "Cacto/Graphics/VertexArrayPack.cpp"
 #include "Cacto/Graphics/Utils.cpp"

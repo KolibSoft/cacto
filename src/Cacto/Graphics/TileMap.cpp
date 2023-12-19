@@ -7,14 +7,15 @@
 namespace cacto
 {
 
-    const sf::Texture *const TileMap::getTexture() const
+    const Shared<const sf::Texture> &TileMap::getTexture() const
     {
         return m_texture;
     }
 
-    void TileMap::setTexture(const sf::Texture *const value)
+    TileMap &TileMap::setTexture(const Shared<const sf::Texture> &value)
     {
         m_texture = value;
+        return *this;
     }
 
     const sf::Vector2f &TileMap::getTileSize() const
@@ -22,10 +23,11 @@ namespace cacto
         return m_tileSize;
     }
 
-    void TileMap::setTileSize(const sf::Vector2f &value)
+    TileMap &TileMap::setTileSize(const sf::Vector2f &value)
     {
         m_tileSize = value;
         m_invalid = true;
+        return *this;
     }
 
     const sf::IntRect &TileMap::getArea() const
@@ -33,11 +35,12 @@ namespace cacto
         return m_area;
     }
 
-    void TileMap::setArea(const sf::IntRect &value)
+    TileMap &TileMap::setArea(const sf::IntRect &value)
     {
         m_area = value;
         m_array.resize(value.width * value.height * 6);
         m_invalid = true;
+        return *this;
     }
 
     sf::FloatRect TileMap::getTile(const sf::Vector2i &position) const
@@ -52,7 +55,7 @@ namespace cacto
         return {};
     }
 
-    void TileMap::setTile(const sf::Vector2i &position, const sf::FloatRect &tile)
+    TileMap &TileMap::setTile(const sf::Vector2i &position, const sf::FloatRect &tile)
     {
         if (m_area.contains(position))
         {
@@ -69,24 +72,33 @@ namespace cacto
             texCoords.y -= tile.height;
             m_array[base + 5].texCoords = texCoords;
         }
+        return *this;
     }
 
-    void TileMap::setTiles(const sf::IntRect &area, const sf::FloatRect &tile)
+    TileMap &TileMap::setTiles(const sf::IntRect &area, const sf::FloatRect &tile)
     {
         for (i32t y = area.top; y < area.top + area.height; y++)
             for (i32t x = area.left; x < area.left + area.width; x++)
                 setTile({x, y}, tile);
+        return *this;
     }
 
-    void TileMap::fill(const sf::FloatRect &tile)
+    TileMap &TileMap::fill(const sf::FloatRect &tile)
     {
         setTiles(m_area, tile);
+        return *this;
+    }
+
+    Shared<Node> TileMap::getParent() const
+    {
+        return m_parent.lock();
     }
 
     TileMap::TileMap()
         : m_texture(nullptr),
           m_tileSize(),
           m_area(),
+          m_parent(),
           m_invalid(true),
           m_array(sf::PrimitiveType::Triangles)
     {
@@ -104,7 +116,17 @@ namespace cacto
         return tile;
     }
 
-    void TileMap::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void TileMap::onAttach(const Shared<Node> &parent)
+    {
+        m_parent = parent;
+    }
+
+    void TileMap::onDetach(const Shared<Node> &parent)
+    {
+        m_parent.reset();
+    }
+
+    void TileMap::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_invalid)
         {
@@ -127,57 +149,90 @@ namespace cacto
             m_invalid = false;
         }
         auto _states = states;
-        _states.texture = m_texture;
+        _states.texture = m_texture.get();
         _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
 
-    JsonValue toJson(const TileMap &tilemap)
+    XmlValue toXml(const TileMap &tilemap)
     {
-        auto json = JsonValue::ObjectValue;
+        auto xml = cacto::toXml((const sf::Transformable &)tilemap);
+        xml.setName("TileMap");
         auto texture = tilemap.getTexture();
         auto tileSize = tilemap.getTileSize();
         auto area = tilemap.getArea();
-        if (texture)
-        {
-            auto id = cacto::getId(*texture);
-            json["texture"] = id;
-        }
-        json["tileSize"] = {tileSize.x, tileSize.y};
-        json["area"] = cacto::toJson(sf::FloatRect(area));
-        auto &tiles = (json["tiles"] = JsonValue::ArrayValue).asArray();
+        xml["texture"] = Pack<sf::Texture>::id(texture);
+        xml["tileSize"] = toString(tileSize);
+        xml["area"] = cacto::toString(sf::FloatRect(area));
+        //
+        auto &content = xml.asContent();
+        XmlValue chunk{"Chunk", {}};
+        chunk["area"] = cacto::toString(sf::FloatRect(area));
+        auto &tiles = chunk.asContent();
         for (i32t y = 0; y < area.height; y++)
             for (i32t x = 0; x < area.width; x++)
             {
                 auto tile = tilemap.getTile({area.left + x, area.top + y});
-                tiles.push_back(cacto::toJson(tile));
+                XmlValue tile_xml{"Tile", {}};
+                tile_xml["tile"] = cacto::toString(tile);
+                tiles.push_back(std::move(tile_xml));
             }
-        return json;
+        content.push_back(std::move(chunk));
+        return std::move(xml);
     }
 
-    void fromJson(TileMap &tilemap, const JsonValue &json)
+    void fromXml(TileMap &tilemap, const XmlValue &xml)
     {
-        auto &texture = json["texture"];
-        auto &tileSize = json["tileSize"];
-        auto &area = json["area"];
-        auto &tiles = json["tiles"];
-        if (texture != nullptr)
+        cacto::fromXml((sf::Transformable &)tilemap, xml);
+        auto texture = Pack<sf::Texture>::resource(xml.getAttribute("texture"));
+        sf::Vector2f tileSize{};
+        sf::FloatRect area{};
+        sf::FloatRect fill{};
+        cacto::fromString(tileSize, xml.getAttribute("tileSize", "0,0"));
+        cacto::fromString(area, xml.getAttribute("area", "0,0,0,0"));
+        cacto::fromString(fill, xml.getAttribute("fill", "0,0,0,0"));
+        tilemap.setTexture(texture);
+        tilemap.setTileSize(tileSize);
+        tilemap.setArea(sf::IntRect(area));
+        tilemap.fill(fill);
+        if (xml.isTag())
         {
-            auto resource = cacto::getTexture(texture.asString());
-            tilemap.setTexture(resource.get());
-        }
-        tilemap.setTileSize({f32t(tileSize[0].getNumber()), f32t(tileSize[1].getNumber())});
-        sf::FloatRect _area{};
-        cacto::fromJson(_area, area);
-        tilemap.setArea(sf::IntRect(_area));
-        for (i32t y = 0; y < _area.height; y++)
-            for (i32t x = 0; x < _area.width; x++)
+            auto &content = xml.asContent();
+            for (auto &item : content)
             {
-                auto &tile = tiles[y * _area.width + x];
-                sf::FloatRect _tile{};
-                cacto::fromJson(_tile, tile);
-                tilemap.setTile({i32t(_area.left) + x, i32t(_area.top) + y}, _tile);
+                if (item.isTag())
+                {
+                    if (item.getName() == "Chunk")
+                    {
+                        auto &tiles = item.asContent();
+                        for (i32t y = 0; y < area.height; y++)
+                            for (i32t x = 0; x < area.width; x++)
+                            {
+                                auto &tile_xml = tiles[y * area.width + x];
+                                sf::FloatRect tile{};
+                                cacto::fromString(tile, tile_xml.getAttribute("tile", "0,0,0,0"));
+                                tilemap.setTile({i32t(area.left) + x, i32t(area.top) + y}, tile);
+                            }
+                    }
+                    else if (item.getName() == "Tile")
+                    {
+                        sf::Vector2f tile_position{};
+                        sf::FloatRect tile{};
+                        cacto::fromString(tile_position, item.getAttribute("position", "0,0"));
+                        cacto::fromString(tile, item.getAttribute("tile", "0,0,0,0"));
+                        tilemap.setTile(sf::Vector2i(tile_position), tile);
+                    }
+                    else if (item.getName() == "Tiles")
+                    {
+                        sf::FloatRect tile_area{};
+                        sf::FloatRect tile_tile{};
+                        cacto::fromString(tile_area, item.getAttribute("area", "0,0,0,0"));
+                        cacto::fromString(tile_tile, item.getAttribute("tile", "0,0,0,0"));
+                        tilemap.setTiles(sf::IntRect(tile_area), tile_tile);
+                    }
+                }
             }
+        }
     }
 
 }

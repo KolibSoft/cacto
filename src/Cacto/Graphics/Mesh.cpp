@@ -48,35 +48,15 @@ namespace cacto
 
     XmlValue toXml(const Mesh &mesh)
     {
-        XmlValue xml{"Mesh", {}};
-        auto &content = xml.asContent();
+        auto xml = cacto::toXml((const sf::VertexArray &)mesh);
         xml["id"] = mesh.getId();
-        xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
-        for (szt i = 0; i < mesh.getVertexCount(); i++)
-        {
-            auto &vertex = mesh[i];
-            auto vertex_xml = cacto::toXml(vertex);
-            content.push_back(std::move(vertex_xml));
-        }
         return std::move(xml);
     }
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
+        cacto::fromXml((sf::VertexArray &)mesh, xml);
         mesh.setId(xml.getAttribute("id"));
-        sf::PrimitiveType primitive;
-        cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
-        mesh.setPrimitiveType(primitive);
-        auto source = Pack<sf::VertexArray>::resource(xml.getAttribute("source"));
-        if (source)
-            (sf::VertexArray &)mesh = *source;
-        if (xml.isTag())
-            for (auto &item : xml.asContent())
-            {
-                sf::Vertex vertex{};
-                cacto::fromXml(vertex, item);
-                mesh.append(vertex);
-            }
     }
 
     namespace mesh
