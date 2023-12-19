@@ -52,20 +52,9 @@ namespace cacto
         return *this;
     }
 
-    bool Skeleton::isInternal() const
+    Shared<Node> Skeleton::getParent() const
     {
-        return m_internal;
-    }
-
-    Skeleton &Skeleton::setInternal(bool value)
-    {
-        m_internal = value;
-        return *this;
-    }
-
-    Node *const Skeleton::getParent() const
-    {
-        return m_parent;
+        return m_parent.lock();
     }
 
     szt Skeleton::getChildCount() const
@@ -73,7 +62,7 @@ namespace cacto
         return m_holders.size();
     }
 
-    Node *const Skeleton::getChild(szt index) const
+    Shared<Node> Skeleton::getChild(szt index) const
     {
         if (index >= m_holders.size())
             return nullptr;
@@ -81,98 +70,63 @@ namespace cacto
         return holder.child;
     }
 
-    const Skeleton::Options *const Skeleton::getOptions(Node &child) const
+    const Skeleton::Options &Skeleton::getOptions(const Shared<const Node> &child) const
     {
         for (auto &holder : m_holders)
-            if (holder.child == &child)
-                return &holder.options;
-        return nullptr;
+            if (holder.child == child)
+                return holder.options;
+        throw std::runtime_error("The node is not a child");
     }
 
-    Skeleton::Options *const Skeleton::getOptions(Node &child)
+    Skeleton::Options &Skeleton::getOptions(const Shared<const Node> &child)
     {
         for (auto &holder : m_holders)
-            if (holder.child == &child)
-                return &holder.options;
-        return nullptr;
+            if (holder.child == child)
+                return holder.options;
+        throw std::runtime_error("The node is not a child");
     }
 
-    Skeleton &Skeleton::append(Node &child, const Options &options)
+    Skeleton &Skeleton::append(const Shared<Node> &child, const Options &options)
     {
-        Node::link(*this, child);
+        Node::link(as<Node>(), child);
         auto &holder = m_holders.back();
         holder.options = options;
         return *this;
     }
 
-    void Skeleton::remove(Node &child)
+    void Skeleton::remove(const Shared<Node> &child)
     {
-        Node::unlink(*this, child);
+        Node::unlink(as<Node>(), child);
     }
 
     Skeleton::Skeleton()
         : m_id(),
-          m_internal(),
-          m_parent(nullptr),
+          m_parent(),
           m_holders()
     {
     }
 
-    Skeleton::~Skeleton()
+    Skeleton::~Skeleton() = default;
+
+    void Skeleton::onAttach(const Shared<Node> &parent)
     {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
-        while (m_holders.size() > 0)
-            Node::unlink(*this, *m_holders.back().child);
+        m_parent = parent;
     }
 
-    Skeleton::Skeleton(const Skeleton &other)
-        : Transformable(other),
-          m_id(),
-          m_internal(),
-          m_parent(nullptr)
+    void Skeleton::onDetach(const Shared<Node> &parent)
     {
+        m_parent.reset();
     }
 
-    Skeleton &Skeleton::operator=(const Skeleton &other)
-    {
-        sf::Transformable::operator=(other);
-        return *this;
-    }
-
-    Skeleton::Skeleton(Skeleton &&other)
-        : Transformable(std::move(other)),
-          m_id(),
-          m_internal(),
-          m_parent(nullptr)
-    {
-    }
-
-    Skeleton &Skeleton::operator=(Skeleton &&other)
-    {
-        sf::Transformable::operator=(std::move(other));
-        return *this;
-    }
-
-    void Skeleton::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Skeleton::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
-    }
-
-    void Skeleton::onAppend(Node &child)
+    void Skeleton::onAppend(const Shared<Node> &child)
     {
         holder holder{};
-        holder.child = &child;
+        holder.child = child;
         holder.options = {};
         m_holders.push_back(holder);
     }
 
-    void Skeleton::onRemove(Node &child)
+    void Skeleton::onRemove(const Shared<Node> &child)
     {
         auto index = getChildIndex(child);
         m_holders.erase(m_holders.begin() + index);
@@ -237,24 +191,26 @@ namespace cacto
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
             auto child = skeleton.getChild(i);
-            auto options = skeleton.getOptions(*child);
-            auto _xml = cacto::toXml(child);
-            _xml["options:coords"] = cacto::toString(options->getCoords());
-            _xml["options:relation"] = cacto::toString(options->getRelation());
-            content.push_back(_xml);
+            if (child)
+            {
+                auto &options = skeleton.getOptions(child);
+                auto _xml = cacto::toXml(child);
+                _xml["options:coords"] = cacto::toString(options.getCoords());
+                _xml["options:relation"] = cacto::toString(options.getRelation());
+                content.push_back(_xml);
+            }
         }
         return xml;
     }
 
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
-        skeleton = {};
         fromXml((sf::Transformable &)skeleton, xml);
         skeleton.setId(xml.getAttribute("id"));
         if (xml.isTag())
             for (auto &item : xml.asContent())
             {
-                Node *node = nullptr;
+                Shared<Node> node = nullptr;
                 cacto::fromXml(node, item);
                 if (node)
                 {
@@ -263,7 +219,7 @@ namespace cacto
                     Skeleton::Relation relation{};
                     cacto::fromString(relation, item.getAttribute("options:relation", "Body"));
                     skeleton
-                        .append(*node,
+                        .append(node,
                                 Skeleton::Options()
                                     .setCoords(coords)
                                     .setRelation(relation));
@@ -274,25 +230,25 @@ namespace cacto
     namespace skeleton
     {
 
-        XmlValue XmlConverter::toXml(const Node *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Node> &value) const
         {
-            const Skeleton *skeleton = nullptr;
-            if (value && typeid(*value) == typeid(Skeleton) && (skeleton = dynamic_cast<const Skeleton *>(value)))
+            Shared<const Skeleton> skeleton = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Skeleton) && (skeleton = std::dynamic_pointer_cast<const Skeleton>(value)))
             {
                 auto xml = cacto::toXml(*skeleton);
-                return xml;
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        Shared<Node> XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Skeleton")
             {
-                auto skeleton = new Skeleton();
+                auto skeleton = std::make_shared<Skeleton>();
                 cacto::fromXml(*skeleton, xml);
-                skeleton->setInternal(true);
-                return skeleton;
+                return std::move(skeleton);
             }
             return nullptr;
         }

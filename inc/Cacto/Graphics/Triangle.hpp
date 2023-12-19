@@ -51,8 +51,8 @@ namespace cacto
             : public virtual geometry::JsonConverter
         {
         public:
-            JsonValue toJson(const Geometry *const value) const override;
-            Geometry *fromJson(const JsonValue &json) const override;
+            JsonValue toJson(const Shared<const Geometry> &value) const override;
+            Shared<Geometry> fromJson(const JsonValue &json) const override;
 
             JsonConverter() = default;
             virtual ~JsonConverter() = default;

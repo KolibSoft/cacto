@@ -77,8 +77,8 @@ namespace cacto
 
     Shared<const sf::String> getString(const std::string &id)
     {
-        auto string = Pack<sf::String>::resource(id);
-        return std::move(string);
+        auto resource = Pack<sf::String>::resource(id);
+        return std::move(resource);
     }
 
     StringPack Strings{"."};

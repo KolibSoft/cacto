@@ -18,70 +18,28 @@ namespace cacto
         return *this;
     }
 
-    bool Mesh::isInternal() const
+    Shared<Node> Mesh::getParent() const
     {
-        return m_internal;
-    }
-
-    Mesh &Mesh::setInternal(bool value)
-    {
-        m_internal = value;
-        return *this;
-    }
-
-    Node *const Mesh::getParent() const
-    {
-        return m_parent;
+        return m_parent.lock();
     }
 
     Mesh::Mesh(sf::PrimitiveType primitive, szt count)
         : sf::VertexArray(primitive, count),
           m_id(),
-          m_internal(),
-          m_parent(nullptr)
+          m_parent()
     {
     }
 
-    Mesh::~Mesh()
+    Mesh::~Mesh() = default;
+
+    void Mesh::onAttach(const Shared<Node> &parent)
     {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
+        m_parent = parent;
     }
 
-    Mesh::Mesh(const Mesh &other)
-        : sf::VertexArray(other),
-          m_id(),
-          m_internal(),
-          m_parent(nullptr)
+    void Mesh::onDetach(const Shared<Node> &parent)
     {
-    }
-
-    Mesh &Mesh::operator=(const Mesh &other)
-    {
-        sf::VertexArray::operator=(other);
-        return *this;
-    }
-
-    Mesh::Mesh(Mesh &&other)
-        : sf::VertexArray(std::move(other)),
-          m_parent(nullptr)
-    {
-    }
-
-    Mesh &Mesh::operator=(Mesh &&other)
-    {
-        sf::VertexArray::operator=(std::move(other));
-        return *this;
-    }
-
-    void Mesh::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Mesh::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
+        m_parent.reset();
     }
 
     void Mesh::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -105,7 +63,6 @@ namespace cacto
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
-        mesh = {};
         mesh.setId(xml.getAttribute("id"));
         sf::PrimitiveType primitive;
         cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
@@ -129,25 +86,25 @@ namespace cacto
     namespace mesh
     {
 
-        XmlValue XmlConverter::toXml(const Node *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Node> &value) const
         {
-            const Mesh *mesh = nullptr;
-            if (value && typeid(*value) == typeid(Mesh) && (mesh = dynamic_cast<const Mesh *>(value)))
+            Shared<const Mesh> mesh = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Mesh) && (mesh = std::dynamic_pointer_cast<const Mesh>(value)))
             {
                 auto xml = cacto::toXml(*mesh);
-                return xml;
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        Shared<Node> XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
             {
-                auto mesh = new Mesh();
+                auto mesh = std::make_shared<Mesh>();
                 cacto::fromXml(*mesh, xml);
-                mesh->setInternal(true);
-                return mesh;
+                return std::move(mesh);
             }
             return nullptr;
         }

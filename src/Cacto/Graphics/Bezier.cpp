@@ -91,25 +91,26 @@ namespace cacto
     namespace bezier
     {
 
-        JsonValue JsonConverter::toJson(const Line *const value) const
+        JsonValue JsonConverter::toJson(const Shared<const Line> &value) const
         {
-            const Bezier *bezier = nullptr;
-            if (value && typeid(*value) == typeid(Bezier) && (bezier = dynamic_cast<const Bezier *>(value)))
+            Shared<const Bezier> bezier = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Bezier) && (bezier = std::dynamic_pointer_cast<const Bezier>(value)))
             {
                 auto json = cacto::toJson(*bezier);
                 json["$type"] = "Bezier";
-                return json;
+                return std::move(json);
             }
             return nullptr;
         }
 
-        Line *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Line> JsonConverter::fromJson(const JsonValue &json) const
         {
             if (json.getKind() == JsonValue::Object && json["$type"] == "Bezier")
             {
-                auto bezier = new Bezier();
+                auto bezier = std::make_shared<Bezier>();
                 cacto::fromJson(*bezier, json);
-                return bezier;
+                return std::move(bezier);
             }
             return nullptr;
         }

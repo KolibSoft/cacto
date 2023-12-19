@@ -71,7 +71,7 @@ namespace cacto
     void fromXml(Shared<Node> &node, const XmlValue &xml)
     {
         auto _node = XmlConverter<Node>::value(xml);
-        node = _node;
+        node = std::move(_node);
     }
 
 }

@@ -39,14 +39,14 @@ namespace cacto
         {
 
         public:
-            JsonValue toJson(const Line *const value) const override;
-            Line *fromJson(const JsonValue &json) const override;
+            JsonValue toJson(const Shared<const Line> &value) const override;
+            Shared<Line> fromJson(const JsonValue &json) const override;
 
             JsonConverter() = default;
             virtual ~JsonConverter() = default;
         };
 
-        extern JsonConverter CACTO_GRAPHICS_APIConverter;
+        extern JsonConverter CACTO_GRAPHICS_API Converter;
 
     }
 
