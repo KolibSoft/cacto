@@ -18,17 +18,6 @@ namespace cacto
         return *this;
     }
 
-    Shared<const sf::VertexArray> Mesh::getArray() const
-    {
-        return m_array;
-    }
-
-    Mesh &Mesh::setArray(const Shared<const sf::VertexArray> &value)
-    {
-        m_array = value;
-        return *this;
-    }
-
     Shared<Node> Mesh::getParent() const
     {
         return m_parent.lock();
@@ -36,7 +25,6 @@ namespace cacto
 
     Mesh::Mesh()
         : m_id(),
-          m_array(),
           m_parent()
     {
     }
@@ -55,26 +43,40 @@ namespace cacto
 
     void Mesh::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        if (m_array)
-            target.draw(*m_array, states);
+        target.draw(*(dynamic_cast<const sf::VertexArray *>(this)), states);
     }
 
     XmlValue toXml(const Mesh &mesh)
     {
         XmlValue xml{"Mesh", {}};
-        auto &id = mesh.getId();
-        std::string array_id = Pack<sf::VertexArray>::id(mesh.getArray());
-        xml["id"] = id;
-        xml["array"] = array_id;
+        auto &content = xml.asContent();
+        xml["id"] = mesh.getId();
+        xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
+        for (szt i = 0; i < mesh.getVertexCount(); i++)
+        {
+            auto &vertex = mesh[i];
+            auto vertex_xml = cacto::toXml(vertex);
+            content.push_back(std::move(vertex_xml));
+        }
         return std::move(xml);
     }
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
-        auto id = xml.getAttribute("id");
-        auto array_id = xml.getAttribute("array");
-        mesh.setId(id);
-        mesh.setArray(Pack<sf::VertexArray>::resource(array_id));
+        mesh.setId(xml.getAttribute("id"));
+        sf::PrimitiveType primitive;
+        cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
+        mesh.setPrimitiveType(primitive);
+        auto source = Pack<sf::VertexArray>::resource(xml.getAttribute("source"));
+        if (source)
+            (sf::VertexArray &)mesh = *source;
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+            {
+                sf::Vertex vertex{};
+                cacto::fromXml(vertex, item);
+                mesh.append(vertex);
+            }
     }
 
     namespace mesh

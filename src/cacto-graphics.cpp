@@ -10,7 +10,7 @@
 #include "Cacto/Graphics/Triangle.cpp"
 #include "Cacto/Graphics/Mesh.cpp"
 #include "Cacto/Graphics/Skeleton.cpp"
-// #include "Cacto/Graphics/TileMap.cpp"
+#include "Cacto/Graphics/TileMap.cpp"
 #include "Cacto/Graphics/ImagePack.cpp"
 #include "Cacto/Graphics/TexturePack.cpp"
 #include "Cacto/Graphics/VertexArrayPack.cpp"

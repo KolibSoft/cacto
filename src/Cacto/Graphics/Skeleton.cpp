@@ -194,13 +194,13 @@ namespace cacto
             if (child)
             {
                 auto &options = skeleton.getOptions(child);
-                auto _xml = cacto::toXml(child);
-                _xml["options:coords"] = cacto::toString(options.getCoords());
-                _xml["options:relation"] = cacto::toString(options.getRelation());
-                content.push_back(_xml);
+                auto child_xml = cacto::toXml(child);
+                child_xml["options:coords"] = cacto::toString(options.getCoords());
+                child_xml["options:relation"] = cacto::toString(options.getRelation());
+                content.push_back(std::move(child_xml));
             }
         }
-        return xml;
+        return std::move(xml);
     }
 
     void fromXml(Skeleton &skeleton, const XmlValue &xml)

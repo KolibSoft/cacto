@@ -30,7 +30,7 @@ int main()
                 window.close();
         }
         window.clear();
-        window.draw(mesh);
+        window.draw((sf::VertexArray &)mesh);
         window.display();
     }
 
