@@ -30,25 +30,4 @@ namespace cacto
         std::vector<sf::Vector2f> m_points;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Bezier &bezier);
-    void CACTO_GRAPHICS_API fromJson(Bezier &bezier, const JsonValue &json);
-
-    namespace bezier
-    {
-
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual line::JsonConverter
-        {
-        public:
-            JsonValue toJson(const Shared<const Line> &value) const override;
-            Shared<Line> fromJson(const JsonValue &json) const override;
-
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
-        };
-
-        extern JsonConverter CACTO_GRAPHICS_API Converter;
-
-    }
-
 }

@@ -1,6 +1,5 @@
 #include <math.h>
 #include <SFML/System/Vector2.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 
 namespace cacto
@@ -66,57 +65,5 @@ namespace cacto
     }
 
     Bezier::~Bezier() = default;
-
-    JsonValue toJson(const Bezier &bezier)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto &points = (json["points"] = JsonValue::ArrayValue).asArray();
-        for (szt i = 0; i < bezier.getPointCount(); i++)
-        {
-            auto &point = bezier.getControlPoint(i);
-            points.push_back({point.x, point.y});
-        }
-        return json;
-    }
-
-    void fromJson(Bezier &bezier, const JsonValue &json)
-    {
-        bezier.clear();
-        auto &points = json["points"];
-        if (points.isArray())
-            for (auto &point : points.asArray())
-                bezier.append({f32t(point[0].getNumber()), f32t(point[1].getNumber())});
-    }
-
-    namespace bezier
-    {
-
-        JsonValue JsonConverter::toJson(const Shared<const Line> &value) const
-        {
-            Shared<const Bezier> bezier = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Bezier) && (bezier = std::dynamic_pointer_cast<const Bezier>(value)))
-            {
-                auto json = cacto::toJson(*bezier);
-                json["$type"] = "Bezier";
-                return std::move(json);
-            }
-            return nullptr;
-        }
-
-        Shared<Line> JsonConverter::fromJson(const JsonValue &json) const
-        {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Bezier")
-            {
-                auto bezier = std::make_shared<Bezier>();
-                cacto::fromJson(*bezier, json);
-                return std::move(bezier);
-            }
-            return nullptr;
-        }
-
-        JsonConverter Converter{};
-
-    }
 
 }

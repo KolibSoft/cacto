@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
 namespace cacto
@@ -100,54 +99,5 @@ namespace cacto
     Rectangle::~Rectangle() = default;
 
     const Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
-
-    JsonValue toJson(const Rectangle &rectangle)
-    {
-        auto json = JsonValue::ObjectValue;
-        json["position"] = {rectangle.getLeft(), rectangle.getTop()};
-        json["size"] = {rectangle.getWidth(), rectangle.getHeight()};
-        return json;
-    }
-
-    void fromJson(Rectangle &rectangle, const JsonValue &json)
-    {
-        auto &position = json["position"];
-        auto &size = json["size"];
-        rectangle.setLeft(f32t(position[0].getNumber()));
-        rectangle.setTop(f32t(position[1].getNumber()));
-        rectangle.setWidth(f32t(size[0].getNumber()));
-        rectangle.setHeight(f32t(size[1].getNumber()));
-    }
-
-    namespace rectangle
-    {
-
-        JsonValue JsonConverter::toJson(const Shared<const Geometry> &value) const
-        {
-            Shared<const Rectangle> rectangle = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Rectangle) && (rectangle = std::dynamic_pointer_cast<const Rectangle>(value)))
-            {
-                auto json = cacto::toJson(*rectangle);
-                json["$type"] = "Rectangle";
-                return std::move(json);
-            }
-            return nullptr;
-        }
-
-        Shared<Geometry> JsonConverter::fromJson(const JsonValue &json) const
-        {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Rectangle")
-            {
-                auto rectangle = std::make_shared<Rectangle>();
-                cacto::fromJson(*rectangle, json);
-                return std::move(rectangle);
-            }
-            return nullptr;
-        }
-
-        JsonConverter Converter{};
-
-    }
 
 }

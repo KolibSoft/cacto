@@ -5,8 +5,6 @@
 namespace cacto
 {
 
-    class JsonValue;
-
     class CACTO_GRAPHICS_API Rectangle final
         : public virtual Geometry
     {
@@ -44,26 +42,5 @@ namespace cacto
         f32t m_right;
         f32t m_bottom;
     };
-
-    JsonValue CACTO_GRAPHICS_API toJson(const Rectangle &rectangle);
-    void CACTO_GRAPHICS_API fromJson(Rectangle &rectangle, const JsonValue &json);
-
-    namespace rectangle
-    {
-
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual geometry::JsonConverter
-        {
-        public:
-            JsonValue toJson(const Shared<const Geometry> &value) const override;
-            Shared<Geometry> fromJson(const JsonValue &json) const override;
-
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
-        };
-
-        extern JsonConverter CACTO_GRAPHICS_API Converter;
-
-    }
 
 }

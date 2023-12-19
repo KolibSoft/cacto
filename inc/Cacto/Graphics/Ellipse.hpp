@@ -39,25 +39,4 @@ namespace cacto
         f32t m_bottom;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse);
-    void CACTO_GRAPHICS_API fromJson(Ellipse &ellipse, const JsonValue &json);
-
-    namespace ellipse
-    {
-
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual geometry::JsonConverter
-        {
-        public:
-            JsonValue toJson(const Shared<const Geometry> &value) const override;
-            Shared<Geometry> fromJson(const JsonValue &json) const override;
-
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
-        };
-
-        extern JsonConverter CACTO_GRAPHICS_API Converter;
-
-    }
-
 }

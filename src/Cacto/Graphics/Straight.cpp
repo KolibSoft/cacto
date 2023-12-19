@@ -1,4 +1,3 @@
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
 namespace cacto
@@ -45,54 +44,5 @@ namespace cacto
     }
 
     Straight::~Straight() = default;
-
-    JsonValue toJson(const Straight &straight)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto &begin = straight.getBegin();
-        auto &end = straight.getEnd();
-        json["begin"] = {begin.x, begin.y};
-        json["end"] = {end.x, end.y};
-        return json;
-    }
-
-    void fromJson(Straight &straight, const JsonValue &json)
-    {
-        auto &begin = json["begin"];
-        auto &end = json["end"];
-        straight.setBegin({f32t(begin[0].getNumber()), f32t(begin[1].getNumber())});
-        straight.setEnd({f32t(end[0].getNumber()), f32t(end[1].getNumber())});
-    }
-
-    namespace straight
-    {
-
-        JsonValue JsonConverter::toJson(const Shared<const Line> &value) const
-        {
-            Shared<const Straight> straight = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Straight) && (straight = std::dynamic_pointer_cast<const Straight>(value)))
-            {
-                auto json = cacto::toJson(*straight);
-                json["$type"] = "Straight";
-                return std::move(json);
-            }
-            return nullptr;
-        }
-
-        Shared<Line> JsonConverter::fromJson(const JsonValue &json) const
-        {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Straight")
-            {
-                auto straight = std::make_shared<Straight>();
-                cacto::fromJson(*straight, json);
-                return std::move(straight);
-            }
-            return nullptr;
-        }
-
-        JsonConverter Converter{};
-
-    }
 
 }
