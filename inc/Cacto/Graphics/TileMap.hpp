@@ -1,18 +1,16 @@
 #pragma once
 
+#include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Lang/Object.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 
-namespace sf
-{
-    class Texture;
-}
-
 namespace cacto
 {
+
+    class TileSet;
 
     class CACTO_GRAPHICS_API TileMap
         : public sf::Transformable,
@@ -22,8 +20,8 @@ namespace cacto
     {
 
     public:
-        const Shared<const sf::Texture> &getTexture() const;
-        TileMap &setTexture(const Shared<const sf::Texture> &value);
+        const Shared<const TileSet> &getTileSet() const;
+        TileMap &setTileSet(const Shared<const TileSet> &value);
 
         const sf::Vector2f &getTileSize() const;
         TileMap &setTileSize(const sf::Vector2f &value);
@@ -31,18 +29,18 @@ namespace cacto
         const sf::IntRect &getArea() const;
         TileMap &setArea(const sf::IntRect &value);
 
-        sf::FloatRect getTile(const sf::Vector2i &position) const;
-        TileMap &setTile(const sf::Vector2i &position, const sf::FloatRect &tile);
+        const std::string &getTile(const sf::Vector2i &position) const;
+        TileMap &setTile(const sf::Vector2i &position, const std::string &id);
 
-        TileMap &setTiles(const sf::IntRect &area, const sf::FloatRect &tile);
-        TileMap &fill(const sf::FloatRect &tile);
+        TileMap &setTiles(const sf::IntRect &area, const std::string &id);
+        TileMap &fill(const std::string &id);
 
         Shared<Node> getParent() const override;
 
         TileMap();
         virtual ~TileMap();
 
-        static sf::FloatRect createTile(const sf::Vector2i &position, const sf::Vector2f &size);
+        static const std::string NoTile;
 
     protected:
         void onAttach(const Shared<Node> &parent) override;
@@ -51,9 +49,10 @@ namespace cacto
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        Shared<const sf::Texture> m_texture;
+        Shared<const TileSet> m_tileSet;
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;
+        std::vector<std::string> m_tiles;
         Weak<Node> m_parent;
 
         mutable bool m_invalid;

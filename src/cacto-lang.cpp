@@ -1,5 +1,3 @@
-#pragma GCC diagnostic ignored "-Wignored-attributes"
-
 #define CACTO_LANG_EXPORTS
 #include "Cacto/Lang/Object.cpp"
 #include "Cacto/Lang/Printer.cpp"

@@ -9,6 +9,7 @@
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/ImagePack.hpp>
 #include <Cacto/Graphics/TileSet.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/Utils.hpp>
@@ -17,11 +18,13 @@
 int main()
 {
 
-    cacto::TexturePack pack{"res/textures"};
+    cacto::Images = {"res/images"};
+    cacto::Textures = {"res/textures"};
     cacto::TileSet tileSet{};
 
     cacto::fromXmlFile(tileSet, "res/tile_set.xml");
-    cacto::toXmlFile(tileSet, "res/tile_set.xml", 2);
+    // cacto::toXmlFile(tileSet, "res/tile_set.xml", 2);
+    std::cout << "Tiles: " << tileSet.asMap().size() << '\n';
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 

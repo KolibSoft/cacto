@@ -1,6 +1,6 @@
 #include <SFML/Graphics/Rect.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
-#include <Cacto/Core/Pack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/TileSet.hpp>
 
