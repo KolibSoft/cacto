@@ -81,6 +81,4 @@ namespace cacto
         return std::move(string);
     }
 
-    StringPack Strings{"."};
-
 }

@@ -32,6 +32,4 @@ namespace cacto
     const std::string &CACTO_GRAPHICS_API getId(const Shared<const TileSet> &texture);
     Shared<const TileSet> CACTO_GRAPHICS_API getTileSet(const std::string &id);
 
-    extern TileSetPack CACTO_GRAPHICS_API TileSets;
-
 }

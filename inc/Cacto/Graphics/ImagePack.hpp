@@ -35,6 +35,4 @@ namespace cacto
     const std::string &CACTO_GRAPHICS_API getId(const Shared<const sf::Image> &image);
     Shared<const sf::Image> CACTO_GRAPHICS_API getImage(const std::string &id);
 
-    extern ImagePack CACTO_GRAPHICS_API Images;
-
 }

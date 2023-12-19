@@ -35,6 +35,4 @@ namespace cacto
     const std::string &CACTO_GRAPHICS_API getId(const Shared<const sf::Texture> &texture);
     Shared<const sf::Texture> CACTO_GRAPHICS_API getTexture(const std::string &id);
 
-    extern TexturePack CACTO_GRAPHICS_API Textures;
-
 }

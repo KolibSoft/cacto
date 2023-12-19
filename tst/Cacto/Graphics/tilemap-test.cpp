@@ -11,6 +11,7 @@
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/ImagePack.hpp>
 #include <Cacto/Graphics/TileSet.hpp>
+#include <Cacto/Graphics/TileSetPack.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Core/Utils.hpp>
@@ -18,8 +19,8 @@
 int main()
 {
 
-    cacto::Images = {"res/images"};
-    cacto::Textures = {"res/textures"};
+    cacto::TexturePack textures{"."};
+    cacto::TileSetPack tileSets{"."};
     cacto::TileSet tileSet{};
 
     cacto::fromXmlFile(tileSet, "res/tile_set.xml");

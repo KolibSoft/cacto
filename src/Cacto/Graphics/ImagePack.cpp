@@ -74,6 +74,4 @@ namespace cacto
         return std::move(image);
     }
 
-    ImagePack Images{"."};
-
 }

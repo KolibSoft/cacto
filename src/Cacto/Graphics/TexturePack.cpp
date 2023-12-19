@@ -75,6 +75,4 @@ namespace cacto
         return std::move(texture);
     }
 
-    TexturePack Textures{"."};
-
 }

@@ -80,6 +80,4 @@ namespace cacto
         return std::move(tileSet);
     }
 
-    TileSetPack TileSets{"."};
-
 }
