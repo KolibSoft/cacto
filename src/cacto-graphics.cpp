@@ -1,3 +1,5 @@
+#pragma GCC diagnostic ignored "-Wignored-attributes"
+
 #define CACTO_GRAPHICS_EXPORTS
 #include "Cacto/Graphics/DrawNode.cpp"
 #include "Cacto/Graphics/Line.cpp"
@@ -10,6 +12,7 @@
 #include "Cacto/Graphics/Triangle.cpp"
 #include "Cacto/Graphics/Mesh.cpp"
 #include "Cacto/Graphics/Skeleton.cpp"
+#include "Cacto/Graphics/TileSet.cpp"
 #include "Cacto/Graphics/TileMap.cpp"
 #include "Cacto/Graphics/ImagePack.cpp"
 #include "Cacto/Graphics/TexturePack.cpp"
