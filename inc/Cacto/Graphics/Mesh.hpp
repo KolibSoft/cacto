@@ -10,8 +10,7 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public sf::VertexArray,
-          public Object,
+        : public Object,
           public virtual LeafNode,
           public virtual DrawNode
     {
@@ -20,9 +19,12 @@ namespace cacto
         const std::string &getId() const override;
         Mesh &setId(const std::string &value);
 
+        Shared<const sf::VertexArray> getArray() const;
+        Mesh& setArray(const Shared<const sf::VertexArray> &value);
+
         Shared<Node> getParent() const override;
 
-        Mesh(sf::PrimitiveType primitive = sf::PrimitiveType::Points, szt count = 0);
+        Mesh();
         virtual ~Mesh();
 
     protected:
@@ -33,6 +35,7 @@ namespace cacto
 
     private:
         std::string m_id;
+        Shared<const sf::VertexArray> m_array;
         Weak<Node> m_parent;
     };
 

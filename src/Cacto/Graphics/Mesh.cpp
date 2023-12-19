@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Core/Pack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 
@@ -18,14 +18,25 @@ namespace cacto
         return *this;
     }
 
+    Shared<const sf::VertexArray> Mesh::getArray() const
+    {
+        return m_array;
+    }
+
+    Mesh &Mesh::setArray(const Shared<const sf::VertexArray> &value)
+    {
+        m_array = value;
+        return *this;
+    }
+
     Shared<Node> Mesh::getParent() const
     {
         return m_parent.lock();
     }
 
-    Mesh::Mesh(sf::PrimitiveType primitive, szt count)
-        : sf::VertexArray(primitive, count),
-          m_id(),
+    Mesh::Mesh()
+        : m_id(),
+          m_array(),
           m_parent()
     {
     }
@@ -44,43 +55,26 @@ namespace cacto
 
     void Mesh::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        target.draw(*dynamic_cast<const sf::VertexArray *>(this), states);
+        if (m_array)
+            target.draw(*m_array, states);
     }
 
     XmlValue toXml(const Mesh &mesh)
     {
         XmlValue xml{"Mesh", {}};
-        auto &content = xml.asContent();
-        xml["id"] = mesh.getId();
-        xml["primitive"] = cacto::toString(mesh.getPrimitiveType());
-        for (szt i = 0; i < mesh.getVertexCount(); i++)
-        {
-            auto &vertex = mesh[i];
-            content.push_back(cacto::toXml(vertex));
-        }
-        return xml;
+        auto &id = mesh.getId();
+        std::string array_id = Pack<sf::VertexArray>::id(mesh.getArray());
+        xml["id"] = id;
+        xml["array"] = array_id;
+        return std::move(xml);
     }
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
-        mesh.setId(xml.getAttribute("id"));
-        sf::PrimitiveType primitive;
-        cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
-        mesh.setPrimitiveType(primitive);
-        auto source = xml.getAttribute("source");
-        if (source.size() > 0)
-        {
-            JsonValue json = nullptr;
-            json.fromFile(source);
-            fromJson((sf::VertexArray &)mesh, json);
-        }
-        if (xml.isTag())
-            for (auto &item : xml.asContent())
-            {
-                sf::Vertex vertex{};
-                cacto::fromXml(vertex, item);
-                mesh.append(vertex);
-            }
+        auto id = xml.getAttribute("id");
+        auto array_id = xml.getAttribute("array");
+        mesh.setId(id);
+        mesh.setArray(Pack<sf::VertexArray>::resource(array_id));
     }
 
     namespace mesh

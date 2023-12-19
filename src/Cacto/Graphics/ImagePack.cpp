@@ -5,10 +5,10 @@
 namespace cacto
 {
 
-    const std::string &ImagePack::getId(const sf::Image &value) const
+    const std::string &ImagePack::getId(const Shared<const sf::Image> &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (pair.second == value)
                 return pair.first;
         return NoId;
     }
@@ -62,7 +62,7 @@ namespace cacto
 
     ImagePack::~ImagePack() = default;
 
-    const std::string &getId(const sf::Image &image)
+    const std::string &getId(const Shared<const sf::Image> &image)
     {
         auto &id = Pack<sf::Image>::id(image);
         return id;
@@ -70,8 +70,8 @@ namespace cacto
 
     Shared<const sf::Image> getImage(const std::string &id)
     {
-        auto resource = Pack<sf::Image>::resource(id);
-        return std::move(resource);
+        auto image = Pack<sf::Image>::resource(id);
+        return std::move(image);
     }
 
     ImagePack Images{"."};

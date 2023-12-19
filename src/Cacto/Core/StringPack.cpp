@@ -6,10 +6,10 @@
 namespace cacto
 {
 
-    const std::string &StringPack::getId(const sf::String &value) const
+    const std::string &StringPack::getId(const Shared<const sf::String> &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (pair.second == value)
                 return pair.first;
         return NoId;
     }
@@ -69,7 +69,7 @@ namespace cacto
 
     StringPack::~StringPack() = default;
 
-    const std::string &getId(const sf::String &string)
+    const std::string &getId(const Shared<const sf::String> &string)
     {
         auto &id = Pack<sf::String>::id(string);
         return id;
@@ -77,8 +77,8 @@ namespace cacto
 
     Shared<const sf::String> getString(const std::string &id)
     {
-        auto resource = Pack<sf::String>::resource(id);
-        return std::move(resource);
+        auto string = Pack<sf::String>::resource(id);
+        return std::move(string);
     }
 
     StringPack Strings{"."};

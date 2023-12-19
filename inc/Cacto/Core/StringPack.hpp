@@ -20,7 +20,7 @@ namespace cacto
     {
 
     public:
-        const std::string &getId(const sf::String &value) const override;
+        const std::string &getId(const Shared<const sf::String> &value) const override;
         Shared<const sf::String> getResource(const std::string &id) const override;
         void setResource(const std::string &id, const Shared<const sf::String> &value) override;
 
@@ -32,7 +32,7 @@ namespace cacto
         mutable std::unordered_map<std::string, Shared<const sf::String>> m_map;
     };
 
-    const std::string &CACTO_CORE_API getId(const sf::String &string);
+    const std::string &CACTO_CORE_API getId(const Shared<const sf::String> &string);
     Shared<const sf::String> CACTO_CORE_API getString(const std::string &id);
 
     extern StringPack CACTO_CORE_API Strings;

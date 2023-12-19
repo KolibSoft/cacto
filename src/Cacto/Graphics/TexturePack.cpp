@@ -6,10 +6,10 @@
 namespace cacto
 {
 
-    const std::string &TexturePack::getId(const sf::Texture &value) const
+    const std::string &TexturePack::getId(const Shared<const sf::Texture> &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (pair.second == value)
                 return pair.first;
         return NoId;
     }
@@ -63,7 +63,7 @@ namespace cacto
 
     TexturePack::~TexturePack() = default;
 
-    const std::string &getId(const sf::Texture &texture)
+    const std::string &getId(const Shared<const sf::Texture> &texture)
     {
         auto &id = Pack<sf::Texture>::id(texture);
         return id;
@@ -71,8 +71,8 @@ namespace cacto
 
     Shared<const sf::Texture> getTexture(const std::string &id)
     {
-        auto resource = Pack<sf::Texture>::resource(id);
-        return std::move(resource);
+        auto texture = Pack<sf::Texture>::resource(id);
+        return std::move(texture);
     }
 
     TexturePack Textures{"."};

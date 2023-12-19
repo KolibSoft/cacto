@@ -17,8 +17,10 @@ namespace cacto
     }
 
     template <typename T>
-    inline const std::string &Pack<T>::id(const T &value)
+    inline const std::string &Pack<T>::id(const Shared<const T> &value)
     {
+        if (value == nullptr)
+            return NoId;
         for (auto &pack : Pack<T>::Packs)
         {
             const std::string &id = pack->getId(value);
@@ -31,6 +33,8 @@ namespace cacto
     template <typename T>
     inline Shared<const T> Pack<T>::resource(const std::string &id)
     {
+        if (id == NoId)
+            return nullptr;
         for (auto &pack : Pack<T>::Packs)
         {
             Shared<const T> value = pack->getResource(id);
