@@ -189,46 +189,4 @@ namespace cacto
         animation.setMode(mode);
     }
 
-    JsonValue toJson(const Animation *const &animation)
-    {
-        auto json = JsonConverter<Animation>::json(animation);
-        return std::move(json);
-    }
-
-    void fromJson(Animation *&animation, const JsonValue &json)
-    {
-        auto value = JsonConverter<Animation>::value(json);
-        animation = value;
-    }
-
-    namespace animation
-    {
-
-        JsonValue JsonConverter::toJson(const Animation *const value) const
-        {
-            const Animation *animation = nullptr;
-            if (value && typeid(*value) == typeid(Animation) && (animation = dynamic_cast<const Animation *>(value)))
-            {
-                auto json = cacto::toJson(*animation);
-                json["$type"] = "Animation";
-                return std::move(json);
-            }
-            return nullptr;
-        }
-
-        Animation *JsonConverter::fromJson(const JsonValue &json) const
-        {
-            if (json.isObject() && json["$type"] == "Animation")
-            {
-                auto animation = new Animation();
-                cacto::fromJson(*animation, json);
-                return animation;
-            }
-            return nullptr;
-        }
-
-        JsonConverter Converter{};
-
-    }
-
 }
