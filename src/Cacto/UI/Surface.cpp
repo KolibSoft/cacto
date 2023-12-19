@@ -9,14 +9,26 @@
 namespace cacto
 {
 
-    const std::string &Surface::getTag() const
+    const std::string &Surface::getId() const
     {
-        return m_tag;
+        return m_id;
     }
 
-    void Surface::setTag(const std::string &value)
+    Surface &Surface::setId(const std::string &value)
     {
-        m_tag = value;
+        m_id = value;
+        return *this;
+    }
+
+    bool Surface::isInternal() const
+    {
+        return m_internal;
+    }
+
+    Surface &Surface::setInternal(bool value)
+    {
+        m_internal = value;
+        return *this;
     }
 
     Node *const Surface::getParent() const
@@ -103,7 +115,9 @@ namespace cacto
     }
 
     Surface::Surface(const Geometry &geometry, const sf::Color &color, const sf::Texture *texture)
-        : m_parent(),
+        : m_id(),
+          m_internal(),
+          m_parent(),
           m_geometry(&geometry),
           m_precision(1),
           m_color(color),
@@ -123,7 +137,9 @@ namespace cacto
     }
 
     Surface::Surface(const Surface &other)
-        : m_parent(),
+        : m_id(),
+          m_internal(),
+          m_parent(),
           m_geometry(other.m_geometry),
           m_precision(other.m_precision),
           m_color(other.m_color),
@@ -141,6 +157,32 @@ namespace cacto
         m_color = other.m_color;
         m_texture = other.m_texture;
         m_textureRect = other.m_textureRect;
+        m_invalid = true;
+        m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
+        return *this;
+    }
+
+    Surface::Surface(Surface &&other)
+        : m_id(),
+          m_internal(),
+          m_parent(),
+          m_geometry(std::move(other.m_geometry)),
+          m_precision(std::move(other.m_precision)),
+          m_color(std::move(other.m_color)),
+          m_texture(std::move(other.m_texture)),
+          m_textureRect(std::move(other.m_textureRect)),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::TriangleFan)
+    {
+    }
+
+    Surface &Surface::operator=(Surface &&other)
+    {
+        m_geometry = std::move(other.m_geometry);
+        m_precision = std::move(other.m_precision);
+        m_color = std::move(other.m_color);
+        m_texture = std::move(other.m_texture);
+        m_textureRect = std::move(other.m_textureRect);
         m_invalid = true;
         m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
         return *this;
@@ -235,7 +277,7 @@ namespace cacto
     XmlValue toXml(const Surface &surface)
     {
         XmlValue xml{"Surface", {}};
-        xml["tag"] = surface.getTag();
+        xml["id"] = surface.getId();
         auto &geometry = surface.getGeometry();
         if (typeid(geometry) == typeid(Rectangle))
             xml["geometry"] = "Rectangle";
@@ -259,7 +301,7 @@ namespace cacto
     void fromXml(Surface &surface, const XmlValue &xml)
     {
         surface = {};
-        surface.setTag(xml.getAttribute("tag"));
+        surface.setId(xml.getAttribute("id"));
         auto geometry = xml.getAttribute("geometry", "Rectangle");
         if (geometry == "Rectangle")
             surface.setGeometry(Rectangle::Identity);

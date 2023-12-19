@@ -23,8 +23,11 @@ namespace cacto
     {
 
     public:
-        const std::string &getTag() const override;
-        void setTag(const std::string &value);
+        const std::string &getId() const override;
+        Surface &setId(const std::string &value);
+
+        bool isInternal() const override;
+        Surface &setInternal(bool value);
 
         Node *const getParent() const override;
 
@@ -53,6 +56,9 @@ namespace cacto
         Surface(const Surface &other);
         Surface &operator=(const Surface &other);
 
+        Surface(Surface &&other);
+        Surface &operator=(Surface &&other);
+
     protected:
         sf::VertexArray &getArray() const;
         void invalidate();
@@ -68,7 +74,8 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        std::string m_tag;
+        std::string m_id;
+        bool m_internal;
         Node *m_parent;
 
         const Geometry *m_geometry;
