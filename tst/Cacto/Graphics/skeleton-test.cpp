@@ -7,17 +7,20 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
 
+    cacto::Textures = {"res"};
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto skeleton = std::make_shared<cacto::Skeleton>();
-    cacto::fromXmlFile(*skeleton, "res/skeleton.xml");
-    cacto::toXmlFile(*skeleton, "res/skeleton.xml", 2);
+    cacto::Shared<cacto::Node> root = nullptr;
+    cacto::fromXmlFile(root, "res/skeleton.xml");
+    cacto::toXmlFile(root, "res/skeleton.xml", 2);
 
+    auto skeleton = std::dynamic_pointer_cast<cacto::Skeleton>(root);
     auto left = skeleton->firstDescendant<cacto::Skeleton>("left");
     auto right = skeleton->firstDescendant<cacto::Skeleton>("right");
 
