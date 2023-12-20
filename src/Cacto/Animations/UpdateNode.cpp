@@ -5,9 +5,7 @@ namespace cacto
 
     void UpdateNode::update(const sf::Time &time)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-            UpdateNode::update(object->as<Node>(), time);
+        onUpdate(time);
     }
 
     UpdateNode::UpdateNode() = default;
@@ -40,9 +38,13 @@ namespace cacto
 
     void UpdateNode::updateChildren(const sf::Time &time)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-            UpdateNode::updateChildren(object->as<Node>(), time);
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = getChild(i);
+            if (child)
+                UpdateNode::update(child, time);
+        }
     }
 
     void UpdateNode::onUpdate(const sf::Time &time)

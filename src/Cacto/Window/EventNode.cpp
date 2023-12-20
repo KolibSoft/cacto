@@ -5,24 +5,14 @@ namespace cacto
 
     bool EventNode::event(const sf::Event &event)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-        {
-            auto handled = EventNode::event(object->as<Node>(), event);
-            return handled;
-        }
-        return false;
+        auto handled = onEvent(event);
+        return handled;
     }
 
     bool EventNode::bubble(const Shared<Node> &target, const sf::Event &event)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-        {
-            auto handled = EventNode::bubble(object->as<Node>(), target, event);
-            return handled;
-        }
-        return false;
+        auto handled = onBubble(target, event);
+        return handled;
     }
 
     EventNode::EventNode() = default;
@@ -89,24 +79,22 @@ namespace cacto
 
     bool EventNode::eventChildren(const sf::Event &event)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
-            auto handled = EventNode::eventChildren(object->as<Node>(), event);
-            return handled;
+            auto child = getChild(i);
+            auto handled = child && EventNode::event(child, event);
+            if (handled)
+                return handled;
         }
         return false;
     }
 
     bool EventNode::bubbleParent(const Shared<Node> &target, const sf::Event &event)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-        {
-            auto handled = EventNode::bubbleParent(object->as<Node>(), target, event);
-            return handled;
-        }
-        return false;
+        auto parent = getParent();
+        auto handled = parent && EventNode::bubble(parent, target, event);
+        return handled;
     }
 
     bool EventNode::onEvent(const sf::Event &event)

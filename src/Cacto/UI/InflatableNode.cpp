@@ -6,31 +6,19 @@ namespace cacto
 
     sf::Vector2f InflatableNode::compact()
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-        {
-            auto size = InflatableNode::compact(object->as<Node>());
-            return size;
-        }
-        return {};
+        auto size = onCompact();
+        return size;
     }
 
     sf::Vector2f InflatableNode::inflate(const sf::Vector2f &containerSize)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-        {
-            auto size = InflatableNode::inflate(object->as<Node>(), containerSize);
-            return size;
-        }
-        return {};
+        auto size = onInflate(containerSize);
+        return size;
     }
 
     void InflatableNode::place(const sf::Vector2f &position)
     {
-        auto object = dynamic_cast<Object *>(this);
-        if (object)
-            InflatableNode::place(object->as<Node>(), position);
+        onPlace(position);
     }
 
     InflatableNode::InflatableNode() = default;
@@ -135,31 +123,47 @@ namespace cacto
 
     sf::Vector2f InflatableNode::compactChildren() const
     {
-        auto object = dynamic_cast<const Object *>(this);
-        if (object)
+        sf::Vector2f size{0, 0};
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
-            auto size = InflatableNode::compactChildren(object->as<Node>());
-            return size;
+            auto child = getChild(i);
+            if (child)
+            {
+                auto childSize = InflatableNode::compact(child);
+                size.x = std::max(size.x, childSize.x);
+                size.y = std::max(size.y, childSize.y);
+            }
         }
-        return {};
+        return size;
     }
 
     sf::Vector2f InflatableNode::inflateChildren(const sf::Vector2f &containerSize) const
     {
-        auto object = dynamic_cast<const Object *>(this);
-        if (object)
+        sf::Vector2f size{0, 0};
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
-            auto size = InflatableNode::inflateChildren(object->as<Node>(), containerSize);
-            return size;
+            auto child = getChild(i);
+            if (child)
+            {
+                auto childSize = InflatableNode::inflate(child, containerSize);
+                size.x = std::max(size.x, childSize.x);
+                size.y = std::max(size.y, childSize.y);
+            }
         }
-        return {};
+        return size;
     }
 
     void InflatableNode::placeChildren(const sf::Vector2f &position)
     {
-        auto object = dynamic_cast<const Object *>(this);
-        if (object)
-            InflatableNode::placeChildren(object->as<Node>(), position);
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
+        {
+            auto child = getChild(i);
+            if (child)
+                InflatableNode::place(child, position);
+        }
     }
 
     sf::Vector2f InflatableNode::onCompact()
