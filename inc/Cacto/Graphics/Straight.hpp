@@ -28,4 +28,26 @@ namespace cacto
         sf::Vector2f m_end;
     };
 
+    XmlValue CACTO_GRAPHICS_API toXml(const Straight &straight);
+    void CACTO_GRAPHICS_API fromXml(Straight &straight, const XmlValue &xml);
+
+    namespace straight
+    {
+
+        class CACTO_GRAPHICS_API XmlConverter
+            : public line::XmlConverter
+        {
+
+        public:
+            XmlValue toXml(const Shared<const Line> &value) const override;
+            Shared<Line> fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_GRAPHICS_API Converter;
+
+    }
+
 }

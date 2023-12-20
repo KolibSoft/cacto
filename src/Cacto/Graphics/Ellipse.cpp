@@ -85,4 +85,55 @@ namespace cacto
 
     const Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
 
+    XmlValue toXml(const Ellipse &ellipse)
+    {
+        XmlValue xml{"Ellipse", {}};
+        auto center = ellipse.getCenter();
+        auto diameters = ellipse.getDiameters();
+        xml["center"] = toString(center);
+        xml["diameters"] = toString(diameters);
+        return std::move(xml);
+    }
+
+    void fromXml(Ellipse &ellipse, const XmlValue &xml)
+    {
+        ellipse = {};
+        sf::Vector2f center{};
+        sf::Vector2f diameters{};
+        fromString(center, xml.getAttribute("center", "0,0"));
+        fromString(diameters, xml.getAttribute("diameters", "0,0"));
+        ellipse.setCenter(center);
+        ellipse.setDiameters(diameters);
+    }
+
+    namespace ellipse
+    {
+
+        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
+        {
+            Shared<const Ellipse> ellipse = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Ellipse) && (ellipse = std::dynamic_pointer_cast<const Ellipse>(value)))
+            {
+                auto xml = cacto::toXml(*ellipse);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Ellipse")
+            {
+                auto ellipse = std::make_shared<Ellipse>();
+                cacto::fromXml(*ellipse, xml);
+                return std::move(ellipse);
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

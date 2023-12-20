@@ -39,4 +39,26 @@ namespace cacto
         f32t m_bottom;
     };
 
+    XmlValue CACTO_GRAPHICS_API toXml(const Ellipse &ellipse);
+    void CACTO_GRAPHICS_API fromXml(Ellipse &ellipse, const XmlValue &xml);
+
+    namespace ellipse
+    {
+
+        class CACTO_GRAPHICS_API XmlConverter
+            : public geometry::XmlConverter
+        {
+
+        public:
+            XmlValue toXml(const Shared<const Geometry> &value) const override;
+            Shared<Geometry> fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_GRAPHICS_API Converter;
+
+    }
+
 }

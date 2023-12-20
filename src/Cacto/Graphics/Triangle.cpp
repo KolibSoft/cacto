@@ -104,4 +104,60 @@ namespace cacto
 
     Triangle::~Triangle() = default;
 
+    XmlValue toXml(const Triangle &triangle)
+    {
+        XmlValue xml{"Triangle", {}};
+        auto pointA = triangle.getPointA();
+        auto pointB = triangle.getPointB();
+        auto pointC = triangle.getPointC();
+        xml["pointA"] = toString(pointA);
+        xml["pointB"] = toString(pointB);
+        xml["pointC"] = toString(pointC);
+        return std::move(xml);
+    }
+
+    void fromXml(Triangle &triangle, const XmlValue &xml)
+    {
+        triangle = {};
+        sf::Vector2f pointA{};
+        sf::Vector2f pointB{};
+        sf::Vector2f pointC{};
+        fromString(pointA, xml.getAttribute("pointA", "0,0"));
+        fromString(pointB, xml.getAttribute("pointB", "0,0"));
+        fromString(pointC, xml.getAttribute("pointC", "0,0"));
+        triangle.setPointA(pointA);
+        triangle.setPointB(pointB);
+        triangle.setPointC(pointC);
+    }
+
+    namespace triangle
+    {
+
+        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
+        {
+            Shared<const Triangle> triangle = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Triangle) && (triangle = std::dynamic_pointer_cast<const Triangle>(value)))
+            {
+                auto xml = cacto::toXml(*triangle);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Triangle")
+            {
+                auto triangle = std::make_shared<Triangle>();
+                cacto::fromXml(*triangle, xml);
+                return std::move(triangle);
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

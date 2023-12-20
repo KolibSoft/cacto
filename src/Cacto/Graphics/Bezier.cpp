@@ -34,29 +34,14 @@ namespace cacto
         return point;
     }
 
-    const sf::Vector2f &Bezier::getControlPoint(szt index) const
+    const std::vector<sf::Vector2f> &Bezier::asPoints() const
     {
-        return m_points[index];
+        return m_points;
     }
 
-    void Bezier::setControlPoint(szt index, const sf::Vector2f &value)
+    std::vector<sf::Vector2f> &Bezier::asPoints()
     {
-        m_points[index] = value;
-    }
-
-    void Bezier::clear()
-    {
-        m_points.clear();
-    }
-
-    void Bezier::append(const sf::Vector2f &point)
-    {
-        m_points.push_back(point);
-    }
-
-    void Bezier::resize(szt count)
-    {
-        m_points.resize(count);
+        return m_points;
     }
 
     Bezier::Bezier(const std::vector<sf::Vector2f> &points)
@@ -65,5 +50,63 @@ namespace cacto
     }
 
     Bezier::~Bezier() = default;
+
+    XmlValue toXml(const Bezier &bezier)
+    {
+        XmlValue xml("Bezier", {});
+        auto &content = xml.asContent();
+        for (auto &point : bezier.asPoints())
+        {
+            XmlValue point_xml{"Point", {}};
+            point_xml["position"] = toString(point);
+            content.push_back(std::move(point_xml));
+        }
+        return std::move(xml);
+    }
+
+    void fromXml(Bezier &bezier, const XmlValue &xml)
+    {
+        bezier = {};
+        if (xml.isTag())
+        {
+            auto &points = bezier.asPoints();
+            for (auto &point_xml : xml.asContent())
+            {
+                sf::Vector2f point{};
+                fromString(point, point_xml.getAttribute("position", "0,0"));
+                points.push_back(point);
+            }
+        }
+    }
+
+    namespace bezier
+    {
+
+        XmlValue XmlConverter::toXml(const Shared<const Line> &value) const
+        {
+            Shared<const Bezier> bezier = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Bezier) && (bezier = std::dynamic_pointer_cast<const Bezier>(value)))
+            {
+                auto xml = cacto::toXml(*bezier);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Shared<Line> XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Bezier")
+            {
+                auto bezier = std::make_shared<Bezier>();
+                cacto::fromXml(*bezier, xml);
+                return std::move(bezier);
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
 
 }

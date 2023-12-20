@@ -23,10 +23,10 @@ namespace cacto
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            auto geometry = std::make_shared<Geometry>();
+            Shared<Geometry> geometry = nullptr;
             XmlValue xml = nullptr;
             xml.fromFile(path);
-            cacto::fromXml(*geometry, xml);
+            cacto::fromXml(geometry, xml);
             m_map.insert({id, geometry});
             return geometry;
         }
@@ -49,7 +49,7 @@ namespace cacto
         {
             auto path = m_path / id;
             XmlValue xml = nullptr;
-            xml = cacto::toXml(*value);
+            xml = cacto::toXml(value);
             xml.toFile(path);
             m_map.insert({id, value});
         }

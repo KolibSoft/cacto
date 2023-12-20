@@ -45,4 +45,55 @@ namespace cacto
 
     Straight::~Straight() = default;
 
+    XmlValue toXml(const Straight &straight)
+    {
+        XmlValue xml("Straight", {});
+        auto begin = toString(straight.getBegin());
+        auto end = toString(straight.getEnd());
+        xml["begin"] = begin;
+        xml["end"] = end;
+        return std::move(xml);
+    }
+
+    void fromXml(Straight &straight, const XmlValue &xml)
+    {
+        straight = {};
+        sf::Vector2f begin{};
+        sf::Vector2f end{};
+        fromString(begin, xml.getAttribute("begin", "0,0"));
+        fromString(end, xml.getAttribute("end", "0,0"));
+        straight.setBegin(begin);
+        straight.setEnd(end);
+    }
+
+    namespace straight
+    {
+
+        XmlValue XmlConverter::toXml(const Shared<const Line> &value) const
+        {
+            Shared<const Straight> straight = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Straight) && (straight = std::dynamic_pointer_cast<const Straight>(value)))
+            {
+                auto xml = cacto::toXml(*straight);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Shared<Line> XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Straight")
+            {
+                auto straight = std::make_shared<Straight>();
+                cacto::fromXml(*straight, xml);
+                return std::move(straight);
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

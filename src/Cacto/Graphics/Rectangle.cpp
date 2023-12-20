@@ -45,48 +45,30 @@ namespace cacto
         return result;
     }
 
-    f32t Rectangle::getLeft() const
+    sf::Vector2f Rectangle::getPosition() const
     {
-        return m_left;
+        return {m_left, m_top};
     }
 
-    void Rectangle::setLeft(f32t value)
+    void Rectangle::setPosition(const sf::Vector2f &value)
     {
-        m_left = value;
-        m_right = value + m_width;
+        m_left = value.x;
+        m_right = value.x + m_width;
+        m_top = value.y;
+        m_bottom = value.y + m_height;
     }
 
-    f32t Rectangle::getTop() const
+    sf::Vector2f Rectangle::getSize() const
     {
-        return m_top;
+        return {m_width, m_height};
     }
 
-    void Rectangle::setTop(f32t value)
+    void Rectangle::setSize(const sf::Vector2f &value)
     {
-        m_top = value;
-        m_bottom = value + m_height;
-    }
-
-    f32t Rectangle::getWidth() const
-    {
-        return m_width;
-    }
-
-    void Rectangle::setWidth(f32t value)
-    {
-        m_width = value;
-        m_right = m_left + value;
-    }
-
-    f32t Rectangle::getHeight() const
-    {
-        return m_height;
-    }
-
-    void Rectangle::setHeight(f32t value)
-    {
-        m_height = value;
-        m_bottom = m_left + value;
+        m_width = value.x;
+        m_right = m_left + value.x;
+        m_height = value.y;
+        m_bottom = m_left + value.y;
     }
 
     Rectangle::Rectangle(const sf::Vector2f &position, const sf::Vector2f &size)
@@ -99,5 +81,56 @@ namespace cacto
     Rectangle::~Rectangle() = default;
 
     const Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
+
+    XmlValue toXml(const Rectangle &rectangle)
+    {
+        XmlValue xml{"Rectangle", {}};
+        auto position = rectangle.getPosition();
+        auto size = rectangle.getSize();
+        xml["position"] = toString(position);
+        xml["size"] = toString(size);
+        return std::move(xml);
+    }
+
+    void fromXml(Rectangle &rectangle, const XmlValue &xml)
+    {
+        rectangle = {};
+        sf::Vector2f position{};
+        sf::Vector2f size{};
+        fromString(position, xml.getAttribute("position"));
+        fromString(size, xml.getAttribute("size"));
+        rectangle.setPosition(position);
+        rectangle.setSize(size);
+    }
+
+    namespace rectangle
+    {
+
+        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
+        {
+            Shared<const Rectangle> rectangle = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Rectangle) && (rectangle = std::dynamic_pointer_cast<const Rectangle>(value)))
+            {
+                auto xml = cacto::toXml(*rectangle);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Rectangle")
+            {
+                auto rectangle = std::make_shared<Rectangle>();
+                cacto::fromXml(*rectangle, xml);
+                return std::move(rectangle);
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
 
 }
