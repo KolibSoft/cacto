@@ -3,6 +3,7 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/GeometryPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/UI/Surface.hpp>
 
@@ -193,39 +194,36 @@ namespace cacto
     XmlValue toXml(const Surface &surface)
     {
         XmlValue xml{"Surface", {}};
-        xml["id"] = surface.getId();
-        auto &geometry = surface.getGeometry();
-        if (typeid(geometry) == typeid(Rectangle))
-            xml["geometry"] = "Rectangle";
-        else if (typeid(geometry) == typeid(Ellipse))
-            xml["geometry"] = "Ellipse";
-        else
-            throw std::runtime_error("Not supported geometry");
-        xml["precision"] = std::to_string(surface.getPrecision());
-        xml["color"] = toString(surface.getColor());
-        xml["texture"] = Pack<sf::Texture>::id(surface.getTexture());
-        xml["textureRect"] = toString(surface.getTextureRect());
+        auto &id = surface.getId();
+        auto &geometry = Pack<Geometry>::id(surface.getGeometry());
+        auto precision = surface.getPrecision();
+        auto color = surface.getColor();
+        auto &texture = Pack<sf::Texture>::id(surface.getTexture());
+        auto textureRect = surface.getTextureRect();
+        xml["id"] = id;
+        xml["geometry"] = geometry;
+        xml["precision"] = std::to_string(precision);
+        xml["color"] = toString(color);
+        xml["texture"] = texture;
+        xml["textureRect"] = toString(textureRect);
         return std::move(xml);
     }
 
     void fromXml(Surface &surface, const XmlValue &xml)
     {
         surface.setId(xml.getAttribute("id"));
-        auto geometry = xml.getAttribute("geometry", "Rectangle");
-        if (geometry == "Rectangle")
-            surface.setGeometry(Rectangle::Identity);
-        else if (geometry == "Ellipse")
-            surface.setGeometry(Ellipse::Identity);
-        else
-            throw std::runtime_error("Not supported geometry");
-        surface.setPrecision(std::stoi(xml.getAttribute("precision", "0")));
+        auto geometry = Pack<Geometry>::resource(xml.getAttribute("geometry"));
+        szt precision = std::stoi(xml.getAttribute("precision", "1"));
         sf::Color color{};
+        auto texture = Pack<sf::Texture>::resource(xml.getAttribute("texture"));
+        sf::FloatRect textureRect{};
         cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
+        cacto::fromString(textureRect, xml.getAttribute("textureRect", "0,0,0,0"));
+        surface.setGeometry(geometry);
+        surface.setPrecision(precision);
         surface.setColor(color);
-        surface.setTexture(Pack<sf::Texture>::resource(xml.getAttribute("texture")));
-        sf::FloatRect rect{};
-        cacto::fromString(rect, xml.getAttribute("textureRect", "0,0,0,0"));
-        surface.setTextureRect(rect);
+        surface.setTexture(texture);
+        surface.setTextureRect(textureRect);
     }
 
     namespace surface

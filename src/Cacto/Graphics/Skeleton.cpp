@@ -145,14 +145,14 @@ namespace cacto
                     auto _states = states;
                     _states.transform *= getTransform();
                     _states.transform.translate(holder.options.getCoords());
-                    DrawNode::draw(*holder.child, target, _states);
+                    DrawNode::draw(holder.child, target, _states);
                 }
                 break;
                 case Relation::Bone:
                 {
                     auto _states = states;
                     _states.transform.translate(getTransform().transformPoint(holder.options.getCoords()));
-                    DrawNode::draw(*holder.child, target, _states);
+                    DrawNode::draw(holder.child, target, _states);
                 }
                 break;
                 default:
