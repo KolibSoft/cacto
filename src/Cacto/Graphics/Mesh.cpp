@@ -18,6 +18,16 @@ namespace cacto
         return *this;
     }
 
+    const sf::VertexArray &Mesh::asArray() const
+    {
+        return m_array;
+    }
+
+    sf::VertexArray &Mesh::asArray()
+    {
+        return m_array;
+    }
+
     Shared<Node> Mesh::getParent() const
     {
         return m_parent.lock();
@@ -25,6 +35,7 @@ namespace cacto
 
     Mesh::Mesh()
         : m_id(),
+          m_array(),
           m_parent()
     {
     }
@@ -43,12 +54,12 @@ namespace cacto
 
     void Mesh::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        target.draw(*(dynamic_cast<const sf::VertexArray *>(this)), states);
+        target.draw(m_array, states);
     }
 
     XmlValue toXml(const Mesh &mesh)
     {
-        auto xml = cacto::toXml((const sf::VertexArray &)mesh);
+        auto xml = cacto::toXml(mesh.asArray());
         xml.setName("Mesh");
         xml["id"] = mesh.getId();
         return std::move(xml);
@@ -56,7 +67,7 @@ namespace cacto
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
-        cacto::fromXml((sf::VertexArray &)mesh, xml);
+        cacto::fromXml(mesh.asArray(), xml);
         mesh.setId(xml.getAttribute("id"));
     }
 

@@ -6,7 +6,6 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Graphics/VertexArrayPack.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Lang/Utils.hpp>
@@ -30,7 +29,7 @@ int main()
                 window.close();
         }
         window.clear();
-        window.draw((sf::VertexArray &)mesh);
+        window.draw(mesh);
         window.display();
     }
 
