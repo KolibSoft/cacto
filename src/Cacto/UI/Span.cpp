@@ -4,54 +4,53 @@
 namespace cacto
 {
 
-    Node *const Span::getParent() const
+    const Shared<const sf::Font> &Span::getFont() const
     {
-        return m_parent;
+        return m_font;
     }
 
-    Span::Span(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : sf::Text(font, string, characterSize),
-          m_parent(),
-          m_place()
+    void Span::setFont(const Shared<const sf::Font> &value)
+    {
+        m_font = value;
+        if (m_font)
+            sf::Text::setFont(*m_font);
+    }
+
+    Shared<Node> Span::getParent() const
+    {
+        return m_parent.lock();
+    }
+
+    Span::Span()
+        : sf::Text(NoFont),
+          m_place(),
+          m_parent()
     {
     }
 
-    Span::~Span()
+    Span::~Span() = default;
+
+    const sf::Font Span::NoFont{};
+
+    void Span::onAttach(const Shared<Node> &parent)
     {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
+        m_parent = parent;
     }
 
-    Span::Span(const Span &other)
-        : sf::Text(other),
-          m_parent(),
-          m_place(other.m_place)
+    void Span::onDetach(const Shared<Node> &parent)
     {
-    }
-
-    Span &Span::operator=(const Span &other)
-    {
-        sf::Text::operator=(other);
-        m_place = other.m_place;
-        return *this;
-    }
-
-    void Span::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Span::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
+        m_parent.reset();
     }
 
     void Span::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        auto *text = dynamic_cast<const sf::Text *>(this);
-        auto _states = states;
-        _states.transform.translate(m_place);
-        target.draw(*text, _states);
+        if (m_font)
+        {
+            auto *text = dynamic_cast<const sf::Text *>(this);
+            auto _states = states;
+            _states.transform.translate(m_place);
+            target.draw(*text, _states);
+        }
     }
 
     sf::Vector2f Span::onCompact()

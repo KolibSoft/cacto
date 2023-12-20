@@ -6,46 +6,31 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Core/Loader.hpp>
-#include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
 #include <Cacto/UI/Span.hpp>
 
 auto _ = false;
 
-enum Textures
-{
-    SurfaceTexture
-};
-
-cacto::Loader<sf::Texture> textures;
-
 int main()
 {
+
+    cacto::FontPack fonts{"."};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     sf::Font font;
     auto _ = font.loadFromFile("./res/Grandview.ttf");
 
-    auto background = cacto::Surface::Rectangle;
-    background.setColor(sf::Color::Red);
-
-    cacto::Span span{font, "It Works"};
-    auto bounds = span.getLocalBounds();
-    span.setOrigin({bounds.width / 2, bounds.height / 2});
-    span.setRotation(sf::degrees(45));
-    span.setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
-    span.setOutlineThickness(10);
-    span.setOutlineColor(sf::Color::Blue);
-
-    cacto::FrameLayout root;
-    root.setBackground(&background);
-    root.setMargin(10);
-    root.append(span);
-    root.setHorizontalAnchor(cacto::FrameLayout::Center);
-    root.setVerticalAnchor(cacto::FrameLayout::Center);
+    auto span = std::make_shared<cacto::Span>();
+    auto bounds = span->getLocalBounds();
+    (*span).setFont(cacto::getFont("res/Grandview.ttf"));
+    (*span).setString("My Span Text");
+    (*span).setOrigin({bounds.width / 2, bounds.height / 2});
+    (*span).setRotation(sf::degrees(45));
+    (*span).setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
+    (*span).setOutlineThickness(10);
+    (*span).setOutlineColor(sf::Color::Blue);
 
     while (window.isOpen())
     {
@@ -57,11 +42,11 @@ int main()
             if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
-        root.compactContent();
-        root.inflate(sf::Vector2f(sf::Mouse::getPosition(window)));
-        root.place();
+        span->compact();
+        span->inflate();
+        span->place();
         window.clear(sf::Color::Black);
-        window.draw(root);
+        window.draw((sf::Text &)*span);
         window.display();
     }
 
