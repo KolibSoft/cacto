@@ -5,23 +5,35 @@ namespace cacto
 
     bool EventNode::event(const sf::Event &event)
     {
-        auto handled = EventNode::event(*this, event);
-        return handled;
+        auto object = dynamic_cast<Object *>(this);
+        if (object)
+        {
+            auto handled = EventNode::event(object->as<Node>(), event);
+            return handled;
+        }
+        return false;
     }
 
-    bool EventNode::bubble(Node &target, const sf::Event &event)
+    bool EventNode::bubble(const Shared<Node> &target, const sf::Event &event)
     {
-        auto handled = EventNode::bubble(*this, target, event);
-        return handled;
+        auto object = dynamic_cast<Object *>(this);
+        if (object)
+        {
+            auto handled = EventNode::bubble(object->as<Node>(), target, event);
+            return handled;
+        }
+        return false;
     }
 
     EventNode::EventNode() = default;
 
     EventNode::~EventNode() = default;
 
-    bool EventNode::event(Node &node, const sf::Event &event)
+    bool EventNode::event(const Shared<Node> &node, const sf::Event &event)
     {
-        auto eventNode = dynamic_cast<EventNode *>(&node);
+        if (node == nullptr)
+            throw std::runtime_error("The node was null");
+        auto eventNode = std::dynamic_pointer_cast<EventNode>(node);
         if (eventNode)
         {
             auto handled = eventNode->onEvent(event);
@@ -34,23 +46,26 @@ namespace cacto
         }
     }
 
-    bool EventNode::eventChildren(Node &node, const sf::Event &event)
+    bool EventNode::eventChildren(const Shared<Node> &node, const sf::Event &event)
     {
-        auto handled = false;
-        auto childCount = node.getChildCount();
+        if (node == nullptr)
+            throw std::runtime_error("The node was null");
+        auto childCount = node->getChildCount();
         for (szt i = 0; i < childCount; i++)
         {
-            auto child = node.getChild(i);
-            auto handled = child && EventNode::event(*child, event);
+            auto child = node->getChild(i);
+            auto handled = child && EventNode::event(child, event);
             if (handled)
-                break;
+                return handled;
         }
-        return handled;
+        return false;
     }
 
-    bool EventNode::bubble(Node &node, Node &target, const sf::Event &event)
+    bool EventNode::bubble(const Shared<Node> &node, const Shared<Node> &target, const sf::Event &event)
     {
-        auto eventNode = dynamic_cast<EventNode *>(&node);
+        if (node == nullptr)
+            throw std::runtime_error("The node was null");
+        auto eventNode = std::dynamic_pointer_cast<EventNode>(node);
         if (eventNode)
         {
             auto handled = eventNode->onBubble(target, event);
@@ -63,23 +78,35 @@ namespace cacto
         }
     }
 
-    bool EventNode::bubbleParent(Node &node, Node &target, const sf::Event &event)
+    bool EventNode::bubbleParent(const Shared<Node> &node, const Shared<Node> &target, const sf::Event &event)
     {
-        auto parent = node.getParent();
-        auto handled = parent && EventNode::bubble(*parent, target, event);
+        if (node == nullptr)
+            throw std::runtime_error("The node was null");
+        auto parent = node->getParent();
+        auto handled = parent && EventNode::bubble(parent, target, event);
         return handled;
     }
 
     bool EventNode::eventChildren(const sf::Event &event)
     {
-        auto handled = EventNode::eventChildren(*this, event);
-        return handled;
+        auto object = dynamic_cast<Object *>(this);
+        if (object)
+        {
+            auto handled = EventNode::eventChildren(object->as<Node>(), event);
+            return handled;
+        }
+        return false;
     }
 
-    bool EventNode::bubbleParent(Node &target, const sf::Event &event)
+    bool EventNode::bubbleParent(const Shared<Node> &target, const sf::Event &event)
     {
-        auto handled = EventNode::bubbleParent(*this, target, event);
-        return handled;
+        auto object = dynamic_cast<Object *>(this);
+        if (object)
+        {
+            auto handled = EventNode::bubbleParent(object->as<Node>(), target, event);
+            return handled;
+        }
+        return false;
     }
 
     bool EventNode::onEvent(const sf::Event &event)
@@ -88,7 +115,7 @@ namespace cacto
         return handled;
     }
 
-    bool EventNode::onBubble(Node &target, const sf::Event &event)
+    bool EventNode::onBubble(const Shared<Node> &target, const sf::Event &event)
     {
         auto handled = bubbleParent(target, event);
         return handled;

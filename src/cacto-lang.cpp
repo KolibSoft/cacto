@@ -1,4 +1,5 @@
 #define CACTO_LANG_EXPORTS
+#include "Cacto/Lang/Object.cpp"
 #include "Cacto/Lang/Printer.cpp"
 #include "Cacto/Lang/Scanner.cpp"
 #include "Cacto/Lang/JsonPrinter.cpp"

@@ -25,7 +25,7 @@ namespace cacto
         Ellipse(const sf::Vector2f &center = {0, 0}, const sf::Vector2f &diameters = {1, 1});
         virtual ~Ellipse();
 
-        static Ellipse Identity;
+        static const Ellipse Identity;
 
     private:
         f32t m_centerX;
@@ -39,24 +39,25 @@ namespace cacto
         f32t m_bottom;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse);
-    void CACTO_GRAPHICS_API fromJson(Ellipse &ellipse, const JsonValue &json);
+    XmlValue CACTO_GRAPHICS_API toXml(const Ellipse &ellipse);
+    void CACTO_GRAPHICS_API fromXml(Ellipse &ellipse, const XmlValue &xml);
 
     namespace ellipse
     {
 
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual geometry::JsonConverter
+        class CACTO_GRAPHICS_API XmlConverter
+            : public geometry::XmlConverter
         {
-        public:
-            JsonValue toJson(const Geometry *const value) const override;
-            Geometry *fromJson(const JsonValue &json) const override;
 
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
+        public:
+            XmlValue toXml(const Shared<const Geometry> &value) const override;
+            Shared<Geometry> fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
         };
 
-        extern JsonConverter CACTO_GRAPHICS_API Converter;
+        extern XmlConverter CACTO_GRAPHICS_API Converter;
 
     }
 

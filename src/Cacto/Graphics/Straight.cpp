@@ -1,4 +1,3 @@
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
 namespace cacto
@@ -46,51 +45,54 @@ namespace cacto
 
     Straight::~Straight() = default;
 
-    JsonValue toJson(const Straight &straight)
+    XmlValue toXml(const Straight &straight)
     {
-        auto json = JsonValue::ObjectValue;
-        auto &begin = straight.getBegin();
-        auto &end = straight.getEnd();
-        json["begin"] = {begin.x, begin.y};
-        json["end"] = {end.x, end.y};
-        return json;
+        XmlValue xml("Straight", {});
+        auto begin = toString(straight.getBegin());
+        auto end = toString(straight.getEnd());
+        xml["begin"] = begin;
+        xml["end"] = end;
+        return std::move(xml);
     }
 
-    void fromJson(Straight &straight, const JsonValue &json)
+    void fromXml(Straight &straight, const XmlValue &xml)
     {
-        auto &begin = json["begin"];
-        auto &end = json["end"];
-        straight.setBegin({f32t(begin[0].getNumber()), f32t(begin[1].getNumber())});
-        straight.setEnd({f32t(end[0].getNumber()), f32t(end[1].getNumber())});
+        straight = {};
+        sf::Vector2f begin{};
+        sf::Vector2f end{};
+        fromString(begin, xml.getAttribute("begin", "0,0"));
+        fromString(end, xml.getAttribute("end", "0,0"));
+        straight.setBegin(begin);
+        straight.setEnd(end);
     }
 
     namespace straight
     {
 
-        JsonValue JsonConverter::toJson(const Line *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Line> &value) const
         {
-            const Straight *straight = nullptr;
-            if (value && typeid(*value) == typeid(Straight) && (straight = dynamic_cast<const Straight *>(value)))
+            Shared<const Straight> straight = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Straight) && (straight = std::dynamic_pointer_cast<const Straight>(value)))
             {
-                auto json = cacto::toJson(*straight);
-                json["$type"] = "Straight";
-                return json;
+                auto xml = cacto::toXml(*straight);
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Line *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Line> XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Straight")
+            if (xml.isTag() && xml.getName() == "Straight")
             {
-                auto straight = new Straight();
-                cacto::fromJson(*straight, json);
-                return straight;
+                auto straight = std::make_shared<Straight>();
+                cacto::fromXml(*straight, xml);
+                return std::move(straight);
             }
             return nullptr;
         }
 
-        JsonConverter Converter{};
+        XmlConverter Converter{};
 
     }
 

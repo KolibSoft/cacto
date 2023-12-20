@@ -183,16 +183,31 @@ namespace cacto
     std::string toString(const sf::Vector2f &point)
     {
         std::stringstream stream{};
-        stream << point.x << ',' << point.y;
+        char separator = ',';
+        stream << point.x << separator << point.y;
         return stream.str();
     }
 
     void fromString(sf::Vector2f &point, const std::string &string)
     {
         std::stringstream stream{string};
-        stream >> point.x;
-        stream.get();
-        stream >> point.y;
+        char separator = ',';
+        stream >> point.x >> separator >> point.y;
+    }
+
+    std::string toString(const sf::FloatRect &rect)
+    {
+        std::stringstream stream{};
+        char separator = ',';
+        stream << rect.left << separator << rect.top << separator << rect.width << separator << rect.height;
+        return stream.str();
+    }
+
+    void fromString(sf::FloatRect &rect, const std::string &string)
+    {
+        std::stringstream stream{string};
+        char separator = ',';
+        stream >> rect.left >> separator >> rect.top >> separator >> rect.width >> separator >> rect.height;
     }
 
     std::string toString(const sf::Color &color)
@@ -209,60 +224,6 @@ namespace cacto
         u32t integer;
         stream >> std::hex >> integer;
         color = sf::Color(integer);
-    }
-
-    JsonValue toJson(const sf::FloatRect &rect)
-    {
-        JsonValue json = {rect.left, rect.top, rect.width, rect.height};
-        return std::move(json);
-    }
-
-    void fromJson(sf::FloatRect &rect, const JsonValue &json)
-    {
-        rect = {};
-        rect.left = json[0].getNumber();
-        rect.top = json[1].getNumber();
-        rect.width = json[2].getNumber();
-        rect.height = json[3].getNumber();
-    }
-
-    JsonValue toJson(const sf::VertexArray &array)
-    {
-        auto json = JsonValue::ObjectValue;
-        auto primitive = array.getPrimitiveType();
-        json["primitive"] = toString(primitive);
-        auto &vertexes = (json["vertexes"] = JsonValue::ArrayValue).asArray();
-        for (szt i = 0; i < array.getVertexCount(); i++)
-        {
-            auto &vertex = array[i];
-            auto item = JsonValue::ObjectValue;
-            item["position"] = {vertex.position.x, vertex.position.y};
-            item["color"] = cacto::toString(vertex.color);
-            item["texCoords"] = {vertex.texCoords.x, vertex.texCoords.y};
-            vertexes.push_back(item);
-        }
-        return std::move(json);
-    }
-
-    void fromJson(sf::VertexArray &array, const JsonValue &json)
-    {
-        array = {};
-        sf::PrimitiveType primitive;
-        fromString(primitive, json["primitive"].getString("Points"));
-        array.setPrimitiveType(sf::PrimitiveType::Triangles);
-        auto &vertexes = json["vertexes"];
-        if (vertexes.isArray())
-            for (auto &item : vertexes.asArray())
-            {
-                auto &position = item["position"];
-                auto &color = item["color"];
-                auto &texCoords = item["texCoords"];
-                sf::Vertex vertex{};
-                vertex.position = {f32t(position[0].getNumber()), f32t(position[1].getNumber())};
-                cacto::fromString(vertex.color, color.getString("#FFFFFFFF"));
-                vertex.texCoords = {f32t(texCoords[0].getNumber()), f32t(texCoords[1].getNumber())};
-                array.append(vertex);
-            }
     }
 
     XmlValue toXml(const sf::Vertex &vertex)
@@ -283,6 +244,35 @@ namespace cacto
         cacto::fromString(vertex.position, position);
         cacto::fromString(vertex.color, color);
         cacto::fromString(vertex.texCoords, texCoords);
+    }
+
+    XmlValue toXml(const sf::VertexArray &array)
+    {
+        XmlValue xml{"VertexArray", {}};
+        auto &content = xml.asContent();
+        xml["primitive"] = cacto::toString(array.getPrimitiveType());
+        for (szt i = 0; i < array.getVertexCount(); i++)
+        {
+            auto &vertex = array[i];
+            auto vertex_xml = cacto::toXml(vertex);
+            content.push_back(std::move(vertex_xml));
+        }
+        return std::move(xml);
+    }
+
+    void fromXml(sf::VertexArray &array, const XmlValue &xml)
+    {
+        array = {};
+        sf::PrimitiveType primitive;
+        cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
+        array.setPrimitiveType(primitive);
+        if (xml.isTag())
+            for (auto &vertex_xml : xml.asContent())
+            {
+                sf::Vertex vertex{};
+                cacto::fromXml(vertex, vertex_xml);
+                array.append(vertex);
+            }
     }
 
     XmlValue toXml(const sf::Transform &transform)

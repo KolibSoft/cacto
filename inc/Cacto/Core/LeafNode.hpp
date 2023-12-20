@@ -11,14 +11,14 @@ namespace cacto
 
     public:
         szt getChildCount() const override;
-        Node *const getChild(szt index = 0) const override;
+        Shared<Node> getChild(szt index = 0) const override;
 
         LeafNode() = default;
         virtual ~LeafNode() = default;
 
     protected:
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
+        void onAppend(const Shared<Node> &child) override;
+        void onRemove(const Shared<Node> &child) override;
     };
 
 }

@@ -17,28 +17,35 @@ namespace cacto
     }
 
     template <typename T>
-    inline const std::string *const Pack<T>::id(const T &value)
+    inline const std::string &Pack<T>::id(const Shared<const T> &value)
     {
+        if (value == nullptr)
+            return NoId;
         for (auto &pack : Pack<T>::Packs)
         {
-            const std::string * id = pack->getId(value);
-            if (id)
+            const std::string &id = pack->getId(value);
+            if (id != NoId)
                 return id;
+        }
+        return NoId;
+    }
+
+    template <typename T>
+    inline Shared<const T> Pack<T>::resource(const std::string &id)
+    {
+        if (id == NoId)
+            return nullptr;
+        for (auto &pack : Pack<T>::Packs)
+        {
+            Shared<const T> value = pack->getResource(id);
+            if (value)
+                return std::move(value);
         }
         return nullptr;
     }
 
     template <typename T>
-    inline const T *const Pack<T>::resource(const std::string &id)
-    {
-        for (auto &pack : Pack<T>::Packs)
-        {
-            const T * value = pack->getResource(id);
-            if (value)
-                return value;
-        }
-        return nullptr;
-    }
+    inline const std::string Pack<T>::NoId{""};
 
     template <typename T>
     inline std::vector<const Pack<T> *> Pack<T>::Packs{};

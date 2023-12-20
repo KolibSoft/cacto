@@ -1,29 +1,44 @@
-#include <Cacto/Lang/JsonValue.hpp>
-#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
 
 namespace cacto
 {
 
-    JsonValue toJson(const Geometry *const &geometry)
+    XmlValue toXml(const Shared<const Geometry> &geometry)
     {
-        auto json = JsonConverter<Geometry>::json(geometry);
-        return std::move(json);
+        auto xml = XmlConverter<Geometry>::xml(geometry);
+        return std::move(xml);
     }
 
-    void fromJson(Geometry *&geometry, const JsonValue &json)
+    void fromXml(Shared<Geometry> &geometry, const XmlValue &xml)
     {
-        auto _geometry = JsonConverter<Geometry>::value(json);
-        geometry = _geometry;
+        auto value = XmlConverter<Geometry>::value(xml);
+        geometry = std::move(value);
     }
 
     namespace geometry
     {
 
-        JsonValue JsonConverter::toJson(const Line *const value) const
+        XmlValue LineXmlConverter::toXml(const Shared<const Line> &value) const
         {
-            return toJson(dynamic_cast<const Geometry *>(value));
+            try
+            {
+                auto cast = std::dynamic_pointer_cast<const Geometry>(value);
+                auto xml = cacto::XmlConverter<Geometry>::xml(cast);
+                return std::move(xml);
+            }
+            catch (std::bad_cast)
+            {
+                return nullptr;
+            }
         }
+
+        Shared<Line> LineXmlConverter::fromXml(const XmlValue &xml) const
+        {
+            auto value = cacto::XmlConverter<Geometry>::value(xml);
+            return std::move(value);
+        }
+
+        LineXmlConverter LineConverter{};
 
     }
 

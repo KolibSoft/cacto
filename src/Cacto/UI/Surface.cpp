@@ -1,27 +1,39 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Geometry.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/GeometryPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/UI/Surface.hpp>
 
 namespace cacto
 {
 
-    Node *const Surface::getParent() const
+    const std::string &Surface::getId() const
     {
-        return m_parent;
+        return m_id;
     }
 
-    Geometry &Surface::getGeometry() const
+    Surface &Surface::setId(const std::string &value)
     {
-        return *m_geometry;
+        m_id = value;
+        return *this;
     }
 
-    Surface &Surface::setGeometry(Geometry &value)
+    Shared<Node> Surface::getParent() const
     {
-        m_geometry = &value;
+        return m_parent.lock();
+    }
+
+    const Shared<const Geometry> &Surface::getGeometry() const
+    {
+        return m_geometry;
+    }
+
+    Surface &Surface::setGeometry(const Shared<const Geometry> &value)
+    {
+        m_geometry = value;
         m_invalid = true;
         return *this;
     }
@@ -52,12 +64,12 @@ namespace cacto
         return *this;
     }
 
-    const sf::Texture *const Surface::getTexture() const
+    const Shared<const sf::Texture> &Surface::getTexture() const
     {
         return m_texture;
     }
 
-    Surface &Surface::setTexture(const sf::Texture *const value, bool resetRect)
+    Surface &Surface::setTexture(const Shared<const sf::Texture> &value, bool resetRect)
     {
         m_texture = value;
         m_invalid = true;
@@ -92,12 +104,13 @@ namespace cacto
         }
     }
 
-    Surface::Surface(Geometry &geometry, const sf::Color &color, const sf::Texture *texture)
-        : m_parent(),
-          m_geometry(&geometry),
+    Surface::Surface()
+        : m_id(),
+          m_parent(),
+          m_geometry(),
           m_precision(1),
-          m_color(color),
-          m_texture(texture),
+          m_color(),
+          m_texture(),
           m_textureRect(),
           m_invalid(true),
           m_array(sf::PrimitiveType::TriangleFan)
@@ -106,39 +119,7 @@ namespace cacto
             setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
     }
 
-    Surface::~Surface()
-    {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
-    }
-
-    Surface::Surface(const Surface &other)
-        : m_parent(),
-          m_geometry(other.m_geometry),
-          m_precision(other.m_precision),
-          m_color(other.m_color),
-          m_texture(other.m_texture),
-          m_textureRect(other.m_textureRect),
-          m_invalid(true),
-          m_array(sf::PrimitiveType::TriangleFan)
-    {
-    }
-
-    Surface &Surface::operator=(const Surface &other)
-    {
-        m_geometry = other.m_geometry;
-        m_precision = other.m_precision;
-        m_color = other.m_color;
-        m_texture = other.m_texture;
-        m_textureRect = other.m_textureRect;
-        m_invalid = true;
-        m_array = sf::VertexArray{sf::PrimitiveType::TriangleFan};
-        return *this;
-    }
-
-    const Surface Surface::Rectangle{Rectangle::Identity};
-
-    const Surface Surface::Ellipse{Ellipse::Identity};
+    Surface::~Surface() = default;
 
     sf::VertexArray &Surface::getArray() const
     {
@@ -150,35 +131,41 @@ namespace cacto
         m_invalid = true;
     }
 
-    void Surface::onAttach(Node &parent)
+    void Surface::onAttach(const Shared<Node> &parent)
     {
-        m_parent = &parent;
+        m_parent = parent;
     }
 
-    void Surface::onDetach(Node &parent)
+    void Surface::onDetach(const Shared<Node> &parent)
     {
-        m_parent = nullptr;
+        m_parent.reset();
     }
 
     void Surface::onUpdate() const
     {
-        cacto::setPoints(m_array, *m_geometry, m_precision);
-        cacto::setColor(m_array, m_color);
-        if (m_texture)
-            cacto::setTexCoords(m_array, m_textureRect);
-        cacto::mapPositions(m_array, *this);
+        if (m_geometry)
+        {
+            cacto::setPoints(m_array, *m_geometry, m_precision);
+            cacto::setColor(m_array, m_color);
+            if (m_texture)
+                cacto::setTexCoords(m_array, m_textureRect);
+            cacto::mapPositions(m_array, *this);
+        }
     }
 
     void Surface::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        update();
-        if (getWidth() > 0 && getHeight() > 0)
+        if (m_geometry)
         {
-            auto _states = states;
-            _states.texture = m_texture;
-            target.draw(m_array, _states);
+            update();
+            if (getWidth() > 0 && getHeight() > 0)
+            {
+                auto _states = states;
+                _states.texture = m_texture.get();
+                target.draw(m_array, _states);
+            }
+            DrawNode::onDraw(target, states);
         }
-        DrawNode::onDraw(target, states);
     }
 
     sf::Vector2f Surface::onCompact()
@@ -204,26 +191,69 @@ namespace cacto
         m_invalid = true;
     }
 
-    Surface colorSurface(const sf::Color &color)
+    XmlValue toXml(const Surface &surface)
     {
-        auto surface = Surface::Rectangle;
-        surface.setColor(color);
-        return surface;
+        XmlValue xml{"Surface", {}};
+        auto &id = surface.getId();
+        auto &geometry = Pack<Geometry>::id(surface.getGeometry());
+        auto precision = surface.getPrecision();
+        auto color = surface.getColor();
+        auto &texture = Pack<sf::Texture>::id(surface.getTexture());
+        auto textureRect = surface.getTextureRect();
+        xml["id"] = id;
+        xml["geometry"] = geometry;
+        xml["precision"] = std::to_string(precision);
+        xml["color"] = toString(color);
+        xml["texture"] = texture;
+        xml["textureRect"] = toString(textureRect);
+        return std::move(xml);
     }
 
-    Surface textureSurface(const sf::Texture &texture, const sf::FloatRect &textureRect)
+    void fromXml(Surface &surface, const XmlValue &xml)
     {
-        auto surface = Surface::Rectangle;
-        if (textureRect == sf::FloatRect{})
+        surface.setId(xml.getAttribute("id"));
+        auto geometry = Pack<Geometry>::resource(xml.getAttribute("geometry"));
+        szt precision = std::stoi(xml.getAttribute("precision", "1"));
+        sf::Color color{};
+        auto texture = Pack<sf::Texture>::resource(xml.getAttribute("texture"));
+        sf::FloatRect textureRect{};
+        cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
+        cacto::fromString(textureRect, xml.getAttribute("textureRect", "0,0,0,0"));
+        surface.setGeometry(geometry);
+        surface.setPrecision(precision);
+        surface.setColor(color);
+        surface.setTexture(texture);
+        surface.setTextureRect(textureRect);
+    }
+
+    namespace surface
+    {
+
+        XmlValue XmlConverter::toXml(const Shared<const Node> &value) const
         {
-            surface.setTexture(&texture, true);
+            Shared<const Surface> surface = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Surface) && (surface = std::dynamic_pointer_cast<const Surface>(value)))
+            {
+                auto xml = cacto::toXml(*surface);
+                return std::move(xml);
+            }
+            return nullptr;
         }
-        else
+
+        Shared<Node> XmlConverter::fromXml(const XmlValue &xml) const
         {
-            surface.setTexture(&texture, false);
-            surface.setTextureRect(textureRect);
+            if (xml.isTag() && xml.getName() == "Surface")
+            {
+                auto surface = std::make_shared<Surface>();
+                cacto::fromXml(*surface, xml);
+                return std::move(surface);
+            }
+            return nullptr;
         }
-        return surface;
+
+        XmlConverter Converter{};
+
     }
 
 }

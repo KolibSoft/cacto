@@ -21,8 +21,8 @@ namespace cacto
         UpdateNode();
         virtual ~UpdateNode();
 
-        static void update(Node &node, const sf::Time &time);
-        static void updateChildren(Node &node, const sf::Time &time);
+        static void update(const Shared<Node> &node, const sf::Time &time);
+        static void updateChildren(const Shared<Node> &node, const sf::Time &time);
 
     protected:
         void updateChildren(const sf::Time &time);

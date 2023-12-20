@@ -1,6 +1,5 @@
 #pragma once
 
-#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace sf
@@ -16,12 +15,6 @@ namespace sf
 namespace cacto
 {
 
-    class Geometry;
-
-    template class CACTO_GRAPHICS_API cacto::JsonConverter<Geometry>;
-
-    class JsonValue;
-
     class Geometry
         : public virtual Line
     {
@@ -34,21 +27,37 @@ namespace cacto
         virtual ~Geometry() = default;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Geometry *const &geometry);
-    void CACTO_GRAPHICS_API fromJson(Geometry *&geometry, const JsonValue &json);
+    template class CACTO_GRAPHICS_API cacto::XmlConverter<Geometry>;
+
+    XmlValue CACTO_GRAPHICS_API toXml(const Shared<const Geometry> &geometry);
+    void CACTO_GRAPHICS_API fromXml(Shared<Geometry> &geometry, const XmlValue &xml);
 
     namespace geometry
     {
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual line::JsonConverter,
-              public virtual cacto::JsonConverter<Geometry>
-        {
-        public:
-            JsonValue toJson(const Line *const value) const override;
 
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
+        class CACTO_GRAPHICS_API LineXmlConverter
+            : public line::XmlConverter
+        {
+
+        public:
+            XmlValue toXml(const Shared<const Line> &value) const override;
+            Shared<Line> fromXml(const XmlValue &xml) const override;
+
+            LineXmlConverter() = default;
+            virtual ~LineXmlConverter() = default;
         };
+
+        extern LineXmlConverter CACTO_GRAPHICS_API LineConverter;
+
+        class CACTO_GRAPHICS_API XmlConverter
+            : public cacto::XmlConverter<Geometry>
+        {
+
+        public:
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
     }
 
 }

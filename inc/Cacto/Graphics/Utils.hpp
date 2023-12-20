@@ -56,17 +56,17 @@ namespace cacto
     std::string CACTO_GRAPHICS_API toString(const sf::Vector2f &point);
     void CACTO_GRAPHICS_API fromString(sf::Vector2f &point, const std::string &string);
 
+    std::string CACTO_GRAPHICS_API toString(const sf::FloatRect &rect);
+    void CACTO_GRAPHICS_API fromString(sf::FloatRect &rect, const std::string &string);
+
     std::string CACTO_GRAPHICS_API toString(const sf::Color &color);
     void CACTO_GRAPHICS_API fromString(sf::Color &color, const std::string &string);
 
-    JsonValue CACTO_GRAPHICS_API toJson(const sf::FloatRect &rect);
-    void CACTO_GRAPHICS_API fromJson(sf::FloatRect &rect, const JsonValue &json);
-
-    JsonValue CACTO_GRAPHICS_API toJson(const sf::VertexArray &array);
-    void CACTO_GRAPHICS_API fromJson(sf::VertexArray &array, const JsonValue &json);
-
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
     void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const sf::VertexArray &array);
+    void CACTO_GRAPHICS_API fromXml(sf::VertexArray &array, const XmlValue &xml);
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Transform &transform);
     void CACTO_GRAPHICS_API fromXml(sf::Transform &transform, const XmlValue &xml);

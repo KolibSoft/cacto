@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cacto/Lang/JsonConverter.hpp>
+#include <Cacto/Lang/XmlConverter.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -18,12 +18,6 @@ namespace sf
 namespace cacto
 {
 
-    class Line;
-
-    template class CACTO_GRAPHICS_API cacto::JsonConverter<Line>;
-
-    class JsonValue;
-
     class CACTO_GRAPHICS_API Line
     {
 
@@ -38,18 +32,23 @@ namespace cacto
     void CACTO_GRAPHICS_API setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision = 0);
     void CACTO_GRAPHICS_API setPoints(sf::VertexArray &array, const Line &line, szt precision = 0);
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Line *const &line);
-    void CACTO_GRAPHICS_API fromJson(Line *&line, const JsonValue &json);
+    template class CACTO_GRAPHICS_API cacto::XmlConverter<Line>;
+
+    XmlValue CACTO_GRAPHICS_API toXml(const Shared<const Line> &line);
+    void CACTO_GRAPHICS_API fromXml(Shared<Line> &line, const XmlValue &xml);
 
     namespace line
     {
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual cacto::JsonConverter<Line>
+
+        class CACTO_GRAPHICS_API XmlConverter
+            : public cacto::XmlConverter<Line>
         {
+
         public:
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
         };
+
     }
 
 }

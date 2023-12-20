@@ -10,14 +10,14 @@ namespace cacto
     {
 
     public:
-        Node *const getParent() const override;
+        Shared<Node> getParent() const override;
 
         RootNode() = default;
         virtual ~RootNode() = default;
 
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const Shared<Node> &parent) override;
+        void onDetach(const Shared<Node> &parent) override;
     };
 
 }

@@ -104,55 +104,59 @@ namespace cacto
 
     Triangle::~Triangle() = default;
 
-    JsonValue toJson(const Triangle &triangle)
+    XmlValue toXml(const Triangle &triangle)
     {
-        auto json = JsonValue::ObjectValue;
-        auto &pointA = triangle.getPointA();
-        auto &pointB = triangle.getPointB();
-        auto &pointC = triangle.getPointC();
-        json["pointA"] = {pointA.x, pointA.y};
-        json["pointB"] = {pointB.x, pointB.y};
-        json["pointC"] = {pointC.x, pointC.y};
-        return json;
+        XmlValue xml{"Triangle", {}};
+        auto pointA = triangle.getPointA();
+        auto pointB = triangle.getPointB();
+        auto pointC = triangle.getPointC();
+        xml["pointA"] = toString(pointA);
+        xml["pointB"] = toString(pointB);
+        xml["pointC"] = toString(pointC);
+        return std::move(xml);
     }
 
-    void fromJson(Triangle &triangle, const JsonValue &json)
+    void fromXml(Triangle &triangle, const XmlValue &xml)
     {
-        auto &pointA = json["pointA"];
-        auto &pointB = json["pointB"];
-        auto &pointC = json["pointC"];
-        triangle.setPointA({f32t(pointA[0].getNumber()), f32t(pointA[1].getNumber())});
-        triangle.setPointB({f32t(pointB[0].getNumber()), f32t(pointB[1].getNumber())});
-        triangle.setPointC({f32t(pointC[0].getNumber()), f32t(pointC[1].getNumber())});
+        triangle = {};
+        sf::Vector2f pointA{};
+        sf::Vector2f pointB{};
+        sf::Vector2f pointC{};
+        fromString(pointA, xml.getAttribute("pointA", "0,0"));
+        fromString(pointB, xml.getAttribute("pointB", "0,0"));
+        fromString(pointC, xml.getAttribute("pointC", "0,0"));
+        triangle.setPointA(pointA);
+        triangle.setPointB(pointB);
+        triangle.setPointC(pointC);
     }
 
     namespace triangle
     {
 
-        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
         {
-            const Triangle *triangle = nullptr;
-            if (value && typeid(*value) == typeid(Triangle) && (triangle = dynamic_cast<const Triangle *>(value)))
+            Shared<const Triangle> triangle = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Triangle) && (triangle = std::dynamic_pointer_cast<const Triangle>(value)))
             {
-                auto json = cacto::toJson(*triangle);
-                json["$type"] = "Triangle";
-                return json;
+                auto xml = cacto::toXml(*triangle);
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Triangle")
+            if (xml.isTag() && xml.getName() == "Triangle")
             {
-                auto triangle = new Triangle();
-                cacto::fromJson(*triangle, json);
-                return triangle;
+                auto triangle = std::make_shared<Triangle>();
+                cacto::fromXml(*triangle, xml);
+                return std::move(triangle);
             }
             return nullptr;
         }
 
-        JsonConverter Converter{};
+        XmlConverter Converter{};
 
     }
 

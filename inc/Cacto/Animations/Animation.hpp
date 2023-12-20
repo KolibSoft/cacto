@@ -49,36 +49,4 @@ namespace cacto
         Mode m_mode;
     };
 
-    template class CACTO_ANIMATIONS_API JsonConverter<Animation>;
-
-    std::string CACTO_ANIMATIONS_API toString(const Animation::Direction &direction);
-    void CACTO_ANIMATIONS_API fromString(Animation::Direction &direction, const std::string &string);
-
-    std::string CACTO_ANIMATIONS_API toString(const Animation::Mode &mode);
-    void CACTO_ANIMATIONS_API fromString(Animation::Mode &mode, const std::string &string);
-
-    JsonValue CACTO_ANIMATIONS_API toJson(const Animation &animation);
-    void CACTO_ANIMATIONS_API fromJson(Animation &animation, const JsonValue &json);
-
-    JsonValue CACTO_ANIMATIONS_API toJson(const Animation *const &animation);
-    void CACTO_ANIMATIONS_API fromJson(Animation *&animation, const JsonValue &json);
-
-    namespace animation
-    {
-
-        class CACTO_ANIMATIONS_API JsonConverter
-            : public virtual cacto::JsonConverter<Animation>
-        {
-        public:
-            JsonValue toJson(const Animation *const value) const override;
-            Animation *fromJson(const JsonValue &json) const override;
-
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
-        };
-
-        extern JsonConverter CACTO_ANIMATIONS_API Converter;
-
-    }
-
 }

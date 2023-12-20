@@ -1,5 +1,4 @@
-#ifndef CACTO_INFLATABLE_NODE_HPP
-#define CACTO_INFLATABLE_NODE_HPP
+#pragma once
 
 #include <SFML/System/Vector2.hpp>
 #include <Cacto/Core/Node.hpp>
@@ -40,5 +39,3 @@ namespace cacto
     };
 
 }
-
-#endif

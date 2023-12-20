@@ -8,21 +8,21 @@ namespace cacto
     template <typename T>
     inline JsonConverter<T>::JsonConverter()
     {
-        Converters.push_back(this);
+        s_Converters.push_back(this);
     }
 
     template <typename T>
     inline JsonConverter<T>::~JsonConverter()
     {
-        Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
+        s_Converters.erase(std::remove(s_Converters.begin(), s_Converters.end(), this), s_Converters.end());
     }
 
     template <typename T>
-    inline JsonValue JsonConverter<T>::json(const T *const value)
+    inline JsonValue JsonConverter<T>::json(const Shared<const T> &value)
     {
         if (value == nullptr)
             return nullptr;
-        for (auto &converter : JsonConverter<T>::Converters)
+        for (auto &converter : JsonConverter<T>::s_Converters)
         {
             JsonValue json = converter->toJson(value);
             if (json != nullptr)
@@ -32,20 +32,27 @@ namespace cacto
     }
 
     template <typename T>
-    inline T *JsonConverter<T>::value(const JsonValue &json)
+    inline Shared<T> JsonConverter<T>::value(const JsonValue &json)
     {
         if (json == nullptr)
             return nullptr;
-        for (auto &converter : JsonConverter<T>::Converters)
+        for (auto &converter : JsonConverter<T>::s_Converters)
         {
-            T* value = converter->fromJson(json);
+            Shared<T> value = converter->fromJson(json);
             if (value)
-                return value;
+                return std::move(value);
         }
         return nullptr;
     }
 
     template <typename T>
-    inline std::vector<const JsonConverter<T> *> JsonConverter<T>::Converters{};
+    inline szt JsonConverter<T>::getConverterCount()
+    {
+        auto count = JsonConverter<T>::s_Converters.size();
+        return count;
+    }
+
+    template <typename T>
+    inline std::vector<const JsonConverter<T> *> JsonConverter<T>::s_Converters{};
 
 }

@@ -1,6 +1,5 @@
 #include <math.h>
 #include <SFML/System/Vector2.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 
 namespace cacto
@@ -35,29 +34,14 @@ namespace cacto
         return point;
     }
 
-    const sf::Vector2f &Bezier::getControlPoint(szt index) const
+    const std::vector<sf::Vector2f> &Bezier::asPoints() const
     {
-        return m_points[index];
+        return m_points;
     }
 
-    void Bezier::setControlPoint(szt index, const sf::Vector2f &value)
+    std::vector<sf::Vector2f> &Bezier::asPoints()
     {
-        m_points[index] = value;
-    }
-
-    void Bezier::clear()
-    {
-        m_points.clear();
-    }
-
-    void Bezier::append(const sf::Vector2f &point)
-    {
-        m_points.push_back(point);
-    }
-
-    void Bezier::resize(szt count)
-    {
-        m_points.resize(count);
+        return m_points;
     }
 
     Bezier::Bezier(const std::vector<sf::Vector2f> &points)
@@ -67,54 +51,61 @@ namespace cacto
 
     Bezier::~Bezier() = default;
 
-    JsonValue toJson(const Bezier &bezier)
+    XmlValue toXml(const Bezier &bezier)
     {
-        auto json = JsonValue::ObjectValue;
-        auto &points = (json["points"] = JsonValue::ArrayValue).asArray();
-        for (szt i = 0; i < bezier.getPointCount(); i++)
+        XmlValue xml("Bezier", {});
+        auto &content = xml.asContent();
+        for (auto &point : bezier.asPoints())
         {
-            auto &point = bezier.getControlPoint(i);
-            points.push_back({point.x, point.y});
+            XmlValue point_xml{"Point", {}};
+            point_xml["position"] = toString(point);
+            content.push_back(std::move(point_xml));
         }
-        return json;
+        return std::move(xml);
     }
 
-    void fromJson(Bezier &bezier, const JsonValue &json)
+    void fromXml(Bezier &bezier, const XmlValue &xml)
     {
-        bezier.clear();
-        auto &points = json["points"];
-        if (points.isArray())
-            for (auto &point : points.asArray())
-                bezier.append({f32t(point[0].getNumber()), f32t(point[1].getNumber())});
+        bezier = {};
+        if (xml.isTag())
+        {
+            auto &points = bezier.asPoints();
+            for (auto &point_xml : xml.asContent())
+            {
+                sf::Vector2f point{};
+                fromString(point, point_xml.getAttribute("position", "0,0"));
+                points.push_back(point);
+            }
+        }
     }
 
     namespace bezier
     {
 
-        JsonValue JsonConverter::toJson(const Line *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Line> &value) const
         {
-            const Bezier *bezier = nullptr;
-            if (value && typeid(*value) == typeid(Bezier) && (bezier = dynamic_cast<const Bezier *>(value)))
+            Shared<const Bezier> bezier = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Bezier) && (bezier = std::dynamic_pointer_cast<const Bezier>(value)))
             {
-                auto json = cacto::toJson(*bezier);
-                json["$type"] = "Bezier";
-                return json;
+                auto xml = cacto::toXml(*bezier);
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Line *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Line> XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Bezier")
+            if (xml.isTag() && xml.getName() == "Bezier")
             {
-                auto bezier = new Bezier();
-                cacto::fromJson(*bezier, json);
-                return bezier;
+                auto bezier = std::make_shared<Bezier>();
+                cacto::fromXml(*bezier, xml);
+                return std::move(bezier);
             }
             return nullptr;
         }
 
-        JsonConverter Converter{};
+        XmlConverter Converter{};
 
     }
 

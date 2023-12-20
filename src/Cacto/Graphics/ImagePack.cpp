@@ -5,15 +5,15 @@
 namespace cacto
 {
 
-    const std::string *const ImagePack::getId(const sf::Image &value) const
+    const std::string &ImagePack::getId(const Shared<const sf::Image> &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == &value)
-                return &pair.first;
-        return nullptr;
+            if (pair.second == value)
+                return pair.first;
+        return NoId;
     }
 
-    const sf::Image *const ImagePack::getResource(const std::string &id) const
+    Shared<const sf::Image> ImagePack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
             if (pair.first == id)
@@ -21,7 +21,7 @@ namespace cacto
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            auto image = new sf::Image();
+            auto image = std::make_shared<sf::Image>();
             auto _ = image->loadFromFile(path);
             m_map.insert({id, image});
             return image;
@@ -33,32 +33,19 @@ namespace cacto
         }
     }
 
-    void ImagePack::setResource(const std::string &id, const sf::Image *const value)
+    void ImagePack::setResource(const std::string &id, const Shared<const sf::Image> &value)
     {
         for (auto &pair : m_map)
             if (pair.first == id)
             {
-                if (pair.second && value)
-                {
-                    *pair.second = *value;
-                }
-                else if (pair.second && !value)
-                {
-                    delete pair.second;
-                    pair.second = nullptr;
-                }
-                else if (!pair.second && value)
-                {
-                    pair.second = new sf::Image(*value);
-                }
+                pair.second = value;
                 return;
             }
         if (value)
         {
             auto path = m_path / id;
-            auto image = new sf::Image(*value);
-            auto _ = image->saveToFile(path);
-            m_map.insert({id, image});
+            auto _ = value->saveToFile(path);
+            m_map.insert({id, value});
         }
         else
         {
@@ -73,30 +60,18 @@ namespace cacto
     {
     }
 
-    ImagePack::~ImagePack()
-    {
-        for (auto &pair : m_map)
-        {
-            if (pair.second)
-            {
-                delete pair.second;
-                pair.second = nullptr;
-            }
-        }
-    }
+    ImagePack::~ImagePack() = default;
 
-    const std::string *const getId(const sf::Image &image)
+    const std::string &getId(const Shared<const sf::Image> &image)
     {
-        auto id = Pack<sf::Image>::id(image);
+        auto &id = Pack<sf::Image>::id(image);
         return id;
     }
 
-    const sf::Image *const getImage(const std::string &id)
+    Shared<const sf::Image> getImage(const std::string &id)
     {
-        auto resource = Pack<sf::Image>::resource(id);
-        return resource;
+        auto image = Pack<sf::Image>::resource(id);
+        return std::move(image);
     }
-
-    ImagePack Images{"."};
 
 }

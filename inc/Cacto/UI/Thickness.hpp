@@ -1,5 +1,4 @@
-#ifndef CACTO_THICKNESS_HPP
-#define CACTO_THICKNESS_HPP
+#pragma once
 
 #include <Cacto/UI/Export.hpp>
 
@@ -31,5 +30,3 @@ namespace cacto
     };
 
 }
-
-#endif

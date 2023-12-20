@@ -1,5 +1,4 @@
-#ifndef CACTO_INPUTABLE_HPP
-#define CACTO_INPUTABLE_HPP
+#pragma once
 
 #include <Cacto/Window/Export.hpp>
 
@@ -25,5 +24,3 @@ namespace cacto
     };
 
 }
-
-#endif

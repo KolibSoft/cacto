@@ -8,21 +8,21 @@ namespace cacto
     template <typename T>
     inline XmlConverter<T>::XmlConverter()
     {
-        Converters.push_back(this);
+        s_Converters.push_back(this);
     }
 
     template <typename T>
     inline XmlConverter<T>::~XmlConverter()
     {
-        Converters.erase(std::remove(Converters.begin(), Converters.end(), this), Converters.end());
+        s_Converters.erase(std::remove(s_Converters.begin(), s_Converters.end(), this), s_Converters.end());
     }
 
     template <typename T>
-    inline XmlValue XmlConverter<T>::xml(const T *const value)
+    inline XmlValue XmlConverter<T>::xml(const Shared<const T> &value)
     {
         if (value == nullptr)
             return nullptr;
-        for (auto &converter : XmlConverter<T>::Converters)
+        for (auto &converter : XmlConverter<T>::s_Converters)
         {
             XmlValue xml = converter->toXml(value);
             if (xml != nullptr)
@@ -32,20 +32,27 @@ namespace cacto
     }
 
     template <typename T>
-    inline T *XmlConverter<T>::value(const XmlValue &xml)
+    inline Shared<T> XmlConverter<T>::value(const XmlValue &xml)
     {
         if (xml == nullptr)
             return nullptr;
-        for (auto &converter : XmlConverter<T>::Converters)
+        for (auto &converter : XmlConverter<T>::s_Converters)
         {
-            T *value = converter->fromXml(xml);
+            Shared<T> value = converter->fromXml(xml);
             if (value)
-                return value;
+                return std::move(value);
         }
         return nullptr;
     }
 
     template <typename T>
-    inline std::vector<const XmlConverter<T> *> XmlConverter<T>::Converters{};
+    inline szt XmlConverter<T>::getConverterCount()
+    {
+        auto count = XmlConverter<T>::s_Converters.size();
+        return count;
+    }
+
+    template <typename T>
+    inline std::vector<const XmlConverter<T> *> XmlConverter<T>::s_Converters{};
 
 }

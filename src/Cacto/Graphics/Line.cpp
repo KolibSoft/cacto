@@ -1,8 +1,6 @@
 #include <algorithm>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
-#include <Cacto/Lang/JsonConverter.hpp>
 #include <Cacto/Graphics/Line.hpp>
 
 namespace cacto
@@ -24,16 +22,16 @@ namespace cacto
         setPoints(vertexes, line, count, precision);
     }
 
-    JsonValue toJson(const Line *const &line)
+    XmlValue toXml(const Shared<const Line> &line)
     {
-        auto json = JsonConverter<Line>::json(line);
-        return std::move(json);
+        auto xml = XmlConverter<Line>::xml(line);
+        return std::move(xml);
     }
 
-    void fromJson(Line *&line, const JsonValue &json)
+    void fromXml(Shared<Line> &line, const XmlValue &xml)
     {
-        auto _line = JsonConverter<Line>::value(json);
-        line = _line;
+        auto value = XmlConverter<Line>::value(xml);
+        line = std::move(value);
     }
 
 }

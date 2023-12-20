@@ -1,11 +1,18 @@
 #include <string>
 #include <iostream>
+#include <filesystem>
 
-int main() {
-    std::string string = u8"Esto funciona";
-    int value = std::stoi("FF", 0, 16);
+#include <Dylib/dylib.hpp>
 
-    std::cout << 1234.56 << "\n";
+int main()
+{
+
+    dylib lib("./lib.dll");
+
+    auto dynamicTest = lib.get_function<std::string *(const std::string *)>("dynamicTest");
+    std::string message = "Message";
+    auto result = dynamicTest(&message);
+    std::cout << *result << '\n';
 
     return 0;
 }

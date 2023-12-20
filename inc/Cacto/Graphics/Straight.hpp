@@ -28,25 +28,25 @@ namespace cacto
         sf::Vector2f m_end;
     };
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Straight &straight);
-    void CACTO_GRAPHICS_API fromJson(Straight &straight, const JsonValue &json);
+    XmlValue CACTO_GRAPHICS_API toXml(const Straight &straight);
+    void CACTO_GRAPHICS_API fromXml(Straight &straight, const XmlValue &xml);
 
     namespace straight
     {
 
-        class CACTO_GRAPHICS_API JsonConverter
-            : public virtual line::JsonConverter
+        class CACTO_GRAPHICS_API XmlConverter
+            : public line::XmlConverter
         {
 
         public:
-            JsonValue toJson(const Line *const value) const override;
-            Line *fromJson(const JsonValue &json) const override;
+            XmlValue toXml(const Shared<const Line> &value) const override;
+            Shared<Line> fromXml(const XmlValue &xml) const override;
 
-            JsonConverter() = default;
-            virtual ~JsonConverter() = default;
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
         };
 
-        extern JsonConverter CACTO_GRAPHICS_APIConverter;
+        extern XmlConverter CACTO_GRAPHICS_API Converter;
 
     }
 

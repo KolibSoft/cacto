@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
@@ -7,52 +9,29 @@
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/ImagePack.hpp>
+#include <Cacto/Graphics/TileSet.hpp>
+#include <Cacto/Graphics/TileSetPack.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Core/Utils.hpp>
 
 int main()
 {
 
-    cacto::TexturePack pack{"res/textures"};
+    cacto::TexturePack textures{"."};
+    cacto::TileSetPack tileSets{"."};
+    cacto::TileSet tileSet{};
+
+    cacto::fromXmlFile(tileSet, "res/tile_set.xml");
+    // cacto::toXmlFile(tileSet, "res/tile_set.xml", 2);
+    std::cout << "Tiles: " << tileSet.asMap().size() << '\n';
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    /*
-    sf::Texture texture;
-    auto _ = texture.loadFromFile("res/WallTile.png");
-    pack.setTexture("tiles.png", texture);
-
-    cacto::JsonValue json = nullptr;
-    json.fromFile("res/rect_map.json");
-    json.toFile("res/rect_map.json");
-
-    std::unordered_map<std::string, sf::FloatRect> tiles{};
-    for (auto &pair : json.asObject())
-    {
-        auto &tile = tiles[pair.first] = {};
-        cacto::rectFromJson(tile, pair.second);
-    }
-    */
     cacto::TileMap tileMap{};
-    /*
-    tileMap.setTexture(&pack.getTexture("tiles.png"));
-    tileMap.setTileSize({32, 32});
-    tileMap.setArea({{1, 1}, {10, 10}});
-
-    tileMap.setTiles({{1, 1}, {10, 1}}, tiles["HWall"]);
-    tileMap.setTiles({{1, 10}, {10, 1}}, tiles["HWall"]);
-    tileMap.setTiles({{1, 1}, {1, 10}}, tiles["VWall"]);
-    tileMap.setTiles({{10, 1}, {1, 10}}, tiles["VWall"]);
-    tileMap.setTile({1, 1}, tiles["TopLeft"]);
-    tileMap.setTile({10, 1}, tiles["TopRight"]);
-    tileMap.setTile({1, 10}, tiles["BottomLeft"]);
-    tileMap.setTile({10, 10}, tiles["BottomRight"]);
-
-    tileMap.toFile("res/tile_map.json");
-    */
-
-    cacto::fromJsonFile(tileMap, "res/tile_map.json");
-    cacto::toJsonFile(tileMap, "res/tile_map.json");
+    cacto::fromXmlFile(tileMap, "res/tile_map.xml");
+    // cacto::toXmlFile(tileMap, "res/tile_map.xml", 2);
 
     while (window.isOpen())
     {
@@ -61,8 +40,8 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::MouseButtonPressed)
-                tileMap.setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
+                cacto::fromXmlFile(tileMap, "res/tile_map.xml");
         }
         window.clear();
         window.draw(tileMap);

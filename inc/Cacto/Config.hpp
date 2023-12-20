@@ -2,6 +2,7 @@
 
 #include <SFML/Config.hpp>
 #include <cstdint>
+#include <memory>
 
 #define CACTO_MAJOR_VERSION 0
 #define CACTO_MINOR_VERSION 1
@@ -39,5 +40,14 @@ namespace cacto
     using s32t = const char32_t *;
 
     using szt = std::size_t;
+
+    template <typename T>
+    using Unique = std::unique_ptr<T>;
+
+    template <typename T>
+    using Shared = std::shared_ptr<T>;
+
+    template <typename T>
+    using Weak = std::weak_ptr<T>;
 
 }

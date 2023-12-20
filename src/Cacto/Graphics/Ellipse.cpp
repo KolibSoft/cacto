@@ -83,53 +83,56 @@ namespace cacto
 
     Ellipse::~Ellipse() = default;
 
-    Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
+    const Ellipse Ellipse::Identity{{0, 0}, {1, 1}};
 
-    JsonValue CACTO_GRAPHICS_API toJson(const Ellipse &ellipse)
+    XmlValue toXml(const Ellipse &ellipse)
     {
-        auto json = JsonValue::ObjectValue;
+        XmlValue xml{"Ellipse", {}};
         auto center = ellipse.getCenter();
         auto diameters = ellipse.getDiameters();
-        json["center"] = {center.x, center.y};
-        json["diameters"] = {diameters.x, diameters.y};
-        return json;
+        xml["center"] = toString(center);
+        xml["diameters"] = toString(diameters);
+        return std::move(xml);
     }
 
-    void CACTO_GRAPHICS_API fromJson(Ellipse &ellipse, const JsonValue &json)
+    void fromXml(Ellipse &ellipse, const XmlValue &xml)
     {
-        auto &center = json["center"];
-        auto &diameters = json["diameters"];
-        ellipse.setCenter({f32t(center[0].getNumber()), f32t(center[1].getNumber())});
-        ellipse.setDiameters({f32t(diameters[0].getNumber()), f32t(diameters[1].getNumber())});
+        ellipse = {};
+        sf::Vector2f center{};
+        sf::Vector2f diameters{};
+        fromString(center, xml.getAttribute("center", "0,0"));
+        fromString(diameters, xml.getAttribute("diameters", "0,0"));
+        ellipse.setCenter(center);
+        ellipse.setDiameters(diameters);
     }
 
     namespace ellipse
     {
 
-        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
         {
-            const Ellipse *ellipse = nullptr;
-            if (value && typeid(*value) == typeid(Ellipse) && (ellipse = dynamic_cast<const Ellipse *>(value)))
+            Shared<const Ellipse> ellipse = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Ellipse) && (ellipse = std::dynamic_pointer_cast<const Ellipse>(value)))
             {
-                auto json = cacto::toJson(*ellipse);
-                json["$type"] = "Ellipse";
-                return json;
+                auto xml = cacto::toXml(*ellipse);
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Ellipse")
+            if (xml.isTag() && xml.getName() == "Ellipse")
             {
-                auto ellipse = new Ellipse();
-                cacto::fromJson(*ellipse, json);
-                return ellipse;
+                auto ellipse = std::make_shared<Ellipse>();
+                cacto::fromXml(*ellipse, xml);
+                return std::move(ellipse);
             }
             return nullptr;
         }
 
-        JsonConverter Converter{};
+        XmlConverter Converter{};
 
     }
 

@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
+#include <Cacto/Lang/Object.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 
 namespace cacto
@@ -29,6 +30,8 @@ namespace cacto
             Options(const sf::Vector2f &coords = {}, Relation relation = Body);
             virtual ~Options();
 
+            static const Options Default;
+
         private:
             sf::Vector2f m_coords;
             Relation m_relation;
@@ -38,6 +41,7 @@ namespace cacto
 
     class CACTO_GRAPHICS_API Skeleton
         : public sf::Transformable,
+          public Object,
           public virtual DrawNode
     {
 
@@ -45,50 +49,43 @@ namespace cacto
         using Relation = skeleton::Relation;
         using Options = skeleton::Options;
 
-        const std::string &getTag() const override;
-        void setTag(const std::string &value);
+        const std::string &getId() const override;
+        Skeleton &setId(const std::string &value);
 
-        Node *const getParent() const override;
+        Shared<Node> getParent() const override;
 
         szt getChildCount() const override;
-        Node *const getChild(szt index = 0) const override;
+        Shared<Node> getChild(szt index = 0) const override;
 
-        const Options *const getOptions(Node &child) const;
-        Options *const getOptions(Node &child);
+        const Options &getOptions(const Shared<const Node> &child) const;
+        Options &getOptions(const Shared<const Node> &child);
 
-        Skeleton &append(Node &child, const Options &options = {}, bool internal = false);
-        void remove(Node &child);
+        Skeleton &append(const Shared<Node> &child, const Options &options = Options::Default);
+        void remove(const Shared<Node> &child);
 
         Skeleton();
         virtual ~Skeleton();
 
-        Skeleton(const Skeleton &other);
-        Skeleton &operator=(const Skeleton &other);
-
-        Skeleton(Skeleton &&other);
-        Skeleton &operator=(Skeleton &&other);
-
     protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
+        void onAttach(const Shared<Node> &parent) override;
+        void onDetach(const Shared<Node> &parent) override;
 
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
+        void onAppend(const Shared<Node> &child) override;
+        void onRemove(const Shared<Node> &child) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         struct holder;
 
-        std::string m_tag;
-        Node *m_parent;
+        std::string m_id;
+        Weak<Node> m_parent;
         std::vector<holder> m_holders;
 
         struct holder
         {
-            Node *child{};
+            Shared<Node> child{};
             Options options{};
-            bool internal{};
         };
     };
 
@@ -106,8 +103,8 @@ namespace cacto
         {
 
         public:
-            XmlValue toXml(const Node *const value) const override;
-            Node *fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Shared<const Node> &value) const override;
+            Shared<Node> fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;

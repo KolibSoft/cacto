@@ -1,5 +1,4 @@
-#ifndef CACTO_FOCUSABLE_HPP
-#define CACTO_FOCUSABLE_HPP
+#pragma once
 
 #include <Cacto/Window/Export.hpp>
 
@@ -27,5 +26,3 @@ namespace cacto
     };
 
 }
-
-#endif

@@ -1,7 +1,6 @@
 #include <stdexcept>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
 namespace cacto
@@ -46,48 +45,30 @@ namespace cacto
         return result;
     }
 
-    f32t Rectangle::getLeft() const
+    sf::Vector2f Rectangle::getPosition() const
     {
-        return m_left;
+        return {m_left, m_top};
     }
 
-    void Rectangle::setLeft(f32t value)
+    void Rectangle::setPosition(const sf::Vector2f &value)
     {
-        m_left = value;
-        m_right = value + m_width;
+        m_left = value.x;
+        m_right = value.x + m_width;
+        m_top = value.y;
+        m_bottom = value.y + m_height;
     }
 
-    f32t Rectangle::getTop() const
+    sf::Vector2f Rectangle::getSize() const
     {
-        return m_top;
+        return {m_width, m_height};
     }
 
-    void Rectangle::setTop(f32t value)
+    void Rectangle::setSize(const sf::Vector2f &value)
     {
-        m_top = value;
-        m_bottom = value + m_height;
-    }
-
-    f32t Rectangle::getWidth() const
-    {
-        return m_width;
-    }
-
-    void Rectangle::setWidth(f32t value)
-    {
-        m_width = value;
-        m_right = m_left + value;
-    }
-
-    f32t Rectangle::getHeight() const
-    {
-        return m_height;
-    }
-
-    void Rectangle::setHeight(f32t value)
-    {
-        m_height = value;
-        m_bottom = m_left + value;
+        m_width = value.x;
+        m_right = m_left + value.x;
+        m_height = value.y;
+        m_bottom = m_left + value.y;
     }
 
     Rectangle::Rectangle(const sf::Vector2f &position, const sf::Vector2f &size)
@@ -99,53 +80,56 @@ namespace cacto
 
     Rectangle::~Rectangle() = default;
 
-    Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
+    const Rectangle Rectangle::Identity{{0, 0}, {1, 1}};
 
-    JsonValue toJson(const Rectangle &rectangle)
+    XmlValue toXml(const Rectangle &rectangle)
     {
-        auto json = JsonValue::ObjectValue;
-        json["position"] = {rectangle.getLeft(), rectangle.getTop()};
-        json["size"] = {rectangle.getWidth(), rectangle.getHeight()};
-        return json;
+        XmlValue xml{"Rectangle", {}};
+        auto position = rectangle.getPosition();
+        auto size = rectangle.getSize();
+        xml["position"] = toString(position);
+        xml["size"] = toString(size);
+        return std::move(xml);
     }
 
-    void fromJson(Rectangle &rectangle, const JsonValue &json)
+    void fromXml(Rectangle &rectangle, const XmlValue &xml)
     {
-        auto &position = json["position"];
-        auto &size = json["size"];
-        rectangle.setLeft(f32t(position[0].getNumber()));
-        rectangle.setTop(f32t(position[1].getNumber()));
-        rectangle.setWidth(f32t(size[0].getNumber()));
-        rectangle.setHeight(f32t(size[1].getNumber()));
+        rectangle = {};
+        sf::Vector2f position{};
+        sf::Vector2f size{};
+        fromString(position, xml.getAttribute("position"));
+        fromString(size, xml.getAttribute("size"));
+        rectangle.setPosition(position);
+        rectangle.setSize(size);
     }
 
     namespace rectangle
     {
 
-        JsonValue JsonConverter::toJson(const Geometry *const value) const
+        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
         {
-            const Rectangle *rectangle = nullptr;
-            if (value && typeid(*value) == typeid(Rectangle) && (rectangle = dynamic_cast<const Rectangle *>(value)))
+            Shared<const Rectangle> rectangle = nullptr;
+            auto ptr = value.get();
+            if (value && typeid(*ptr) == typeid(Rectangle) && (rectangle = std::dynamic_pointer_cast<const Rectangle>(value)))
             {
-                auto json = cacto::toJson(*rectangle);
-                json["$type"] = "Rectangle";
-                return json;
+                auto xml = cacto::toXml(*rectangle);
+                return std::move(xml);
             }
             return nullptr;
         }
 
-        Geometry *JsonConverter::fromJson(const JsonValue &json) const
+        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (json.getKind() == JsonValue::Object && json["$type"] == "Rectangle")
+            if (xml.isTag() && xml.getName() == "Rectangle")
             {
-                auto rectangle = new Rectangle();
-                cacto::fromJson(*rectangle, json);
-                return rectangle;
+                auto rectangle = std::make_shared<Rectangle>();
+                cacto::fromXml(*rectangle, xml);
+                return std::move(rectangle);
             }
             return nullptr;
         }
 
-        JsonConverter Converter{};
+        XmlConverter Converter{};
 
     }
 
