@@ -49,6 +49,7 @@ namespace cacto
     XmlValue toXml(const Mesh &mesh)
     {
         auto xml = cacto::toXml((const sf::VertexArray &)mesh);
+        xml.setName("Mesh");
         xml["id"] = mesh.getId();
         return std::move(xml);
     }
