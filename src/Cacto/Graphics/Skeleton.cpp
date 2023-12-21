@@ -200,7 +200,7 @@ namespace cacto
 
     XmlValue toXml(const Skeleton &skeleton)
     {
-        XmlValue xml = toXml((sf::Transformable &)skeleton);
+        XmlValue xml = toXml(skeleton.asTransformable());
         xml.setName("Skeleton");
         xml["id"] = skeleton.getId();
         auto &content = xml.asContent();
@@ -221,7 +221,7 @@ namespace cacto
 
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
-        fromXml((sf::Transformable &)skeleton, xml);
+        fromXml(skeleton.asTransformable(), xml);
         skeleton.setId(xml.getAttribute("id"));
         if (xml.isTag())
             for (auto &item : xml.asContent())

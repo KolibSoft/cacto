@@ -384,6 +384,7 @@ namespace cacto
     }
 
     XmlValue::XmlValue(XmlValue &&other)
+        : XmlValue(nullptr)
     {
         *this = std::move(other);
     }

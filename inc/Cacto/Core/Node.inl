@@ -9,7 +9,8 @@ namespace cacto
         if (this->getId() == id)
         {
             auto node = const_cast<Node *>(this);
-            return node;
+            auto cast = dynamic_cast<T*>(node);
+            return cast;
         }
         for (szt i = 0; i < getChildCount(); i++)
         {
@@ -30,7 +31,8 @@ namespace cacto
         if (this->getId() == id)
         {
             auto node = const_cast<Node *>(this);
-            return node;
+            auto cast = dynamic_cast<T*>(node);
+            return cast;
         }
         auto parent = getParent();
         if (parent)
