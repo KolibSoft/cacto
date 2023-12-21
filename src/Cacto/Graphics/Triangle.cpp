@@ -133,11 +133,10 @@ namespace cacto
     namespace triangle
     {
 
-        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
+        XmlValue XmlConverter::toXml(const Geometry *const value) const
         {
-            Shared<const Triangle> triangle = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Triangle) && (triangle = std::dynamic_pointer_cast<const Triangle>(value)))
+            const Triangle *triangle = nullptr;
+            if (value && typeid(*value) == typeid(Triangle) && (triangle = dynamic_cast<const Triangle *>(value)))
             {
                 auto xml = cacto::toXml(*triangle);
                 return std::move(xml);
@@ -145,11 +144,11 @@ namespace cacto
             return nullptr;
         }
 
-        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
+        Geometry *XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.isTag() && xml.getName() == "Triangle")
             {
-                auto triangle = std::make_shared<Triangle>();
+                auto triangle = new Triangle();
                 cacto::fromXml(*triangle, xml);
                 return std::move(triangle);
             }

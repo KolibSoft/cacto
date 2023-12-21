@@ -82,11 +82,10 @@ namespace cacto
     namespace bezier
     {
 
-        XmlValue XmlConverter::toXml(const Shared<const Line> &value) const
+        XmlValue XmlConverter::toXml(const Line *const value) const
         {
-            Shared<const Bezier> bezier = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Bezier) && (bezier = std::dynamic_pointer_cast<const Bezier>(value)))
+            const Bezier *bezier = nullptr;
+            if (value && typeid(*value) == typeid(Bezier) && (bezier = dynamic_cast<const Bezier *>(value)))
             {
                 auto xml = cacto::toXml(*bezier);
                 return std::move(xml);
@@ -94,13 +93,13 @@ namespace cacto
             return nullptr;
         }
 
-        Shared<Line> XmlConverter::fromXml(const XmlValue &xml) const
+        Line *XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.isTag() && xml.getName() == "Bezier")
             {
-                auto bezier = std::make_shared<Bezier>();
+                auto bezier = new Bezier();
                 cacto::fromXml(*bezier, xml);
-                return std::move(bezier);
+                return bezier;
             }
             return nullptr;
         }

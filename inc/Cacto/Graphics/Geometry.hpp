@@ -29,31 +29,20 @@ namespace cacto
 
     template class CACTO_GRAPHICS_API cacto::XmlConverter<Geometry>;
 
-    XmlValue CACTO_GRAPHICS_API toXml(const Shared<const Geometry> &geometry);
-    void CACTO_GRAPHICS_API fromXml(Shared<Geometry> &geometry, const XmlValue &xml);
+    XmlValue CACTO_GRAPHICS_API toXml(const Geometry *const &geometry);
+    void CACTO_GRAPHICS_API fromXml(Geometry *&geometry, const XmlValue &xml);
 
     namespace geometry
     {
 
-        class CACTO_GRAPHICS_API LineXmlConverter
-            : public line::XmlConverter
-        {
-
-        public:
-            XmlValue toXml(const Shared<const Line> &value) const override;
-            Shared<Line> fromXml(const XmlValue &xml) const override;
-
-            LineXmlConverter() = default;
-            virtual ~LineXmlConverter() = default;
-        };
-
-        extern LineXmlConverter CACTO_GRAPHICS_API LineConverter;
-
         class CACTO_GRAPHICS_API XmlConverter
-            : public cacto::XmlConverter<Geometry>
+            : public virtual line::XmlConverter,
+              public virtual cacto::XmlConverter<Geometry>
         {
 
         public:
+            XmlValue toXml(const Line *const value) const override;
+
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
         };

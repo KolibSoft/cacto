@@ -57,8 +57,8 @@ namespace cacto
 
     void fromXml(Node *&node, const XmlValue &xml)
     {
-        auto _node = XmlConverter<Node>::value(xml);
-        node = _node;
+        auto value = XmlConverter<Node>::value(xml);
+        node = value;
     }
 
 }

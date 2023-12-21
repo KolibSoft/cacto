@@ -3,42 +3,31 @@
 namespace cacto
 {
 
-    XmlValue toXml(const Shared<const Geometry> &geometry)
+    XmlValue toXml(const Geometry *const &geometry)
     {
         auto xml = XmlConverter<Geometry>::xml(geometry);
         return std::move(xml);
     }
 
-    void fromXml(Shared<Geometry> &geometry, const XmlValue &xml)
+    void fromXml(Geometry *&geometry, const XmlValue &xml)
     {
         auto value = XmlConverter<Geometry>::value(xml);
-        geometry = std::move(value);
+        geometry = value;
     }
 
     namespace geometry
     {
 
-        XmlValue LineXmlConverter::toXml(const Shared<const Line> &value) const
+        XmlValue XmlConverter::toXml(const Line *const value) const
         {
-            try
+            const Geometry *geometry = nullptr;
+            if ((geometry = dynamic_cast<const Geometry *>(value)))
             {
-                auto cast = std::dynamic_pointer_cast<const Geometry>(value);
-                auto xml = cacto::XmlConverter<Geometry>::xml(cast);
+                auto xml = cacto::XmlConverter<Geometry>::xml(geometry);
                 return std::move(xml);
             }
-            catch (std::bad_cast)
-            {
-                return nullptr;
-            }
+            return nullptr;
         }
-
-        Shared<Line> LineXmlConverter::fromXml(const XmlValue &xml) const
-        {
-            auto value = cacto::XmlConverter<Geometry>::value(xml);
-            return std::move(value);
-        }
-
-        LineXmlConverter LineConverter{};
 
     }
 

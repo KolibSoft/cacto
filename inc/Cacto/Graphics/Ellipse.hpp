@@ -50,8 +50,8 @@ namespace cacto
         {
 
         public:
-            XmlValue toXml(const Shared<const Geometry> &value) const override;
-            Shared<Geometry> fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Geometry *const value) const override;
+            Geometry *fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;

@@ -34,14 +34,14 @@ namespace cacto
 
     template class CACTO_GRAPHICS_API cacto::XmlConverter<Line>;
 
-    XmlValue CACTO_GRAPHICS_API toXml(const Shared<const Line> &line);
-    void CACTO_GRAPHICS_API fromXml(Shared<Line> &line, const XmlValue &xml);
+    XmlValue CACTO_GRAPHICS_API toXml(const Line *const &line);
+    void CACTO_GRAPHICS_API fromXml(Line *&line, const XmlValue &xml);
 
     namespace line
     {
 
         class CACTO_GRAPHICS_API XmlConverter
-            : public cacto::XmlConverter<Line>
+            : public virtual cacto::XmlConverter<Line>
         {
 
         public:

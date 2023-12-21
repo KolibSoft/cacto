@@ -106,11 +106,10 @@ namespace cacto
     namespace rectangle
     {
 
-        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
+        XmlValue XmlConverter::toXml(const Geometry *const value) const
         {
-            Shared<const Rectangle> rectangle = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Rectangle) && (rectangle = std::dynamic_pointer_cast<const Rectangle>(value)))
+            const Rectangle *rectangle = nullptr;
+            if (value && typeid(*value) == typeid(Rectangle) && (rectangle = dynamic_cast<const Rectangle *>(value)))
             {
                 auto xml = cacto::toXml(*rectangle);
                 return std::move(xml);
@@ -118,11 +117,11 @@ namespace cacto
             return nullptr;
         }
 
-        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
+        Geometry *XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.isTag() && xml.getName() == "Rectangle")
             {
-                auto rectangle = std::make_shared<Rectangle>();
+                auto rectangle = new Rectangle();
                 cacto::fromXml(*rectangle, xml);
                 return std::move(rectangle);
             }
