@@ -19,18 +19,16 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    sf::Font font;
-    auto _ = font.loadFromFile("./res/Grandview.ttf");
-
     auto span = std::make_shared<cacto::Span>();
-    auto bounds = span->getLocalBounds();
     (*span).setFont(cacto::getFont("res/Grandview.ttf"));
-    (*span).setString("My Span Text");
-    (*span).setOrigin({bounds.width / 2, bounds.height / 2});
-    (*span).setRotation(sf::degrees(45));
-    (*span).setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
-    (*span).setOutlineThickness(10);
-    (*span).setOutlineColor(sf::Color::Blue);
+    auto &text = span->asText();
+    auto bounds = text.getLocalBounds();
+    text.setString("My Span Text");
+    text.setOrigin({bounds.width / 2, bounds.height / 2});
+    text.setRotation(sf::degrees(45));
+    text.setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
+    text.setOutlineThickness(10);
+    text.setOutlineColor(sf::Color::Blue);
 
     while (window.isOpen())
     {
@@ -46,7 +44,7 @@ int main()
         span->inflate();
         span->place();
         window.clear(sf::Color::Black);
-        window.draw((sf::Text &)*span);
+        window.draw(*span);
         window.display();
     }
 
