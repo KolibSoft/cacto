@@ -126,7 +126,7 @@ namespace cacto
             {
                 auto ellipse = new Ellipse();
                 cacto::fromXml(*ellipse, xml);
-                return std::move(ellipse);
+                return ellipse;
             }
             return nullptr;
         }

@@ -150,7 +150,7 @@ namespace cacto
             {
                 auto triangle = new Triangle();
                 cacto::fromXml(*triangle, xml);
-                return std::move(triangle);
+                return triangle;
             }
             return nullptr;
         }

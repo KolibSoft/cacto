@@ -28,9 +28,9 @@ namespace cacto
         return m_array;
     }
 
-    Shared<Node> Mesh::getParent() const
+    Node *const Mesh::getParent() const
     {
-        return m_parent.lock();
+        return m_parent;
     }
 
     Mesh::Mesh()
@@ -40,16 +40,20 @@ namespace cacto
     {
     }
 
-    Mesh::~Mesh() = default;
-
-    void Mesh::onAttach(const Shared<Node> &parent)
+    Mesh::~Mesh()
     {
-        m_parent = parent;
+        if (m_parent)
+            Node::unlink(*m_parent, *this);
     }
 
-    void Mesh::onDetach(const Shared<Node> &parent)
+    void Mesh::onAttach(Node &parent)
     {
-        m_parent.reset();
+        m_parent = &parent;
+    }
+
+    void Mesh::onDetach(Node &parent)
+    {
+        m_parent = nullptr;
     }
 
     void Mesh::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -74,11 +78,10 @@ namespace cacto
     namespace mesh
     {
 
-        XmlValue XmlConverter::toXml(const Shared<const Node> &value) const
+        XmlValue XmlConverter::toXml(const Node *const value) const
         {
-            Shared<const Mesh> mesh = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Mesh) && (mesh = std::dynamic_pointer_cast<const Mesh>(value)))
+            const Mesh *mesh = nullptr;
+            if (value && typeid(*value) == typeid(Mesh) && (mesh = dynamic_cast<const Mesh *>(value)))
             {
                 auto xml = cacto::toXml(*mesh);
                 return std::move(xml);
@@ -86,13 +89,13 @@ namespace cacto
             return nullptr;
         }
 
-        Shared<Node> XmlConverter::fromXml(const XmlValue &xml) const
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
             {
-                auto mesh = std::make_shared<Mesh>();
+                auto mesh = new Mesh();
                 cacto::fromXml(*mesh, xml);
-                return std::move(mesh);
+                return mesh;
             }
             return nullptr;
         }

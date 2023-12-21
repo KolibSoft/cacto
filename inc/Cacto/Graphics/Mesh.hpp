@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Lang/Object.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
@@ -10,8 +9,7 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public Object,
-          public virtual LeafNode,
+        : public virtual LeafNode,
           public virtual DrawNode
     {
 
@@ -19,7 +17,7 @@ namespace cacto
         const std::string &getId() const override;
         Mesh &setId(const std::string &value);
 
-        Shared<Node> getParent() const override;
+        Node *const getParent() const override;
 
         const sf::VertexArray &asArray() const;
         sf::VertexArray &asArray();
@@ -28,15 +26,15 @@ namespace cacto
         virtual ~Mesh();
 
     protected:
-        void onAttach(const Shared<Node> &parent) override;
-        void onDetach(const Shared<Node> &parent) override;
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         std::string m_id;
         sf::VertexArray m_array;
-        Weak<Node> m_parent;
+        Node *m_parent;
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Mesh &mesh);
@@ -49,8 +47,8 @@ namespace cacto
             : public virtual node::XmlConverter
         {
         public:
-            XmlValue toXml(const Shared<const Node> &value) const override;
-            Shared<Node> fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;

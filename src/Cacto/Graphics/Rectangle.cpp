@@ -123,7 +123,7 @@ namespace cacto
             {
                 auto rectangle = new Rectangle();
                 cacto::fromXml(*rectangle, xml);
-                return std::move(rectangle);
+                return rectangle;
             }
             return nullptr;
         }
