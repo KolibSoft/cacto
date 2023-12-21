@@ -14,14 +14,14 @@ namespace cacto
     {
 
     public:
-        virtual XmlValue toXml(const Shared<const T> &value) const = 0;
-        virtual Shared<T> fromXml(const XmlValue &xml) const = 0;
+        virtual XmlValue toXml(const T *const value) const = 0;
+        virtual T *fromXml(const XmlValue &xml) const = 0;
 
         XmlConverter();
         virtual ~XmlConverter();
 
-        static XmlValue xml(const Shared<const T> &value);
-        static Shared<T> value(const XmlValue &xml);
+        static XmlValue xml(const T *const value);
+        static T *value(const XmlValue &xml);
 
         static szt getConverterCount();
 

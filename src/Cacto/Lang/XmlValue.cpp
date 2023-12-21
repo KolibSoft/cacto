@@ -68,7 +68,7 @@ namespace cacto
         return def;
     }
 
-    const std::map<std::string, std::string> &XmlValue::asAttributes() const
+    const std::unordered_map<std::string, std::string> &XmlValue::asAttributes() const
     {
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
@@ -89,7 +89,7 @@ namespace cacto
         return m_tag->attributes[key];
     }
 
-    std::map<std::string, std::string> &XmlValue::asAttributes()
+    std::unordered_map<std::string, std::string> &XmlValue::asAttributes()
     {
         if (m_kind != Tag)
             throw std::runtime_error("Xml is not an tag value");
@@ -333,7 +333,7 @@ namespace cacto
     {
     }
 
-    XmlValue::XmlValue(const std::string &name, const std::map<std::string, std::string> &attributes, const std::vector<XmlValue> &content)
+    XmlValue::XmlValue(const std::string &name, const std::unordered_map<std::string, std::string> &attributes, const std::vector<XmlValue> &content)
         : m_kind(Tag),
           m_tag(new tag())
     {

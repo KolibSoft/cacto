@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <filesystem>
 #include <Cacto/Lang/Export.hpp>
 
@@ -35,8 +35,8 @@ namespace cacto
         void setName(const std::string &value);
 
         std::string getAttribute(const std::string &name, const std::string &def = "") const;
-        const std::map<std::string, std::string> &asAttributes() const;
-        std::map<std::string, std::string> &asAttributes();
+        const std::unordered_map<std::string, std::string> &asAttributes() const;
+        std::unordered_map<std::string, std::string> &asAttributes();
         const std::string &operator[](const std::string &key) const;
         std::string &operator[](const std::string &key);
 
@@ -60,7 +60,7 @@ namespace cacto
         XmlValue(std::nullptr_t = 0);
         XmlValue(const std::string &text);
         XmlValue(const s8t &text);
-        XmlValue(const std::string &name, const std::map<std::string, std::string> &attributes, const std::vector<XmlValue> &content = {});
+        XmlValue(const std::string &name, const std::unordered_map<std::string, std::string> &attributes, const std::vector<XmlValue> &content = {});
         XmlValue(const std::string &name, std::initializer_list<std::pair<const std::string, std::string>> attributes, std::initializer_list<XmlValue> content = {});
         virtual ~XmlValue();
 
@@ -92,7 +92,7 @@ namespace cacto
         struct tag
         {
             std::string name{};
-            std::map<std::string, std::string> attributes{};
+            std::unordered_map<std::string, std::string> attributes{};
             std::vector<XmlValue> content{};
         };
     };

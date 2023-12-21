@@ -18,7 +18,7 @@ namespace cacto
     }
 
     template <typename T>
-    inline JsonValue JsonConverter<T>::json(const Shared<const T> &value)
+    inline JsonValue JsonConverter<T>::json(const T *const value)
     {
         if (value == nullptr)
             return nullptr;
@@ -32,15 +32,15 @@ namespace cacto
     }
 
     template <typename T>
-    inline Shared<T> JsonConverter<T>::value(const JsonValue &json)
+    inline T *JsonConverter<T>::value(const JsonValue &json)
     {
         if (json == nullptr)
             return nullptr;
         for (auto &converter : JsonConverter<T>::s_Converters)
         {
-            Shared<T> value = converter->fromJson(json);
+            T *value = converter->fromJson(json);
             if (value)
-                return std::move(value);
+                return value;
         }
         return nullptr;
     }
