@@ -38,8 +38,8 @@ namespace cacto
             return nullptr;
         for (auto &converter : XmlConverter<T>::s_Converters)
         {
-            T* value = converter->fromXml(xml);
-            if (value)
+            T *value = converter->fromXml(xml);
+            if (value != nullptr)
                 return value;
         }
         return nullptr;

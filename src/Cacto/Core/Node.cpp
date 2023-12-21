@@ -10,68 +10,55 @@ namespace cacto
         return NoId;
     }
 
-    i32t Node::getChildIndex(const Shared<const Node> &child) const
+    i32t Node::getChildIndex(const Node &child) const
     {
-        if (child == nullptr)
-            return -1;
-        for (szt i = 0; i < getChildCount(); i++)
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
             auto _child = getChild(i);
-            if (_child == child)
+            if (_child == &child)
                 return i;
         }
         return -1;
     }
 
-    void Node::link(const Shared<Node> &parent, const Shared<Node> &child)
+    void Node::link(Node &parent, Node &child)
     {
-        if (parent == nullptr)
-            throw std::runtime_error("The parent was null");
-
-        if (child == nullptr)
-            throw std::runtime_error("The child was null");
-
-        if (child->getParent() != nullptr)
+        if (child.getParent() != nullptr)
             throw std::runtime_error("The child was linked to another parent");
 
-        auto current = parent;
+        auto current = &parent;
         while (current)
         {
-            if (current == child)
+            if (current == &child)
                 throw std::runtime_error("The child is its own ancestor");
             current = current->getParent();
         }
-        parent->onAppend(child);
-        child->onAttach(parent);
+        parent.onAppend(child);
+        child.onAttach(parent);
     }
 
-    void Node::unlink(const Shared<Node> &parent, const Shared<Node> &child)
+    void Node::unlink(Node &parent, Node &child)
     {
-        if (parent == nullptr)
-            throw std::runtime_error("The parent was null");
-
-        if (child == nullptr)
-            throw std::runtime_error("The child was null");
-
-        if (child->getParent() != parent)
+        if (child.getParent() != &parent)
             throw std::runtime_error("The child was linked to another parent");
 
-        child->onDetach(parent);
-        parent->onRemove(child);
+        child.onDetach(parent);
+        parent.onRemove(child);
     }
 
     const std::string Node::NoId;
 
-    XmlValue toXml(const Shared<const Node> &node)
+    XmlValue toXml(const Node *const &node)
     {
         auto xml = XmlConverter<Node>::xml(node);
         return std::move(xml);
     }
 
-    void fromXml(Shared<Node> &node, const XmlValue &xml)
+    void fromXml(Node *&node, const XmlValue &xml)
     {
         auto _node = XmlConverter<Node>::value(xml);
-        node = std::move(_node);
+        node = _node;
     }
 
 }
