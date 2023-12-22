@@ -9,7 +9,7 @@ namespace cacto
     const std::string &StringPack::getId(const sf::String &value) const
     {
         for (auto &pair : m_map)
-            if (*pair.second == value)
+            if (pair.second.get() == &value)
                 return pair.first;
         return NoId;
     }
@@ -18,14 +18,14 @@ namespace cacto
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second;
+                return pair.second.get();
         try
         {
             std::string _string{};
             fromFile(_string, m_path / id);
-            auto string = new sf::String(_string);
+            auto string = std::make_shared<sf::String>(_string);
             m_map.insert({id, string});
-            return string;
+            return string.get();
         }
         catch (...)
         {
@@ -40,14 +40,7 @@ namespace cacto
     {
     }
 
-    StringPack::~StringPack()
-    {
-        for (auto &pair : m_map)
-        {
-            delete pair.second;
-            pair.second = nullptr;
-        }
-    }
+    StringPack::~StringPack() = default;
 
     const std::string &getId(const sf::String &string)
     {

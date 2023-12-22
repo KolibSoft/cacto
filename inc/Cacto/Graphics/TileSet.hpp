@@ -24,8 +24,8 @@ namespace cacto
     {
 
     public:
-        const Shared<const sf::Texture> &getTexture() const;
-        TileSet &setTexture(const Shared<const sf::Texture> &value);
+        const sf::Texture *const getTexture() const;
+        TileSet &setTexture(const sf::Texture *const value);
 
         const std::map<std::string, sf::FloatRect> &asMap() const;
         std::map<std::string, sf::FloatRect> &asMap();
@@ -36,7 +36,7 @@ namespace cacto
         virtual ~TileSet();
 
     private:
-        Shared<const sf::Texture> m_texture;
+        const sf::Texture *m_texture;
         mutable std::map<std::string, sf::FloatRect> m_map;
     };
 

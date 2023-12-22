@@ -28,7 +28,7 @@ namespace cacto
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, sf::String *> m_map;
+        mutable std::unordered_map<std::string, std::shared_ptr<sf::String>> m_map;
     };
 
     const std::string &CACTO_CORE_API getId(const sf::String &string);

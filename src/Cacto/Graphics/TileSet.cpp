@@ -7,12 +7,12 @@
 namespace cacto
 {
 
-    const Shared<const sf::Texture> &TileSet::getTexture() const
+    const sf::Texture *const TileSet::getTexture() const
     {
         return m_texture;
     }
 
-    TileSet &TileSet::setTexture(const Shared<const sf::Texture> &value)
+    TileSet &TileSet::setTexture(const sf::Texture *const value)
     {
         m_texture = value;
         return *this;
@@ -49,8 +49,8 @@ namespace cacto
     XmlValue toXml(const TileSet &tileSet)
     {
         XmlValue xml{"TileSet", {}};
-        auto texture = Pack<sf::Texture>::id(tileSet.getTexture());
-        xml["texture"] = texture;
+        auto texture = tileSet.getTexture();
+        xml["texture"] = texture ? getId(*texture) : "";
         auto &content = xml.asContent();
         for (auto &pair : tileSet.asMap())
         {
@@ -65,7 +65,7 @@ namespace cacto
     void fromXml(TileSet &tileSet, const XmlValue &xml)
     {
         tileSet = {};
-        auto texture = Pack<sf::Texture>::resource(xml.getAttribute("texture"));
+        auto texture = getTexture(xml.getAttribute("texture"));
         tileSet.setTexture(texture);
         if (xml.isTag())
         {

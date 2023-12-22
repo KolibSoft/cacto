@@ -20,19 +20,18 @@ namespace cacto
     {
 
     public:
-        const std::string &getId(const Shared<const sf::Texture> &value) const override;
-        Shared<const sf::Texture> getResource(const std::string &id) const override;
-        void setResource(const std::string &id, const Shared<const sf::Texture> &value) override;
+        const std::string &getId(const sf::Texture &value) const override;
+        const sf::Texture *const getResource(const std::string &id) const override;
 
         TexturePack(const std::filesystem::path &path);
         virtual ~TexturePack();
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, Shared<const sf::Texture>> m_map;
+        mutable std::unordered_map<std::string, std::shared_ptr<sf::Texture>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const Shared<const sf::Texture> &texture);
-    Shared<const sf::Texture> CACTO_GRAPHICS_API getTexture(const std::string &id);
+    const std::string &CACTO_GRAPHICS_API getId(const sf::Texture &texture);
+    const sf::Texture *const CACTO_GRAPHICS_API getTexture(const std::string &id);
 
 }
