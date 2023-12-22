@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cacto/Lang/XmlConverter.hpp>
+#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
@@ -33,6 +34,7 @@ namespace cacto
         static void unlink(Node &parent, Node &child);
 
         static const std::string NoId;
+        static ResourceStack<Node> XmlStack;
 
     protected:
         virtual void onAttach(Node &parent) = 0;
@@ -47,9 +49,6 @@ namespace cacto
     XmlValue CACTO_CORE_API toXml(const Node *const &node);
     void CACTO_CORE_API fromXml(Node *&node, const XmlValue &xml);
 
-    szt CACTO_CORE_API getXmlNodeStackSize();
-    std::vector<std::shared_ptr<Node>> CACTO_CORE_API takeXmlNodeStack(szt index = 0);
-
     namespace node
     {
 
@@ -59,15 +58,6 @@ namespace cacto
         public:
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
-
-            static szt getStackSize();
-            static std::vector<std::shared_ptr<Node>> takeStackFrame(szt index = 0);
-
-        protected:
-            static void pushStack(const std::shared_ptr<Node> &node);
-
-        private:
-            static std::vector<std::shared_ptr<Node>> s_Stack;
         };
 
     }

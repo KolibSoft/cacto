@@ -95,7 +95,7 @@ namespace cacto
             {
                 auto mesh = std::make_shared<Mesh>();
                 cacto::fromXml(*mesh, xml);
-                XmlConverter::pushStack(mesh);
+                Node::XmlStack.push(mesh);
                 return mesh.get();
             }
             return nullptr;

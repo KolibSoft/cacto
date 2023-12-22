@@ -14,5 +14,8 @@ int main()
     auto result = dynamicTest(&message);
     std::cout << *result << '\n';
 
+    std::vector<int> vec1{};
+    std::vector<int> vec2{};
+
     return 0;
 }

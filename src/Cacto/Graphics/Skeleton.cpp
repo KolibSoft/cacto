@@ -263,7 +263,7 @@ namespace cacto
             {
                 auto skeleton = std::make_shared<Skeleton>();
                 cacto::fromXml(*skeleton, xml);
-                XmlConverter::pushStack(skeleton);
+                Node::XmlStack.push(skeleton);
                 return skeleton.get();
             }
             return nullptr;

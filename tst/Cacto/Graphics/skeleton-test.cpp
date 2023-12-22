@@ -16,13 +16,13 @@ int main()
 
     cacto::Skeleton skeleton{};
 
-    auto stackIndex = cacto::getXmlNodeStackSize();
+    auto stackSize = cacto::Node::XmlStack.getSize();
     cacto::fromXmlFile(skeleton, "res/skeleton.xml");
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
 
-    std::cout << "Node Xml Converter Stack: " << cacto::getXmlNodeStackSize() << '\n';
-    auto stack = cacto::takeXmlNodeStack(stackIndex);
-    std::cout << "Node Xml Converter Stack: " << cacto::getXmlNodeStackSize() << '\n';
+    std::cout << "Node Xml Stack: " << cacto::Node::XmlStack.getSize() << '\n';
+    auto stack = cacto::Node::XmlStack.pop(cacto::Node::XmlStack.getSize() - stackSize);
+    std::cout << "Node Xml Stack: " << cacto::Node::XmlStack.getSize() << '\n';
     std::cout << "Taken Stack: " << stack.size() << '\n';
 
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
