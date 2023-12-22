@@ -93,9 +93,10 @@ namespace cacto
         {
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
             {
-                auto mesh = new Mesh();
+                auto mesh = std::make_shared<Mesh>();
                 cacto::fromXml(*mesh, xml);
-                return mesh;
+                XmlConverter::pushStack(mesh);
+                return mesh.get();
             }
             return nullptr;
         }

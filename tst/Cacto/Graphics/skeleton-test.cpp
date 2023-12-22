@@ -15,8 +15,15 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Skeleton skeleton{};
+
+    auto stackIndex = cacto::getXmlNodeStackSize();
     cacto::fromXmlFile(skeleton, "res/skeleton.xml");
     cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
+
+    std::cout << "Node Xml Converter Stack: " << cacto::getXmlNodeStackSize() << '\n';
+    auto stack = cacto::takeXmlNodeStack(stackIndex);
+    std::cout << "Node Xml Converter Stack: " << cacto::getXmlNodeStackSize() << '\n';
+    std::cout << "Taken Stack: " << stack.size() << '\n';
 
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");

@@ -261,9 +261,10 @@ namespace cacto
         {
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Skeleton")
             {
-                auto skeleton = new Skeleton();
+                auto skeleton = std::make_shared<Skeleton>();
                 cacto::fromXml(*skeleton, xml);
-                return skeleton;
+                XmlConverter::pushStack(skeleton);
+                return skeleton.get();
             }
             return nullptr;
         }
