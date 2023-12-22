@@ -25,6 +25,12 @@ namespace cacto
         Mesh();
         virtual ~Mesh();
 
+        Mesh(const Mesh &other) = delete;
+        Mesh &operator=(const Mesh &other) = delete;
+
+        Mesh(Mesh &&other) = delete;
+        Mesh &operator=(Mesh &&other) = delete;
+
     protected:
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;

@@ -64,6 +64,12 @@ namespace cacto
         Skeleton();
         virtual ~Skeleton();
 
+        Skeleton(const Skeleton &other) = delete;
+        Skeleton &operator=(const Skeleton &other) = delete;
+
+        Skeleton(Skeleton &&other) = delete;
+        Skeleton &operator=(Skeleton &&other) = delete;
+
     protected:
         void onAttach(Node &parent) override;
         void onDetach(Node &parent) override;

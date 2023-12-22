@@ -3,7 +3,6 @@
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Lang/Object.hpp>
 #include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 
@@ -13,15 +12,13 @@ namespace cacto
     class TileSet;
 
     class CACTO_GRAPHICS_API TileMap
-        : public sf::Transformable,
-          public Object,
-          public virtual LeafNode,
+        : public virtual LeafNode,
           public virtual DrawNode
     {
 
     public:
-        const Shared<const TileSet> &getTileSet() const;
-        TileMap &setTileSet(const Shared<const TileSet> &value);
+        const TileSet *const getTileSet() const;
+        TileMap &setTileSet(const TileSet *const value);
 
         const sf::Vector2f &getTileSize() const;
         TileMap &setTileSize(const sf::Vector2f &value);
@@ -35,25 +32,35 @@ namespace cacto
         TileMap &setTiles(const sf::IntRect &area, const std::string &id);
         TileMap &fill(const std::string &id);
 
-        Shared<Node> getParent() const override;
+        const sf::Transformable &asTransformable() const;
+        sf::Transformable &asTransformable();
+
+        Node *const getParent() const override;
 
         TileMap();
         virtual ~TileMap();
 
+        TileMap(const TileMap &other) = delete;
+        TileMap &operator=(const TileMap &other) = delete;
+
+        TileMap(TileMap &&other) = delete;
+        TileMap &operator=(TileMap &&other) = delete;
+
         static const std::string NoTile;
 
     protected:
-        void onAttach(const Shared<Node> &parent) override;
-        void onDetach(const Shared<Node> &parent) override;
+        void onAttach(Node &parent) override;
+        void onDetach(Node &parent) override;
 
         void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        Shared<const TileSet> m_tileSet;
+        const TileSet *m_tileSet;
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;
         std::vector<std::string> m_tiles;
-        Weak<Node> m_parent;
+        sf::Transformable m_transformable;
+        Node *m_parent;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;

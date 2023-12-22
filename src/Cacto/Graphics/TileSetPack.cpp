@@ -7,19 +7,19 @@
 namespace cacto
 {
 
-    const std::string &TileSetPack::getId(const Shared<const TileSet> &value) const
+    const std::string &TileSetPack::getId(const TileSet &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
+            if (pair.second.get() == &value)
                 return pair.first;
         return NoId;
     }
 
-    Shared<const TileSet> TileSetPack::getResource(const std::string &id) const
+    const TileSet *const TileSetPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second;
+                return pair.second.get();
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
@@ -28,35 +28,12 @@ namespace cacto
             xml.fromFile(path);
             cacto::fromXml(*tileSet, xml);
             m_map.insert({id, tileSet});
-            return tileSet;
+            return tileSet.get();
         }
         else
         {
             m_map.insert({id, nullptr});
             return nullptr;
-        }
-    }
-
-    void TileSetPack::setResource(const std::string &id, const Shared<const TileSet> &value)
-    {
-        for (auto &pair : m_map)
-            if (pair.first == id)
-            {
-                pair.second = value;
-                return;
-            }
-        if (value)
-        {
-            auto path = m_path / id;
-            XmlValue xml = nullptr;
-            xml = cacto::toXml(*value);
-            xml.toFile(path);
-            m_map.insert({id, value});
-        }
-        else
-        {
-            if (std::filesystem::remove(m_path / id))
-                m_map.insert({id, nullptr});
         }
     }
 
@@ -68,16 +45,16 @@ namespace cacto
 
     TileSetPack::~TileSetPack() = default;
 
-    const std::string &getId(const Shared<const TileSet> &tileSet)
+    const std::string &getId(const TileSet &tileSet)
     {
         auto &id = Pack<TileSet>::id(tileSet);
         return id;
     }
 
-    Shared<const TileSet> getTileSet(const std::string &id)
+    const TileSet *const getTileSet(const std::string &id)
     {
         auto tileSet = Pack<TileSet>::resource(id);
-        return std::move(tileSet);
+        return tileSet;
     }
 
 }

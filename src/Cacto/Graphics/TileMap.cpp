@@ -7,12 +7,12 @@
 namespace cacto
 {
 
-    const Shared<const TileSet> &TileMap::getTileSet() const
+    const TileSet *const TileMap::getTileSet() const
     {
         return m_tileSet;
     }
 
-    TileMap &TileMap::setTileSet(const Shared<const TileSet> &value)
+    TileMap &TileMap::setTileSet(const TileSet *const value)
     {
         m_tileSet = value;
         return *this;
@@ -95,15 +95,26 @@ namespace cacto
         return *this;
     }
 
-    Shared<Node> TileMap::getParent() const
+    const sf::Transformable &TileMap::asTransformable() const
     {
-        return m_parent.lock();
+        return m_transformable;
+    }
+
+    sf::Transformable &TileMap::asTransformable()
+    {
+        return m_transformable;
+    }
+
+    Node *const TileMap::getParent() const
+    {
+        return m_parent;
     }
 
     TileMap::TileMap()
         : m_tileSet(nullptr),
           m_tileSize(),
           m_area(),
+          m_transformable(),
           m_parent(),
           m_invalid(true),
           m_array(sf::PrimitiveType::Triangles)
@@ -114,14 +125,14 @@ namespace cacto
 
     const std::string TileMap::NoTile;
 
-    void TileMap::onAttach(const Shared<Node> &parent)
+    void TileMap::onAttach(Node &parent)
     {
-        m_parent = parent;
+        m_parent = &parent;
     }
 
-    void TileMap::onDetach(const Shared<Node> &parent)
+    void TileMap::onDetach(Node &parent)
     {
-        m_parent.reset();
+        m_parent = nullptr;
     }
 
     void TileMap::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -150,19 +161,19 @@ namespace cacto
         if (m_tileSet == nullptr)
             _states.texture = nullptr;
         else
-            _states.texture = m_tileSet->getTexture().get();
-        _states.transform *= getTransform();
+            _states.texture = m_tileSet->getTexture();
+        _states.transform *= m_transformable.getTransform();
         target.draw(m_array, _states);
     }
 
     XmlValue toXml(const TileMap &tileMap)
     {
-        auto xml = cacto::toXml((const sf::Transformable &)tileMap);
+        auto xml = cacto::toXml(tileMap.asTransformable());
         xml.setName("TileMap");
         auto tileSet = tileMap.getTileSet();
         auto tileSize = tileMap.getTileSize();
         auto area = tileMap.getArea();
-        xml["tileSet"] = Pack<TileSet>::id(tileSet);
+        xml["tileSet"] = tileSet ? getId(*tileSet) : "";
         xml["tileSize"] = toString(tileSize);
         xml["area"] = cacto::toString(sf::FloatRect(area));
         //
@@ -184,8 +195,8 @@ namespace cacto
 
     void fromXml(TileMap &tileMap, const XmlValue &xml)
     {
-        cacto::fromXml((sf::Transformable &)tileMap, xml);
-        auto tileSet = Pack<TileSet>::resource(xml.getAttribute("tileSet"));
+        cacto::fromXml(tileMap.asTransformable(), xml);
+        auto tileSet = getTileSet(xml.getAttribute("tileSet"));
         sf::Vector2f tileSize{};
         sf::FloatRect area{};
         auto fill = xml.getAttribute("fill", "None");

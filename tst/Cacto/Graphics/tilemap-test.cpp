@@ -21,17 +21,12 @@ int main()
 
     cacto::TexturePack textures{"."};
     cacto::TileSetPack tileSets{"."};
-    cacto::TileSet tileSet{};
-
-    cacto::fromXmlFile(tileSet, "res/tile_set.xml");
-    // cacto::toXmlFile(tileSet, "res/tile_set.xml", 2);
-    std::cout << "Tiles: " << tileSet.asMap().size() << '\n';
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::TileMap tileMap{};
     cacto::fromXmlFile(tileMap, "res/tile_map.xml");
-    // cacto::toXmlFile(tileMap, "res/tile_map.xml", 2);
+    cacto::toXmlFile(tileMap, "res/tile_map.xml", 2);
 
     while (window.isOpen())
     {
