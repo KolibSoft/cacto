@@ -13,7 +13,7 @@ namespace cacto
     {
 
     public:
-        virtual const std::string &getId() const;
+        virtual const std::string &getId() const = 0;
 
         virtual Node *const getParent() const = 0;
 
@@ -33,7 +33,6 @@ namespace cacto
         bool hasDescendant(const Node &node) const;
         bool hasAncestor(const Node &node) const;
 
-        static const std::string NoId;
         static ResourceStack<Node> XmlStack;
     };
 

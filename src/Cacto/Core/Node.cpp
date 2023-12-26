@@ -5,11 +5,6 @@
 namespace cacto
 {
 
-    const std::string &Node::getId() const
-    {
-        return NoId;
-    }
-
     i32t Node::getChildIndex(const Node &child) const
     {
         auto childCount = getChildCount();
@@ -46,7 +41,6 @@ namespace cacto
         return false;
     }
 
-    const std::string Node::NoId;
     ResourceStack<Node> Node::XmlStack{};
 
     XmlValue toXml(const Node *const &node)

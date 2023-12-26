@@ -12,7 +12,7 @@ namespace cacto
     {
 
     public:
-        virtual void attach(ParentNode &child) = 0;
+        virtual void attach(ParentNode &parent) = 0;
         virtual void detach() = 0;
 
         ChildNode() = default;
