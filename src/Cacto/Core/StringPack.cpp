@@ -6,6 +6,11 @@
 namespace cacto
 {
 
+    const std::filesystem::path &StringPack::getPath() const
+    {
+        return m_path;
+    }
+
     const std::string &StringPack::getId(const sf::String &value) const
     {
         for (auto &pair : m_map)
@@ -41,6 +46,19 @@ namespace cacto
     }
 
     StringPack::~StringPack() = default;
+
+    StringPack::StringPack(StringPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    StringPack &StringPack::operator=(StringPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
 
     const std::string &getId(const sf::String &string)
     {

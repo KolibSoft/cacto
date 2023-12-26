@@ -22,29 +22,28 @@ namespace cacto
         return -1;
     }
 
-    void Node::link(Node &parent, Node &child)
+    bool Node::hasDescendant(const Node &node) const
     {
-        if (child.getParent() != nullptr)
-            throw std::runtime_error("The child was linked to another parent");
-
-        auto current = &parent;
-        while (current)
+        if (&node == this)
+            return true;
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
-            if (current == &child)
-                throw std::runtime_error("The child is its own ancestor");
-            current = current->getParent();
+            auto child = getChild(i);
+            if (child && child->hasDescendant(node))
+                return true;
         }
-        parent.onAppend(child);
-        child.onAttach(parent);
+        return false;
     }
 
-    void Node::unlink(Node &parent, Node &child)
+    bool Node::hasAncestor(const Node &node) const
     {
-        if (child.getParent() != &parent)
-            throw std::runtime_error("The child was linked to another parent");
-
-        child.onDetach(parent);
-        parent.onRemove(child);
+        if (&node == this)
+            return true;
+        auto parent = getParent();
+        if (parent && parent->hasAncestor(node))
+            return true;
+        return false;
     }
 
     const std::string Node::NoId;

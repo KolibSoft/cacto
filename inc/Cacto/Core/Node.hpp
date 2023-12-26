@@ -30,18 +30,11 @@ namespace cacto
         Node() = default;
         virtual ~Node() = default;
 
-        static void link(Node &parent, Node &child);
-        static void unlink(Node &parent, Node &child);
+        bool hasDescendant(const Node &node) const;
+        bool hasAncestor(const Node &node) const;
 
         static const std::string NoId;
         static ResourceStack<Node> XmlStack;
-
-    protected:
-        virtual void onAttach(Node &parent) = 0;
-        virtual void onDetach(Node &parent) = 0;
-
-        virtual void onAppend(Node &child) = 0;
-        virtual void onRemove(Node &child) = 0;
     };
 
     template class CACTO_CORE_API XmlConverter<Node>;

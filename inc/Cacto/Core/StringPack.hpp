@@ -20,11 +20,19 @@ namespace cacto
     {
 
     public:
+        const std::filesystem::path &getPath() const;
+
         const std::string &getId(const sf::String &value) const override;
         const sf::String *const getResource(const std::string &id) const override;
 
         StringPack(const std::filesystem::path &path);
         virtual ~StringPack();
+
+        StringPack(const StringPack &other) = delete;
+        StringPack &operator=(const StringPack &other) = delete;
+
+        StringPack(StringPack &&other);
+        StringPack &operator=(StringPack &&other);
 
     private:
         std::filesystem::path m_path;

@@ -12,14 +12,15 @@ namespace cacto
             auto cast = dynamic_cast<T*>(node);
             return cast;
         }
-        for (szt i = 0; i < getChildCount(); i++)
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
             auto child = getChild(i);
             if (child)
             {
                 auto node = child->firstDescendant<T>(id);
                 if (node)
-                    return std::move(node);
+                    return node;
             }
         }
         return nullptr;
@@ -38,7 +39,7 @@ namespace cacto
         if (parent)
         {
             auto node = parent->firstAncestor<T>(id);
-            return std::move(node);
+            return node;
         }
         return nullptr;
     }
