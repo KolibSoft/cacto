@@ -120,6 +120,10 @@ namespace cacto
     {
         if (getChildIndex(child) >= 0)
             return;
+        if (child.getParent() != nullptr && child.getParent() != this)
+            throw std::runtime_error("The node is already attached to another parent");
+        if (hasAncestor(child))
+            throw std::runtime_error("The node is an ancestor");
         holder holder{};
         holder.child = &child;
         holder.options = {};
@@ -185,8 +189,7 @@ namespace cacto
     Skeleton::~Skeleton()
     {
         detach();
-        while (getChildCount() > 0)
-            remove(*getChild());
+        clearChildren();
     }
 
     std::string toString(Skeleton::Relation relation)

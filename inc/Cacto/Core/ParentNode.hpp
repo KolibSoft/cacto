@@ -13,6 +13,7 @@ namespace cacto
 
     public:
         ParentNode *const getParent() const override;
+        void clearChildren();
 
         virtual void append(ChildNode &child) = 0;
         virtual void remove(ChildNode &child) = 0;
