@@ -15,7 +15,7 @@ namespace cacto
     const std::string &ColorPack::getId(const sf::Color &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (*pair.second == value)
                 return pair.first;
         return NoId;
     }

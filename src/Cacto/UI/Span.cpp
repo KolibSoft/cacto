@@ -2,6 +2,7 @@
 #include <SFML/Graphics/Font.hpp>
 #include <Cacto/Core/StringPack.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/UI/Span.hpp>
 
 namespace cacto
@@ -164,12 +165,13 @@ namespace cacto
         XmlValue xml{"Span", {}};
         auto font = span.getFont();
         auto string = getId(span.getString());
+        auto color = getId(span.getColor());
         xml["id"] = span.getId();
         xml["font"] = font ? getId(*font) : "";
         xml["string"] = string.size() ? string : span.getString().toAnsiString();
         xml["direction"] = toString(span.getDirection());
         xml["characterSize"] = std::to_string(span.getCharacterSize());
-        xml["color"] = toString(span.getColor());
+        xml["color"] = color.size() ? color : toString(span.getColor());
         return std::move(xml);
     }
 
@@ -178,18 +180,20 @@ namespace cacto
         auto id = xml.getAttribute("id");
         auto font = getFont(xml.getAttribute("font"));
         auto string = getString(xml.getAttribute("string"));
+        auto color = getColor(xml.getAttribute("color"));
         TextDirection direction{};
         u32t characterSize = std::stoi(xml.getAttribute("characterSize", "0"));
-        sf::Color color{};
+        sf::Color _color{};
         cacto::fromString(direction, xml.getAttribute("direction", "ToRight"));
-        cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
+        if (color)
+            cacto::fromString(_color, xml.getAttribute("color", "#FFFFFFFF"));
         span
             .setId(id)
             .setFont(font)
             .setString(string ? *string : sf::String(xml.getAttribute("string")))
             .setDirection(direction)
             .setCharacterSize(characterSize)
-            .setColor(color);
+            .setColor(color ? *color : _color);
     }
 
     namespace span

@@ -6,6 +6,7 @@
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
 namespace cacto
@@ -333,8 +334,9 @@ namespace cacto
     XmlValue toXml(const sf::Vertex &vertex)
     {
         XmlValue xml{"Vertex", {}};
+        auto color = getId(vertex.color);
         xml["position"] = cacto::toString(vertex.position);
-        xml["color"] = cacto::toString(vertex.color);
+        xml["color"] = color.size() ? color : cacto::toString(vertex.color);
         xml["texCoords"] = cacto::toString(vertex.texCoords);
         return std::move(xml);
     }
@@ -344,10 +346,13 @@ namespace cacto
         vertex = {};
         auto position = xml.getAttribute("position", "0,0");
         auto texCoords = xml.getAttribute("texCoords", "0,0");
-        auto color = xml.getAttribute("color", "#FFFFFFFF");
+        auto color = getColor(xml.getAttribute("color"));
         cacto::fromString(vertex.position, position);
-        cacto::fromString(vertex.color, color);
         cacto::fromString(vertex.texCoords, texCoords);
+        if (color)
+            vertex.color = *color;
+        else
+            cacto::fromString(vertex.color, xml.getAttribute("color", "#FFFFFFFF"));
     }
 
     XmlValue toXml(const sf::VertexArray &array)
