@@ -28,6 +28,12 @@ namespace cacto
         ImagePack(const std::filesystem::path &path);
         virtual ~ImagePack();
 
+        ImagePack(const ImagePack &other) = delete;
+        ImagePack &operator=(const ImagePack &other) = delete;
+
+        ImagePack(ImagePack &&other);
+        ImagePack &operator=(ImagePack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Image>> m_map;

@@ -25,6 +25,12 @@ namespace cacto
         TileSetPack(const std::filesystem::path &path);
         virtual ~TileSetPack();
 
+        TileSetPack(const TileSetPack &other) = delete;
+        TileSetPack &operator=(const TileSetPack &other) = delete;
+
+        TileSetPack(TileSetPack &&other);
+        TileSetPack &operator=(TileSetPack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<TileSet>> m_map;

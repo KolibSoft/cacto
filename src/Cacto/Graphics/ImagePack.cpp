@@ -46,6 +46,19 @@ namespace cacto
 
     ImagePack::~ImagePack() = default;
 
+    ImagePack::ImagePack(ImagePack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    ImagePack &ImagePack::operator=(ImagePack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
     const std::string &getId(const sf::Image &image)
     {
         auto &id = Pack<sf::Image>::id(image);

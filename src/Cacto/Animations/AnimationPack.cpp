@@ -49,6 +49,19 @@ namespace cacto
 
     AnimationPack::~AnimationPack() = default;
 
+    AnimationPack::AnimationPack(AnimationPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    AnimationPack &AnimationPack::operator=(AnimationPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
     const std::string &getId(const Animation &animation)
     {
         auto &id = Pack<Animation>::id(animation);

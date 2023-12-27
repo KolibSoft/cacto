@@ -12,6 +12,7 @@
 #include "Cacto/Graphics/Skeleton.cpp"
 #include "Cacto/Graphics/TileSet.cpp"
 #include "Cacto/Graphics/TileMap.cpp"
+#include "Cacto/Graphics/ColorPack.cpp"
 #include "Cacto/Graphics/ImagePack.cpp"
 #include "Cacto/Graphics/TexturePack.cpp"
 #include "Cacto/Graphics/FontPack.cpp"

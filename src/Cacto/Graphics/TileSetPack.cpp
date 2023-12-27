@@ -50,6 +50,19 @@ namespace cacto
 
     TileSetPack::~TileSetPack() = default;
 
+    TileSetPack::TileSetPack(TileSetPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    TileSetPack &TileSetPack::operator=(TileSetPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
     const std::string &getId(const TileSet &tileSet)
     {
         auto &id = Pack<TileSet>::id(tileSet);

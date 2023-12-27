@@ -51,6 +51,19 @@ namespace cacto
 
     GeometryPack::~GeometryPack() = default;
 
+    GeometryPack::GeometryPack(GeometryPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    GeometryPack &GeometryPack::operator=(GeometryPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
     const std::string &getId(const Geometry &geometry)
     {
         auto &id = Pack<Geometry>::id(geometry);

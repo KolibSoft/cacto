@@ -47,6 +47,19 @@ namespace cacto
 
     TexturePack::~TexturePack() = default;
 
+    TexturePack::TexturePack(TexturePack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    TexturePack &TexturePack::operator=(TexturePack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
     const std::string &getId(const sf::Texture &texture)
     {
         auto &id = Pack<sf::Texture>::id(texture);

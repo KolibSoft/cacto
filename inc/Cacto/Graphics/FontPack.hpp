@@ -28,6 +28,12 @@ namespace cacto
         FontPack(const std::filesystem::path &path);
         virtual ~FontPack();
 
+        FontPack(const FontPack &other) = delete;
+        FontPack &operator=(const FontPack &other) = delete;
+
+        FontPack(FontPack &&other);
+        FontPack &operator=(FontPack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Font>> m_map;

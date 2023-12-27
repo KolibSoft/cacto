@@ -46,6 +46,19 @@ namespace cacto
 
     FontPack::~FontPack() = default;
 
+    FontPack::FontPack(FontPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    FontPack &FontPack::operator=(FontPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
     const std::string &getId(const sf::Font &font)
     {
         auto &id = Pack<sf::Font>::id(font);

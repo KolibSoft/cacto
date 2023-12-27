@@ -25,6 +25,12 @@ namespace cacto
         GeometryPack(const std::filesystem::path &path);
         virtual ~GeometryPack();
 
+        GeometryPack(const GeometryPack &other) = delete;
+        GeometryPack &operator=(const GeometryPack &other) = delete;
+
+        GeometryPack(GeometryPack &&other);
+        GeometryPack &operator=(GeometryPack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<Geometry>> m_map;

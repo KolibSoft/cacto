@@ -28,6 +28,12 @@ namespace cacto
         TexturePack(const std::filesystem::path &path);
         virtual ~TexturePack();
 
+        TexturePack(const TexturePack &other) = delete;
+        TexturePack &operator=(const TexturePack &other) = delete;
+
+        TexturePack(TexturePack &&other);
+        TexturePack &operator=(TexturePack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Texture>> m_map;

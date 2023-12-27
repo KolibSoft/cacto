@@ -28,6 +28,12 @@ namespace cacto
         ColorPack(const std::filesystem::path &path);
         virtual ~ColorPack();
 
+        ColorPack(const ColorPack &other) = delete;
+        ColorPack &operator=(const ColorPack &other) = delete;
+
+        ColorPack(ColorPack &&other);
+        ColorPack &operator=(ColorPack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Color>> m_map;

@@ -25,6 +25,12 @@ namespace cacto
         AnimationPack(const std::filesystem::path &path);
         virtual ~AnimationPack();
 
+        AnimationPack(const AnimationPack &other) = delete;
+        AnimationPack &operator=(const AnimationPack &other) = delete;
+
+        AnimationPack(AnimationPack &&other);
+        AnimationPack &operator=(AnimationPack &&other);
+
     private:
         std::filesystem::path m_path;
         mutable std::unordered_map<std::string, std::shared_ptr<Animation>> m_map;

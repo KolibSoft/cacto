@@ -37,7 +37,7 @@ namespace cacto
             json.fromFile(path);
             for (auto &pair : json.asObject())
             {
-                auto string = std::make_shared<sf::String>(pair.second.asString());
+                auto string = std::make_shared<sf::String>(pair.second.getString(""));
                 m_map.insert({pair.first, string});
             }
         }
