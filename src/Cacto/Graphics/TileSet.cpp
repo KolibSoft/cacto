@@ -18,6 +18,22 @@ namespace cacto
         return *this;
     }
 
+    const std::string &TileSet::getId(const sf::FloatRect &tile) const
+    {
+        for (auto &pair : m_map)
+            if (pair.second == tile)
+                return pair.first;
+        return NoId;
+    }
+
+    const sf::FloatRect &TileSet::getTile(const std::string &id) const
+    {
+        for (auto &pair : m_map)
+            if (pair.first == id)
+                return pair.second;
+        return NoTile;
+    }
+
     const std::map<std::string, sf::FloatRect> &TileSet::asMap() const
     {
         return m_map;
@@ -28,16 +44,6 @@ namespace cacto
         return m_map;
     }
 
-    const sf::FloatRect &TileSet::operator[](const std::string &id) const
-    {
-        return m_map[id];
-    }
-
-    sf::FloatRect &TileSet::operator[](const std::string &id)
-    {
-        return m_map[id];
-    }
-
     TileSet::TileSet()
         : m_texture(),
           m_map()
@@ -45,6 +51,9 @@ namespace cacto
     }
 
     TileSet::~TileSet() = default;
+
+    const std::string TileSet::NoId{""};
+    const sf::FloatRect TileSet::NoTile{};
 
     XmlValue toXml(const TileSet &tileSet)
     {

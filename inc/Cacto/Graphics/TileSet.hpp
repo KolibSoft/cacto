@@ -27,17 +27,21 @@ namespace cacto
         const sf::Texture *const getTexture() const;
         TileSet &setTexture(const sf::Texture *const value);
 
+        const std::string &getId(const sf::FloatRect &tile) const;
+        const sf::FloatRect &getTile(const std::string &id) const;
+
         const std::map<std::string, sf::FloatRect> &asMap() const;
         std::map<std::string, sf::FloatRect> &asMap();
-        const sf::FloatRect &operator[](const std::string &id) const;
-        sf::FloatRect &operator[](const std::string &id);
 
         TileSet();
         virtual ~TileSet();
 
+        static const std::string NoId;
+        static const sf::FloatRect NoTile;
+
     private:
         const sf::Texture *m_texture;
-        mutable std::map<std::string, sf::FloatRect> m_map;
+        std::map<std::string, sf::FloatRect> m_map;
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const TileSet &tileSet);
