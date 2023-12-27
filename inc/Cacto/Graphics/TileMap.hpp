@@ -5,6 +5,11 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 
+namespace sf
+{
+    class Texture;
+}
+
 namespace cacto
 {
 

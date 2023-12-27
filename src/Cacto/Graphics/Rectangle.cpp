@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
 namespace cacto

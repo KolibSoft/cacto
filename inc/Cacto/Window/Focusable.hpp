@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cacto/Window/Export.hpp>
+#include <Cacto/Config.hpp>
 
 namespace sf
 {
@@ -10,19 +10,15 @@ namespace sf
 namespace cacto
 {
 
-    class CACTO_WINDOW_API Focusable
+    class Focusable
     {
 
     public:
-        void focus();
-        void unfocus();
+        virtual void focus() = 0;
+        virtual void unfocus() = 0;
 
         Focusable() = default;
         virtual ~Focusable() = default;
-
-    protected:
-        virtual void onFocus(const sf::Event &event) = 0;
-        virtual void onUnfocus(const sf::Event &event) = 0;
     };
 
 }

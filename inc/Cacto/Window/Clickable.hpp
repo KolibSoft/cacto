@@ -2,7 +2,7 @@
 
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <Cacto/Window/Export.hpp>
+#include <Cacto/Config.hpp>
 
 namespace sf
 {
@@ -12,16 +12,13 @@ namespace sf
 namespace cacto
 {
 
-    class CACTO_WINDOW_API Clickable
+    class Clickable
     {
     public:
-        void click(sf::Mouse::Button button = sf::Mouse::Left, const sf::Vector2f &position = {0, 0});
+        virtual void click(sf::Mouse::Button button = sf::Mouse::Left, const sf::Vector2f &position = {0, 0}) = 0;
 
         Clickable() = default;
         virtual ~Clickable() = default;
-
-    protected:
-        virtual void onClick(const sf::Event &event) = 0;
     };
 
 }

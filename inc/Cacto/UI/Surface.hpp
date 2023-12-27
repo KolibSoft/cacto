@@ -1,7 +1,6 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/UI/Box.hpp>
 #include <Cacto/UI/UINode.hpp>
@@ -18,7 +17,7 @@ namespace cacto
 
     class CACTO_UI_API Surface
         : public Box,
-          public virtual LeafNode,
+          public virtual ChildNode,
           public virtual UINode
     {
 
@@ -26,8 +25,8 @@ namespace cacto
         const std::string &getId() const override;
         Surface &setId(const std::string &value);
 
-        const Shared<const Geometry> &getGeometry() const;
-        Surface &setGeometry(const Shared<const Geometry> &value);
+        const Geometry *const getGeometry() const;
+        Surface &setGeometry(const Geometry *const value);
 
         szt getPrecision() const;
         Surface &setPrecision(szt value);
@@ -35,41 +34,40 @@ namespace cacto
         const sf::Color &getColor() const;
         Surface &setColor(const sf::Color &value);
 
-        const Shared<const sf::Texture> &getTexture() const;
-        Surface &setTexture(const Shared<const sf::Texture> &value, bool resetRect = true);
+        const sf::Texture *const getTexture() const;
+        Surface &setTexture(const sf::Texture *const value, bool resetRect = true);
 
         const sf::FloatRect &getTextureRect() const;
         Surface &setTextureRect(const sf::FloatRect &value);
 
-        Shared<Node> getParent() const override;
+        ParentNode *const getParent() const override;
 
-        void update(bool force = false) const;
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
+        sf::Vector2f compact() override;
+        sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void place(const sf::Vector2f &position = {0, 0}) override;
 
         Surface();
         virtual ~Surface();
 
-    protected:
-        sf::VertexArray &getArray() const;
-        void invalidate();
+        Surface(const Surface &other) = delete;
+        Surface &operator=(const Surface &other) = delete;
 
-        void onAttach(const Shared<Node> &parent) override;
-        void onDetach(const Shared<Node> &parent) override;
-
-        virtual void onUpdate() const;
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
-        sf::Vector2f onCompact() override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
-        void onPlace(const sf::Vector2f &position = {0, 0}) override;
+        Surface(Surface &&other) = delete;
+        Surface &operator=(Surface &&other) = delete;
 
     private:
         std::string m_id;
-        Shared<const Geometry> m_geometry;
+        const Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
-        Shared<const sf::Texture> m_texture;
+        const sf::Texture *m_texture;
         sf::FloatRect m_textureRect;
-        Weak<Node> m_parent;
+        ParentNode *m_parent;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
@@ -86,8 +84,8 @@ namespace cacto
         {
 
         public:
-            XmlValue toXml(const Shared<const Node> &value) const override;
-            Shared<Node> fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
