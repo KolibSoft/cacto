@@ -13,19 +13,9 @@
 int main()
 {
 
-    cacto::StringPack pack{"res/strings"};
-    sf::String string = "My String Basic";
-
-    pack.setResource("my_string.txt", &string);
-    std::cout << "Content: " << pack.getResource("my_string.txt")->toAnsiString() << "\n";
-
-    string = "My String Content";
-    pack.setResource("my_string.txt", &string);
-    std::cout << "Content: " << pack.getResource("my_string.txt")->toAnsiString() << "\n";
-
-    auto resource = cacto::getString("my_string.txt");
-    std::cout << "Global Content: " << resource->toAnsiString() << "\n";
-    std::cout << "Global Id: " << *cacto::getId(*resource) << "\n";
+    cacto::StringPack pack{"res/strings.json"};
+    auto string = cacto::getString("my_string");
+    std::cout << "String content: " << (string ? string->toAnsiString() : "No Content") << '\n';
 
     return 0;
 }

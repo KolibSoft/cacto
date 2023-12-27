@@ -24,25 +24,26 @@ namespace cacto
         for (auto &pair : m_map)
             if (pair.first == id)
                 return pair.second.get();
-        try
-        {
-            std::string _string{};
-            fromFile(_string, m_path / id);
-            auto string = std::make_shared<sf::String>(_string);
-            m_map.insert({id, string});
-            return string.get();
-        }
-        catch (...)
-        {
-            m_map.insert({id, nullptr});
-            return nullptr;
-        }
+        return nullptr;
     }
 
     StringPack::StringPack(const std::filesystem::path &path)
         : m_path(path),
           m_map()
     {
+        try
+        {
+            JsonValue json = nullptr;
+            json.fromFile(path);
+            for (auto &pair : json.asObject())
+            {
+                auto string = std::make_shared<sf::String>(pair.second.asString());
+                m_map.insert({pair.first, string});
+            }
+        }
+        catch (...)
+        {
+        }
     }
 
     StringPack::~StringPack() = default;
