@@ -42,4 +42,7 @@ namespace cacto
     const std::string &CACTO_CORE_API getId(const sf::String &string);
     const sf::String *const CACTO_CORE_API getString(const std::string &id);
 
+    std::string CACTO_CORE_API toAttribute(const sf::String &string);
+    sf::String CACTO_CORE_API fromAttribute(const std::string &id, const sf::String &def = "");
+
 }

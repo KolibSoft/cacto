@@ -7,11 +7,14 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Mesh.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
+
+    cacto::ColorPack colors{"res/colors.json"};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 

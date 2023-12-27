@@ -2,13 +2,9 @@
 
 #include <unordered_map>
 #include <filesystem>
+#include <SFML/Graphics/Color.hpp>
 #include <Cacto/Core/Pack.hpp>
 #include <Cacto/Graphics/Export.hpp>
-
-namespace sf
-{
-    class Color;
-}
 
 namespace cacto
 {
@@ -39,7 +35,10 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Color>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const sf::Color &font);
+    const std::string &CACTO_GRAPHICS_API getId(const sf::Color &color);
     const sf::Color *const CACTO_GRAPHICS_API getColor(const std::string &id);
+
+    std::string CACTO_GRAPHICS_API toAttribute(const sf::Color &color);
+    sf::Color CACTO_GRAPHICS_API fromAttribute(const std::string &id, const sf::Color &def = sf::Color::White);
 
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/ChildNode.hpp>
+#include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
 

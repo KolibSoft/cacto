@@ -334,10 +334,9 @@ namespace cacto
     XmlValue toXml(const sf::Vertex &vertex)
     {
         XmlValue xml{"Vertex", {}};
-        auto color = getId(vertex.color);
         xml["position"] = cacto::toString(vertex.position);
-        xml["color"] = color.size() ? color : cacto::toString(vertex.color);
         xml["texCoords"] = cacto::toString(vertex.texCoords);
+        xml["color"] = toAttribute(vertex.color);
         return std::move(xml);
     }
 
@@ -346,13 +345,10 @@ namespace cacto
         vertex = {};
         auto position = xml.getAttribute("position", "0,0");
         auto texCoords = xml.getAttribute("texCoords", "0,0");
-        auto color = getColor(xml.getAttribute("color"));
+        auto color = xml.getAttribute("color");
         cacto::fromString(vertex.position, position);
         cacto::fromString(vertex.texCoords, texCoords);
-        if (color)
-            vertex.color = *color;
-        else
-            cacto::fromString(vertex.color, xml.getAttribute("color", "#FFFFFFFF"));
+        vertex.color = fromAttribute(color);
     }
 
     XmlValue toXml(const sf::VertexArray &array)

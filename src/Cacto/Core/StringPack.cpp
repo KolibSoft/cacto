@@ -73,4 +73,20 @@ namespace cacto
         return string;
     }
 
+    std::string toAttribute(const sf::String &string)
+    {
+        auto &id = getId(string);
+        if (id == Pack<sf::String>::NoId)
+            return string.toAnsiString();
+        return id;
+    }
+
+    sf::String fromAttribute(const std::string &id, const sf::String &def)
+    {
+        auto string = getString(id);
+        if (string)
+            return *string;
+        return def;
+    }
+
 }

@@ -1,7 +1,6 @@
 #include <fstream>
-#include <SFML/Graphics/Color.hpp>
-#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 
 namespace cacto
@@ -73,6 +72,22 @@ namespace cacto
     {
         auto color = Pack<sf::Color>::resource(id);
         return color;
+    }
+
+    std::string toAttribute(const sf::Color &color)
+    {
+        auto &id = getId(color);
+        if (id == Pack<sf::Color>::NoId)
+            return toString(color);
+        return id;
+    }
+
+    sf::Color fromAttribute(const std::string &id, const sf::Color &def)
+    {
+        auto color = getColor(id);
+        if (color)
+            return *color;
+        return def;
     }
 
 }

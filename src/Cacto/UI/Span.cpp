@@ -164,11 +164,10 @@ namespace cacto
     {
         XmlValue xml{"Span", {}};
         auto font = span.getFont();
-        auto string = getId(span.getString());
         auto color = getId(span.getColor());
         xml["id"] = span.getId();
         xml["font"] = font ? getId(*font) : "";
-        xml["string"] = string.size() ? string : span.getString().toAnsiString();
+        xml["string"] = toAttribute(span.getString());
         xml["direction"] = toString(span.getDirection());
         xml["characterSize"] = std::to_string(span.getCharacterSize());
         xml["color"] = color.size() ? color : toString(span.getColor());
@@ -179,7 +178,7 @@ namespace cacto
     {
         auto id = xml.getAttribute("id");
         auto font = getFont(xml.getAttribute("font"));
-        auto string = getString(xml.getAttribute("string"));
+        auto string = xml.getAttribute("string");
         auto color = getColor(xml.getAttribute("color"));
         TextDirection direction{};
         u32t characterSize = std::stoi(xml.getAttribute("characterSize", "0"));
@@ -190,7 +189,7 @@ namespace cacto
         span
             .setId(id)
             .setFont(font)
-            .setString(string ? *string : sf::String(xml.getAttribute("string")))
+            .setString(fromAttribute(string, string))
             .setDirection(direction)
             .setCharacterSize(characterSize)
             .setColor(color ? *color : _color);
