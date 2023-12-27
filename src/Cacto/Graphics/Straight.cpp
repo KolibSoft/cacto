@@ -84,9 +84,10 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Straight")
             {
-                auto straight = new Straight();
+                auto straight = std::make_shared<Straight>();
                 cacto::fromXml(*straight, xml);
-                return straight;
+                Line::XmlStack.push(straight);
+                return straight.get();
             }
             return nullptr;
         }

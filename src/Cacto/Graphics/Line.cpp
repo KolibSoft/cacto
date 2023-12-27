@@ -6,6 +6,8 @@
 namespace cacto
 {
 
+    ResourceStack<Line> Line::XmlStack{};
+
     void setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision)
     {
         for (szt i = 0; i < count; i++)

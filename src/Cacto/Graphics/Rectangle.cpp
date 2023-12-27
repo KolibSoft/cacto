@@ -122,9 +122,11 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Rectangle")
             {
-                auto rectangle = new Rectangle();
+                auto rectangle = std::make_shared<Rectangle>();
                 cacto::fromXml(*rectangle, xml);
-                return rectangle;
+                Line::XmlStack.push(rectangle);
+                Geometry::XmlStack.push(rectangle);
+                return rectangle.get();
             }
             return nullptr;
         }

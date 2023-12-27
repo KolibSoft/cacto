@@ -15,7 +15,7 @@ namespace sf
 namespace cacto
 {
 
-    class Geometry
+    class CACTO_GRAPHICS_API Geometry
         : public virtual Line
     {
 
@@ -25,6 +25,8 @@ namespace cacto
 
         Geometry() = default;
         virtual ~Geometry() = default;
+
+        static ResourceStack<Geometry> XmlStack;
     };
 
     template class CACTO_GRAPHICS_API cacto::XmlConverter<Geometry>;

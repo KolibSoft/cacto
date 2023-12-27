@@ -125,9 +125,11 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Ellipse")
             {
-                auto ellipse = new Ellipse();
+                auto ellipse = std::make_shared<Ellipse>();
                 cacto::fromXml(*ellipse, xml);
-                return ellipse;
+                Line::XmlStack.push(ellipse);
+                Geometry::XmlStack.push(ellipse);
+                return ellipse.get();
             }
             return nullptr;
         }

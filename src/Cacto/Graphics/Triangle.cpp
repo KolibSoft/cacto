@@ -149,9 +149,11 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Triangle")
             {
-                auto triangle = new Triangle();
+                auto triangle = std::make_shared<Triangle>();
                 cacto::fromXml(*triangle, xml);
-                return triangle;
+                Line::XmlStack.push(triangle);
+                Geometry::XmlStack.push(triangle);
+                return triangle.get();
             }
             return nullptr;
         }

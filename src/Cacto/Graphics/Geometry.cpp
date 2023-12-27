@@ -3,6 +3,8 @@
 namespace cacto
 {
 
+    ResourceStack<Geometry> Geometry::XmlStack{};
+
     XmlValue toXml(const Geometry *const &geometry)
     {
         auto xml = XmlConverter<Geometry>::xml(geometry);

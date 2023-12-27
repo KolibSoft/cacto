@@ -97,9 +97,10 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Bezier")
             {
-                auto bezier = new Bezier();
+                auto bezier = std::make_shared<Bezier>();
                 cacto::fromXml(*bezier, xml);
-                return bezier;
+                Line::XmlStack.push(bezier);
+                return bezier.get();
             }
             return nullptr;
         }

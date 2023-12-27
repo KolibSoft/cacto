@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Cacto/Lang/XmlConverter.hpp>
+#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -27,6 +28,8 @@ namespace cacto
 
         Line() = default;
         virtual ~Line() = default;
+
+        static ResourceStack<Line> XmlStack;
     };
 
     void CACTO_GRAPHICS_API setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision = 0);
