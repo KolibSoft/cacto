@@ -30,9 +30,10 @@ namespace cacto
         {
             Geometry *geometry = nullptr;
             XmlValue xml = nullptr;
+            auto size = Geometry::XmlStack.getSize();
             xml.fromFile(path);
             cacto::fromXml(geometry, xml);
-            m_map.insert({id, std::shared_ptr<Geometry>(geometry)});
+            m_map.insert({id, Geometry::XmlStack.pop()});
             return geometry;
         }
         else

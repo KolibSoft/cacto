@@ -175,7 +175,10 @@ namespace cacto
             setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
     }
 
-    Surface::~Surface() = default;
+    Surface::~Surface()
+    {
+        detach();
+    }
 
     XmlValue toXml(const Surface &surface)
     {
