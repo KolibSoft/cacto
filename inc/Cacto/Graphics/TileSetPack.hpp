@@ -17,6 +17,8 @@ namespace cacto
     {
 
     public:
+        const std::filesystem::path &getPath() const;
+        
         const std::string &getId(const TileSet &value) const override;
         const TileSet *const getResource(const std::string &id) const override;
 

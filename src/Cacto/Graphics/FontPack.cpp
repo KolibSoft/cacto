@@ -5,37 +5,37 @@
 namespace cacto
 {
 
-    const std::string &FontPack::getId(const Shared<const sf::Font> &value) const
+    const std::filesystem::path &FontPack::getPath() const
+    {
+        return m_path;
+    }
+
+    const std::string &FontPack::getId(const sf::Font &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
+            if (pair.second.get() == &value)
                 return pair.first;
         return NoId;
     }
 
-    Shared<const sf::Font> FontPack::getResource(const std::string &id) const
+    const sf::Font *const FontPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second;
+                return pair.second.get();
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
             auto font = std::make_shared<sf::Font>();
             auto _ = font->loadFromFile(path);
             m_map.insert({id, font});
-            return font;
+            return font.get();
         }
         else
         {
             m_map.insert({id, nullptr});
             return nullptr;
         }
-    }
-
-    void FontPack::setResource(const std::string &id, const Shared<const sf::Font> &value)
-    {
-        throw std::runtime_error("Fonts can not be saved nor overwritten");
     }
 
     FontPack::FontPack(const std::filesystem::path &path)
@@ -46,16 +46,16 @@ namespace cacto
 
     FontPack::~FontPack() = default;
 
-    const std::string &getId(const Shared<const sf::Font> &font)
+    const std::string &getId(const sf::Font &font)
     {
         auto &id = Pack<sf::Font>::id(font);
         return id;
     }
 
-    Shared<const sf::Font> getFont(const std::string &id)
+    const sf::Font *const getFont(const std::string &id)
     {
         auto font = Pack<sf::Font>::resource(id);
-        return std::move(font);
+        return font;
     }
 
 }

@@ -20,6 +20,8 @@ namespace cacto
     {
 
     public:
+        const std::filesystem::path &getPath() const;
+        
         const std::string &getId(const sf::Image &value) const override;
         const sf::Image *const getResource(const std::string &id) const override;
 

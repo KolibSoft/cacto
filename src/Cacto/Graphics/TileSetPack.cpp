@@ -7,6 +7,11 @@
 namespace cacto
 {
 
+    const std::filesystem::path &TileSetPack::getPath() const
+    {
+        return m_path;
+    }
+
     const std::string &TileSetPack::getId(const TileSet &value) const
     {
         for (auto &pair : m_map)

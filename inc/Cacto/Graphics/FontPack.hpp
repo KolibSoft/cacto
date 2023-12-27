@@ -20,19 +20,20 @@ namespace cacto
     {
 
     public:
-        const std::string &getId(const Shared<const sf::Font> &value) const override;
-        Shared<const sf::Font> getResource(const std::string &id) const override;
-        void setResource(const std::string &id, const Shared<const sf::Font> &value) override;
+        const std::filesystem::path &getPath() const;
+
+        const std::string &getId(const sf::Font &value) const override;
+        const sf::Font *const getResource(const std::string &id) const override;
 
         FontPack(const std::filesystem::path &path);
         virtual ~FontPack();
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, Shared<const sf::Font>> m_map;
+        mutable std::unordered_map<std::string, std::shared_ptr<sf::Font>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const Shared<const sf::Font> &font);
-    Shared<const sf::Font> CACTO_GRAPHICS_API getFont(const std::string &id);
+    const std::string &CACTO_GRAPHICS_API getId(const sf::Font &font);
+    const sf::Font *const CACTO_GRAPHICS_API getFont(const std::string &id);
 
 }

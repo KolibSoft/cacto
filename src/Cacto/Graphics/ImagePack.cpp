@@ -5,6 +5,11 @@
 namespace cacto
 {
 
+    const std::filesystem::path &ImagePack::getPath() const
+    {
+        return m_path;
+    }
+
     const std::string &ImagePack::getId(const sf::Image &value) const
     {
         for (auto &pair : m_map)

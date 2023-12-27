@@ -6,6 +6,11 @@
 namespace cacto
 {
 
+    const std::filesystem::path &TexturePack::getPath() const
+    {
+        return m_path;
+    }
+
     const std::string &TexturePack::getId(const sf::Texture &value) const
     {
         for (auto &pair : m_map)
