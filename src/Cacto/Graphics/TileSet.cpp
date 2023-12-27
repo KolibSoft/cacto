@@ -56,7 +56,7 @@ namespace cacto
         {
             XmlValue tile_xml{"Tile", {}};
             tile_xml["id"] = pair.first;
-            tile_xml["area"] = cacto::toString(pair.second);
+            tile_xml["rect"] = cacto::toString(pair.second);
             content.push_back(std::move(tile_xml));
         }
         return std::move(xml);
@@ -73,9 +73,9 @@ namespace cacto
             for (auto &tile_xml : xml.asContent())
             {
                 auto id = tile_xml.getAttribute("id");
-                sf::FloatRect area{};
-                cacto::fromString(area, tile_xml.getAttribute("area", "0,0,0,0"));
-                map.insert({id, area});
+                sf::FloatRect tile{};
+                cacto::fromString(tile, tile_xml.getAttribute("rect", "0,0,0,0"));
+                map.insert({id, tile});
             }
         }
     }

@@ -3,22 +3,22 @@
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 
 namespace cacto
 {
 
-    class TileSet;
-
     class CACTO_GRAPHICS_API TileMap
-        : public virtual LeafNode,
+        : public virtual ChildNode,
           public virtual DrawNode
     {
 
     public:
-        const TileSet *const getTileSet() const;
-        TileMap &setTileSet(const TileSet *const value);
+        const std::string &getId() const override;
+        TileMap &setId(const std::string &value);
+
+        const sf::Texture *const getTexture() const;
+        TileMap &setTexture(const sf::Texture *const value);
 
         const sf::Vector2f &getTileSize() const;
         TileMap &setTileSize(const sf::Vector2f &value);
@@ -26,16 +26,21 @@ namespace cacto
         const sf::IntRect &getArea() const;
         TileMap &setArea(const sf::IntRect &value);
 
-        const std::string &getTile(const sf::Vector2i &position) const;
-        TileMap &setTile(const sf::Vector2i &position, const std::string &id);
+        const sf::FloatRect &getTile(const sf::Vector2i &position) const;
+        TileMap &setTile(const sf::Vector2i &position, const sf::FloatRect &tile);
 
-        TileMap &setTiles(const sf::IntRect &area, const std::string &id);
-        TileMap &fill(const std::string &id);
+        TileMap &setTiles(const sf::IntRect &area, const sf::FloatRect &tile);
+        TileMap &fill(const sf::FloatRect &tile);
 
         const sf::Transformable &asTransformable() const;
         sf::Transformable &asTransformable();
 
-        Node *const getParent() const override;
+        ParentNode *const getParent() const override;
+
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         TileMap();
         virtual ~TileMap();
@@ -46,21 +51,16 @@ namespace cacto
         TileMap(TileMap &&other) = delete;
         TileMap &operator=(TileMap &&other) = delete;
 
-        static const std::string NoTile;
-
-    protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
-
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        static const sf::FloatRect NoTile;
 
     private:
-        const TileSet *m_tileSet;
+        std::string m_id;
+        const sf::Texture *m_texture;
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;
-        std::vector<std::string> m_tiles;
+        std::vector<sf::FloatRect> m_tiles;
         sf::Transformable m_transformable;
-        Node *m_parent;
+        ParentNode *m_parent;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
