@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/LeafNode.hpp>
+#include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
@@ -9,7 +9,7 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public virtual LeafNode,
+        : public virtual ChildNode,
           public virtual DrawNode
     {
 
@@ -17,10 +17,15 @@ namespace cacto
         const std::string &getId() const override;
         Mesh &setId(const std::string &value);
 
-        Node *const getParent() const override;
+        ParentNode *const getParent() const override;
 
         const sf::VertexArray &asArray() const;
         sf::VertexArray &asArray();
+
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         Mesh();
         virtual ~Mesh();
@@ -31,16 +36,10 @@ namespace cacto
         Mesh(Mesh &&other) = delete;
         Mesh &operator=(Mesh &&other) = delete;
 
-    protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
-
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
     private:
         std::string m_id;
         sf::VertexArray m_array;
-        Node *m_parent;
+        ParentNode *m_parent;
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Mesh &mesh);

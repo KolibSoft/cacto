@@ -62,7 +62,7 @@ namespace cacto
         return m_transformable;
     }
 
-    Node *const Skeleton::getParent() const
+    ParentNode *const Skeleton::getParent() const
     {
         return m_parent;
     }
@@ -72,7 +72,7 @@ namespace cacto
         return m_holders.size();
     }
 
-    Node *const Skeleton::getChild(szt index) const
+    ChildNode *const Skeleton::getChild(szt index) const
     {
         if (index >= m_holders.size())
             return nullptr;
@@ -96,59 +96,55 @@ namespace cacto
         return nullptr;
     }
 
-    Skeleton &Skeleton::append(Node &child, const Options &options)
+    void Skeleton::attach(ParentNode &parent)
     {
-        Node::link(*this, child);
-        m_holders.back().options = options;
-        return *this;
-    }
-
-    void Skeleton::remove(Node &child)
-    {
-        Node::unlink(*this, child);
-    }
-
-    Skeleton::Skeleton()
-        : m_id(),
-          m_transformable(),
-          m_parent(),
-          m_holders()
-    {
-    }
-
-    Skeleton::~Skeleton()
-    {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
-        while (m_holders.size() > 0)
-            Node::unlink(*this, *m_holders.back().child);
-    }
-
-    void Skeleton::onAttach(Node &parent)
-    {
+        if (m_parent == &parent)
+            return;
+        if (m_parent != nullptr)
+            throw std::runtime_error("This node is already attached to another parent");
+        if (parent.hasAncestor(*this))
+            throw std::runtime_error("This node is an ancestor");
         m_parent = &parent;
+        parent.append(*this);
     }
 
-    void Skeleton::onDetach(Node &parent)
+    void Skeleton::detach()
     {
+        if (m_parent == nullptr)
+            return;
+        m_parent->remove(*this);
         m_parent = nullptr;
     }
 
-    void Skeleton::onAppend(Node &child)
+    void Skeleton::append(ChildNode &child)
     {
+        if (getChildIndex(child) >= 0)
+            return;
         holder holder{};
         holder.child = &child;
         holder.options = {};
         m_holders.push_back(holder);
+        child.attach(*this);
     }
 
-    void Skeleton::onRemove(Node &child)
+    Skeleton &Skeleton::append(ChildNode &child, const Options &options)
+    {
+        append(child);
+        m_holders.back().options = options;
+        return *this;
+    }
+
+    void Skeleton::remove(ChildNode &child)
     {
         auto index = getChildIndex(child);
-        m_holders.erase(m_holders.begin() + index);
+        if (getChildIndex(child) >= 0)
+        {
+            m_holders.erase(m_holders.begin() + index);
+            child.detach();
+        }
     }
 
-    void Skeleton::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void Skeleton::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_holders.size() > 0)
         {
@@ -176,6 +172,21 @@ namespace cacto
                 }
             }
         }
+    }
+
+    Skeleton::Skeleton()
+        : m_id(),
+          m_transformable(),
+          m_parent(),
+          m_holders()
+    {
+    }
+
+    Skeleton::~Skeleton()
+    {
+        detach();
+        while (getChildCount() > 0)
+            remove(*getChild());
     }
 
     std::string toString(Skeleton::Relation relation)
@@ -228,14 +239,15 @@ namespace cacto
             {
                 Node *node = nullptr;
                 cacto::fromXml(node, item);
-                if (node)
+                auto child = dynamic_cast<ChildNode *>(node);
+                if (child)
                 {
                     sf::Vector2f coords{};
                     cacto::fromString(coords, item.getAttribute("options:coords", "0,0"));
                     Skeleton::Relation relation{};
                     cacto::fromString(relation, item.getAttribute("options:relation", "Body"));
                     skeleton
-                        .append(*node,
+                        .append(*child,
                                 Skeleton::Options()
                                     .setCoords(coords)
                                     .setRelation(relation));

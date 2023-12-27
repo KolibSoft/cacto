@@ -1,3 +1,5 @@
+#include <Cacto/Core/ParentNode.hpp>
+#include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Core/Node.hpp>
 
 namespace cacto
@@ -9,7 +11,7 @@ namespace cacto
         if (this->getId() == id)
         {
             auto node = const_cast<Node *>(this);
-            auto cast = dynamic_cast<T*>(node);
+            auto cast = dynamic_cast<T *>(node);
             return cast;
         }
         auto childCount = getChildCount();
@@ -32,7 +34,7 @@ namespace cacto
         if (this->getId() == id)
         {
             auto node = const_cast<Node *>(this);
-            auto cast = dynamic_cast<T*>(node);
+            auto cast = dynamic_cast<T *>(node);
             return cast;
         }
         auto parent = getParent();

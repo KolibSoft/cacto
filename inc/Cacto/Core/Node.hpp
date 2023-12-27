@@ -7,7 +7,8 @@
 namespace cacto
 {
 
-    class Node;
+    class ParentNode;
+    class ChildNode;
 
     class CACTO_CORE_API Node
     {
@@ -15,11 +16,11 @@ namespace cacto
     public:
         virtual const std::string &getId() const = 0;
 
-        virtual Node *const getParent() const = 0;
+        virtual ParentNode *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
-        virtual Node *const getChild(szt index = 0) const = 0;
-        i32t getChildIndex(const Node &child) const;
+        virtual ChildNode *const getChild(szt index = 0) const = 0;
+        i32t getChildIndex(const ChildNode &child) const;
 
         template <typename T = Node>
         T *const firstDescendant(const std::string &id) const;

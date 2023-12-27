@@ -37,7 +37,9 @@ namespace cacto
     }
 
     class CACTO_GRAPHICS_API Skeleton
-        : public virtual DrawNode
+        : public virtual ParentNode,
+          public virtual ChildNode,
+          public virtual DrawNode
     {
 
     public:
@@ -50,16 +52,22 @@ namespace cacto
         const sf::Transformable &asTransformable() const;
         sf::Transformable &asTransformable();
 
-        Node *const getParent() const override;
+        ParentNode *const getParent() const override;
 
         szt getChildCount() const override;
-        Node *const getChild(szt index = 0) const override;
+        ChildNode *const getChild(szt index = 0) const override;
 
         const Options *const getOptions(const Node &child) const;
         Options *const getOptions(const Node &child);
 
-        Skeleton &append(Node &child, const Options &options = {});
-        void remove(Node &child);
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void append(ChildNode &child) override;
+        Skeleton &append(ChildNode &child, const Options &options);
+        void remove(ChildNode &child) override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         Skeleton();
         virtual ~Skeleton();
@@ -70,26 +78,17 @@ namespace cacto
         Skeleton(Skeleton &&other) = delete;
         Skeleton &operator=(Skeleton &&other) = delete;
 
-    protected:
-        void onAttach(Node &parent) override;
-        void onDetach(Node &parent) override;
-
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
-
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
     private:
         struct holder;
 
         std::string m_id;
         sf::Transformable m_transformable;
-        Node *m_parent;
+        ParentNode *m_parent;
         std::vector<holder> m_holders;
 
         struct holder
         {
-            Node *child{};
+            ChildNode *child{};
             Options options{};
         };
     };

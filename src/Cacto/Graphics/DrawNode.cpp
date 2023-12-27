@@ -5,7 +5,12 @@ namespace cacto
 
     void DrawNode::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        onDraw(target, states);
+        drawChildren(target, states);
+    }
+
+    void DrawNode::drawChildren(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        DrawNode::drawChildren(*this, target, states);
     }
 
     DrawNode::DrawNode() = default;
@@ -16,7 +21,7 @@ namespace cacto
     {
         auto drawNode = dynamic_cast<const DrawNode *>(&node);
         if (drawNode)
-            drawNode->onDraw(target, states);
+            drawNode->draw(target, states);
         else
             DrawNode::drawChildren(node, target, states);
     }
@@ -30,16 +35,6 @@ namespace cacto
             if (child)
                 DrawNode::draw(*child, target, states);
         }
-    }
-
-    void DrawNode::drawChildren(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        DrawNode::drawChildren(*this, target, states);
-    }
-
-    void DrawNode::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        drawChildren(target, states);
     }
 
 }

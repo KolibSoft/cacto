@@ -18,6 +18,11 @@ namespace cacto
         return *this;
     }
 
+    ParentNode *const Mesh::getParent() const
+    {
+        return m_parent;
+    }
+
     const sf::VertexArray &Mesh::asArray() const
     {
         return m_array;
@@ -28,9 +33,29 @@ namespace cacto
         return m_array;
     }
 
-    Node *const Mesh::getParent() const
+    void Mesh::attach(ParentNode &parent)
     {
-        return m_parent;
+        if (m_parent == &parent)
+            return;
+        if (m_parent != nullptr)
+            throw std::runtime_error("This node is already attached to another parent");
+        if (parent.hasAncestor(*this))
+            throw std::runtime_error("This node is an ancestor");
+        m_parent = &parent;
+        parent.append(*this);
+    }
+
+    void Mesh::detach()
+    {
+        if (m_parent == nullptr)
+            return;
+        m_parent->remove(*this);
+        m_parent = nullptr;
+    }
+
+    void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        target.draw(m_array, states);
     }
 
     Mesh::Mesh()
@@ -42,23 +67,7 @@ namespace cacto
 
     Mesh::~Mesh()
     {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
-    }
-
-    void Mesh::onAttach(Node &parent)
-    {
-        m_parent = &parent;
-    }
-
-    void Mesh::onDetach(Node &parent)
-    {
-        m_parent = nullptr;
-    }
-
-    void Mesh::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        target.draw(m_array, states);
+        detach();
     }
 
     XmlValue toXml(const Mesh &mesh)

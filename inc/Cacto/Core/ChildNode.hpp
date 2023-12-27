@@ -7,11 +7,14 @@ namespace cacto
 
     class ParentNode;
 
-    class ChildNode
+    class CACTO_CORE_API ChildNode
         : public virtual Node
     {
 
     public:
+        szt getChildCount() const override;
+        ChildNode *const getChild(szt index = 0) const override;
+
         virtual void attach(ParentNode &parent) = 0;
         virtual void detach() = 0;
 
