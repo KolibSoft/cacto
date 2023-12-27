@@ -2,6 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <Cacto/Graphics/TexDirection.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -35,14 +36,6 @@ namespace cacto
 
     class JsonValue;
     class XmlValue;
-
-    enum class TextDirection
-    {
-        ToLeft,
-        ToRight,
-        ToTop,
-        ToBottom
-    };
 
     void CACTO_GRAPHICS_API setPositions(sf::Vertex *const vertexes, const sf::Vector2f *positions, szt count);
     void CACTO_GRAPHICS_API setPositions(sf::VertexArray &array, const std::vector<sf::Vector2f> &positions);

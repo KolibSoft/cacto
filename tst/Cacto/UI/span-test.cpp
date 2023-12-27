@@ -22,14 +22,10 @@ int main()
     cacto::Span span{};
     span
         .setFont(cacto::getFont("res/font.ttf"))
-        .setString("My Span Text");
-    auto &text = span.asText();
-    auto bounds = text.getLocalBounds();
-    text.setOrigin({bounds.width / 2, bounds.height / 2});
-    text.setRotation(sf::degrees(45));
-    text.setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
-    text.setOutlineThickness(10);
-    text.setOutlineColor(sf::Color::Blue);
+        .setString("My Span Text")
+        .setDirection(cacto::Span::Direction::ToBottom)
+        .setCharacterSize(16)
+        .setColor(sf::Color::Cyan);
 
     while (window.isOpen())
     {
@@ -44,7 +40,7 @@ int main()
         span.compact();
         span.inflate();
         span.place();
-        window.clear(sf::Color::Black);
+        window.clear();
         window.draw(span);
         window.display();
     }

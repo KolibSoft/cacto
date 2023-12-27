@@ -1,9 +1,15 @@
 #ifndef CACTO_SPAN_HPP
 #define CACTO_SPAN_HPP
 
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/Text.hpp>
+#include <SFML/System/String.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Graphics/TexDirection.hpp>
 #include <Cacto/UI/UINode.hpp>
+
+namespace sf
+{
+    class Font;
+}
 
 namespace cacto
 {
@@ -14,7 +20,7 @@ namespace cacto
     {
 
     public:
-        using Style = sf::Text::Style;
+        using Direction = cacto::TextDirection;
 
         const std::string &getId() const override;
         Span &setId(const std::string &value);
@@ -25,8 +31,14 @@ namespace cacto
         const sf::String &getString() const;
         Span &setString(const sf::String &value);
 
-        const sf::Text &asText() const;
-        sf::Text &asText();
+        Direction getDirection() const;
+        Span &setDirection(Direction value);
+
+        u32t getCharacterSize() const;
+        Span &setCharacterSize(u32t value);
+
+        const sf::Color &getColor() const;
+        Span &setColor(const sf::Color &value);
 
         ParentNode *const getParent() const override;
 
@@ -50,9 +62,16 @@ namespace cacto
 
     private:
         std::string m_id;
-        sf::Text m_text;
+        const sf::Font *m_font;
+        sf::String m_string;
+        Direction m_direction;
+        u32t m_characterSize;
+        sf::Color m_color;
         sf::Vector2f m_place;
         ParentNode *m_parent;
+
+        mutable bool m_invalid;
+        mutable sf::VertexArray m_array;
     };
 
 }

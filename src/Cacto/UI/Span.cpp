@@ -1,4 +1,5 @@
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Span.hpp>
 
@@ -18,34 +19,62 @@ namespace cacto
 
     const sf::Font *const Span::getFont() const
     {
-        return &m_text.getFont();
+        return m_font;
     }
 
     Span &Span::setFont(const sf::Font *const value)
     {
-        m_text.setFont(*value);
+        m_font = value;
+        m_invalid = true;
         return *this;
     }
 
     const sf::String &Span::getString() const
     {
-        return m_text.getString();
+        return m_string;
     }
 
     Span &Span::setString(const sf::String &value)
     {
-        m_text.setString(value);
+        m_string = value;
+        m_invalid = true;
         return *this;
     }
 
-    const sf::Text &Span::asText() const
+    Span::Direction Span::getDirection() const
     {
-        return m_text;
+        return m_direction;
     }
 
-    sf::Text &Span::asText()
+    Span &Span::setDirection(Direction value)
     {
-        return m_text;
+        m_direction = value;
+        m_invalid = true;
+        return *this;
+    }
+
+    u32t Span::getCharacterSize() const
+    {
+        return m_characterSize;
+    }
+
+    Span &Span::setCharacterSize(u32t value)
+    {
+        m_characterSize = value;
+        m_invalid = true;
+        return *this;
+    }
+
+    const sf::Color &Span::getColor() const
+    {
+        return m_color;
+    }
+
+    Span &Span::setColor(const sf::Color &value)
+    {
+        m_color = value;
+        m_invalid = true;
+        return *this;
     }
 
     ParentNode *const Span::getParent() const
@@ -75,42 +104,58 @@ namespace cacto
 
     void Span::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        if (getFont())
+        if (m_font && m_characterSize)
         {
+            if (m_invalid)
+            {
+                cacto::setGlyphs(m_array, *m_font, m_string, m_direction, m_characterSize, false, 0);
+                cacto::setColor(m_array, m_color);
+                m_invalid = false;
+            }
             auto _states = states;
             _states.transform.translate(m_place);
-            target.draw(m_text, _states);
+            _states.texture = &m_font->getTexture(m_characterSize);
+            target.draw(m_array, _states);
         }
     }
 
     sf::Vector2f Span::compact()
     {
-        auto bounds = m_text.getLocalBounds();
+        auto bounds = m_array.getBounds();
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
 
     sf::Vector2f Span::inflate(const sf::Vector2f &containerSize)
     {
-        auto bounds = m_text.getLocalBounds();
+        auto bounds = m_array.getBounds();
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
 
     void Span::place(const sf::Vector2f &position)
     {
-        auto bounds = m_text.getLocalBounds();
+        auto bounds = m_array.getBounds();
         m_place = {position.x - bounds.left, position.y - bounds.top};
     }
 
     Span::Span()
         : m_id(),
-          m_text(*cacto::getFont("Default")),
+          m_font(),
+          m_string(),
+          m_direction(Direction::ToRight),
+          m_characterSize(),
+          m_color(sf::Color::White),
           m_place(),
-          m_parent()
+          m_parent(),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::Triangles)
     {
     }
 
-    Span::~Span() = default;
+    Span::~Span()
+    {
+        detach();
+    }
 
 }
