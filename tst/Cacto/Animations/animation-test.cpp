@@ -13,6 +13,7 @@
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Animations/Linear.hpp>
 #include <Cacto/Animations/Coloring.hpp>
+#include <Cacto/Animations/AnimationPack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
@@ -21,6 +22,7 @@ int main()
 
     cacto::TexturePack textures{"."};
     cacto::GeometryPack geometries{"."};
+    cacto::AnimationPack animations{"."};
 
     std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
 
@@ -39,8 +41,8 @@ int main()
     surface->setWidth(100);
     surface->setHeight(100);
 
-    cacto::Linear linear{1, 2, sf::Time::Zero, sf::seconds(5), cacto::Animation::Forward, cacto::Animation::Flip};
-    cacto::Coloring coloring{sf::Color::Red, sf::Color::Blue, sf::Time::Zero, sf::seconds(5), cacto::Animation::Reverse, cacto::Animation::Flip};
+    auto linear = dynamic_cast<const cacto::Linear *>(cacto::getAnimation("res/linear.xml"));
+    auto coloring = dynamic_cast<const cacto::Coloring *>(cacto::getAnimation("res/coloring.xml"));
     sf::Time lifetime{};
 
     sf::Clock clock{};
@@ -71,8 +73,8 @@ int main()
         auto dt = clock.restart();
         lifetime += dt;
 
-        auto f = linear.getValue(lifetime);
-        auto c = coloring.getValue(lifetime);
+        auto f = linear->getValue(lifetime);
+        auto c = coloring->getValue(lifetime);
         skeleton.asTransformable().setScale({f, f});
         cacto::setColor(left_mesh->asArray(), c);
         cacto::setColor(right_mesh->asArray(), c);

@@ -170,8 +170,8 @@ namespace cacto
     XmlValue toXml(const Animation &animation)
     {
         XmlValue xml{"Animation", {}};
-        xml["delay"] = animation.getDelay().asSeconds();
-        xml["duration"] = animation.getDuration().asSeconds();
+        xml["delay"] = std::to_string(animation.getDelay().asSeconds());
+        xml["duration"] = std::to_string(animation.getDuration().asSeconds());
         xml["direction"] = toString(animation.getDirection());
         xml["mode"] = toString(animation.getMode());
         return std::move(xml);

@@ -84,7 +84,7 @@ namespace cacto
 
         Animation *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.isTag() && xml.getName() == "Linear")
+            if (xml.isTag() && xml.getName() == "Coloring")
             {
                 auto coloring = std::make_shared<Coloring>();
                 cacto::fromXml(*coloring, xml);
