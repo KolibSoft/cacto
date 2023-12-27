@@ -11,14 +11,7 @@ namespace cacto
 
     bool EventNode::eventChildren(const sf::Event &event) const
     {
-        auto childCount = getChildCount();
-        for (szt i = 0; i < childCount; i++)
-        {
-            auto child = getChild(i);
-            auto handled = child && EventNode::event(*child, event);
-            if (handled)
-                return handled;
-        }
+        auto handled = EventNode::eventChildren(*this, event);
         return false;
     }
 
@@ -30,9 +23,8 @@ namespace cacto
 
     bool EventNode::bubbleParent(Node &target, const sf::Event &event) const
     {
-        auto parent = getParent();
-        auto handled = parent && EventNode::bubble(*parent, target, event);
-        return handled;
+        auto handled = EventNode::bubbleParent(*this, target, event);
+        return false;
     }
 
     EventNode::EventNode() = default;

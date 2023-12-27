@@ -40,4 +40,50 @@ namespace cacto
 
     Linear::~Linear() = default;
 
+    XmlValue toXml(const Linear &linear)
+    {
+        auto xml = toXml((const Animation &)linear);
+        xml.setName("Linear");
+        xml["from"] = std::to_string(linear.getFrom());
+        xml["to"] = std::to_string(linear.getTo());
+        return std::move(xml);
+    }
+
+    void fromXml(Linear &linear, const XmlValue &xml)
+    {
+        fromXml((Animation &)linear, xml);
+        linear.setFrom(std::stof(xml.getAttribute("from", "0")));
+        linear.setTo(std::stof(xml.getAttribute("to", "0")));
+    }
+
+    namespace linear
+    {
+
+        XmlValue XmlConverter::toXml(const Animation *const value) const
+        {
+            const Linear *linear = nullptr;
+            if (value && typeid(*value) == typeid(Linear) && (linear = dynamic_cast<const Linear *>(value)))
+            {
+                auto xml = cacto::toXml(*linear);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Animation *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Linear")
+            {
+                auto linear = std::make_shared<Linear>();
+                cacto::fromXml(*linear, xml);
+                Animation::XmlStack.push(linear);
+                return linear.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

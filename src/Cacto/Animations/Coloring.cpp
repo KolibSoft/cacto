@@ -48,4 +48,54 @@ namespace cacto
 
     inline Coloring::~Coloring() = default;
 
+    XmlValue toXml(const Coloring &coloring)
+    {
+        auto xml = toXml((const Animation &)coloring);
+        xml.setName("Coloring");
+        xml["from"] = toString(coloring.getFrom());
+        xml["to"] = toString(coloring.getTo());
+        return std::move(xml);
+    }
+
+    void fromXml(Coloring &coloring, const XmlValue &xml)
+    {
+        fromXml((Animation &)coloring, xml);
+        sf::Color from{};
+        sf::Color to{};
+        fromString(from, xml.getAttribute("from", "#FFFFFFFF"));
+        fromString(to, xml.getAttribute("to", "#FFFFFFFF"));
+        coloring.setFrom(from);
+        coloring.setTo(to);
+    }
+
+    namespace coloring
+    {
+
+        XmlValue XmlConverter::toXml(const Animation *const value) const
+        {
+            const Coloring *coloring = nullptr;
+            if (value && typeid(*value) == typeid(Coloring) && (coloring = dynamic_cast<const Coloring *>(value)))
+            {
+                auto xml = cacto::toXml(*coloring);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Animation *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Linear")
+            {
+                auto coloring = std::make_shared<Coloring>();
+                cacto::fromXml(*coloring, xml);
+                Animation::XmlStack.push(coloring);
+                return coloring.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

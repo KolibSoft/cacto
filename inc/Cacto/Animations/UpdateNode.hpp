@@ -16,18 +16,14 @@ namespace cacto
     {
 
     public:
-        void update(const sf::Time &time);
+        virtual void update(const sf::Time &time);
+        void updateChildren(const sf::Time &time) const;
 
         UpdateNode();
         virtual ~UpdateNode();
 
-        static void update(const Shared<Node> &node, const sf::Time &time);
-        static void updateChildren(const Shared<Node> &node, const sf::Time &time);
-
-    protected:
-        void updateChildren(const sf::Time &time);
-
-        virtual void onUpdate(const sf::Time &time);
+        static void update(Node &node, const sf::Time &time);
+        static void updateChildren(const Node &node, const sf::Time &time);
     };
 
 }
