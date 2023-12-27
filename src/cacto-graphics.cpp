@@ -18,4 +18,5 @@
 #include "Cacto/Graphics/FontPack.cpp"
 #include "Cacto/Graphics/GeometryPack.cpp"
 #include "Cacto/Graphics/TileSetPack.cpp"
+#include "Cacto/Graphics/TextDirection.cpp"
 #include "Cacto/Graphics/Utils.cpp"

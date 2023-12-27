@@ -1,5 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <Cacto/Core/StringPack.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Span.hpp>
 
@@ -156,6 +157,69 @@ namespace cacto
     Span::~Span()
     {
         detach();
+    }
+
+    XmlValue toXml(const Span &span)
+    {
+        XmlValue xml{"Span", {}};
+        auto font = span.getFont();
+        auto string = getId(span.getString());
+        xml["id"] = span.getId();
+        xml["font"] = font ? getId(*font) : "";
+        xml["string"] = string.size() ? string : span.getString().toAnsiString();
+        xml["direction"] = toString(span.getDirection());
+        xml["characterSize"] = std::to_string(span.getCharacterSize());
+        xml["color"] = toString(span.getColor());
+        return std::move(xml);
+    }
+
+    void fromXml(Span &span, const XmlValue &xml)
+    {
+        auto id = xml.getAttribute("id");
+        auto font = getFont(xml.getAttribute("font"));
+        auto string = getString(xml.getAttribute("string"));
+        TextDirection direction{};
+        u32t characterSize = std::stoi(xml.getAttribute("characterSize", "0"));
+        sf::Color color{};
+        cacto::fromString(direction, xml.getAttribute("direction", "ToRight"));
+        cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
+        span
+            .setId(id)
+            .setFont(font)
+            .setString(string ? *string : sf::String(xml.getAttribute("string")))
+            .setDirection(direction)
+            .setCharacterSize(characterSize)
+            .setColor(color);
+    }
+
+    namespace span
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Span *span = nullptr;
+            if (value && typeid(*value) == typeid(Span) && (span = dynamic_cast<const Span *>(value)))
+            {
+                auto xml = cacto::toXml(*span);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Span")
+            {
+                auto span = std::make_shared<Span>();
+                cacto::fromXml(*span, xml);
+                Node::XmlStack.push(span);
+                return span.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

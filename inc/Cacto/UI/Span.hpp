@@ -3,7 +3,7 @@
 
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Graphics/TexDirection.hpp>
+#include <Cacto/Graphics/TextDirection.hpp>
 #include <Cacto/UI/UINode.hpp>
 
 namespace sf
@@ -73,6 +73,27 @@ namespace cacto
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
     };
+
+    XmlValue CACTO_UI_API toXml(const Span &span);
+    void CACTO_UI_API fromXml(Span &span, const XmlValue &xml);
+
+    namespace span
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
 
 }
 

@@ -2,7 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics/PrimitiveType.hpp>
-#include <Cacto/Graphics/TexDirection.hpp>
+#include <Cacto/Graphics/TextDirection.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf

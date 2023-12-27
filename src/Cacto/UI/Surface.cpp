@@ -219,11 +219,12 @@ namespace cacto
         sf::FloatRect textureRect{};
         cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
         cacto::fromString(textureRect, xml.getAttribute("textureRect", "0,0,0,0"));
-        surface.setGeometry(geometry);
-        surface.setPrecision(precision);
-        surface.setColor(color);
-        surface.setTexture(texture);
-        surface.setTextureRect(textureRect);
+        surface
+            .setGeometry(geometry)
+            .setPrecision(precision)
+            .setColor(color)
+            .setTexture(texture)
+            .setTextureRect(textureRect);
     }
 
     namespace surface
