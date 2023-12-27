@@ -3,16 +3,13 @@
 
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Text.hpp>
-#include <Cacto/Lang/Object.hpp>
-#include <Cacto/Core/LeafNode.hpp>
 #include <Cacto/UI/UINode.hpp>
 
 namespace cacto
 {
 
     class CACTO_UI_API Span
-        : public Object,
-          public virtual LeafNode,
+        : public virtual ChildNode,
           public virtual UINode
     {
 
@@ -22,37 +19,40 @@ namespace cacto
         const std::string &getId() const override;
         Span &setId(const std::string &value);
 
-        const Shared<const sf::Font> &getFont() const;
-        Span &setFont(const Shared<const sf::Font> &value);
+        const sf::Font *const getFont() const;
+        Span &setFont(const sf::Font *const value);
 
-        const Shared<const sf::String> &getString() const;
-        Span &setString(const Shared<const sf::String> &value);
+        const sf::String &getString() const;
+        Span &setString(const sf::String &value);
 
         const sf::Text &asText() const;
         sf::Text &asText();
 
-        Shared<Node> getParent() const override;
+        ParentNode *const getParent() const override;
+
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
+        sf::Vector2f compact() override;
+        sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void place(const sf::Vector2f &position = {0, 0}) override;
 
         Span();
         virtual ~Span();
 
-    protected:
-        void onAttach(const Shared<Node> &parent) override;
-        void onDetach(const Shared<Node> &parent) override;
+        Span(const Span &other) = delete;
+        Span &operator=(const Span &other) = delete;
 
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
-        sf::Vector2f onCompact() override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize = {0, 0}) override;
-        void onPlace(const sf::Vector2f &position = {0, 0}) override;
+        Span(Span &&other) = delete;
+        Span &operator=(Span &&other) = delete;
 
     private:
         std::string m_id;
-        Shared<const sf::Font> m_font;
-        Shared<const sf::String> m_string;
         sf::Text m_text;
         sf::Vector2f m_place;
-        Weak<Node> m_parent;
+        ParentNode *m_parent;
     };
 
 }

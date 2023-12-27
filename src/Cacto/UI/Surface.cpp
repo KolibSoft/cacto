@@ -21,11 +21,6 @@ namespace cacto
         return *this;
     }
 
-    ParentNode *const Surface::getParent() const
-    {
-        return m_parent;
-    }
-
     const Geometry *const Surface::getGeometry() const
     {
         return m_geometry;
@@ -95,6 +90,21 @@ namespace cacto
         return *this;
     }
 
+    const Box &Surface::asBox() const
+    {
+        return m_box;
+    }
+
+    Box &Surface::asBox()
+    {
+        return m_box;
+    }
+
+    ParentNode *const Surface::getParent() const
+    {
+        return m_parent;
+    }
+
     void Surface::attach(ParentNode &parent)
     {
         if (m_parent == &parent)
@@ -125,10 +135,10 @@ namespace cacto
                 cacto::setColor(m_array, m_color);
                 if (m_texture)
                     cacto::setTexCoords(m_array, m_textureRect);
-                cacto::mapPositions(m_array, *this);
+                cacto::mapPositions(m_array, m_box);
                 m_invalid = false;
             }
-            if (getWidth() > 0 && getHeight() > 0)
+            if (m_box.getWidth() > 0 && m_box.getHeight() > 0)
             {
                 auto _states = states;
                 _states.texture = m_texture;
@@ -139,29 +149,30 @@ namespace cacto
 
     sf::Vector2f Surface::compact()
     {
-        setWidth(0);
-        setHeight(0);
+        m_box.setWidth(0);
+        m_box.setHeight(0);
         m_invalid = true;
         return {0, 0};
     }
 
     sf::Vector2f Surface::inflate(const sf::Vector2f &containerSize)
     {
-        setWidth(containerSize.x);
-        setHeight(containerSize.y);
+        m_box.setWidth(containerSize.x);
+        m_box.setHeight(containerSize.y);
         m_invalid = true;
         return containerSize;
     }
 
     void Surface::place(const sf::Vector2f &position)
     {
-        setLeft(position.x);
-        setTop(position.y);
+        m_box.setLeft(position.x);
+        m_box.setTop(position.y);
         m_invalid = true;
     }
 
     Surface::Surface()
         : m_id(),
+          m_box(),
           m_parent(),
           m_geometry(),
           m_precision(1),

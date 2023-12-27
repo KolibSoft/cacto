@@ -16,8 +16,7 @@ namespace cacto
     class Geometry;
 
     class CACTO_UI_API Surface
-        : public Box,
-          public virtual ChildNode,
+        : public virtual ChildNode,
           public virtual UINode
     {
 
@@ -39,6 +38,9 @@ namespace cacto
 
         const sf::FloatRect &getTextureRect() const;
         Surface &setTextureRect(const sf::FloatRect &value);
+
+        const Box &asBox() const;
+        Box &asBox();
 
         ParentNode *const getParent() const override;
 
@@ -62,6 +64,7 @@ namespace cacto
 
     private:
         std::string m_id;
+        Box m_box;
         const Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;

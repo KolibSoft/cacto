@@ -19,11 +19,12 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto span = std::make_shared<cacto::Span>();
-    (*span).setFont(cacto::getFont("res/Grandview.ttf"));
-    auto &text = span->asText();
+    cacto::Span span{};
+    span
+        .setFont(cacto::getFont("res/font.ttf"))
+        .setString("My Span Text");
+    auto &text = span.asText();
     auto bounds = text.getLocalBounds();
-    text.setString("My Span Text");
     text.setOrigin({bounds.width / 2, bounds.height / 2});
     text.setRotation(sf::degrees(45));
     text.setStyle(sf::Text::Bold | sf::Text::Italic | sf::Text::StrikeThrough);
@@ -40,11 +41,11 @@ int main()
             if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
         }
-        span->compact();
-        span->inflate();
-        span->place();
+        span.compact();
+        span.inflate();
+        span.place();
         window.clear(sf::Color::Black);
-        window.draw(*span);
+        window.draw(span);
         window.display();
     }
 
