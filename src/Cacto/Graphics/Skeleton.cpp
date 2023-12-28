@@ -235,6 +235,7 @@ namespace cacto
 
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
+        skeleton.clearChildren();
         fromXml(skeleton.asTransformable(), xml);
         skeleton.setId(xml.getAttribute("id"));
         if (xml.isTag())

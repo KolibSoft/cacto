@@ -261,4 +261,69 @@ namespace cacto
         detach();
     }
 
+    XmlValue toXml(const Block &block)
+    {
+        XmlValue xml{"Block", {}};
+        // Handle background
+        xml["margin"] = toString(block.getMargin());
+        xml["padding"] = toString(block.getPadding());
+        xml["minWidth"] = std::to_string(block.getMinWidth());
+        xml["maxWidth"] = std::to_string(block.getMaxWidth());
+        xml["minHeight"] = std::to_string(block.getMinHeight());
+        xml["maxHeight"] = std::to_string(block.getMaxHeight());
+        return std::move(xml);
+    }
+
+    void fromXml(Block &block, const XmlValue &xml)
+    {
+        auto id = xml.getAttribute("id");
+        // Handle background
+        Thickness margin{};
+        Thickness padding{};
+        auto minWidth = std::stof(xml.getAttribute("minWidth", "0"));
+        auto maxWidth = std::stof(xml.getAttribute("maxWidth", "inf"));
+        auto minHeight = std::stof(xml.getAttribute("minHeight", "0"));
+        auto maxHeight = std::stof(xml.getAttribute("maxHeight", "inf"));
+        fromString(margin, xml.getAttribute("margin", "0,0,0,0"));
+        fromString(padding, xml.getAttribute("padding", "0,0,0,0"));
+        block
+            .setId(id)
+            .setMargin(margin)
+            .setPadding(padding)
+            .setMinWidth(minWidth)
+            .setMaxWidth(maxWidth)
+            .setMinHeight(minHeight)
+            .setMaxHeight(maxHeight);
+    }
+
+    namespace block
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Block *block = nullptr;
+            if (value && typeid(*value) == typeid(Block) && (block = dynamic_cast<const Block *>(value)))
+            {
+                auto xml = cacto::toXml(*block);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Block")
+            {
+                auto block = std::make_shared<Block>();
+                cacto::fromXml(*block, xml);
+                Node::XmlStack.push(block);
+                return block.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

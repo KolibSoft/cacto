@@ -81,9 +81,6 @@ namespace cacto
         Block(Block &&other) = delete;
         Block &operator=(Block &&other) = delete;
 
-    protected:
-        
-
     private:
         std::string m_id;
         Box m_box;
@@ -96,6 +93,27 @@ namespace cacto
         f32t m_maxHeight;
         ParentNode *m_parent;
     };
+
+    XmlValue CACTO_UI_API toXml(const Block &block);
+    void CACTO_UI_API fromXml(Block &block, const XmlValue &xml);
+
+    namespace block
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
 
 }
 

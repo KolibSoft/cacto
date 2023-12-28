@@ -29,4 +29,7 @@ namespace cacto
         f32t bottom;
     };
 
+    std::string CACTO_UI_API toString(const Thickness &thickness);
+    void CACTO_UI_API fromString(Thickness &thickness, const std::string &string);
+
 }

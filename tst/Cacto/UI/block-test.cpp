@@ -10,6 +10,7 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 auto _ = false;
 
@@ -24,11 +25,15 @@ int main()
         .setColor(sf::Color::Red);
 
     cacto::Block root{};
-    root.setBackground(&background);
-    root.setMargin(10);
-    root.setMinWidth(100);
-    root.setMaxHeight(100);
-    root.setPadding(10);
+    root
+        .setBackground(&background)
+        .setMargin(10)
+        .setMinWidth(100)
+        .setMaxHeight(100)
+        .setPadding(10);
+
+    cacto::toXmlFile(root, "res/block.xml", 4);
+    cacto::fromXmlFile(root, "res/block.xml");
 
     while (window.isOpen())
     {
@@ -37,8 +42,10 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::Resized)
+            else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
+                cacto::fromXmlFile(root, "res/block.xml");
         }
         root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});

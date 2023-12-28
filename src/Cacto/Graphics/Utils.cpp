@@ -1,11 +1,12 @@
 #include <SFML/System/String.hpp>
-#include <SFML/Graphics/Glyph.hpp>
+#include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Graphics/RectPack.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
