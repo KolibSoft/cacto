@@ -51,8 +51,8 @@ int main()
         .setPadding(10);
     root.append(block);
 
-    // cacto::toXmlFile(root, "res/frame.xml", 4);
-    // cacto::fromXmlFile(root, "res/frame.xml");
+    cacto::toXmlFile(root, "res/frame.xml", 4);
+    cacto::fromXmlFile(root, "res/frame.xml");
 
     while (window.isOpen())
     {
@@ -64,7 +64,7 @@ int main()
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-                ; // cacto::fromXmlFile(root, "res/frame.xml");
+                cacto::fromXmlFile(root, "res/frame.xml");
         }
         root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});

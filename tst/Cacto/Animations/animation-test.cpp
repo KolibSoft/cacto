@@ -22,6 +22,9 @@
 int main()
 {
 
+    std::cout << "Label size: " << sizeof(cacto::Label) << '\n';
+    std::cout << "Text size: " << sizeof(sf::Text) << '\n';
+
     cacto::TexturePack textures{"."};
     cacto::GeometryPack geometries{"."};
     cacto::FontPack fonts{"."};
@@ -30,6 +33,7 @@ int main()
     std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+    window.setFramerateLimit(60);
 
     cacto::Skeleton skeleton{};
     cacto::fromXmlFile(skeleton, "res/composed.xml");
@@ -78,6 +82,7 @@ int main()
         }
 
         auto dt = clock.restart();
+        // std::cout << "FPS: " << (1 / dt.asSeconds()) << '\n';
         lifetime += dt;
 
         auto f = linear->getValue(lifetime);

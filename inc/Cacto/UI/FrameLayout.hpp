@@ -42,6 +42,28 @@ namespace cacto
         ChildNode *m_child;
     };
 
+    
+    XmlValue CACTO_UI_API toXml(const FrameLayout &frame);
+    void CACTO_UI_API fromXml(FrameLayout &frame, const XmlValue &xml);
+
+    namespace frame
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
 }
 
 #endif

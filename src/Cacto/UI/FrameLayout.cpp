@@ -119,4 +119,68 @@ namespace cacto
             remove(*m_child);
     }
 
+    XmlValue toXml(const FrameLayout &frame)
+    {
+        auto xml = cacto::toXml((const Block &)frame);
+        xml.setName("FrameLayout");
+        auto child = frame.getChild();
+        if (child)
+        {
+            auto child_xml = toXml(child);
+            xml.asContent().push_back(std::move(child_xml));
+        }
+        xml["horizontalAnchor"] = toString(frame.getHorizontalAnchor());
+        xml["verticalAnchor"] = toString(frame.getVerticalAnchor());
+        return std::move(xml);
+    }
+
+    void fromXml(FrameLayout &frame, const XmlValue &xml)
+    {
+        frame.clearChildren();
+        cacto::fromXml((Block &)frame, xml);
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+            {
+                Node *node = nullptr;
+                fromXml(node, item);
+                auto child = dynamic_cast<ChildNode *>(node);
+                if (child)
+                    frame.append(*child);
+            }
+        Box::Anchor hAnchor{};
+        Box::Anchor vAnchor{};
+        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
+        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+    }
+
+    namespace frame
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const FrameLayout *frame = nullptr;
+            if (value && typeid(*value) == typeid(FrameLayout) && (frame = dynamic_cast<const FrameLayout *>(value)))
+            {
+                auto xml = cacto::toXml(*frame);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "FrameLayout")
+            {
+                auto frame = std::make_shared<FrameLayout>();
+                cacto::fromXml(*frame, xml);
+                Node::XmlStack.push(frame);
+                return frame.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }
