@@ -8,6 +8,7 @@
 
 #include <Cacto/Core/StringPack.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Span.hpp>
 #include <Cacto/Lang/Utils.hpp>
@@ -18,6 +19,7 @@ int main()
 {
 
     cacto::StringPack strings{"res/strings.json"};
+    cacto::ColorPack colors{"res/colors.json"};
     cacto::FontPack fonts{"."};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");

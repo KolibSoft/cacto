@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Font.hpp>
-#include <Cacto/Core/StringPack.hpp>
+#include <Cacto/Core/Utils.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/UI/Span.hpp>
@@ -178,21 +178,20 @@ namespace cacto
     {
         auto id = xml.getAttribute("id");
         auto font = getFont(xml.getAttribute("font"));
-        auto string = xml.getAttribute("string");
-        auto color = getColor(xml.getAttribute("color"));
+        sf::String string{};
+        sf::Color color{};
         TextDirection direction{};
         u32t characterSize = std::stoi(xml.getAttribute("characterSize", "0"));
-        sf::Color _color{};
+        cacto::fromAttribute(string, xml.getAttribute("string"));
+        cacto::fromAttribute(color, xml.getAttribute("color", "#FFFFFFFF"));
         cacto::fromString(direction, xml.getAttribute("direction", "ToRight"));
-        if (color)
-            cacto::fromString(_color, xml.getAttribute("color", "#FFFFFFFF"));
         span
             .setId(id)
             .setFont(font)
-            .setString(fromAttribute(string, string))
+            .setString(string)
             .setDirection(direction)
             .setCharacterSize(characterSize)
-            .setColor(color ? *color : _color);
+            .setColor(color);
     }
 
     namespace span
