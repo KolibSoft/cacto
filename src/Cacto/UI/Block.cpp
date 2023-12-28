@@ -138,6 +138,7 @@ namespace cacto
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
+        m_vTransform = states.transform;
         if (m_background)
             DrawNode::draw(*m_background, target, states);
     }
@@ -234,6 +235,12 @@ namespace cacto
             InflatableNode::place(*m_background, {getLeft(), getTop()});
     }
 
+    bool Block::containsVisually(const sf::Vector2f &point) const
+    {
+        auto result = contains(m_vTransform.getInverse().transformPoint(point));
+        return result;
+    }
+
     Block::Block()
         : Box(),
           m_id(),
@@ -242,7 +249,8 @@ namespace cacto
           m_padding(0),
           m_minWidth(0), m_maxWidth(std::numeric_limits<f32t>::infinity()),
           m_minHeight(0), m_maxHeight(std::numeric_limits<f32t>::infinity()),
-          m_parent()
+          m_parent(),
+          m_vTransform(sf::Transform::Identity)
     {
     }
 

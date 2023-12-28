@@ -17,7 +17,7 @@ namespace cacto
 
     bool Input::event(const sf::Event &event)
     {
-        if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        if (event.type == sf::Event::MouseButtonReleased && containsVisually({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
             focus();
             return true;

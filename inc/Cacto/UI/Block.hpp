@@ -59,6 +59,8 @@ namespace cacto
         sf::Vector2f inflateBlock(const sf::Vector2f &containerSize);
         void placeBlock(const sf::Vector2f &position);
 
+        bool containsVisually(const sf::Vector2f &point) const;
+
         void attach(ParentNode &parent) override;
         void detach() override;
 
@@ -89,6 +91,8 @@ namespace cacto
         f32t m_minHeight;
         f32t m_maxHeight;
         ParentNode *m_parent;
+
+        mutable sf::Transform m_vTransform;
     };
 
     XmlValue CACTO_UI_API toXml(const Block &block);

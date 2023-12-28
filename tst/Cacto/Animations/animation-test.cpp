@@ -16,7 +16,7 @@
 #include <Cacto/Animations/Coloring.hpp>
 #include <Cacto/Animations/AnimationPack.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/Span.hpp>
+#include <Cacto/UI/Button.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
@@ -32,17 +32,19 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Skeleton skeleton{};
-    cacto::fromXmlFile(skeleton, "res/skeleton.xml");
+    cacto::fromXmlFile(skeleton, "res/composed.xml");
     std::cout << cacto::toXml(skeleton).toString() << "\n";
-    cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
+    cacto::toXmlFile(skeleton, "res/composed.xml", 2);
 
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
     auto left_mesh = dynamic_cast<cacto::Mesh *>(left->getChild());
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
     auto right_mesh = dynamic_cast<cacto::Mesh *>(right->getChild());
     auto surface = skeleton.firstDescendant<cacto::Surface>("surface");
-    surface->asBox().setWidth(100);
-    surface->asBox().setHeight(100);
+    auto button = skeleton.firstDescendant<cacto::Button>("button");
+
+    button->setOnClickListener([&](cacto::Node &target, const sf::Event &event)
+                               { std::cout << "Clicked\n"; });
 
     auto linear = dynamic_cast<const cacto::Linear *>(cacto::getAnimation("res/linear.xml"));
     auto coloring = dynamic_cast<const cacto::Coloring *>(cacto::getAnimation("res/coloring.xml"));
@@ -55,9 +57,11 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (cacto::EventNode::event(skeleton, event))
+                break;
+            else if (event.type == sf::Event::Closed)
                 window.close();
-            else if (event.type == sf::Event::MouseButtonPressed)
+            else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Button::Right)
                 skeleton.asTransformable().setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
@@ -81,6 +85,13 @@ int main()
         skeleton.asTransformable().setScale({f, f});
         cacto::setColor(left_mesh->asArray(), c);
         cacto::setColor(right_mesh->asArray(), c);
+
+        cacto::InflatableNode::compact(skeleton);
+        cacto::InflatableNode::inflate(skeleton);
+        cacto::InflatableNode::place(skeleton);
+
+        surface->asBox().setWidth(100);
+        surface->asBox().setHeight(100);
 
         window.clear();
         window.draw(skeleton);
