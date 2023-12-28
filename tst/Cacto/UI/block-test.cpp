@@ -8,6 +8,8 @@
 
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/GeometryPack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
 #include <Cacto/Lang/Utils.hpp>
@@ -17,11 +19,14 @@ auto _ = false;
 int main()
 {
 
+    cacto::GeometryPack geometries{"."};
+    cacto::TexturePack textures{"."};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Surface background{};
     background
-        .setGeometry(&cacto::Rectangle::Identity)
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
     cacto::Block root{};

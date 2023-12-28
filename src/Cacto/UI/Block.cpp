@@ -264,7 +264,15 @@ namespace cacto
     XmlValue toXml(const Block &block)
     {
         XmlValue xml{"Block", {}};
-        // Handle background
+        auto background = block.getBackground();
+        if (background)
+        {
+            XmlValue content{"Background", {}};
+            auto background_xml = toXml(background);
+            content.asContent().push_back(background_xml);
+            xml.asContent().push_back(std::move(content));
+        }
+        xml["id"] = block.getId();
         xml["margin"] = toString(block.getMargin());
         xml["padding"] = toString(block.getPadding());
         xml["minWidth"] = std::to_string(block.getMinWidth());
@@ -276,8 +284,19 @@ namespace cacto
 
     void fromXml(Block &block, const XmlValue &xml)
     {
+        block.setBackground(nullptr);
         auto id = xml.getAttribute("id");
-        // Handle background
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+                if (item.isTag() && item.getName() == "Background")
+                    for (auto &background_xml : item.asContent())
+                    {
+                        Node *node = nullptr;
+                        fromXml(node, background_xml);
+                        ChildNode *child = dynamic_cast<ChildNode *>(node);
+                        if (child)
+                            block.setBackground(child);
+                    }
         Thickness margin{};
         Thickness padding{};
         auto minWidth = std::stof(xml.getAttribute("minWidth", "0"));
