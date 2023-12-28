@@ -12,35 +12,52 @@ namespace cacto
     {
 
     public:
-        const Span &getSpan() const;
-        Span &getSpan();
+        using Anchor = Box::Anchor;
 
         Anchor getHorizontalAnchor() const;
-        Label& setHorizontalAnchor(Anchor value);
+        Label &setHorizontalAnchor(Anchor value);
 
         Anchor getVerticalAnchor() const;
-        Label& setVerticalAnchor(Anchor value);
+        Label &setVerticalAnchor(Anchor value);
 
-        Label(const sf::Font &font, const sf::String &string = "", u32t characterSize = 30);
-        Label(sf::Font &&font, const sf::String &string = "", u32t characterSize = 30) = delete;
+        const Span &asSpan() const;
+        Span &asSpan();
 
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
+        sf::Vector2f compact() override;
+        sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void place(const sf::Vector2f &position = {0, 0}) override;
+
+        Label();
         virtual ~Label();
-
-        Label(const Label &other);
-        Label &operator=(const Label &other);
-
-    protected:
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
-        sf::Vector2f onCompact() override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize) override;
-        void onPlace(const sf::Vector2f &position) override;
 
     private:
         Span m_span;
         Anchor m_hAnchor;
         Anchor m_vAnchor;
     };
+
+    XmlValue CACTO_UI_API toXml(const Label &label);
+    void CACTO_UI_API fromXml(Label &label, const XmlValue &xml);
+
+    namespace label
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
 
 }
 

@@ -15,7 +15,8 @@ namespace cacto
 {
 
     class CACTO_UI_API Span
-        : public virtual ChildNode,
+        : public Box,
+          public virtual ChildNode,
           public virtual UINode
     {
 
@@ -67,7 +68,6 @@ namespace cacto
         Direction m_direction;
         u32t m_characterSize;
         sf::Color m_color;
-        sf::Vector2f m_place;
         ParentNode *m_parent;
 
         mutable bool m_invalid;

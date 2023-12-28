@@ -140,4 +140,28 @@ namespace cacto
     {
     }
 
+    std::string toString(Box::Anchor anchor)
+    {
+        if (anchor == Box::Start)
+            return "Start";
+        else if (anchor == Box::End)
+            return "End";
+        else if (anchor == Box::Center)
+            return "Center";
+        else
+            throw std::runtime_error("Invalid anchor value");
+    }
+
+    void fromString(Box::Anchor &anchor, const std::string &string)
+    {
+        if (string == "Start")
+            anchor = Box::Start;
+        else if (string == "End")
+            anchor = Box::End;
+        else if (string == "Center")
+            anchor = Box::Center;
+        else
+            throw std::runtime_error("Invalid anchor value");
+    }
+
 }

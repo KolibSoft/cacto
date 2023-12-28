@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <SFML/Graphics/Rect.hpp>
 #include <Cacto/UI/Export.hpp>
 
@@ -50,5 +51,8 @@ namespace cacto
     private:
         sf::FloatRect m_rect;
     };
+
+    std::string CACTO_UI_API toString(Box::Anchor anchor);
+    void CACTO_UI_API fromString(Box::Anchor &anchor, const std::string &string);
 
 }
