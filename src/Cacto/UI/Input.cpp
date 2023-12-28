@@ -15,27 +15,7 @@ namespace cacto
         return *this;
     }
 
-    Input::Input(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : Label(font, string, characterSize),
-          m_focused()
-    {
-    }
-
-    Input::~Input() {}
-
-    Input::Input(const Input &other)
-        : Label(other),
-          m_focused()
-    {
-    }
-
-    Input &Input::operator=(const Input &other)
-    {
-        Label::operator=(other);
-        return *this;
-    }
-
-    bool Input::onEvent(const sf::Event &event)
+    bool Input::event(const sf::Event &event)
     {
         if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
@@ -50,9 +30,43 @@ namespace cacto
         return false;
     }
 
+    void Input::input(u32t unicode)
+    {
+        sf::Event event{};
+        event.type = sf::Event::TextEntered;
+        event.text.unicode = unicode;
+        onInput(event);
+    }
+
+    void Input::focus()
+    {
+        sf::Event event{};
+        event.type = sf::Event::GainedFocus;
+
+        m_focused = true;
+        bubbleParent(*this, event);
+    }
+
+    void Input::unfocus()
+    {
+        sf::Event event{};
+        event.type = sf::Event::LostFocus;
+
+        m_focused = false;
+        bubbleParent(*this, event);
+    }
+
+    Input::Input()
+        : Label(),
+          m_focused()
+    {
+    }
+
+    Input::~Input() {}
+
     void Input::onInput(const sf::Event &event)
     {
-        auto string = getSpan().getString();
+        auto string = asSpan().getString();
         auto character = static_cast<char32_t>(event.text.unicode);
         switch (character)
         {
@@ -64,23 +78,53 @@ namespace cacto
             string += character;
             break;
         }
-        getSpan().setString(string);
+        asSpan().setString(string);
         if (m_onInput)
             m_onInput(*this, event);
         else
             bubbleParent(*this, event);
     }
 
-    void Input::onFocus(const sf::Event &event)
+    XmlValue CACTO_UI_API toXml(const Input &label)
     {
-        m_focused = true;
-        bubbleParent(*this, event);
+        auto xml = cacto::toXml((const Label &)label);
+        xml.setName("Input");
+        return std::move(xml);
     }
 
-    void Input::onUnfocus(const sf::Event &event)
+    void CACTO_UI_API fromXml(Input &input, const XmlValue &xml)
     {
-        m_focused = false;
-        bubbleParent(*this, event);
+        cacto::fromXml((Label &)input, xml);
+    }
+
+    namespace input
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Input *input = nullptr;
+            if (value && typeid(*value) == typeid(Input) && (input = dynamic_cast<const Input *>(value)))
+            {
+                auto xml = cacto::toXml(*input);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Input")
+            {
+                auto input = std::make_shared<Input>();
+                cacto::fromXml(*input, xml);
+                Node::XmlStack.push(input);
+                return input.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

@@ -19,11 +19,7 @@ namespace cacto
     {
         if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
-            if (m_onClick)
-                m_onClick(*this, event);
-            else
-                bubbleParent(*this, event);
-            focus();
+            onClick(event);
             return true;
         }
         else if (m_focused && event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
@@ -38,14 +34,9 @@ namespace cacto
         sf::Event event{};
         event.type = sf::Event::MouseButtonReleased;
         event.mouseButton.button = button;
-        event.mouseButton.x = position.x;
-        event.mouseButton.y = position.y;
-
-        if (m_onClick)
-            m_onClick(*this, event);
-        else
-            bubbleParent(*this, event);
-        focus();
+        event.mouseButton.x = getLeft() + position.x;
+        event.mouseButton.y = getTop() + position.y;
+        onClick(event);
     }
 
     void Button::focus()
@@ -74,6 +65,15 @@ namespace cacto
     }
 
     Button::~Button() {}
+
+    void Button::onClick(const sf::Event &event)
+    {
+        if (m_onClick)
+            m_onClick(*this, event);
+        else
+            bubbleParent(*this, event);
+        focus();
+    }
 
     XmlValue CACTO_UI_API toXml(const Button &label)
     {

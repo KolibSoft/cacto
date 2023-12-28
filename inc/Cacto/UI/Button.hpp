@@ -30,6 +30,9 @@ namespace cacto
         Button(const Button &other);
         Button &operator=(const Button &other);
 
+    protected:
+        virtual void onClick(const sf::Event &event);
+
     private:
         EventListener m_onClick;
         bool m_focused;
