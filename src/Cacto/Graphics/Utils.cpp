@@ -331,12 +331,46 @@ namespace cacto
         color = sf::Color(integer);
     }
 
+    std::string toAttribute(const sf::FloatRect &rect)
+    {
+        auto &id = getId(rect);
+        if (id != "")
+            return id;
+        return toString(rect);
+    }
+
+    void fromAttribute(sf::FloatRect &rect, const std::string &attribute)
+    {
+        auto value = getRect(attribute);
+        if (value)
+            rect = *value;
+        else
+            fromString(rect, attribute);
+    }
+
+    std::string toAttribute(const sf::Color &color)
+    {
+        auto &id = getId(color);
+        if (id != "")
+            return id;
+        return toString(color);
+    }
+
+    void fromAttribute(sf::Color &color, const std::string &attribute)
+    {
+        auto value = getColor(attribute);
+        if (value)
+            color = *value;
+        else
+            fromString(color, attribute);
+    }
+
     XmlValue toXml(const sf::Vertex &vertex)
     {
         XmlValue xml{"Vertex", {}};
         xml["position"] = cacto::toString(vertex.position);
         xml["texCoords"] = cacto::toString(vertex.texCoords);
-        xml["color"] = toAttribute(vertex.color);
+        xml["color"] = cacto::toAttribute(vertex.color);
         return std::move(xml);
     }
 
@@ -345,10 +379,10 @@ namespace cacto
         vertex = {};
         auto position = xml.getAttribute("position", "0,0");
         auto texCoords = xml.getAttribute("texCoords", "0,0");
-        auto color = xml.getAttribute("color");
+        auto color = xml.getAttribute("color", "#FFFFFFFF");
         cacto::fromString(vertex.position, position);
         cacto::fromString(vertex.texCoords, texCoords);
-        vertex.color = fromAttribute(color);
+        cacto::fromAttribute(vertex.color, color);
     }
 
     XmlValue toXml(const sf::VertexArray &array)

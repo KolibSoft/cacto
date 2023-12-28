@@ -1,6 +1,8 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
-#include <Cacto/Graphics/TileSetPack.hpp>
+#include <Cacto/Graphics/RectPack.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 
@@ -204,7 +206,7 @@ namespace cacto
             {
                 auto tile = tileMap.getTile({area.left + x, area.top + y});
                 XmlValue tile_xml{"Tile", {}};
-                tile_xml["rect"] = toString(tile);
+                tile_xml["tile"] = toAttribute(tile);
                 tiles.push_back(std::move(tile_xml));
             }
         content.push_back(std::move(chunk));
@@ -240,7 +242,7 @@ namespace cacto
                             {
                                 auto &tile_xml = tiles[y * area.width + x];
                                 sf::FloatRect tile{};
-                                cacto::fromString(tile, tile_xml.getAttribute("rect", "0,0,0,0"));
+                                fromAttribute(tile, tile_xml.getAttribute("tile", "0,0,0,0"));
                                 tileMap.setTile({i32t(area.left) + x, i32t(area.top) + y}, tile);
                             }
                     }
@@ -248,7 +250,7 @@ namespace cacto
                     {
                         sf::Vector2f tile_position{};
                         sf::FloatRect tile{};
-                        cacto::fromString(tile, item.getAttribute("rect", "0,0,0,0"));
+                        fromAttribute(tile, item.getAttribute("tile", "0,0,0,0"));
                         cacto::fromString(tile_position, item.getAttribute("position", "0,0"));
                         tileMap.setTile(sf::Vector2i(tile_position), tile);
                     }
@@ -256,7 +258,7 @@ namespace cacto
                     {
                         sf::FloatRect tile_area{};
                         sf::FloatRect tile{};
-                        cacto::fromString(tile, item.getAttribute("rect", "0,0,0,0"));
+                        fromAttribute(tile, item.getAttribute("tile", "0,0,0,0"));
                         cacto::fromString(tile_area, item.getAttribute("area", "0,0,0,0"));
                         tileMap.setTiles(sf::IntRect(tile_area), tile);
                     }

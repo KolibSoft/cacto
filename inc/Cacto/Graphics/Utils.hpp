@@ -69,6 +69,12 @@ namespace cacto
     std::string CACTO_GRAPHICS_API toString(const sf::Color &color);
     void CACTO_GRAPHICS_API fromString(sf::Color &color, const std::string &string);
 
+    std::string CACTO_GRAPHICS_API toAttribute(const sf::FloatRect &rect);
+    void CACTO_GRAPHICS_API fromAttribute(sf::FloatRect &rect, const std::string &attribute);
+
+    std::string CACTO_GRAPHICS_API toAttribute(const sf::Color &color);
+    void CACTO_GRAPHICS_API fromAttribute(sf::Color &color, const std::string &attribute);
+
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
     void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);
 
