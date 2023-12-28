@@ -1,5 +1,6 @@
 #include <cmath>
 #include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 
 namespace cacto
@@ -109,11 +110,10 @@ namespace cacto
     namespace ellipse
     {
 
-        XmlValue XmlConverter::toXml(const Shared<const Geometry> &value) const
+        XmlValue XmlConverter::toXml(const Geometry *const value) const
         {
-            Shared<const Ellipse> ellipse = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Ellipse) && (ellipse = std::dynamic_pointer_cast<const Ellipse>(value)))
+            const Ellipse *ellipse = nullptr;
+            if (value && typeid(*value) == typeid(Ellipse) && (ellipse = dynamic_cast<const Ellipse *>(value)))
             {
                 auto xml = cacto::toXml(*ellipse);
                 return std::move(xml);
@@ -121,13 +121,15 @@ namespace cacto
             return nullptr;
         }
 
-        Shared<Geometry> XmlConverter::fromXml(const XmlValue &xml) const
+        Geometry *XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.isTag() && xml.getName() == "Ellipse")
             {
                 auto ellipse = std::make_shared<Ellipse>();
                 cacto::fromXml(*ellipse, xml);
-                return std::move(ellipse);
+                Line::XmlStack.push(ellipse);
+                Geometry::XmlStack.push(ellipse);
+                return ellipse.get();
             }
             return nullptr;
         }

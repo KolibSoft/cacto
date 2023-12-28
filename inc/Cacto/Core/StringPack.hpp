@@ -20,19 +20,26 @@ namespace cacto
     {
 
     public:
-        const std::string &getId(const Shared<const sf::String> &value) const override;
-        Shared<const sf::String> getResource(const std::string &id) const override;
-        void setResource(const std::string &id, const Shared<const sf::String> &value) override;
+        const std::filesystem::path &getPath() const;
+
+        const std::string &getId(const sf::String &value) const override;
+        const sf::String *const getResource(const std::string &id) const override;
 
         StringPack(const std::filesystem::path &path);
         virtual ~StringPack();
 
+        StringPack(const StringPack &other) = delete;
+        StringPack &operator=(const StringPack &other) = delete;
+
+        StringPack(StringPack &&other);
+        StringPack &operator=(StringPack &&other);
+
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, Shared<const sf::String>> m_map;
+        mutable std::unordered_map<std::string, std::shared_ptr<sf::String>> m_map;
     };
 
-    const std::string &CACTO_CORE_API getId(const Shared<const sf::String> &string);
-    Shared<const sf::String> CACTO_CORE_API getString(const std::string &id);
+    const std::string &CACTO_CORE_API getId(const sf::String &string);
+    const sf::String *const CACTO_CORE_API getString(const std::string &id);
 
 }

@@ -21,17 +21,12 @@ namespace cacto
         return *this;
     }
 
-    Shared<Node> Surface::getParent() const
-    {
-        return m_parent.lock();
-    }
-
-    const Shared<const Geometry> &Surface::getGeometry() const
+    const Geometry *const Surface::getGeometry() const
     {
         return m_geometry;
     }
 
-    Surface &Surface::setGeometry(const Shared<const Geometry> &value)
+    Surface &Surface::setGeometry(const Geometry *const value)
     {
         m_geometry = value;
         m_invalid = true;
@@ -64,12 +59,12 @@ namespace cacto
         return *this;
     }
 
-    const Shared<const sf::Texture> &Surface::getTexture() const
+    const sf::Texture *const Surface::getTexture() const
     {
         return m_texture;
     }
 
-    Surface &Surface::setTexture(const Shared<const sf::Texture> &value, bool resetRect)
+    Surface &Surface::setTexture(const sf::Texture *const value, bool resetRect)
     {
         m_texture = value;
         m_invalid = true;
@@ -95,17 +90,89 @@ namespace cacto
         return *this;
     }
 
-    void Surface::update(bool force) const
+    const Box &Surface::asBox() const
     {
-        if (m_invalid || force)
+        return m_box;
+    }
+
+    Box &Surface::asBox()
+    {
+        return m_box;
+    }
+
+    ParentNode *const Surface::getParent() const
+    {
+        return m_parent;
+    }
+
+    void Surface::attach(ParentNode &parent)
+    {
+        if (m_parent == &parent)
+            return;
+        if (m_parent != nullptr)
+            throw std::runtime_error("This node is already attached to another parent");
+        if (parent.hasAncestor(*this))
+            throw std::runtime_error("This node is an ancestor");
+        m_parent = &parent;
+        parent.append(*this);
+    }
+
+    void Surface::detach()
+    {
+        if (m_parent == nullptr)
+            return;
+        m_parent->remove(*this);
+        m_parent = nullptr;
+    }
+
+    void Surface::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        if (m_geometry)
         {
-            onUpdate();
-            m_invalid = false;
+            if (m_invalid)
+            {
+                cacto::setPoints(m_array, *m_geometry, m_precision);
+                cacto::setColor(m_array, m_color);
+                if (m_texture)
+                    cacto::setTexCoords(m_array, m_textureRect);
+                cacto::mapPositions(m_array, m_box);
+                m_invalid = false;
+            }
+            if (m_box.getWidth() > 0 && m_box.getHeight() > 0)
+            {
+                auto _states = states;
+                _states.texture = m_texture;
+                target.draw(m_array, _states);
+            }
         }
+    }
+
+    sf::Vector2f Surface::compact()
+    {
+        m_box.setWidth(0);
+        m_box.setHeight(0);
+        m_invalid = true;
+        return {0, 0};
+    }
+
+    sf::Vector2f Surface::inflate(const sf::Vector2f &containerSize)
+    {
+        m_box.setWidth(containerSize.x);
+        m_box.setHeight(containerSize.y);
+        m_invalid = true;
+        return containerSize;
+    }
+
+    void Surface::place(const sf::Vector2f &position)
+    {
+        m_box.setLeft(position.x);
+        m_box.setTop(position.y);
+        m_invalid = true;
     }
 
     Surface::Surface()
         : m_id(),
+          m_box(),
           m_parent(),
           m_geometry(),
           m_precision(1),
@@ -119,92 +186,25 @@ namespace cacto
             setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
     }
 
-    Surface::~Surface() = default;
-
-    sf::VertexArray &Surface::getArray() const
+    Surface::~Surface()
     {
-        return m_array;
-    }
-
-    void Surface::invalidate()
-    {
-        m_invalid = true;
-    }
-
-    void Surface::onAttach(const Shared<Node> &parent)
-    {
-        m_parent = parent;
-    }
-
-    void Surface::onDetach(const Shared<Node> &parent)
-    {
-        m_parent.reset();
-    }
-
-    void Surface::onUpdate() const
-    {
-        if (m_geometry)
-        {
-            cacto::setPoints(m_array, *m_geometry, m_precision);
-            cacto::setColor(m_array, m_color);
-            if (m_texture)
-                cacto::setTexCoords(m_array, m_textureRect);
-            cacto::mapPositions(m_array, *this);
-        }
-    }
-
-    void Surface::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_geometry)
-        {
-            update();
-            if (getWidth() > 0 && getHeight() > 0)
-            {
-                auto _states = states;
-                _states.texture = m_texture.get();
-                target.draw(m_array, _states);
-            }
-            DrawNode::onDraw(target, states);
-        }
-    }
-
-    sf::Vector2f Surface::onCompact()
-    {
-        setWidth(0);
-        setHeight(0);
-        m_invalid = true;
-        return {0, 0};
-    }
-
-    sf::Vector2f Surface::onInflate(const sf::Vector2f &containerSize)
-    {
-        setWidth(containerSize.x);
-        setHeight(containerSize.y);
-        m_invalid = true;
-        return containerSize;
-    }
-
-    void Surface::onPlace(const sf::Vector2f &position)
-    {
-        setLeft(position.x);
-        setTop(position.y);
-        m_invalid = true;
+        detach();
     }
 
     XmlValue toXml(const Surface &surface)
     {
         XmlValue xml{"Surface", {}};
         auto &id = surface.getId();
-        auto &geometry = Pack<Geometry>::id(surface.getGeometry());
+        auto geometry = surface.getGeometry();
         auto precision = surface.getPrecision();
         auto color = surface.getColor();
-        auto &texture = Pack<sf::Texture>::id(surface.getTexture());
+        auto texture = surface.getTexture();
         auto textureRect = surface.getTextureRect();
         xml["id"] = id;
-        xml["geometry"] = geometry;
+        xml["geometry"] = geometry ? getId(*geometry) : "";
         xml["precision"] = std::to_string(precision);
         xml["color"] = toString(color);
-        xml["texture"] = texture;
+        xml["texture"] = texture ? getId(*texture) : "";
         xml["textureRect"] = toString(textureRect);
         return std::move(xml);
     }
@@ -212,28 +212,28 @@ namespace cacto
     void fromXml(Surface &surface, const XmlValue &xml)
     {
         surface.setId(xml.getAttribute("id"));
-        auto geometry = Pack<Geometry>::resource(xml.getAttribute("geometry"));
+        auto geometry = getGeometry(xml.getAttribute("geometry"));
         szt precision = std::stoi(xml.getAttribute("precision", "1"));
         sf::Color color{};
-        auto texture = Pack<sf::Texture>::resource(xml.getAttribute("texture"));
+        auto texture = getTexture(xml.getAttribute("texture"));
         sf::FloatRect textureRect{};
         cacto::fromString(color, xml.getAttribute("color", "#FFFFFFFF"));
         cacto::fromString(textureRect, xml.getAttribute("textureRect", "0,0,0,0"));
-        surface.setGeometry(geometry);
-        surface.setPrecision(precision);
-        surface.setColor(color);
-        surface.setTexture(texture);
-        surface.setTextureRect(textureRect);
+        surface
+            .setGeometry(geometry)
+            .setPrecision(precision)
+            .setColor(color)
+            .setTexture(texture)
+            .setTextureRect(textureRect);
     }
 
     namespace surface
     {
 
-        XmlValue XmlConverter::toXml(const Shared<const Node> &value) const
+        XmlValue XmlConverter::toXml(const Node *const value) const
         {
-            Shared<const Surface> surface = nullptr;
-            auto ptr = value.get();
-            if (value && typeid(*ptr) == typeid(Surface) && (surface = std::dynamic_pointer_cast<const Surface>(value)))
+            const Surface *surface = nullptr;
+            if (value && typeid(*value) == typeid(Surface) && (surface = dynamic_cast<const Surface *>(value)))
             {
                 auto xml = cacto::toXml(*surface);
                 return std::move(xml);
@@ -241,13 +241,14 @@ namespace cacto
             return nullptr;
         }
 
-        Shared<Node> XmlConverter::fromXml(const XmlValue &xml) const
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
             if (xml.isTag() && xml.getName() == "Surface")
             {
                 auto surface = std::make_shared<Surface>();
                 cacto::fromXml(*surface, xml);
-                return std::move(surface);
+                Node::XmlStack.push(surface);
+                return surface.get();
             }
             return nullptr;
         }

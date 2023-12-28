@@ -3,3 +3,4 @@
 #include "Cacto/Animations/Animation.cpp"
 #include "Cacto/Animations/Linear.cpp"
 #include "Cacto/Animations/Coloring.cpp"
+#include "Cacto/Animations/AnimationPack.cpp"

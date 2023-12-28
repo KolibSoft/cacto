@@ -12,31 +12,27 @@ namespace sf
 namespace cacto
 {
 
-    using EventListener = std::function<void(const Shared<Node> &target, const sf::Event &event)>;
+    using EventListener = std::function<void(Node &target, const sf::Event &event)>;
 
     class CACTO_WINDOW_API EventNode
         : public virtual Node
     {
 
     public:
-        bool event(const sf::Event &event);
-        bool bubble(const Shared<Node> &target, const sf::Event &event);
+        virtual bool event(const sf::Event &event);
+        bool eventChildren(const sf::Event &event) const;
+
+        virtual bool bubble(Node &target, const sf::Event &event);
+        bool bubbleParent(Node &target, const sf::Event &event) const;
 
         EventNode();
         virtual ~EventNode();
 
-        static bool event(const Shared<Node> &node, const sf::Event &event);
-        static bool eventChildren(const Shared<Node> &node, const sf::Event &event);
+        static bool event(Node &node, const sf::Event &event);
+        static bool eventChildren(const Node &node, const sf::Event &event);
 
-        static bool bubble(const Shared<Node> &node, const Shared<Node> &target, const sf::Event &event);
-        static bool bubbleParent(const Shared<Node> &node, const Shared<Node> &target, const sf::Event &event);
-
-    protected:
-        bool eventChildren(const sf::Event &event);
-        bool bubbleParent(const Shared<Node> &target, const sf::Event &event);
-
-        virtual bool onEvent(const sf::Event &event);
-        virtual bool onBubble(const Shared<Node> &target, const sf::Event &event);
+        static bool bubble(Node &node, Node &target, const sf::Event &event);
+        static bool bubbleParent(const Node &node, Node &target, const sf::Event &event);
     };
 
 }

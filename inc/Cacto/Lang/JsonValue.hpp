@@ -2,7 +2,7 @@
 
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
 #include <filesystem>
 #include <ostream>
 #include <istream>
@@ -52,8 +52,8 @@ namespace cacto
         JsonValue &operator[](szt index);
 
         bool isObject() const;
-        const std::map<std::string, JsonValue> &asObject() const;
-        std::map<std::string, JsonValue> &asObject();
+        const std::unordered_map<std::string, JsonValue> &asObject() const;
+        std::unordered_map<std::string, JsonValue> &asObject();
         const JsonValue &operator[](const std::string &key) const;
         JsonValue &operator[](const std::string &key);
 
@@ -79,7 +79,7 @@ namespace cacto
         JsonValue(std::nullptr_t = 0);
         JsonValue(const std::vector<JsonValue> &array);
         JsonValue(std::initializer_list<JsonValue> array);
-        JsonValue(const std::map<std::string, JsonValue> &object);
+        JsonValue(const std::unordered_map<std::string, JsonValue> &object);
         JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object);
         virtual ~JsonValue();
 
@@ -109,7 +109,7 @@ namespace cacto
             std::string *m_string;
             bool m_boolean;
             std::vector<JsonValue> *m_array;
-            std::map<std::string, JsonValue> *m_object;
+            std::unordered_map<std::string, JsonValue> *m_object;
         };
     };
 

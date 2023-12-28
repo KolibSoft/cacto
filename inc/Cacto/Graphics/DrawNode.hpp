@@ -19,17 +19,14 @@ namespace cacto
     {
 
     public:
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override final;
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        void drawChildren(sf::RenderTarget &target, const sf::RenderStates &states) const;
 
         DrawNode();
         virtual ~DrawNode();
 
-        static void draw(const Shared<const Node> &node, sf::RenderTarget &target, const sf::RenderStates &states);
-        static void drawChildren(const Shared<const Node> &node, sf::RenderTarget &target, const sf::RenderStates &states);
-
-    protected:
-        void drawChildren(sf::RenderTarget &target, const sf::RenderStates &states) const;
-        virtual void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const;
+        static void draw(const Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
+        static void drawChildren(const Node &node, sf::RenderTarget &target, const sf::RenderStates &states);
     };
 
 }

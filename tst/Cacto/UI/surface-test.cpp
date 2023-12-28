@@ -22,18 +22,20 @@ int main()
     std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    auto root = std::make_shared<cacto::Surface>();
+    cacto::Surface surface{};
 
-    (*root)
-        .setGeometry(cacto::getGeometry("ellipse.xml"))
+    /*
+    surface
+        .setGeometry(cacto::getGeometry("res/ellipse.xml"))
         .setPrecision(12)
-        .setTexture(cacto::getTexture("fondo.png"))
+        .setColor(sf::Color::Yellow)
+        .setTexture(cacto::getTexture("res/image.png"))
         .setTextureRect({{-100, -100}, {1000, 1000}});
+    */
+    cacto::fromXmlFile(surface, "res/surface.xml");
+    cacto::toXmlFile(surface, "res/surface.xml", 2);
 
-    cacto::fromXmlFile(*root, "res/surface.xml");
-    cacto::toXmlFile(*root, "res/surface.xml", 2);
-
-    std::cout << cacto::toXml(root).toString(2) << '\n';
+    std::cout << cacto::toXml(surface).toString(2) << '\n';
 
     while (window.isOpen())
     {
@@ -42,14 +44,16 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
-            if (event.type == sf::Event::Resized)
+            else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            else if (event.type == sf::Event::KeyPressed || event.key.code == sf::Keyboard::Space)
+                cacto::fromXmlFile(surface, "res/surface.xml");
         }
-        root->compact();
-        root->inflate(sf::Vector2f(window.getSize()));
-        root->place();
+        surface.compact();
+        surface.inflate(sf::Vector2f(window.getSize()));
+        surface.place();
         window.clear(sf::Color::Black);
-        window.draw(*root);
+        window.draw(surface);
         window.display();
     }
 

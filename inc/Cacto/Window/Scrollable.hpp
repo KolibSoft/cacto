@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Window/Mouse.hpp>
-#include <Cacto/Window/Export.hpp>
+#include <Cacto/Config.hpp>
 
 namespace sf
 {
@@ -15,13 +15,10 @@ namespace cacto
     {
 
     public:
-        void scroll(sf::Mouse::Wheel wheel = sf::Mouse::Wheel::VerticalWheel, f32t delta = 0, i32t x = 0, i32t y = 0);
+        virtual void scroll(sf::Mouse::Wheel wheel = sf::Mouse::Wheel::VerticalWheel, f32t delta = 0, i32t x = 0, i32t y = 0) = 0;
 
         Scrollable() = default;
         virtual ~Scrollable() = default;
-
-    protected:
-        virtual void onScroll(const sf::Event &event) = 0;
     };
 
 }

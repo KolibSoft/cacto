@@ -6,79 +6,71 @@
 namespace cacto
 {
 
-    const std::string &StringPack::getId(const Shared<const sf::String> &value) const
+    const std::filesystem::path &StringPack::getPath() const
+    {
+        return m_path;
+    }
+
+    const std::string &StringPack::getId(const sf::String &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
+            if (*pair.second == value)
                 return pair.first;
         return NoId;
     }
 
-    Shared<const sf::String> StringPack::getResource(const std::string &id) const
+    const sf::String *const StringPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second;
-        try
-        {
-            std::string _string{};
-            fromFile(_string, m_path / id);
-            auto string = std::make_shared<sf::String>(_string);
-            m_map.insert({id, string});
-            return string;
-        }
-        catch (...)
-        {
-            m_map.insert({id, nullptr});
-            return nullptr;
-        }
-    }
-
-    void StringPack::setResource(const std::string &id, const Shared<const sf::String> &value)
-    {
-        for (auto &pair : m_map)
-            if (pair.first == id)
-            {
-                pair.second = value;
-                return;
-            }
-        if (value)
-        {
-            try
-            {
-                auto _string = value->toAnsiString();
-                toFile(_string, m_path / id);
-                m_map.insert({id, value});
-            }
-            catch (...)
-            {
-            }
-        }
-        else
-        {
-            if (std::filesystem::remove(m_path / id))
-                m_map.insert({id, nullptr});
-        }
+                return pair.second.get();
+        return nullptr;
     }
 
     StringPack::StringPack(const std::filesystem::path &path)
         : m_path(path),
           m_map()
     {
+        try
+        {
+            JsonValue json = nullptr;
+            json.fromFile(path);
+            for (auto &pair : json.asObject())
+            {
+                auto string = std::make_shared<sf::String>(pair.second.getString(""));
+                m_map.insert({pair.first, string});
+            }
+        }
+        catch (...)
+        {
+        }
     }
 
     StringPack::~StringPack() = default;
 
-    const std::string &getId(const Shared<const sf::String> &string)
+    StringPack::StringPack(StringPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    StringPack &StringPack::operator=(StringPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
+    const std::string &getId(const sf::String &string)
     {
         auto &id = Pack<sf::String>::id(string);
         return id;
     }
 
-    Shared<const sf::String> getString(const std::string &id)
+    const sf::String *const getString(const std::string &id)
     {
         auto string = Pack<sf::String>::resource(id);
-        return std::move(string);
+        return string;
     }
 
 }

@@ -1,9 +1,12 @@
+#include <SFML/System/String.hpp>
+#include <SFML/Graphics/Glyph.hpp>
 #include <SFML/Graphics/Vertex.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 
 namespace cacto
@@ -76,6 +79,108 @@ namespace cacto
         auto *vertexes = &(array[0]);
         auto bounds = array.getBounds();
         mapPositions(vertexes, bounds, surface, count);
+    }
+
+    void setGlyphs(sf::Vertex *const vertexes, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness, szt count)
+    {
+        count /= 6;
+        f32t offset = 0;
+        sf::Vertex glyph_vertexes[4]{};
+
+        auto setTexCoords = [&](const sf::IntRect &rect)
+        {
+            sf::FloatRect _rect{rect};
+            glyph_vertexes[0].texCoords = {_rect.left, _rect.top};
+            glyph_vertexes[1].texCoords = {_rect.left + _rect.width, _rect.top};
+            glyph_vertexes[2].texCoords = {_rect.left, _rect.top + _rect.height};
+            glyph_vertexes[3].texCoords = {_rect.left + _rect.width, _rect.top + _rect.height};
+        };
+
+        auto appendGlyph = [&](szt i)
+        {
+            vertexes[i * 6 + 0] = glyph_vertexes[0];
+            vertexes[i * 6 + 1] = glyph_vertexes[1];
+            vertexes[i * 6 + 2] = glyph_vertexes[3];
+            vertexes[i * 6 + 3] = glyph_vertexes[0];
+            vertexes[i * 6 + 4] = glyph_vertexes[2];
+            vertexes[i * 6 + 5] = glyph_vertexes[3];
+        };
+
+        switch (direction)
+        {
+        case TextDirection::ToLeft:
+            for (szt i = 0; i < count; i++)
+            {
+                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &bounds = glyph.bounds;
+
+                offset += glyph.advance + font.getKerning(string[i], string[i + 1], characterSize, bold);
+                glyph_vertexes[0].position = {bounds.left - offset, bounds.top};
+                glyph_vertexes[1].position = {bounds.left + bounds.width - offset, bounds.top};
+                glyph_vertexes[2].position = {bounds.left - offset, bounds.top + bounds.height};
+                glyph_vertexes[3].position = {bounds.left + bounds.width - offset, bounds.top + bounds.height};
+
+                setTexCoords(glyph.textureRect);
+                appendGlyph(i);
+            }
+            break;
+        case TextDirection::ToRight:
+            for (szt i = 0; i < count; i++)
+            {
+                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &bounds = glyph.bounds;
+
+                glyph_vertexes[0].position = {bounds.left + offset, bounds.top};
+                glyph_vertexes[1].position = {bounds.left + bounds.width + offset, bounds.top};
+                glyph_vertexes[2].position = {bounds.left + offset, bounds.top + bounds.height};
+                glyph_vertexes[3].position = {bounds.left + bounds.width + offset, bounds.top + bounds.height};
+                offset += glyph.advance + font.getKerning(string[i], string[i + 1], characterSize, bold);
+
+                setTexCoords(glyph.textureRect);
+                appendGlyph(i);
+            }
+            break;
+        case TextDirection::ToTop:
+            for (szt i = 0; i < count; i++)
+            {
+                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &bounds = glyph.bounds;
+
+                offset += font.getLineSpacing(characterSize);
+                glyph_vertexes[0].position = {bounds.left, bounds.top - offset};
+                glyph_vertexes[1].position = {bounds.left + bounds.width, bounds.top - offset};
+                glyph_vertexes[2].position = {bounds.left, bounds.top + bounds.height - offset};
+                glyph_vertexes[3].position = {bounds.left + bounds.width, bounds.top + bounds.height - offset};
+
+                setTexCoords(glyph.textureRect);
+                appendGlyph(i);
+            }
+            break;
+        case TextDirection::ToBottom:
+            for (szt i = 0; i < count; i++)
+            {
+                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &bounds = glyph.bounds;
+
+                glyph_vertexes[0].position = {bounds.left, bounds.top + offset};
+                glyph_vertexes[1].position = {bounds.left + bounds.width, bounds.top + offset};
+                glyph_vertexes[2].position = {bounds.left, bounds.top + bounds.height + offset};
+                glyph_vertexes[3].position = {bounds.left + bounds.width, bounds.top + bounds.height + offset};
+                offset += font.getLineSpacing(characterSize);
+
+                setTexCoords(glyph.textureRect);
+                appendGlyph(i);
+            }
+            break;
+        }
+    }
+
+    void setGlyphs(sf::VertexArray &array, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness)
+    {
+        array.resize(string.getSize() * 6);
+        auto count = array.getVertexCount();
+        auto *vertexes = &(array[0]);
+        setGlyphs(vertexes, font, string, direction, characterSize, bold, outlineThickness, count);
     }
 
     bool zoneIn(const sf::FloatRect &rect, const sf::FloatRect &zone)
@@ -226,12 +331,46 @@ namespace cacto
         color = sf::Color(integer);
     }
 
+    std::string toAttribute(const sf::FloatRect &rect)
+    {
+        auto &id = getId(rect);
+        if (id != "")
+            return id;
+        return toString(rect);
+    }
+
+    void fromAttribute(sf::FloatRect &rect, const std::string &attribute)
+    {
+        auto value = getRect(attribute);
+        if (value)
+            rect = *value;
+        else
+            fromString(rect, attribute);
+    }
+
+    std::string toAttribute(const sf::Color &color)
+    {
+        auto &id = getId(color);
+        if (id != "")
+            return id;
+        return toString(color);
+    }
+
+    void fromAttribute(sf::Color &color, const std::string &attribute)
+    {
+        auto value = getColor(attribute);
+        if (value)
+            color = *value;
+        else
+            fromString(color, attribute);
+    }
+
     XmlValue toXml(const sf::Vertex &vertex)
     {
         XmlValue xml{"Vertex", {}};
         xml["position"] = cacto::toString(vertex.position);
-        xml["color"] = cacto::toString(vertex.color);
         xml["texCoords"] = cacto::toString(vertex.texCoords);
+        xml["color"] = cacto::toAttribute(vertex.color);
         return std::move(xml);
     }
 
@@ -242,8 +381,8 @@ namespace cacto
         auto texCoords = xml.getAttribute("texCoords", "0,0");
         auto color = xml.getAttribute("color", "#FFFFFFFF");
         cacto::fromString(vertex.position, position);
-        cacto::fromString(vertex.color, color);
         cacto::fromString(vertex.texCoords, texCoords);
+        cacto::fromAttribute(vertex.color, color);
     }
 
     XmlValue toXml(const sf::VertexArray &array)

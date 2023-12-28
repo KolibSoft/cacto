@@ -27,4 +27,25 @@ namespace cacto
         sf::Color m_to;
     };
 
+    XmlValue CACTO_ANIMATIONS_API toXml(const Coloring &coloring);
+    void CACTO_ANIMATIONS_API fromXml(Coloring &coloring, const XmlValue &xml);
+
+    namespace coloring
+    {
+
+        class CACTO_ANIMATIONS_API XmlConverter
+            : public virtual animation::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Animation *const value) const override;
+            Animation *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_ANIMATIONS_API Converter;
+
+    }
+
 }

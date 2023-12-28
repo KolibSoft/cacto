@@ -26,4 +26,25 @@ namespace cacto
         f32t m_to;
     };
 
+    XmlValue CACTO_ANIMATIONS_API toXml(const Linear &linear);
+    void CACTO_ANIMATIONS_API fromXml(Linear &linear, const XmlValue &xml);
+
+    namespace linear
+    {
+
+        class CACTO_ANIMATIONS_API XmlConverter
+            : public virtual animation::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Animation *const value) const override;
+            Animation *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_ANIMATIONS_API Converter;
+
+    }
+
 }

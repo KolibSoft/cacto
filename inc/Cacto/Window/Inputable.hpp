@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cacto/Window/Export.hpp>
+#include <Cacto/Config.hpp>
 
 namespace sf
 {
@@ -10,11 +10,11 @@ namespace sf
 namespace cacto
 {
 
-    class CACTO_WINDOW_API Inputable
+    class Inputable
     {
 
     public:
-        void input(u32t unicode);
+        virtual void input(u32t unicode) = 0;
 
         Inputable() = default;
         virtual ~Inputable() = default;

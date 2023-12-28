@@ -1,8 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Lang/Object.hpp>
-#include <Cacto/Core/LeafNode.hpp>
+#include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
@@ -10,9 +9,7 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public sf::VertexArray,
-          public Object,
-          public virtual LeafNode,
+        : public virtual ChildNode,
           public virtual DrawNode
     {
 
@@ -20,20 +17,29 @@ namespace cacto
         const std::string &getId() const override;
         Mesh &setId(const std::string &value);
 
-        Shared<Node> getParent() const override;
+        ParentNode *const getParent() const override;
+
+        const sf::VertexArray &asArray() const;
+        sf::VertexArray &asArray();
+
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         Mesh();
         virtual ~Mesh();
 
-    protected:
-        void onAttach(const Shared<Node> &parent) override;
-        void onDetach(const Shared<Node> &parent) override;
+        Mesh(const Mesh &other) = delete;
+        Mesh &operator=(const Mesh &other) = delete;
 
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        Mesh(Mesh &&other) = delete;
+        Mesh &operator=(Mesh &&other) = delete;
 
     private:
         std::string m_id;
-        Weak<Node> m_parent;
+        sf::VertexArray m_array;
+        ParentNode *m_parent;
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Mesh &mesh);
@@ -46,8 +52,8 @@ namespace cacto
             : public virtual node::XmlConverter
         {
         public:
-            XmlValue toXml(const Shared<const Node> &value) const override;
-            Shared<Node> fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;

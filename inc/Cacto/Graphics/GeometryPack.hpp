@@ -17,19 +17,26 @@ namespace cacto
     {
 
     public:
-        const std::string &getId(const Shared<const Geometry> &value) const override;
-        Shared<const Geometry> getResource(const std::string &id) const override;
-        void setResource(const std::string &id, const Shared<const Geometry> &value) override;
+        const std::filesystem::path &getPath() const;
+
+        const std::string &getId(const Geometry &value) const override;
+        const Geometry *const getResource(const std::string &id) const override;
 
         GeometryPack(const std::filesystem::path &path);
         virtual ~GeometryPack();
 
+        GeometryPack(const GeometryPack &other) = delete;
+        GeometryPack &operator=(const GeometryPack &other) = delete;
+
+        GeometryPack(GeometryPack &&other);
+        GeometryPack &operator=(GeometryPack &&other);
+
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, Shared<const Geometry>> m_map;
+        mutable std::unordered_map<std::string, std::shared_ptr<Geometry>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const Shared<const Geometry> &geometry);
-    Shared<const Geometry> CACTO_GRAPHICS_API getGeometry(const std::string &id);
+    const std::string &CACTO_GRAPHICS_API getId(const Geometry &geometry);
+    const Geometry *const CACTO_GRAPHICS_API getGeometry(const std::string &id);
 
 }

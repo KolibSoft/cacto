@@ -167,26 +167,70 @@ namespace cacto
             throw std::runtime_error("Not supported mode value");
     }
 
-    JsonValue toJson(const Animation &animation)
+    XmlValue toXml(const Animation &animation)
     {
-        auto json = JsonValue::ObjectValue;
-        json["delay"] = animation.getDelay().asSeconds();
-        json["duration"] = animation.getDuration().asSeconds();
-        json["direction"] = toString(animation.getDirection());
-        json["mode"] = toString(animation.getMode());
-        return std::move(json);
+        XmlValue xml{"Animation", {}};
+        xml["delay"] = std::to_string(animation.getDelay().asSeconds());
+        xml["duration"] = std::to_string(animation.getDuration().asSeconds());
+        xml["direction"] = toString(animation.getDirection());
+        xml["mode"] = toString(animation.getMode());
+        return std::move(xml);
     }
 
-    void fromJson(Animation &animation, const JsonValue &json)
+    void fromXml(Animation &animation, const XmlValue &xml)
     {
-        animation.setDelay(sf::seconds(json["delay"].getNumber()));
-        animation.setDuration(sf::seconds(json["duration"].getNumber()));
+        animation.setDelay(sf::seconds(std::stof(xml.getAttribute("delay", "0"))));
+        animation.setDuration(sf::seconds(std::stof(xml.getAttribute("duration", "0"))));
         Animation::Direction direction{};
-        fromString(direction, json["direction"].getString("Forward"));
+        fromString(direction, xml.getAttribute("direction", "Forward"));
         animation.setDirection(direction);
         Animation::Mode mode{};
-        fromString(mode, json["mode"].getString("Once"));
+        fromString(mode, xml.getAttribute("mode", "Once"));
         animation.setMode(mode);
     }
+
+    XmlValue toXml(const Animation *const &animation)
+    {
+        auto xml = XmlConverter<Animation>::xml(animation);
+        return std::move(xml);
+    }
+
+    void fromXml(Animation *&animation, const XmlValue &xml)
+    {
+        auto value = XmlConverter<Animation>::value(xml);
+        animation = value;
+    }
+
+    namespace animation
+    {
+
+        XmlValue XmlConverter::toXml(const Animation *const value) const
+        {
+            const Animation *animation = nullptr;
+            if (value && typeid(*value) == typeid(Animation) && (animation = dynamic_cast<const Animation *>(value)))
+            {
+                auto xml = cacto::toXml(*animation);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Animation *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Animation")
+            {
+                auto animation = std::make_shared<Animation>();
+                cacto::fromXml(*animation, xml);
+                Animation::XmlStack.push(animation);
+                return animation.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
+    ResourceStack<Animation> Animation::XmlStack{};
 
 }

@@ -5,73 +5,54 @@
 namespace cacto
 {
 
-    const std::string &Node::getId() const
+    i32t Node::getChildIndex(const ChildNode &child) const
     {
-        return NoId;
-    }
-
-    i32t Node::getChildIndex(const Shared<const Node> &child) const
-    {
-        if (child == nullptr)
-            return -1;
-        for (szt i = 0; i < getChildCount(); i++)
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
             auto _child = getChild(i);
-            if (_child == child)
+            if (_child == &child)
                 return i;
         }
         return -1;
     }
 
-    void Node::link(const Shared<Node> &parent, const Shared<Node> &child)
+    bool Node::hasDescendant(const Node &node) const
     {
-        if (parent == nullptr)
-            throw std::runtime_error("The parent was null");
-
-        if (child == nullptr)
-            throw std::runtime_error("The child was null");
-
-        if (child->getParent() != nullptr)
-            throw std::runtime_error("The child was linked to another parent");
-
-        auto current = parent;
-        while (current)
+        if (&node == this)
+            return true;
+        auto childCount = getChildCount();
+        for (szt i = 0; i < childCount; i++)
         {
-            if (current == child)
-                throw std::runtime_error("The child is its own ancestor");
-            current = current->getParent();
+            auto child = getChild(i);
+            if (child && child->hasDescendant(node))
+                return true;
         }
-        parent->onAppend(child);
-        child->onAttach(parent);
+        return false;
     }
 
-    void Node::unlink(const Shared<Node> &parent, const Shared<Node> &child)
+    bool Node::hasAncestor(const Node &node) const
     {
-        if (parent == nullptr)
-            throw std::runtime_error("The parent was null");
-
-        if (child == nullptr)
-            throw std::runtime_error("The child was null");
-
-        if (child->getParent() != parent)
-            throw std::runtime_error("The child was linked to another parent");
-
-        child->onDetach(parent);
-        parent->onRemove(child);
+        if (&node == this)
+            return true;
+        auto parent = getParent();
+        if (parent && parent->hasAncestor(node))
+            return true;
+        return false;
     }
 
-    const std::string Node::NoId;
+    ResourceStack<Node> Node::XmlStack{};
 
-    XmlValue toXml(const Shared<const Node> &node)
+    XmlValue toXml(const Node *const &node)
     {
         auto xml = XmlConverter<Node>::xml(node);
         return std::move(xml);
     }
 
-    void fromXml(Shared<Node> &node, const XmlValue &xml)
+    void fromXml(Node *&node, const XmlValue &xml)
     {
-        auto _node = XmlConverter<Node>::value(xml);
-        node = std::move(_node);
+        auto value = XmlConverter<Node>::value(xml);
+        node = value;
     }
 
 }

@@ -6,6 +6,8 @@
 namespace cacto
 {
 
+    ResourceStack<Line> Line::XmlStack{};
+
     void setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision)
     {
         for (szt i = 0; i < count; i++)
@@ -22,16 +24,16 @@ namespace cacto
         setPoints(vertexes, line, count, precision);
     }
 
-    XmlValue toXml(const Shared<const Line> &line)
+    XmlValue toXml(const Line *const &line)
     {
         auto xml = XmlConverter<Line>::xml(line);
         return std::move(xml);
     }
 
-    void fromXml(Shared<Line> &line, const XmlValue &xml)
+    void fromXml(Line *&line, const XmlValue &xml)
     {
         auto value = XmlConverter<Line>::value(xml);
-        line = std::move(value);
+        line = value;
     }
 
 }

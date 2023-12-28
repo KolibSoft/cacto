@@ -1,51 +1,46 @@
 #pragma once
 
 #include <Cacto/Lang/XmlConverter.hpp>
+#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
 {
 
-    class Node;
+    class ParentNode;
+    class ChildNode;
 
     class CACTO_CORE_API Node
     {
 
     public:
-        virtual const std::string &getId() const;
+        virtual const std::string &getId() const = 0;
 
-        virtual Shared<Node> getParent() const = 0;
+        virtual ParentNode *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
-        virtual Shared<Node> getChild(szt index = 0) const = 0;
-        i32t getChildIndex(const Shared<const Node> &child) const;
+        virtual ChildNode *const getChild(szt index = 0) const = 0;
+        i32t getChildIndex(const ChildNode &child) const;
 
         template <typename T = Node>
-        Shared<T> firstDescendant(const std::string &id) const;
+        T *const firstDescendant(const std::string &id) const;
 
         template <typename T = Node>
-        Shared<T> firstAncestor(const std::string &id) const;
+        T *const firstAncestor(const std::string &id) const;
 
         Node() = default;
         virtual ~Node() = default;
 
-        static void link(const Shared<Node> &parent, const Shared<Node> &child);
-        static void unlink(const Shared<Node> &parent, const Shared<Node> &child);
+        bool hasDescendant(const Node &node) const;
+        bool hasAncestor(const Node &node) const;
 
-        static const std::string NoId;
-
-    protected:
-        virtual void onAttach(const Shared<Node> &parent) = 0;
-        virtual void onDetach(const Shared<Node> &parent) = 0;
-
-        virtual void onAppend(const Shared<Node> &child) = 0;
-        virtual void onRemove(const Shared<Node> &child) = 0;
+        static ResourceStack<Node> XmlStack;
     };
 
     template class CACTO_CORE_API XmlConverter<Node>;
 
-    XmlValue CACTO_CORE_API toXml(const Shared<const Node> &node);
-    void CACTO_CORE_API fromXml(Shared<Node> &node, const XmlValue &xml);
+    XmlValue CACTO_CORE_API toXml(const Node *const &node);
+    void CACTO_CORE_API fromXml(Node *&node, const XmlValue &xml);
 
     namespace node
     {

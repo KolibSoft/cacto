@@ -7,56 +7,39 @@
 namespace cacto
 {
 
-    const std::string &GeometryPack::getId(const Shared<const Geometry> &value) const
+    const std::filesystem::path &GeometryPack::getPath() const
+    {
+        return m_path;
+    }
+
+    const std::string &GeometryPack::getId(const Geometry &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second == value)
+            if (pair.second.get() == &value)
                 return pair.first;
         return NoId;
     }
 
-    Shared<const Geometry> GeometryPack::getResource(const std::string &id) const
+    const Geometry *const GeometryPack::getResource(const std::string &id) const
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second;
+                return pair.second.get();
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            Shared<Geometry> geometry = nullptr;
+            Geometry *geometry = nullptr;
             XmlValue xml = nullptr;
+            auto size = Geometry::XmlStack.getSize();
             xml.fromFile(path);
             cacto::fromXml(geometry, xml);
-            m_map.insert({id, geometry});
+            m_map.insert({id, Geometry::XmlStack.pop()});
             return geometry;
         }
         else
         {
             m_map.insert({id, nullptr});
             return nullptr;
-        }
-    }
-
-    void GeometryPack::setResource(const std::string &id, const Shared<const Geometry> &value)
-    {
-        for (auto &pair : m_map)
-            if (pair.first == id)
-            {
-                pair.second = value;
-                return;
-            }
-        if (value)
-        {
-            auto path = m_path / id;
-            XmlValue xml = nullptr;
-            xml = cacto::toXml(value);
-            xml.toFile(path);
-            m_map.insert({id, value});
-        }
-        else
-        {
-            if (std::filesystem::remove(m_path / id))
-                m_map.insert({id, nullptr});
         }
     }
 
@@ -68,16 +51,29 @@ namespace cacto
 
     GeometryPack::~GeometryPack() = default;
 
-    const std::string &getId(const Shared<const Geometry> &geometry)
+    GeometryPack::GeometryPack(GeometryPack &&other)
+        : m_path(std::move(other.m_path)),
+          m_map(std::move(other.m_map))
+    {
+    }
+
+    GeometryPack &GeometryPack::operator=(GeometryPack &&other)
+    {
+        m_path = std::move(other.m_path);
+        m_map = std::move(other.m_map);
+        return *this;
+    }
+
+    const std::string &getId(const Geometry &geometry)
     {
         auto &id = Pack<Geometry>::id(geometry);
         return id;
     }
 
-    Shared<const Geometry> getGeometry(const std::string &id)
+    const Geometry *const getGeometry(const std::string &id)
     {
         auto geometry = Pack<Geometry>::resource(id);
-        return std::move(geometry);
+        return geometry;
     }
 
 }

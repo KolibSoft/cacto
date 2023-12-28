@@ -8,10 +8,9 @@
 
 #include <Cacto/Graphics/TileMap.hpp>
 #include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/RectPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/ImagePack.hpp>
-#include <Cacto/Graphics/TileSet.hpp>
-#include <Cacto/Graphics/TileSetPack.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Lang/Utils.hpp>
 #include <Cacto/Core/Utils.hpp>
@@ -20,18 +19,13 @@ int main()
 {
 
     cacto::TexturePack textures{"."};
-    cacto::TileSetPack tileSets{"."};
-    cacto::TileSet tileSet{};
-
-    cacto::fromXmlFile(tileSet, "res/tile_set.xml");
-    // cacto::toXmlFile(tileSet, "res/tile_set.xml", 2);
-    std::cout << "Tiles: " << tileSet.asMap().size() << '\n';
+    cacto::RectPack rects{"res/rects.json"};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::TileMap tileMap{};
-    cacto::fromXmlFile(tileMap, "res/tile_map.xml");
-    // cacto::toXmlFile(tileMap, "res/tile_map.xml", 2);
+    cacto::fromXmlFile(tileMap, "res/tilemap.xml");
+    cacto::toXmlFile(tileMap, "res/tilemap.xml", 2);
 
     while (window.isOpen())
     {

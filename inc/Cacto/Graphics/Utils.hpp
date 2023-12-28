@@ -2,6 +2,7 @@
 
 #include <string>
 #include <SFML/Graphics/PrimitiveType.hpp>
+#include <Cacto/Graphics/TextDirection.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -25,6 +26,9 @@ namespace sf
     class Transformable;
     class Angle;
 
+    class String;
+    class Font;
+
 }
 
 namespace cacto
@@ -45,6 +49,9 @@ namespace cacto
     void CACTO_GRAPHICS_API mapPositions(sf::Vertex *const vertexes, const sf::FloatRect bounds, const sf::FloatRect surface, szt count);
     void CACTO_GRAPHICS_API mapPositions(sf::VertexArray &array, const sf::FloatRect surface);
 
+    void CACTO_GRAPHICS_API setGlyphs(sf::Vertex *const vertexes, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness, szt count);
+    void CACTO_GRAPHICS_API setGlyphs(sf::VertexArray &array, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness);
+
     bool CACTO_GRAPHICS_API zoneIn(const sf::FloatRect &rect, const sf::FloatRect &zone);
     bool CACTO_GRAPHICS_API zoneWith(const sf::FloatRect &rect, const sf::FloatRect &zone);
 
@@ -61,6 +68,12 @@ namespace cacto
 
     std::string CACTO_GRAPHICS_API toString(const sf::Color &color);
     void CACTO_GRAPHICS_API fromString(sf::Color &color, const std::string &string);
+
+    std::string CACTO_GRAPHICS_API toAttribute(const sf::FloatRect &rect);
+    void CACTO_GRAPHICS_API fromAttribute(sf::FloatRect &rect, const std::string &attribute);
+
+    std::string CACTO_GRAPHICS_API toAttribute(const sf::Color &color);
+    void CACTO_GRAPHICS_API fromAttribute(sf::Color &color, const std::string &attribute);
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
     void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);

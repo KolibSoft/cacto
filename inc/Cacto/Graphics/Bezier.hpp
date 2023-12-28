@@ -37,8 +37,8 @@ namespace cacto
         {
 
         public:
-            XmlValue toXml(const Shared<const Line> &value) const override;
-            Shared<Line> fromXml(const XmlValue &xml) const override;
+            XmlValue toXml(const Line *const value) const override;
+            Line *fromXml(const XmlValue &xml) const override;
 
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
