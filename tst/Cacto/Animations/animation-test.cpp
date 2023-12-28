@@ -9,12 +9,14 @@
 #include <Cacto/Graphics/Skeleton.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
 #include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Animations/Linear.hpp>
 #include <Cacto/Animations/Coloring.hpp>
 #include <Cacto/Animations/AnimationPack.hpp>
 #include <Cacto/UI/Surface.hpp>
+#include <Cacto/UI/Span.hpp>
 #include <Cacto/Lang/Utils.hpp>
 
 int main()
@@ -22,6 +24,7 @@ int main()
 
     cacto::TexturePack textures{"."};
     cacto::GeometryPack geometries{"."};
+    cacto::FontPack fonts{"."};
     cacto::AnimationPack animations{"."};
 
     std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
@@ -38,8 +41,8 @@ int main()
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
     auto right_mesh = dynamic_cast<cacto::Mesh *>(right->getChild());
     auto surface = skeleton.firstDescendant<cacto::Surface>("surface");
-    surface->setWidth(100);
-    surface->setHeight(100);
+    surface->asBox().setWidth(100);
+    surface->asBox().setHeight(100);
 
     auto linear = dynamic_cast<const cacto::Linear *>(cacto::getAnimation("res/linear.xml"));
     auto coloring = dynamic_cast<const cacto::Coloring *>(cacto::getAnimation("res/coloring.xml"));
