@@ -15,7 +15,8 @@ namespace cacto
 {
 
     class CACTO_UI_API Block
-        : public virtual ChildNode,
+        : public Box,
+          public virtual ChildNode,
           public virtual UINode
     {
 
@@ -50,9 +51,6 @@ namespace cacto
         Box getContainerBox() const;
         Box getContentBox() const;
 
-        const Box &asBox() const;
-        Box &asBox();
-
         ParentNode *const getParent() const override;
 
         void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
@@ -83,7 +81,6 @@ namespace cacto
 
     private:
         std::string m_id;
-        Box m_box;
         Node *m_background;
         Thickness m_margin;
         Thickness m_padding;

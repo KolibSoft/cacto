@@ -176,7 +176,7 @@ namespace cacto
           m_parent(),
           m_geometry(),
           m_precision(1),
-          m_color(),
+          m_color(sf::Color::White),
           m_texture(),
           m_textureRect(),
           m_invalid(true),

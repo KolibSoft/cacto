@@ -119,26 +119,16 @@ namespace cacto
 
     Box Block::getContainerBox() const
     {
-        Box box{m_box};
+        Box box{*this};
         box.expand(m_margin);
         return box;
     }
 
     Box Block::getContentBox() const
     {
-        Box box{m_box};
+        Box box{*this};
         box.shrink(m_padding);
         return box;
-    }
-
-    const Box &Block::asBox() const
-    {
-        return m_box;
-    }
-
-    Box &Block::asBox()
-    {
-        return m_box;
     }
 
     ParentNode *const Block::getParent() const
@@ -169,8 +159,8 @@ namespace cacto
             std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
         if (m_background)
             InflatableNode::compact(*m_background);
-        m_box.setWidth(size.x);
-        m_box.setHeight(size.y);
+        setWidth(size.x);
+        setHeight(size.y);
         return size;
     }
 
@@ -178,12 +168,12 @@ namespace cacto
     {
         auto hMargin = m_margin.getHorizontal();
         auto vMargin = m_margin.getVertical();
-        sf::Vector2f size{std::max(m_box.getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
-                          std::max(m_box.getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
-        m_box.setWidth(size.x - hMargin);
-        m_box.setHeight(size.y - vMargin);
+        sf::Vector2f size{std::max(getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
+                          std::max(getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
+        setWidth(size.x - hMargin);
+        setHeight(size.y - vMargin);
         if (m_background)
-            InflatableNode::inflate(*m_background, {m_box.getWidth(), m_box.getHeight()});
+            InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
         return size;
     }
 
@@ -238,15 +228,15 @@ namespace cacto
 
     void Block::placeBlock(const sf::Vector2f &position)
     {
-        m_box.setLeft(position.x + m_margin.left);
-        m_box.setTop(position.y + m_margin.top);
+        setLeft(position.x + m_margin.left);
+        setTop(position.y + m_margin.top);
         if (m_background)
-            InflatableNode::place(*m_background, {m_box.getLeft(), m_box.getTop()});
+            InflatableNode::place(*m_background, {getLeft(), getTop()});
     }
 
     Block::Block()
-        : m_id(),
-          m_box(),
+        : Box(),
+          m_id(),
           m_background(nullptr),
           m_margin(0),
           m_padding(0),
