@@ -6,6 +6,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
@@ -17,8 +18,10 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    auto background = cacto::Surface::Rectangle;
-    background.setColor(sf::Color::Red);
+    cacto::Surface background{};
+    background
+        .setGeometry(&cacto::Rectangle::Identity)
+        .setColor(sf::Color::Red);
 
     cacto::Block root{};
     root.setBackground(&background);

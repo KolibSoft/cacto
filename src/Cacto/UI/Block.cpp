@@ -8,9 +8,15 @@
 namespace cacto
 {
 
-    Node *const Block::getParent() const
+    const std::string &Block::getId() const
     {
-        return m_parent;
+        return m_id;
+    }
+
+    Block &Block::setId(const std::string &value)
+    {
+        m_id = value;
+        return *this;
     }
 
     Node *const Block::getBackground() const
@@ -113,55 +119,31 @@ namespace cacto
 
     Box Block::getContainerBox() const
     {
-        Box box{*this};
+        Box box{m_box};
         box.expand(m_margin);
         return box;
     }
 
     Box Block::getContentBox() const
     {
-        Box box{*this};
+        Box box{m_box};
         box.shrink(m_padding);
         return box;
     }
 
-    Block::Block()
-        : m_parent(),
-          m_background(nullptr),
-          m_margin(0),
-          m_padding(0),
-          m_minWidth(0), m_maxWidth(std::numeric_limits<f32t>::infinity()),
-          m_minHeight(0), m_maxHeight(std::numeric_limits<f32t>::infinity())
+    const Box &Block::asBox() const
     {
+        return m_box;
     }
 
-    Block::~Block()
+    Box &Block::asBox()
     {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
+        return m_box;
     }
 
-    Block::Block(const Block &other)
-        : Box(other),
-          m_parent(),
-          m_background(nullptr),
-          m_margin(other.m_margin),
-          m_padding(other.m_padding),
-          m_minWidth(other.m_minWidth), m_maxWidth(other.m_maxWidth),
-          m_minHeight(other.m_minHeight), m_maxHeight(other.m_maxHeight)
+    ParentNode *const Block::getParent() const
     {
-    }
-
-    Block &Block::operator=(const Block &other)
-    {
-        Box::operator=(other);
-        m_margin = other.m_margin;
-        m_padding = other.m_padding;
-        m_minWidth = other.m_minWidth;
-        m_maxWidth = other.m_maxWidth;
-        m_minHeight = other.m_minHeight;
-        m_maxHeight = other.m_maxHeight;
-        return *this;
+        return m_parent;
     }
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -187,8 +169,8 @@ namespace cacto
             std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
         if (m_background)
             InflatableNode::compact(*m_background);
-        setWidth(size.x);
-        setHeight(size.y);
+        m_box.setWidth(size.x);
+        m_box.setHeight(size.y);
         return size;
     }
 
@@ -196,60 +178,87 @@ namespace cacto
     {
         auto hMargin = m_margin.getHorizontal();
         auto vMargin = m_margin.getVertical();
-        sf::Vector2f size{std::max(getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
-                          std::max(getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
-        setWidth(size.x - hMargin);
-        setHeight(size.y - vMargin);
+        sf::Vector2f size{std::max(m_box.getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
+                          std::max(m_box.getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
+        m_box.setWidth(size.x - hMargin);
+        m_box.setHeight(size.y - vMargin);
         if (m_background)
-            InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
+            InflatableNode::inflate(*m_background, {m_box.getWidth(), m_box.getHeight()});
         return size;
     }
 
-    void Block::placeBlock(const sf::Vector2f &position)
+    void Block::attach(ParentNode &parent)
     {
-        setLeft(position.x + m_margin.left);
-        setTop(position.y + m_margin.top);
-        if (m_background)
-            InflatableNode::place(*m_background, {getLeft(), getTop()});
-    }
-
-    void Block::onAttach(Node &parent)
-    {
+        if (m_parent == &parent)
+            return;
+        if (m_parent != nullptr)
+            throw std::runtime_error("This node is already attached to another parent");
+        if (parent.hasAncestor(*this))
+            throw std::runtime_error("This node is an ancestor");
         m_parent = &parent;
+        parent.append(*this);
     }
 
-    void Block::onDetach(Node &parent)
+    void Block::detach()
     {
+        if (m_parent == nullptr)
+            return;
+        m_parent->remove(*this);
         m_parent = nullptr;
     }
 
-    void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void Block::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
     }
 
-    bool Block::onEvent(const sf::Event &event)
+    bool Block::event(const sf::Event &event)
     {
         eventBlock(event);
         auto handled = eventChildren(event);
         return handled;
     }
 
-    sf::Vector2f Block::onCompact()
+    sf::Vector2f Block::compact()
     {
         auto size = compactBlock({0, 0});
         return size;
     }
 
-    sf::Vector2f Block::onInflate(const sf::Vector2f &containerSize)
+    sf::Vector2f Block::inflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
         return size;
     }
 
-    void Block::onPlace(const sf::Vector2f &position)
+    void Block::place(const sf::Vector2f &position)
     {
         placeBlock(position);
+    }
+
+    void Block::placeBlock(const sf::Vector2f &position)
+    {
+        m_box.setLeft(position.x + m_margin.left);
+        m_box.setTop(position.y + m_margin.top);
+        if (m_background)
+            InflatableNode::place(*m_background, {m_box.getLeft(), m_box.getTop()});
+    }
+
+    Block::Block()
+        : m_id(),
+          m_box(),
+          m_background(nullptr),
+          m_margin(0),
+          m_padding(0),
+          m_minWidth(0), m_maxWidth(std::numeric_limits<f32t>::infinity()),
+          m_minHeight(0), m_maxHeight(std::numeric_limits<f32t>::infinity()),
+          m_parent()
+    {
+    }
+
+    Block::~Block()
+    {
+        detach();
     }
 
 }
