@@ -1,5 +1,4 @@
 #include <limits>
-#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -7,63 +6,65 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/GeometryPack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/Block.hpp>
-#include <Cacto/UI/VirtualLayout.hpp>
-#include <Cacto/UI/Button.hpp>
+#include <Cacto/UI/FrameLayout.hpp>
+#include <Cacto/Lang/Utils.hpp>
 
 auto _ = false;
 
 int main()
 {
 
+    cacto::GeometryPack geometries{"."};
+    cacto::TexturePack textures{"."};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    sf::Font font;
-    auto _ = font.loadFromFile("./res/Grandview.ttf");
+    cacto::Surface bgBlock{};
+    bgBlock
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Red);
 
-    auto background = cacto::Surface::Rectangle;
-    background.setColor(sf::Color::Red);
+    cacto::Block block{};
+    block
+        .setBackground(&bgBlock)
+        .setMargin(10)
+        .setMinWidth(100)
+        .setMaxHeight(100)
+        .setPadding(10);
 
-    cacto::VirtualLayout root{};
-    root.setBackground(&background);
-    root.setMargin(10);
-    root.setPadding(10);
+    cacto::Surface bgRoot{};
+    bgRoot
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Blue);
 
-    cacto::Button button{font, "It Works"};
-    auto bgBlock = background;
-    bgBlock.setColor(sf::Color::Blue);
-    button.setBackground(&bgBlock);
-    button.setMargin(10);
-    button.setFixedWidth(0);
-    button.setFixedHeight(0);
-    button.setPadding(10);
+    cacto::FrameLayout root{};
+    root
+        .setBackground(&bgRoot)
+        .setMargin(10)
+        .setMinWidth(100)
+        .setMaxHeight(100)
+        .setPadding(10);
+    root.append(block);
 
-    button.setOnClickListener([](auto &node, auto &event)
-                              { std::cout << "Clicked\n"; });
-
-    root.append(button);
-    root.setHorizontalAnchor(cacto::Block::Center);
-    root.setVerticalAnchor(cacto::Block::Center);
-
-    // root.setMinWidth(300);
-    // root.setMinHeight(300);
+    cacto::toXmlFile(root, "res/frame.xml", 4);
+    cacto::fromXmlFile(root, "res/frame.xml");
 
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (!root.event(event))
-            {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-                if (event.type == sf::Event::Resized)
-                    window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
-                if (event.type == sf::Event::MouseWheelScrolled)
-                    root.getTransformable().move({0, event.mouseWheelScroll.delta * 5});
-            }
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if (event.type == sf::Event::Resized)
+                window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
+                cacto::fromXmlFile(root, "res/frame.xml");
         }
         root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});

@@ -76,8 +76,10 @@ namespace cacto
 
     sf::Vector2f FrameLayout::compact()
     {
-        auto contentSize = m_child ? InflatableNode::compact(*m_child) : sf::Vector2f{0, 0};
-        auto size = compactBlock(contentSize);
+        auto childSize = m_child ? InflatableNode::compact(*m_child) : sf::Vector2f{0, 0};
+        m_childBox.setWidth(childSize.x);
+        m_childBox.setHeight(childSize.y);
+        auto size = compactBlock(childSize);
         return size;
     }
 
@@ -87,7 +89,9 @@ namespace cacto
         if (m_child)
         {
             auto contentBox = getContentBox();
-            m_childSize = InflatableNode::inflate(*m_child, {contentBox.getWidth(), contentBox.getHeight()});
+            auto childSize = InflatableNode::inflate(*m_child, {contentBox.getWidth(), contentBox.getHeight()});
+            m_childBox.setWidth(childSize.x);
+            m_childBox.setHeight(childSize.y);
         }
         return size;
     }
@@ -98,9 +102,12 @@ namespace cacto
         if (m_child)
         {
             auto contentBox = getContentBox();
-            contentBox.setWidth(m_childSize.x, m_hAnchor);
-            contentBox.setHeight(m_childSize.y, m_vAnchor);
-            InflatableNode::place(*m_child, {contentBox.getLeft(), contentBox.getTop()});
+            contentBox.setWidth(m_childBox.getWidth(), m_hAnchor);
+            contentBox.setHeight(m_childBox.getHeight(), m_vAnchor);
+            sf::Vector2f childPlace{contentBox.getLeft(), contentBox.getTop()};
+            InflatableNode::place(*m_child, childPlace);
+            m_childBox.setLeft(childPlace.x);
+            m_childBox.setTop(childPlace.y);
         }
     }
 
@@ -108,7 +115,7 @@ namespace cacto
         : Block(),
           m_hAnchor(Start),
           m_vAnchor(Start),
-          m_childSize(),
+          m_childBox(),
           m_child()
     {
     }
@@ -117,6 +124,11 @@ namespace cacto
     {
         if (m_child)
             remove(*m_child);
+    }
+
+    const Box &FrameLayout::getChildBox() const
+    {
+        return m_childBox;
     }
 
     XmlValue toXml(const FrameLayout &frame)

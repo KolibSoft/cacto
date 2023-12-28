@@ -16,7 +16,8 @@ namespace cacto
     class Geometry;
 
     class CACTO_UI_API Surface
-        : public virtual ChildNode,
+        : public Box,
+          public virtual ChildNode,
           public virtual UINode
     {
 
@@ -39,9 +40,6 @@ namespace cacto
         const sf::FloatRect &getTextureRect() const;
         Surface &setTextureRect(const sf::FloatRect &value);
 
-        const Box &asBox() const;
-        Box &asBox();
-
         ParentNode *const getParent() const override;
 
         void attach(ParentNode &parent) override;
@@ -52,6 +50,8 @@ namespace cacto
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
+
+        bool containsVisually(const sf::Vector2f &point) const;
 
         Surface();
         virtual ~Surface();
@@ -64,7 +64,6 @@ namespace cacto
 
     private:
         std::string m_id;
-        Box m_box;
         const Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
@@ -74,6 +73,7 @@ namespace cacto
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
+        mutable sf::Transform m_vTransform;
     };
 
     XmlValue CACTO_UI_API toXml(const Surface &surface);

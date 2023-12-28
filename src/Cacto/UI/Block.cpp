@@ -138,9 +138,9 @@ namespace cacto
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        m_vTransform = states.transform;
         if (m_background)
             DrawNode::draw(*m_background, target, states);
+        m_vTransform = states.transform;
     }
 
     void Block::eventBlock(const sf::Event &event)

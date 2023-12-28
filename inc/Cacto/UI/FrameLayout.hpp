@@ -35,14 +35,16 @@ namespace cacto
         FrameLayout();
         virtual ~FrameLayout();
 
+    protected:
+        const Box &getChildBox() const;
+
     private:
         Anchor m_hAnchor;
         Anchor m_vAnchor;
-        sf::Vector2f m_childSize;
+        Box m_childBox;
         ChildNode *m_child;
     };
 
-    
     XmlValue CACTO_UI_API toXml(const FrameLayout &frame);
     void CACTO_UI_API fromXml(FrameLayout &frame, const XmlValue &xml);
 

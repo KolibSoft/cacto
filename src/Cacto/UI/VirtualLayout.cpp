@@ -1,48 +1,22 @@
 #include <SFML/Window/Event.hpp>
+#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
 
 namespace cacto
 {
 
-    const sf::Transformable &VirtualLayout::getTransformable() const
+    const sf::Transformable &VirtualLayout::asTransformable() const
     {
         return m_transformable;
     }
 
-    sf::Transformable &VirtualLayout::getTransformable()
+    sf::Transformable &VirtualLayout::asTransformable()
     {
         return m_transformable;
     }
 
-    VirtualLayout::VirtualLayout()
-        : FrameLayout(),
-          m_transformable(),
-          m_surface(Surface::Rectangle),
-          m_texture()
-    {
-        m_surface.setColor(sf::Color::White);
-    }
-
-    VirtualLayout::~VirtualLayout() = default;
-
-    VirtualLayout::VirtualLayout(const VirtualLayout &other)
-        : FrameLayout(other),
-          m_transformable(other.m_transformable),
-          m_surface(other.m_surface),
-          m_texture()
-    {
-    }
-
-    VirtualLayout &VirtualLayout::operator=(const VirtualLayout &other)
-    {
-        FrameLayout::operator=(other);
-        m_transformable = other.m_transformable;
-        m_surface = other.m_surface;
-        return *this;
-    }
-
-    void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void VirtualLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
         auto child = getChild();
@@ -65,40 +39,40 @@ namespace cacto
         }
     }
 
-    sf::Vector2f VirtualLayout::onCompact()
+    sf::Vector2f VirtualLayout::compact()
     {
-        FrameLayout::onCompact();
+        FrameLayout::compact();
         auto size = compactBlock({0, 0});
         m_surface.compact();
         return size;
     }
 
-    sf::Vector2f VirtualLayout::onInflate(const sf::Vector2f &containerSize)
+    sf::Vector2f VirtualLayout::inflate(const sf::Vector2f &containerSize)
     {
-        auto size = FrameLayout::onInflate(containerSize);
+        auto size = FrameLayout::inflate(containerSize);
         auto contentBox = getContentBox();
         m_surface.inflate({contentBox.getWidth(), contentBox.getHeight()});
         return size;
     }
 
-    void VirtualLayout::onPlace(const sf::Vector2f &position)
+    void VirtualLayout::place(const sf::Vector2f &position)
     {
         placeBlock(position);
         auto contentBox = getContentBox();
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
-        auto holder = getHolder();
-        if (holder)
+        auto child = getChild();
+        if (child)
         {
-            auto &childBox = holder->getBox();
+            auto &childBox = getChildBox();
             contentBox.setLeft(0);
             contentBox.setTop(0);
             contentBox.setWidth(childBox.getWidth(), getHorizontalAnchor());
             contentBox.setHeight(childBox.getHeight(), getVerticalAnchor());
-            holder->place({contentBox.getLeft(), contentBox.getTop()});
+            InflatableNode::place(*child, {contentBox.getLeft(), contentBox.getTop()});
         }
     }
 
-    bool VirtualLayout::onEvent(const sf::Event &event)
+    bool VirtualLayout::event(const sf::Event &event)
     {
         auto child = getChild();
         if (child)
@@ -120,7 +94,7 @@ namespace cacto
             case sf::Event::MouseButtonReleased:
             {
                 sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
-                if (m_surface.contains(point))
+                if (m_surface.containsVisually(point))
                 {
                     point = map(point);
                     auto _event = event;
@@ -133,7 +107,7 @@ namespace cacto
             case sf::Event::MouseMoved:
             {
                 sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
-                if (m_surface.contains(point))
+                if (m_surface.containsVisually(point))
                 {
                     point = map(point);
                     auto _event = event;
@@ -146,7 +120,7 @@ namespace cacto
             case sf::Event::MouseWheelScrolled:
             {
                 sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
-                if (m_surface.contains(point))
+                if (m_surface.containsVisually(point))
                 {
                     point = map(point);
                     auto _event = event;
@@ -165,7 +139,7 @@ namespace cacto
         return false;
     }
 
-    bool VirtualLayout::onBubble(Node &target, const sf::Event &event)
+    bool VirtualLayout::bubble(Node &target, const sf::Event &event)
     {
         auto parent = getParent();
         if (parent)
@@ -222,5 +196,18 @@ namespace cacto
         }
         return false;
     }
+
+    VirtualLayout::VirtualLayout()
+        : FrameLayout(),
+          m_transformable(),
+          m_surface(),
+          m_texture()
+    {
+        m_surface
+            .setGeometry(&Rectangle::Identity)
+            .setColor(sf::Color::White);
+    }
+
+    VirtualLayout::~VirtualLayout() = default;
 
 }

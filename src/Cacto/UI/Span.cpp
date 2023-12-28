@@ -118,6 +118,7 @@ namespace cacto
             _states.transform.translate({getLeft(), getTop()});
             _states.texture = &m_font->getTexture(m_characterSize);
             target.draw(m_array, _states);
+            m_vTransform = _states.transform;
         }
     }
 
@@ -146,6 +147,12 @@ namespace cacto
         setTop(position.y - bounds.top);
     }
 
+    bool Span::containsVisually(const sf::Vector2f &point) const
+    {
+        auto result = contains(m_vTransform.getInverse().transformPoint(point));
+        return result;
+    }
+
     Span::Span()
         : Box(),
           m_id(),
@@ -156,7 +163,8 @@ namespace cacto
           m_color(sf::Color::White),
           m_parent(),
           m_invalid(true),
-          m_array(sf::PrimitiveType::Triangles)
+          m_array(sf::PrimitiveType::Triangles),
+          m_vTransform(sf::Transform::Identity)
     {
     }
 

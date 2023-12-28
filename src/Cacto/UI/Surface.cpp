@@ -90,16 +90,6 @@ namespace cacto
         return *this;
     }
 
-    const Box &Surface::asBox() const
-    {
-        return m_box;
-    }
-
-    Box &Surface::asBox()
-    {
-        return m_box;
-    }
-
     ParentNode *const Surface::getParent() const
     {
         return m_parent;
@@ -135,44 +125,50 @@ namespace cacto
                 cacto::setColor(m_array, m_color);
                 if (m_texture)
                     cacto::setTexCoords(m_array, m_textureRect);
-                cacto::mapPositions(m_array, m_box);
+                cacto::mapPositions(m_array, *this);
                 m_invalid = false;
             }
-            if (m_box.getWidth() > 0 && m_box.getHeight() > 0)
+            if (getWidth() > 0 && getHeight() > 0)
             {
                 auto _states = states;
                 _states.texture = m_texture;
                 target.draw(m_array, _states);
+                m_vTransform = _states.transform;
             }
         }
     }
 
     sf::Vector2f Surface::compact()
     {
-        m_box.setWidth(0);
-        m_box.setHeight(0);
+        setWidth(0);
+        setHeight(0);
         m_invalid = true;
         return {0, 0};
     }
 
     sf::Vector2f Surface::inflate(const sf::Vector2f &containerSize)
     {
-        m_box.setWidth(containerSize.x);
-        m_box.setHeight(containerSize.y);
+        setWidth(containerSize.x);
+        setHeight(containerSize.y);
         m_invalid = true;
         return containerSize;
     }
 
     void Surface::place(const sf::Vector2f &position)
     {
-        m_box.setLeft(position.x);
-        m_box.setTop(position.y);
+        setLeft(position.x);
+        setTop(position.y);
         m_invalid = true;
+    }
+
+    bool Surface::containsVisually(const sf::Vector2f &point) const
+    {
+        auto result = contains(m_vTransform.getInverse().transformPoint(point));
+        return result;
     }
 
     Surface::Surface()
         : m_id(),
-          m_box(),
           m_parent(),
           m_geometry(),
           m_precision(1),
@@ -180,7 +176,8 @@ namespace cacto
           m_texture(),
           m_textureRect(),
           m_invalid(true),
-          m_array(sf::PrimitiveType::TriangleFan)
+          m_array(sf::PrimitiveType::TriangleFan),
+          m_vTransform(sf::Transform::Identity)
     {
         if (m_texture)
             setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
