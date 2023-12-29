@@ -11,13 +11,15 @@
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
+#include <Cacto/Window/NodeUtils.hpp>
 #include <Cacto/Animations/Linear.hpp>
 #include <Cacto/Animations/Coloring.hpp>
 #include <Cacto/Animations/AnimationPack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Button.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/UI/NodeUtils.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 int main()
 {
@@ -36,9 +38,11 @@ int main()
     window.setFramerateLimit(60);
 
     cacto::Skeleton skeleton{};
-    cacto::fromXmlFile(skeleton, "res/composed.xml");
-    std::cout << cacto::toXml(skeleton).toString() << "\n";
-    cacto::toXmlFile(skeleton, "res/composed.xml", 2);
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/composed.xml");
+    cacto::fromXml(skeleton, xml);
+    xml = cacto::toXml(skeleton);
+    xml.toFile("res/composed.xml", 2);
 
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
     auto left_mesh = dynamic_cast<cacto::Mesh *>(left->getChild());
@@ -61,23 +65,23 @@ int main()
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (cacto::EventNode::event(skeleton, event))
+            if (cacto::handle(skeleton, event))
                 break;
             else if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Button::Right)
-                skeleton.asTransformable().setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                skeleton.setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
-                skeleton.asTransformable().rotate(sf::degrees(event.mouseWheelScroll.delta));
-                skeleton.asTransformable().setScale(skeleton.asTransformable().getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
+                skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
+                skeleton.setScale(skeleton.getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
             }
             else if (event.type == sf::Event::KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::Left)
-                    left->asTransformable().rotate(sf::degrees(5));
+                    left->rotate(sf::degrees(5));
                 else if (event.key.code == sf::Keyboard::Right)
-                    right->asTransformable().rotate(sf::degrees(5));
+                    right->rotate(sf::degrees(5));
             }
         }
 
@@ -87,16 +91,16 @@ int main()
 
         auto f = linear->getValue(lifetime);
         auto c = coloring->getValue(lifetime);
-        skeleton.asTransformable().setScale({f, f});
-        cacto::setColor(left_mesh->asArray(), c);
-        cacto::setColor(right_mesh->asArray(), c);
+        skeleton.setScale({f, f});
+        cacto::setColor(*left_mesh, c);
+        cacto::setColor(*right_mesh, c);
 
-        cacto::InflatableNode::compact(skeleton);
-        cacto::InflatableNode::inflate(skeleton);
-        cacto::InflatableNode::place(skeleton);
+        cacto::compact(skeleton);
+        cacto::inflate(skeleton);
+        cacto::place(skeleton);
 
-        surface->asBox().setWidth(100);
-        surface->asBox().setHeight(100);
+        surface->setWidth(100);
+        surface->setHeight(100);
 
         window.clear();
         window.draw(skeleton);

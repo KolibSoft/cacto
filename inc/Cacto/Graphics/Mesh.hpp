@@ -18,9 +18,6 @@ namespace cacto
 
         ParentNode *const getParent() const override;
 
-        const sf::VertexArray &asArray() const;
-        sf::VertexArray &asArray();
-
         void attach(ParentNode &parent) override;
         void detach() override;
 
