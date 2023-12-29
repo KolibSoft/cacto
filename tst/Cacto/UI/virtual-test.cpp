@@ -11,8 +11,8 @@
 #include <Cacto/Graphics/GeometryPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/FrameLayout.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/UI/VirtualLayout.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 auto _ = false;
 
@@ -42,7 +42,7 @@ int main()
         .setGeometry(cacto::getGeometry("res/rectangle.xml"))
         .setColor(sf::Color::Blue);
 
-    cacto::FrameLayout root{};
+    cacto::VirtualLayout root{};
     root
         .setBackground(&bgRoot)
         .setMargin(10)
@@ -51,8 +51,13 @@ int main()
         .setPadding(10);
     root.append(block);
 
-    cacto::toXmlFile(root, "res/frame.xml", 4);
-    cacto::fromXmlFile(root, "res/frame.xml");
+    /*
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/virtual.xml");
+    cacto::fromXml(root, xml);
+    xml = cacto::toXml(root);
+    xml.toFile("res/virtual.xml", 2);
+    */
 
     while (window.isOpen())
     {
@@ -64,7 +69,12 @@ int main()
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-                cacto::fromXmlFile(root, "res/frame.xml");
+            {
+                /*
+                xml.fromFile("res/virtual.xml");
+                cacto::fromXml(root, xml);
+                */
+            }
         }
         root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});

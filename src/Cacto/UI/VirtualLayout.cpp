@@ -1,6 +1,8 @@
 #include <SFML/Window/Event.hpp>
+#include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/UI/Surface.hpp>
+#include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
 
 namespace cacto
@@ -14,29 +16,6 @@ namespace cacto
     sf::Transformable &VirtualLayout::asTransformable()
     {
         return m_transformable;
-    }
-
-    void VirtualLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        drawBlock(target, states);
-        auto child = getChild();
-        if (child)
-        {
-            auto contentBox = getContentBox();
-            sf::Vector2u contentSize{u32t(contentBox.getWidth()), u32t(contentBox.getHeight())};
-            if (contentSize.x > 0 && contentSize.y > 0)
-            {
-                if (contentSize != m_texture.getSize())
-                {
-                    auto _ = m_texture.create(contentSize);
-                    m_surface.setTexture(&m_texture.getTexture());
-                }
-                m_texture.clear(sf::Color::Transparent);
-                DrawNode::draw(*child, m_texture, m_transformable.getTransform());
-                m_texture.display();
-                target.draw(m_surface, states);
-            }
-        }
     }
 
     sf::Vector2f VirtualLayout::compact()
@@ -68,11 +47,11 @@ namespace cacto
             contentBox.setTop(0);
             contentBox.setWidth(childBox.getWidth(), getHorizontalAnchor());
             contentBox.setHeight(childBox.getHeight(), getVerticalAnchor());
-            InflatableNode::place(*child, {contentBox.getLeft(), contentBox.getTop()});
+            cacto::place(*child, {contentBox.getLeft(), contentBox.getTop()});
         }
     }
 
-    bool VirtualLayout::event(const sf::Event &event)
+    bool VirtualLayout::handle(const sf::Event &event)
     {
         auto child = getChild();
         if (child)
@@ -100,7 +79,7 @@ namespace cacto
                     auto _event = event;
                     _event.mouseButton.x = point.x;
                     _event.mouseButton.y = point.y;
-                    handled = EventNode::event(*child, _event);
+                    handled = cacto::handle(*child, _event);
                 }
             }
             break;
@@ -113,7 +92,7 @@ namespace cacto
                     auto _event = event;
                     _event.mouseMove.x = point.x;
                     _event.mouseMove.y = point.y;
-                    handled = EventNode::event(*child, _event);
+                    handled = cacto::handle(*child, _event);
                 }
             }
             break;
@@ -126,12 +105,12 @@ namespace cacto
                     auto _event = event;
                     _event.mouseWheelScroll.x = point.x;
                     _event.mouseWheelScroll.y = point.y;
-                    handled = EventNode::event(*child, _event);
+                    handled = cacto::handle(*child, _event);
                 }
             }
             break;
             default:
-                handled = EventNode::event(*child, event);
+                handled = cacto::handle(*child, event);
                 break;
             }
             return handled;
@@ -165,7 +144,7 @@ namespace cacto
                 auto _event = event;
                 _event.mouseButton.x = point.x;
                 _event.mouseButton.y = point.y;
-                handled = EventNode::bubble(*parent, target, _event);
+                handled = cacto::bubble(*parent, target, _event);
             }
             break;
             case sf::Event::MouseMoved:
@@ -175,7 +154,7 @@ namespace cacto
                 auto _event = event;
                 _event.mouseMove.x = point.x;
                 _event.mouseMove.y = point.y;
-                handled = EventNode::bubble(*parent, target, _event);
+                handled = cacto::bubble(*parent, target, _event);
             }
             break;
             case sf::Event::MouseWheelScrolled:
@@ -185,11 +164,11 @@ namespace cacto
                 auto _event = event;
                 _event.mouseWheelScroll.x = point.x;
                 _event.mouseWheelScroll.y = point.y;
-                handled = EventNode::bubble(*parent, target, _event);
+                handled = cacto::bubble(*parent, target, _event);
             }
             break;
             default:
-                handled = EventNode::bubble(*parent, target, event);
+                handled = cacto::bubble(*parent, target, event);
                 break;
             }
             return handled;
@@ -209,5 +188,28 @@ namespace cacto
     }
 
     VirtualLayout::~VirtualLayout() = default;
+
+    void VirtualLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        auto child = getChild();
+        if (child)
+        {
+            auto contentBox = getContentBox();
+            sf::Vector2u contentSize{u32t(contentBox.getWidth()), u32t(contentBox.getHeight())};
+            if (contentSize.x > 0 && contentSize.y > 0)
+            {
+                if (contentSize != m_texture.getSize())
+                {
+                    auto _ = m_texture.create(contentSize);
+                    m_surface.setTexture(&m_texture.getTexture());
+                }
+                m_texture.clear(sf::Color::Transparent);
+                cacto::draw(*child, m_texture, m_transformable.getTransform());
+                m_texture.display();
+                target.draw(m_surface, states);
+            }
+        }
+    }
 
 }

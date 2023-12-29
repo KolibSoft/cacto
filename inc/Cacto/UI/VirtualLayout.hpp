@@ -16,17 +16,18 @@ namespace cacto
         const sf::Transformable &asTransformable() const;
         sf::Transformable &asTransformable();
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
 
-        bool event(const sf::Event &event) override;
+        bool handle(const sf::Event &event) override;
         bool bubble(Node &target, const sf::Event &event) override;
 
         VirtualLayout();
         virtual ~VirtualLayout();
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         sf::Transformable m_transformable;
