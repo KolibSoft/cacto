@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Cacto/Core/ParentNode.hpp>
 #include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Core/Node.hpp>

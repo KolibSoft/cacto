@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Cacto/Core/ResourceStack.hpp>
 
 namespace cacto
