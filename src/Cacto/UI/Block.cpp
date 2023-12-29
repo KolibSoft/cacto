@@ -237,7 +237,7 @@ namespace cacto
 
     bool Block::containsVisually(const sf::Vector2f &point) const
     {
-        auto result = contains(m_vTransform.getInverse().transformPoint(point));
+        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
         return result;
     }
 

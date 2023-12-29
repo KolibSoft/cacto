@@ -65,7 +65,7 @@ int main()
         surface.inflate(sf::Vector2f(window.getSize()));
         surface.place();
 
-        if (surface.containsVisually(sf::Vector2f(sf::Mouse::getPosition(window))))
+        if (surface.containsVisualPoint(sf::Vector2f(sf::Mouse::getPosition(window))))
             window.clear(sf::Color::Green);
         else
             window.clear(sf::Color::Black);

@@ -120,7 +120,7 @@ namespace cacto
         m_rect.height += thickness.getVertical();
     }
 
-    bool Box::contains(const sf::Vector2f &point) const
+    bool Box::containsPoint(const sf::Vector2f &point) const
     {
         auto result = m_rect.contains(point);
         return result;

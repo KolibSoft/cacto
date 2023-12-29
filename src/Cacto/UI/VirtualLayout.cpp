@@ -94,7 +94,7 @@ namespace cacto
             case sf::Event::MouseButtonReleased:
             {
                 sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
-                if (m_surface.containsVisually(point))
+                if (m_surface.containsVisualPoint(point))
                 {
                     point = map(point);
                     auto _event = event;
@@ -107,7 +107,7 @@ namespace cacto
             case sf::Event::MouseMoved:
             {
                 sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
-                if (m_surface.containsVisually(point))
+                if (m_surface.containsVisualPoint(point))
                 {
                     point = map(point);
                     auto _event = event;
@@ -120,7 +120,7 @@ namespace cacto
             case sf::Event::MouseWheelScrolled:
             {
                 sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
-                if (m_surface.containsVisually(point))
+                if (m_surface.containsVisualPoint(point))
                 {
                     point = map(point);
                     auto _event = event;

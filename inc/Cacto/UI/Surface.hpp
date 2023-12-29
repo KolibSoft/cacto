@@ -50,7 +50,7 @@ namespace cacto
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
 
-        bool containsVisually(const sf::Vector2f &point) const;
+        bool containsVisualPoint(const sf::Vector2f &point) const;
 
         Surface();
         virtual ~Surface();

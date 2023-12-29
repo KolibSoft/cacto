@@ -141,7 +141,7 @@ namespace cacto
         m_invalid = true;
     }
 
-    bool Surface::containsVisually(const sf::Vector2f &point) const
+    bool Surface::containsVisualPoint(const sf::Vector2f &point) const
     {
         if (m_geometry)
         {
