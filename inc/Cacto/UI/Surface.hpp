@@ -1,9 +1,9 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Core/Node.hpp>
+#include <Cacto/UI/Inflatable.hpp>
 #include <Cacto/UI/Box.hpp>
-#include <Cacto/UI/UINode.hpp>
 
 namespace sf
 {
@@ -17,8 +17,9 @@ namespace cacto
 
     class CACTO_UI_API Surface
         : public Box,
-          public virtual ChildNode,
-          public virtual UINode
+          public virtual sf::Drawable,
+          public virtual Inflatable,
+          public virtual ChildNode
     {
 
     public:
@@ -45,8 +46,6 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
@@ -61,6 +60,9 @@ namespace cacto
 
         Surface(Surface &&other) = delete;
         Surface &operator=(Surface &&other) = delete;
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         std::string m_id;

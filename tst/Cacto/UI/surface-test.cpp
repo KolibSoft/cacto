@@ -10,7 +10,7 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/UI/Surface.hpp>
 
 int main()
@@ -32,8 +32,11 @@ int main()
         .setTexture(cacto::getTexture("res/image.png"))
         .setTextureRect({{-100, -100}, {1000, 1000}});
     */
-    cacto::fromXmlFile(surface, "res/surface.xml");
-    cacto::toXmlFile(surface, "res/surface.xml", 2);
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/surface.xml");
+    cacto::fromXml(surface, xml);
+    xml = cacto::toXml(surface);
+    xml.toFile("res/surface.xml", 2);
 
     std::cout << cacto::toXml(surface).toString(2) << '\n';
 
@@ -52,7 +55,10 @@ int main()
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             else if (event.type == sf::Event::KeyPressed || event.key.code == sf::Keyboard::Space)
-                cacto::fromXmlFile(surface, "res/surface.xml");
+            {
+                xml.fromFile("res/surface.xml");
+                cacto::fromXml(surface, xml);
+            }
         }
 
         surface.compact();

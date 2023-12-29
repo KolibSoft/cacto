@@ -4,7 +4,9 @@
 #include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/RectUtils.hpp>
+#include <Cacto/Graphics/ColorUtils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 #include <Cacto/UI/Surface.hpp>
 
 namespace cacto
@@ -115,29 +117,6 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    void Surface::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_geometry)
-        {
-            if (m_invalid)
-            {
-                cacto::setPoints(m_array, *m_geometry, m_precision);
-                cacto::setColor(m_array, m_color);
-                if (m_texture)
-                    cacto::setTexCoords(m_array, m_textureRect);
-                cacto::mapPositions(m_array, *this);
-                m_invalid = false;
-            }
-            if (getWidth() > 0 && getHeight() > 0)
-            {
-                auto _states = states;
-                _states.texture = m_texture;
-                target.draw(m_array, _states);
-                m_vTransform = _states.transform;
-            }
-        }
-    }
-
     sf::Vector2f Surface::compact()
     {
         setWidth(0);
@@ -186,6 +165,29 @@ namespace cacto
     Surface::~Surface()
     {
         detach();
+    }
+
+    void Surface::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        if (m_geometry)
+        {
+            if (m_invalid)
+            {
+                cacto::setPoints(m_array, *m_geometry, m_precision);
+                cacto::setColor(m_array, m_color);
+                if (m_texture)
+                    cacto::setTexCoords(m_array, m_textureRect);
+                cacto::mapPositions(m_array, *this);
+                m_invalid = false;
+            }
+            if (getWidth() > 0 && getHeight() > 0)
+            {
+                auto _states = states;
+                _states.texture = m_texture;
+                target.draw(m_array, _states);
+                m_vTransform = _states.transform;
+            }
+        }
     }
 
     XmlValue toXml(const Surface &surface)
