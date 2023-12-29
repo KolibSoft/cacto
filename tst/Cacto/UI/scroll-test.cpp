@@ -10,7 +10,9 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Surface.hpp>
+#include <Cacto/UI/Label.hpp>
 #include <Cacto/UI/ScrollLayout.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 
@@ -21,21 +23,28 @@ int main()
 
     cacto::GeometryPack geometries{"."};
     cacto::TexturePack textures{"."};
+    cacto::FontPack fonts{"."};
 
-    sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+    sf::ContextSettings settings{};
+    sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window", sf::Style::Default, settings);
+    window.setFramerateLimit(60);
 
-    cacto::Surface bgBlock{};
-    bgBlock
+    cacto::Surface bgElement{};
+    bgElement
         .setGeometry(cacto::getGeometry("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
-    cacto::Block block{};
-    block
-        .setBackground(&bgBlock)
+    cacto::Label element{};
+    element
+        .setBackground(&bgElement)
         .setMargin(10)
         .setFixedWidth(400)
         .setFixedHeight(400)
         .setPadding(10);
+    element.asSpan()
+        .setFont(cacto::getFont("res/font.ttf"))
+        .setString("Text Content")
+        .setCharacterSize(32);
 
     cacto::Surface bgScroll{};
     bgScroll
@@ -49,7 +58,7 @@ int main()
         .setFixedWidth(300)
         .setFixedHeight(300)
         .setPadding(10);
-    scroll.append(block);
+    scroll.append(element);
 
     cacto::Surface bgRoot{};
     bgRoot
@@ -73,6 +82,10 @@ int main()
     xml.toFile("res/scroll.xml", 2);
     */
 
+    sf::Transformable transformable{};
+    transformable.move({100, 100});
+    transformable.rotate(sf::degrees(15));
+
     while (window.isOpen())
     {
         sf::Event event{};
@@ -95,8 +108,8 @@ int main()
         root.compact();
         root.inflate();
         root.place();
-        window.clear(sf::Color::Black);
-        window.draw(root);
+        window.clear();
+        window.draw(root, transformable.getTransform());
         window.display();
     }
 
