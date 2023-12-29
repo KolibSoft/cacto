@@ -1,5 +1,4 @@
-#ifndef CACTO_BLOCK_HPP
-#define CACTO_BLOCK_HPP
+#pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/Node.hpp>
@@ -125,5 +124,3 @@ namespace cacto
     }
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CACTO_FRAME_LAYOUT_HPP
-#define CACTO_FRAME_LAYOUT_HPP
+#pragma once
 
 #include <Cacto/UI/Block.hpp>
 
@@ -67,5 +66,3 @@ namespace cacto
     }
 
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CACTO_SCROLL_LAYOUT_HPP
-#define CACTO_SCROLL_LAYOUT_HPP
+#pragma once
 
 #include <Cacto/Window/Scrollable.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
@@ -51,5 +50,3 @@ namespace cacto
     }
 
 }
-
-#endif

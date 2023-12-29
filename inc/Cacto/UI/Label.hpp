@@ -1,5 +1,4 @@
-#ifndef CACTO_LABEL_HPP
-#define CACTO_LABEL_HPP
+#pragma once
 
 #include <Cacto/UI/Span.hpp>
 #include <Cacto/UI/Block.hpp>
@@ -60,5 +59,3 @@ namespace cacto
     }
 
 }
-
-#endif

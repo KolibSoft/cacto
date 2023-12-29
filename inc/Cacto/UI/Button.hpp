@@ -1,5 +1,4 @@
-#ifndef CACTO_BUTTON_HPP
-#define CACTO_BUTTON_HPP
+#pragma once
 
 #include <Cacto/Window/EventListener.hpp>
 #include <Cacto/Window/Clickable.hpp>
@@ -61,5 +60,3 @@ namespace cacto
     }
 
 }
-
-#endif

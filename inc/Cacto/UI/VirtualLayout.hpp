@@ -1,5 +1,4 @@
-#ifndef CACTO_VIRTUAL_LAYOUT_HPP
-#define CACTO_VIRTUAL_LAYOUT_HPP
+#pragma once
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/RenderTexture.hpp>
@@ -58,5 +57,3 @@ namespace cacto
     }
 
 }
-
-#endif

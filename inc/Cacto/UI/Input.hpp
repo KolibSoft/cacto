@@ -1,5 +1,4 @@
-#ifndef CACTO_INPUT_HPP
-#define CACTO_INPUT_HPP
+#pragma once
 
 #include <SFML/System/String.hpp>
 #include <Cacto/Window/EventListener.hpp>
@@ -59,5 +58,3 @@ namespace cacto
     }
 
 }
-
-#endif

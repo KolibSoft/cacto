@@ -1,5 +1,4 @@
-#ifndef CACTO_SPAN_HPP
-#define CACTO_SPAN_HPP
+#pragma once
 
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
@@ -104,5 +103,3 @@ namespace cacto
     }
 
 }
-
-#endif

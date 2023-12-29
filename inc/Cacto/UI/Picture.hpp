@@ -1,5 +1,4 @@
-#ifndef CACTO_PICTURE_HPP
-#define CACTO_PICTURE_HPP
+#pragma once
 
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
@@ -74,5 +73,3 @@ namespace cacto
     }
 
 }
-
-#endif
