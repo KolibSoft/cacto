@@ -2,9 +2,11 @@
 #define CACTO_BLOCK_HPP
 
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/Node.hpp>
+#include <Cacto/Window/Handler.hpp>
 #include <Cacto/UI/Thickness.hpp>
+#include <Cacto/UI/Inflatable.hpp>
 #include <Cacto/UI/Box.hpp>
-#include <Cacto/UI/UINode.hpp>
 
 namespace sf
 {
@@ -16,8 +18,10 @@ namespace cacto
 
     class CACTO_UI_API Block
         : public Box,
-          public virtual ChildNode,
-          public virtual UINode
+          public virtual sf::Drawable,
+          public virtual Inflatable,
+          public virtual Handler,
+          public virtual ChildNode
     {
 
     public:
@@ -53,24 +57,17 @@ namespace cacto
 
         ParentNode *const getParent() const override;
 
-        void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
-        void eventBlock(const sf::Event &event);
-        sf::Vector2f compactBlock(const sf::Vector2f &contentSize);
-        sf::Vector2f inflateBlock(const sf::Vector2f &containerSize);
-        void placeBlock(const sf::Vector2f &position);
-
-        bool containsVisually(const sf::Vector2f &point) const;
+        bool containsVisualPoint(const sf::Vector2f &point) const;
 
         void attach(ParentNode &parent) override;
         void detach() override;
-
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
 
-        bool event(const sf::Event &event) override;
+        bool handle(const sf::Event &event) override;
+        bool bubble(Node &target, const sf::Event &event) override;
 
         Block();
         virtual ~Block();
@@ -80,6 +77,15 @@ namespace cacto
 
         Block(Block &&other) = delete;
         Block &operator=(Block &&other) = delete;
+
+    protected:
+        void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
+        void handleBlock(const sf::Event &event);
+        sf::Vector2f compactBlock(const sf::Vector2f &contentSize);
+        sf::Vector2f inflateBlock(const sf::Vector2f &containerSize);
+        void placeBlock(const sf::Vector2f &position);
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         std::string m_id;

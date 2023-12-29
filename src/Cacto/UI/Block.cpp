@@ -1,8 +1,9 @@
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/NodeUtils.hpp>
+#include <Cacto/Window/NodeUtils.hpp>
+#include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/Block.hpp>
 
 namespace cacto
@@ -136,48 +137,6 @@ namespace cacto
         return m_parent;
     }
 
-    void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_background)
-            DrawNode::draw(*m_background, target, states);
-        m_vTransform = states.transform;
-    }
-
-    void Block::eventBlock(const sf::Event &event)
-    {
-        if (m_background)
-            EventNode::event(*m_background, event);
-    }
-
-    sf::Vector2f Block::compactBlock(const sf::Vector2f &contentSize)
-    {
-        auto hMargin = m_margin.getHorizontal();
-        auto vMargin = m_margin.getVertical();
-        auto hPadding = m_padding.getHorizontal();
-        auto vPadding = m_padding.getVertical();
-        sf::Vector2f size{
-            std::max(hPadding, std::max(m_minWidth, contentSize.x + hPadding)) + hMargin,
-            std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
-        if (m_background)
-            InflatableNode::compact(*m_background);
-        setWidth(size.x);
-        setHeight(size.y);
-        return size;
-    }
-
-    sf::Vector2f Block::inflateBlock(const sf::Vector2f &containerSize)
-    {
-        auto hMargin = m_margin.getHorizontal();
-        auto vMargin = m_margin.getVertical();
-        sf::Vector2f size{std::max(getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
-                          std::max(getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
-        setWidth(size.x - hMargin);
-        setHeight(size.y - vMargin);
-        if (m_background)
-            InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
-        return size;
-    }
-
     void Block::attach(ParentNode &parent)
     {
         if (m_parent == &parent)
@@ -198,16 +157,64 @@ namespace cacto
         m_parent = nullptr;
     }
 
+    void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        if (m_background)
+            cacto::draw(*m_background, target, states);
+        m_vTransform = states.transform;
+    }
+
+    sf::Vector2f Block::compactBlock(const sf::Vector2f &contentSize)
+    {
+        auto hMargin = m_margin.getHorizontal();
+        auto vMargin = m_margin.getVertical();
+        auto hPadding = m_padding.getHorizontal();
+        auto vPadding = m_padding.getVertical();
+        sf::Vector2f size{
+            std::max(hPadding, std::max(m_minWidth, contentSize.x + hPadding)) + hMargin,
+            std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
+        if (m_background)
+            cacto::compact(*m_background);
+        setWidth(size.x);
+        setHeight(size.y);
+        return size;
+    }
+
+    sf::Vector2f Block::inflateBlock(const sf::Vector2f &containerSize)
+    {
+        auto hMargin = m_margin.getHorizontal();
+        auto vMargin = m_margin.getVertical();
+        sf::Vector2f size{std::max(getWidth(), std::min(containerSize.x, m_maxWidth + hMargin)),
+                          std::max(getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
+        setWidth(size.x - hMargin);
+        setHeight(size.y - vMargin);
+        if (m_background)
+            cacto::inflate(*m_background, {getWidth(), getHeight()});
+        return size;
+    }
+
+    void Block::handleBlock(const sf::Event &event)
+    {
+        if (m_background)
+            cacto::handle(*m_background, event);
+    }
+
     void Block::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
     }
 
-    bool Block::event(const sf::Event &event)
+    bool Block::handle(const sf::Event &event)
     {
-        eventBlock(event);
-        auto handled = eventChildren(event);
+        handleBlock(event);
+        auto handled = cacto::handleChildren(*this, event);
         return handled;
+    }
+
+    bool Block::bubble(Node &target, const sf::Event &event)
+    {
+        auto handle = cacto::bubbleParent(*this, target, event);
+        return handle;
     }
 
     sf::Vector2f Block::compact()
@@ -232,10 +239,10 @@ namespace cacto
         setLeft(position.x + m_margin.left);
         setTop(position.y + m_margin.top);
         if (m_background)
-            InflatableNode::place(*m_background, {getLeft(), getTop()});
+            cacto::place(*m_background, {getLeft(), getTop()});
     }
 
-    bool Block::containsVisually(const sf::Vector2f &point) const
+    bool Block::containsVisualPoint(const sf::Vector2f &point) const
     {
         auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
         return result;
