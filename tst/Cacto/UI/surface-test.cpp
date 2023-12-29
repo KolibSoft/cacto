@@ -37,6 +37,11 @@ int main()
 
     std::cout << cacto::toXml(surface).toString(2) << '\n';
 
+    sf::Transformable transformable{};
+    transformable.scale({0.5, 0.5});
+    transformable.move({200, 200});
+    transformable.rotate(sf::degrees(30));
+
     while (window.isOpen())
     {
         sf::Event event{};
@@ -49,11 +54,17 @@ int main()
             else if (event.type == sf::Event::KeyPressed || event.key.code == sf::Keyboard::Space)
                 cacto::fromXmlFile(surface, "res/surface.xml");
         }
+
         surface.compact();
         surface.inflate(sf::Vector2f(window.getSize()));
         surface.place();
-        window.clear(sf::Color::Black);
-        window.draw(surface);
+
+        if (surface.containsVisually(sf::Vector2f(sf::Mouse::getPosition(window))))
+            window.clear(sf::Color::Green);
+        else
+            window.clear(sf::Color::Black);
+
+        window.draw(surface, transformable.getTransform());
         window.display();
     }
 

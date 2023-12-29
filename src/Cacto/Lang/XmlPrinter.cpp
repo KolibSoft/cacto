@@ -1,4 +1,4 @@
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/StringUtils.hpp>
 #include <Cacto/Lang/XmlPrinter.hpp>
 
 namespace cacto
