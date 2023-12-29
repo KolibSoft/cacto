@@ -79,6 +79,11 @@ namespace cacto
         return *this;
     }
 
+    const sf::Transform &Span::getVisualTransform() const
+    {
+        return m_vTransform;
+    }
+
     ParentNode *const Span::getParent() const
     {
         return m_parent;

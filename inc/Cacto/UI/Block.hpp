@@ -55,6 +55,8 @@ namespace cacto
         Box getContainerBox() const;
         Box getContentBox() const;
 
+        const sf::Transform &getVisualTransform() const;
+
         ParentNode *const getParent() const override;
 
         bool containsVisualPoint(const sf::Vector2f &point) const;

@@ -1,4 +1,5 @@
 #include <limits>
+#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -16,6 +17,20 @@
 
 auto _ = false;
 
+class Element : public cacto::Block
+{
+
+public:
+    bool handle(const sf::Event &event) override
+    {
+        if (event.type == sf::Event::MouseMoved && containsVisualPoint({float(event.mouseMove.x), float(event.mouseMove.y)}))
+        {
+            std::cout << "Hovered\n";
+        }
+        return Block::handle(event);
+    }
+};
+
 int main()
 {
 
@@ -29,12 +44,12 @@ int main()
         .setGeometry(cacto::getGeometry("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
-    cacto::Block block{};
-    block
+    Element element{};
+    element
         .setBackground(&bgBlock)
         .setMargin(10)
-        .setMinWidth(100)
-        .setMaxHeight(100)
+        .setFixedWidth(100)
+        .setFixedHeight(100)
         .setPadding(10);
 
     cacto::Surface bgRoot{};
@@ -44,12 +59,14 @@ int main()
 
     cacto::VirtualLayout root{};
     root
+        .setHorizontalAnchor(cacto::Box::Center)
+        .setVerticalAnchor(cacto::Box::Center)
         .setBackground(&bgRoot)
         .setMargin(10)
-        .setMinWidth(100)
-        .setMaxHeight(100)
+        .setFixedWidth(200)
+        .setFixedHeight(200)
         .setPadding(10);
-    root.append(block);
+    root.append(element);
 
     /*
     cacto::XmlValue xml = nullptr;
@@ -59,12 +76,18 @@ int main()
     xml.toFile("res/virtual.xml", 2);
     */
 
+    sf::Transformable transformable{};
+    transformable.move({100, 100});
+    transformable.rotate(sf::degrees(15));
+
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (event.type == sf::Event::Closed)
+            if (root.handle(event))
+                break;
+            else if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
@@ -81,10 +104,10 @@ int main()
             }
         }
         root.compact();
-        root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
+        root.inflate();
         root.place();
-        window.clear(sf::Color::Black);
-        window.draw(root);
+        window.clear();
+        window.draw(root, transformable.getTransform());
         window.display();
     }
 

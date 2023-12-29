@@ -133,6 +133,11 @@ namespace cacto
         return box;
     }
 
+    const sf::Transform &Block::getVisualTransform() const
+    {
+        return m_vTransform;
+    }
+
     ParentNode *const Block::getParent() const
     {
         return m_parent;

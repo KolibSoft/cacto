@@ -1,4 +1,5 @@
 #include <limits>
+#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -12,7 +13,7 @@
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/Label.hpp>
+#include <Cacto/UI/Button.hpp>
 #include <Cacto/UI/ScrollLayout.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 
@@ -34,8 +35,10 @@ int main()
         .setGeometry(cacto::getGeometry("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
-    cacto::Label element{};
+    cacto::Button element{};
     element
+        .setOnClickListener([&](cacto::Node &target, const sf::Event &event)
+                            { std::cout << "Clicked\n"; })
         .setBackground(&bgElement)
         .setMargin(10)
         .setFixedWidth(400)

@@ -41,6 +41,8 @@ namespace cacto
         const sf::FloatRect &getTextureRect() const;
         Surface &setTextureRect(const sf::FloatRect &value);
 
+        const sf::Transform &getVisualTransform() const;
+        
         ParentNode *const getParent() const override;
 
         void attach(ParentNode &parent) override;

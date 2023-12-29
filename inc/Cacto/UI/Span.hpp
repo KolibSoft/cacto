@@ -43,6 +43,8 @@ namespace cacto
         const sf::Color &getColor() const;
         Span &setColor(const sf::Color &value);
 
+        const sf::Transform &getVisualTransform() const;
+
         ParentNode *const getParent() const override;
 
         void attach(ParentNode &parent) override;

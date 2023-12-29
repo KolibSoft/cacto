@@ -93,6 +93,11 @@ namespace cacto
         return *this;
     }
 
+    const sf::Transform &Surface::getVisualTransform() const
+    {
+        return m_vTransform;
+    }
+
     ParentNode *const Surface::getParent() const
     {
         return m_parent;

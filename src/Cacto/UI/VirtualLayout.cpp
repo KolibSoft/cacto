@@ -63,6 +63,7 @@ namespace cacto
                 auto contentBox = getContentBox();
                 auto transform = m_transformable.getInverseTransform();
                 sf::Vector2f mappedPoint{point.x, point.y};
+                mappedPoint = getVisualTransform().getInverse().transformPoint(mappedPoint);
                 mappedPoint.x -= contentBox.getLeft();
                 mappedPoint.y -= contentBox.getTop();
                 mappedPoint = transform.transformPoint(mappedPoint);
@@ -133,6 +134,7 @@ namespace cacto
                 mappedPoint = transform.transformPoint(mappedPoint);
                 mappedPoint.x += contentBox.getLeft();
                 mappedPoint.y += contentBox.getTop();
+                mappedPoint = getVisualTransform().transformPoint(mappedPoint);
                 return mappedPoint;
             };
             switch (event.type)
