@@ -1,6 +1,7 @@
 #ifndef CACTO_BUTTON_HPP
 #define CACTO_BUTTON_HPP
 
+#include <Cacto/Window/EventListener.hpp>
 #include <Cacto/Window/Clickable.hpp>
 #include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
@@ -18,7 +19,7 @@ namespace cacto
         const EventListener &getOnClickListener() const;
         Button &setOnClickListener(const EventListener &value);
 
-        bool event(const sf::Event &event) override;
+        bool handle(const sf::Event &event) override;
 
         void click(sf::Mouse::Button button = sf::Mouse::Left, const sf::Vector2f &position = {0, 0}) override;
         void focus() override;

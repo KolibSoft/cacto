@@ -14,7 +14,7 @@
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Button.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 auto _ = false;
 
@@ -46,15 +46,18 @@ int main()
         .setString("My Label Text")
         .setCharacterSize(16);
 
-    cacto::toXmlFile(root, "res/button.xml", 4);
-    cacto::fromXmlFile(root, "res/button.xml");
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/button.xml");
+    cacto::fromXml(root, xml);
+    xml = cacto::toXml(root);
+    xml.toFile("res/button.xml", 2);
 
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (root.event(event))
+            if (root.handle(event))
                 break;
             else if (event.type == sf::Event::Closed)
                 window.close();

@@ -2,6 +2,7 @@
 #define CACTO_INPUT_HPP
 
 #include <SFML/System/String.hpp>
+#include <Cacto/Window/EventListener.hpp>
 #include <Cacto/Window/Inputable.hpp>
 #include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
@@ -19,7 +20,7 @@ namespace cacto
         const EventListener &getOnInputListener() const;
         Input &setOnInputListener(const EventListener &value);
 
-        bool event(const sf::Event &event) override;
+        bool handle(const sf::Event &event) override;
 
         void input(u32t unicode) override;
         void focus() override;

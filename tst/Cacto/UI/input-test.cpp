@@ -14,7 +14,7 @@
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Input.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 auto _ = false;
 
@@ -47,15 +47,18 @@ int main()
         .setDirection(cacto::TextDirection::ToLeft)
         .setCharacterSize(16);
 
-    cacto::toXmlFile(root, "res/input.xml", 4);
-    cacto::fromXmlFile(root, "res/input.xml");
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/input.xml");
+    cacto::fromXml(root, xml);
+    xml = cacto::toXml(root);
+    xml.toFile("res/input.xml", 2);
 
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (root.event(event))
+            if (root.handle(event))
                 break;
             else if (event.type == sf::Event::Closed)
                 window.close();

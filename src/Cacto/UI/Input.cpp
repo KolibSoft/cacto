@@ -15,9 +15,9 @@ namespace cacto
         return *this;
     }
 
-    bool Input::event(const sf::Event &event)
+    bool Input::handle(const sf::Event &event)
     {
-        if (event.type == sf::Event::MouseButtonReleased && containsVisually({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        if (event.type == sf::Event::MouseButtonReleased && containsVisualPoint({float(event.mouseButton.x), float(event.mouseButton.y)}))
         {
             focus();
             return true;
@@ -44,7 +44,7 @@ namespace cacto
         event.type = sf::Event::GainedFocus;
 
         m_focused = true;
-        bubbleParent(*this, event);
+        cacto::bubbleParent(*this, *this, event);
     }
 
     void Input::unfocus()
@@ -53,7 +53,7 @@ namespace cacto
         event.type = sf::Event::LostFocus;
 
         m_focused = false;
-        bubbleParent(*this, event);
+        cacto::bubbleParent(*this, *this, event);
     }
 
     Input::Input()
@@ -82,7 +82,7 @@ namespace cacto
         if (m_onInput)
             m_onInput(*this, event);
         else
-            bubbleParent(*this, event);
+            cacto::bubbleParent(*this, *this, event);
     }
 
     XmlValue CACTO_UI_API toXml(const Input &label)
