@@ -3,7 +3,8 @@
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/Core/Node.hpp>
+#include <Cacto/Graphics/Export.hpp>
 
 namespace sf
 {
@@ -14,8 +15,9 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API TileMap
-        : public virtual ChildNode,
-          public virtual DrawNode
+        : public sf::Transformable,
+          public virtual sf::Drawable,
+          public virtual ChildNode
     {
 
     public:
@@ -37,15 +39,10 @@ namespace cacto
         TileMap &setTiles(const sf::IntRect &area, const sf::FloatRect &tile);
         TileMap &fill(const sf::FloatRect &tile);
 
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
-
         ParentNode *const getParent() const override;
 
         void attach(ParentNode &parent) override;
         void detach() override;
-
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         TileMap();
         virtual ~TileMap();
@@ -58,13 +55,15 @@ namespace cacto
 
         static const sf::FloatRect NoTile;
 
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
     private:
         std::string m_id;
         const sf::Texture *m_texture;
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;
         std::vector<sf::FloatRect> m_tiles;
-        sf::Transformable m_transformable;
         ParentNode *m_parent;
 
         mutable bool m_invalid;

@@ -1,7 +1,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Core/Pack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 
 namespace cacto
@@ -21,16 +21,6 @@ namespace cacto
     ParentNode *const Mesh::getParent() const
     {
         return m_parent;
-    }
-
-    const sf::VertexArray &Mesh::asArray() const
-    {
-        return m_array;
-    }
-
-    sf::VertexArray &Mesh::asArray()
-    {
-        return m_array;
     }
 
     void Mesh::attach(ParentNode &parent)
@@ -53,14 +43,8 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        target.draw(m_array, states);
-    }
-
     Mesh::Mesh()
         : m_id(),
-          m_array(),
           m_parent()
     {
     }
@@ -72,7 +56,7 @@ namespace cacto
 
     XmlValue toXml(const Mesh &mesh)
     {
-        auto xml = cacto::toXml(mesh.asArray());
+        auto xml = cacto::toXml((const sf::VertexArray &)mesh);
         xml.setName("Mesh");
         xml["id"] = mesh.getId();
         return std::move(xml);
@@ -80,7 +64,7 @@ namespace cacto
 
     void fromXml(Mesh &mesh, const XmlValue &xml)
     {
-        cacto::fromXml(mesh.asArray(), xml);
+        cacto::fromXml((sf::VertexArray &)mesh, xml);
         mesh.setId(xml.getAttribute("id"));
     }
 

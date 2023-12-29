@@ -2,15 +2,14 @@
 
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/Node.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public virtual ChildNode,
-          public virtual DrawNode
+        : public sf::VertexArray,
+          public virtual ChildNode
     {
 
     public:
@@ -19,13 +18,8 @@ namespace cacto
 
         ParentNode *const getParent() const override;
 
-        const sf::VertexArray &asArray() const;
-        sf::VertexArray &asArray();
-
         void attach(ParentNode &parent) override;
         void detach() override;
-
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
         Mesh();
         virtual ~Mesh();
@@ -38,7 +32,6 @@ namespace cacto
 
     private:
         std::string m_id;
-        sf::VertexArray m_array;
         ParentNode *m_parent;
     };
 

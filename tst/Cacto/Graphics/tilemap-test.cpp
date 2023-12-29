@@ -7,13 +7,10 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/TileMap.hpp>
-#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/RectPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/ImagePack.hpp>
-#include <Cacto/Lang/JsonValue.hpp>
-#include <Cacto/Lang/Utils.hpp>
-#include <Cacto/Core/Utils.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 int main()
 {
@@ -24,8 +21,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::TileMap tileMap{};
-    cacto::fromXmlFile(tileMap, "res/tilemap.xml");
-    cacto::toXmlFile(tileMap, "res/tilemap.xml", 2);
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/tilemap.xml");
+    cacto::fromXml(tileMap, xml);
+    xml = cacto::toXml(tileMap);
+    xml.toFile("res/tilemap.xml", 2);
 
     while (window.isOpen())
     {
@@ -35,7 +35,10 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-                cacto::fromXmlFile(tileMap, "res/tile_map.xml");
+            {
+                xml.fromFile("res/tilemap.xml");
+                cacto::fromXml(tileMap, xml);
+            }
         }
         window.clear();
         window.draw(tileMap);

@@ -1,56 +1,68 @@
-#ifndef CACTO_FRAME_LAYOUT_HPP
-#define CACTO_FRAME_LAYOUT_HPP
+#pragma once
 
-#include <Cacto/UI/Layout.hpp>
 #include <Cacto/UI/Block.hpp>
 
 namespace cacto
 {
 
     class CACTO_UI_API FrameLayout
-        : public Block
+        : public Block,
+          public virtual ParentNode
     {
 
     public:
-        szt getChildCount() const override;
-        Node *const getChild(szt index = 0) const override;
-
         Anchor getHorizontalAnchor() const;
         FrameLayout &setHorizontalAnchor(Anchor value);
 
         Anchor getVerticalAnchor() const;
         FrameLayout &setVerticalAnchor(Anchor value);
 
-        void append(Node &child);
-        void remove(Node &child);
+        ParentNode *const getParent() const override;
+
+        szt getChildCount() const override;
+        ChildNode *const getChild(szt index = 0) const override;
+
+        void append(ChildNode &child) override;
+        void remove(ChildNode &child) override;
+
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
+        sf::Vector2f compact() override;
+        sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void place(const sf::Vector2f &position = {0, 0}) override;
 
         FrameLayout();
         virtual ~FrameLayout();
 
-        FrameLayout(const FrameLayout &other);
-        FrameLayout &operator=(const FrameLayout &other);
-
     protected:
-        using Holder = layout::Holder;
-
-        const Holder *const getHolder() const;
-        Holder *const getHolder();
-
-        void onAppend(Node &child) override;
-        void onRemove(Node &child) override;
-
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
-        sf::Vector2f onCompact() override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize) override;
-        void onPlace(const sf::Vector2f &position) override;
+        const Box &getChildBox() const;
 
     private:
         Anchor m_hAnchor;
         Anchor m_vAnchor;
-        Holder *m_holder;
+        Box m_childBox;
+        ChildNode *m_child;
     };
 
-}
+    XmlValue CACTO_UI_API toXml(const FrameLayout &frame);
+    void CACTO_UI_API fromXml(FrameLayout &frame, const XmlValue &xml);
 
-#endif
+    namespace frame
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
+}

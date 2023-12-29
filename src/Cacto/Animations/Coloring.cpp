@@ -1,4 +1,4 @@
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/ColorUtils.hpp>
 #include <Cacto/Animations/Coloring.hpp>
 
 namespace cacto
@@ -52,8 +52,8 @@ namespace cacto
     {
         auto xml = toXml((const Animation &)coloring);
         xml.setName("Coloring");
-        xml["from"] = toString(coloring.getFrom());
-        xml["to"] = toString(coloring.getTo());
+        xml["from"] = toAttribute(coloring.getFrom());
+        xml["to"] = toAttribute(coloring.getTo());
         return std::move(xml);
     }
 
@@ -62,8 +62,8 @@ namespace cacto
         fromXml((Animation &)coloring, xml);
         sf::Color from{};
         sf::Color to{};
-        fromString(from, xml.getAttribute("from", "#FFFFFFFF"));
-        fromString(to, xml.getAttribute("to", "#FFFFFFFF"));
+        fromAttribute(from, xml.getAttribute("from", "#FFFFFFFF"));
+        fromAttribute(to, xml.getAttribute("to", "#FFFFFFFF"));
         coloring.setFrom(from);
         coloring.setTo(to);
     }

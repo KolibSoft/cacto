@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/UI/Picture.hpp>
 
 namespace cacto
@@ -50,64 +50,24 @@ namespace cacto
         return *this;
     }
 
-    const Surface &Picture::getSurface() const
+    const Surface &Picture::asSurface() const
     {
         return m_surface;
     }
 
-    Surface &Picture::getSurface()
+    Surface &Picture::asSurface()
     {
         return m_surface;
     }
 
-    Picture::Picture(const sf::Texture &texture, Scale scale)
-        : Block(),
-          m_surface(Rectangle::Identity, sf::Color::White, &texture),
-          m_scale(scale),
-          m_textureRect(),
-          m_hAnchor(Start),
-          m_vAnchor(Start)
-    {
-        m_textureRect = m_surface.getTextureRect();
-    }
-
-    Picture::~Picture() = default;
-
-    Picture::Picture(const Picture &other)
-        : Block(other),
-          m_surface(other.m_surface),
-          m_scale(other.m_scale),
-          m_textureRect(other.m_textureRect),
-          m_hAnchor(other.m_hAnchor),
-          m_vAnchor(other.m_vAnchor)
-    {
-        m_textureRect = m_surface.getTextureRect();
-    }
-
-    Picture &Picture::operator=(const Picture &other)
-    {
-        m_surface = other.m_surface;
-        m_scale = other.m_scale;
-        m_textureRect = other.m_textureRect;
-        m_hAnchor = other.m_hAnchor;
-        m_vAnchor = other.m_vAnchor;
-        return *this;
-    }
-
-    void Picture::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        drawBlock(target, states);
-        target.draw(dynamic_cast<const DrawNode &>(m_surface), states);
-    }
-
-    sf::Vector2f Picture::onCompact()
+    sf::Vector2f Picture::compact()
     {
         auto contentSize = m_surface.compact();
         auto size = compactBlock(contentSize);
         return size;
     }
 
-    sf::Vector2f Picture::onInflate(const sf::Vector2f &containerSize)
+    sf::Vector2f Picture::inflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
         auto contentBox = getContentBox();
@@ -133,7 +93,7 @@ namespace cacto
         return size;
     }
 
-    void Picture::onPlace(const sf::Vector2f &position)
+    void Picture::place(const sf::Vector2f &position)
     {
         placeBlock(position);
         auto contentBox = getContentBox();
@@ -144,6 +104,77 @@ namespace cacto
             contentBox.setHeight(childSize.y, m_vAnchor);
         }
         m_surface.place({contentBox.getLeft(), contentBox.getTop()});
+    }
+
+    Picture::Picture()
+        : Block(),
+          m_surface(),
+          m_scale(Fill),
+          m_textureRect(),
+          m_hAnchor(Start),
+          m_vAnchor(Start)
+    {
+        m_textureRect = m_surface.getTextureRect();
+    }
+
+    Picture::~Picture() = default;
+
+    void Picture::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        target.draw(m_surface, states);
+    }
+
+    XmlValue CACTO_UI_API toXml(const Picture &picture)
+    {
+        auto xml = cacto::toXml((const Block &)picture);
+        xml.setName("Picture");
+        auto surface_xml = cacto::toXml(picture.asSurface());
+        for (auto &pair : surface_xml.asAttributes())
+            xml[pair.first] = pair.second;
+        xml["horizontalAnchor"] = toString(picture.getHorizontalAnchor());
+        xml["verticalAnchor"] = toString(picture.getVerticalAnchor());
+        return std::move(xml);
+    }
+
+    void CACTO_UI_API fromXml(Picture &picture, const XmlValue &xml)
+    {
+        cacto::fromXml((Block &)picture, xml);
+        cacto::fromXml(picture.asSurface(), xml);
+        Box::Anchor hAnchor{};
+        Box::Anchor vAnchor{};
+        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
+        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+    }
+
+    namespace picture
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Picture *picture = nullptr;
+            if (value && typeid(*value) == typeid(Picture) && (picture = dynamic_cast<const Picture *>(value)))
+            {
+                auto xml = cacto::toXml(*picture);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Picture")
+            {
+                auto picture = std::make_shared<Picture>();
+                cacto::fromXml(*picture, xml);
+                Node::XmlStack.push(picture);
+                return picture.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

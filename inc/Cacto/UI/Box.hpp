@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <SFML/Graphics/Rect.hpp>
 #include <Cacto/UI/Export.hpp>
 
@@ -40,7 +41,7 @@ namespace cacto
         void shrink(const Thickness &thickness);
         void expand(const Thickness &thickness);
 
-        bool contains(const sf::Vector2f &point) const;
+        bool containsPoint(const sf::Vector2f &point) const;
 
         Box(const sf::FloatRect &rect = {});
         operator const sf::FloatRect &() const;
@@ -50,5 +51,8 @@ namespace cacto
     private:
         sf::FloatRect m_rect;
     };
+
+    std::string CACTO_UI_API toString(Box::Anchor anchor);
+    void CACTO_UI_API fromString(Box::Anchor &anchor, const std::string &string);
 
 }

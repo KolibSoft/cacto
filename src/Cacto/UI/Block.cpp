@@ -1,16 +1,24 @@
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Core/XmlPack.hpp>
+#include <Cacto/Graphics/NodeUtils.hpp>
+#include <Cacto/Window/NodeUtils.hpp>
+#include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/Block.hpp>
 
 namespace cacto
 {
 
-    Node *const Block::getParent() const
+    const std::string &Block::getId() const
     {
-        return m_parent;
+        return m_id;
+    }
+
+    Block &Block::setId(const std::string &value)
+    {
+        m_id = value;
+        return *this;
     }
 
     Node *const Block::getBackground() const
@@ -125,55 +133,41 @@ namespace cacto
         return box;
     }
 
-    Block::Block()
-        : m_parent(),
-          m_background(nullptr),
-          m_margin(0),
-          m_padding(0),
-          m_minWidth(0), m_maxWidth(std::numeric_limits<f32t>::infinity()),
-          m_minHeight(0), m_maxHeight(std::numeric_limits<f32t>::infinity())
+    const sf::Transform &Block::getVisualTransform() const
     {
+        return m_vTransform;
     }
 
-    Block::~Block()
+    ParentNode *const Block::getParent() const
     {
-        if (m_parent)
-            Node::unlink(*m_parent, *this);
+        return m_parent;
     }
 
-    Block::Block(const Block &other)
-        : Box(other),
-          m_parent(),
-          m_background(nullptr),
-          m_margin(other.m_margin),
-          m_padding(other.m_padding),
-          m_minWidth(other.m_minWidth), m_maxWidth(other.m_maxWidth),
-          m_minHeight(other.m_minHeight), m_maxHeight(other.m_maxHeight)
+    void Block::attach(ParentNode &parent)
     {
+        if (m_parent == &parent)
+            return;
+        if (m_parent != nullptr)
+            throw std::runtime_error("This node is already attached to another parent");
+        if (parent.hasAncestor(*this))
+            throw std::runtime_error("This node is an ancestor");
+        m_parent = &parent;
+        parent.append(*this);
     }
 
-    Block &Block::operator=(const Block &other)
+    void Block::detach()
     {
-        Box::operator=(other);
-        m_margin = other.m_margin;
-        m_padding = other.m_padding;
-        m_minWidth = other.m_minWidth;
-        m_maxWidth = other.m_maxWidth;
-        m_minHeight = other.m_minHeight;
-        m_maxHeight = other.m_maxHeight;
-        return *this;
+        if (m_parent == nullptr)
+            return;
+        m_parent->remove(*this);
+        m_parent = nullptr;
     }
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_background)
-            DrawNode::draw(*m_background, target, states);
-    }
-
-    void Block::eventBlock(const sf::Event &event)
-    {
-        if (m_background)
-            EventNode::event(*m_background, event);
+            cacto::draw(*m_background, target, states);
+        m_vTransform = states.transform;
     }
 
     sf::Vector2f Block::compactBlock(const sf::Vector2f &contentSize)
@@ -186,7 +180,7 @@ namespace cacto
             std::max(hPadding, std::max(m_minWidth, contentSize.x + hPadding)) + hMargin,
             std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
         if (m_background)
-            InflatableNode::compact(*m_background);
+            cacto::compact(*m_background);
         setWidth(size.x);
         setHeight(size.y);
         return size;
@@ -201,8 +195,49 @@ namespace cacto
         setWidth(size.x - hMargin);
         setHeight(size.y - vMargin);
         if (m_background)
-            InflatableNode::inflate(*m_background, {getWidth(), getHeight()});
+            cacto::inflate(*m_background, {getWidth(), getHeight()});
         return size;
+    }
+
+    void Block::handleBlock(const sf::Event &event)
+    {
+        if (m_background)
+            cacto::handle(*m_background, event);
+    }
+
+    void Block::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+    }
+
+    bool Block::handle(const sf::Event &event)
+    {
+        handleBlock(event);
+        auto handled = cacto::handleChildren(*this, event);
+        return handled;
+    }
+
+    bool Block::bubble(Node &target, const sf::Event &event)
+    {
+        auto handle = cacto::bubbleParent(*this, target, event);
+        return handle;
+    }
+
+    sf::Vector2f Block::compact()
+    {
+        auto size = compactBlock({0, 0});
+        return size;
+    }
+
+    sf::Vector2f Block::inflate(const sf::Vector2f &containerSize)
+    {
+        auto size = inflateBlock(containerSize);
+        return size;
+    }
+
+    void Block::place(const sf::Vector2f &position)
+    {
+        placeBlock(position);
     }
 
     void Block::placeBlock(const sf::Vector2f &position)
@@ -210,46 +245,132 @@ namespace cacto
         setLeft(position.x + m_margin.left);
         setTop(position.y + m_margin.top);
         if (m_background)
-            InflatableNode::place(*m_background, {getLeft(), getTop()});
+            cacto::place(*m_background, {getLeft(), getTop()});
     }
 
-    void Block::onAttach(Node &parent)
+    bool Block::containsVisualPoint(const sf::Vector2f &point) const
     {
-        m_parent = &parent;
+        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
+        return result;
     }
 
-    void Block::onDetach(Node &parent)
+    Block::Block()
+        : Box(),
+          m_id(),
+          m_background(nullptr),
+          m_margin(0),
+          m_padding(0),
+          m_minWidth(0), m_maxWidth(std::numeric_limits<f32t>::infinity()),
+          m_minHeight(0), m_maxHeight(std::numeric_limits<f32t>::infinity()),
+          m_parent(),
+          m_vTransform(sf::Transform::Identity)
     {
-        m_parent = nullptr;
     }
 
-    void Block::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    Block::~Block()
     {
-        drawBlock(target, states);
+        detach();
     }
 
-    bool Block::onEvent(const sf::Event &event)
+    XmlValue toXml(const Block &block)
     {
-        eventBlock(event);
-        auto handled = eventChildren(event);
-        return handled;
+        XmlValue xml{"Block", {}};
+        auto background = block.getBackground();
+        if (background)
+        {
+            XmlValue content{"Background", {}};
+            auto background_xml = toXml(background);
+            auto id = getId(background_xml);
+            if (id != "")
+            {
+                xml["background"] = id;
+            }
+            else
+            {
+                content.asContent().push_back(background_xml);
+                xml.asContent().push_back(std::move(content));
+            }
+        }
+        xml["id"] = block.getId();
+        xml["margin"] = toString(block.getMargin());
+        xml["padding"] = toString(block.getPadding());
+        xml["minWidth"] = std::to_string(block.getMinWidth());
+        xml["maxWidth"] = std::to_string(block.getMaxWidth());
+        xml["minHeight"] = std::to_string(block.getMinHeight());
+        xml["maxHeight"] = std::to_string(block.getMaxHeight());
+        return std::move(xml);
     }
 
-    sf::Vector2f Block::onCompact()
+    void fromXml(Block &block, const XmlValue &xml)
     {
-        auto size = compactBlock({0, 0});
-        return size;
+        block.setBackground(nullptr);
+        auto id = xml.getAttribute("id");
+        auto background = getXml(xml.getAttribute("background"));
+        if (background)
+        {
+            Node *node = nullptr;
+            fromXml(node, *background);
+            ChildNode *child = dynamic_cast<ChildNode *>(node);
+            if (child)
+                block.setBackground(child);
+        }
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+                if (item.isTag() && item.getName() == "Background")
+                    for (auto &background_xml : item.asContent())
+                    {
+                        Node *node = nullptr;
+                        fromXml(node, background_xml);
+                        ChildNode *child = dynamic_cast<ChildNode *>(node);
+                        if (child)
+                            block.setBackground(child);
+                    }
+        Thickness margin{};
+        Thickness padding{};
+        auto minWidth = std::stof(xml.getAttribute("minWidth", "0"));
+        auto maxWidth = std::stof(xml.getAttribute("maxWidth", "inf"));
+        auto minHeight = std::stof(xml.getAttribute("minHeight", "0"));
+        auto maxHeight = std::stof(xml.getAttribute("maxHeight", "inf"));
+        fromString(margin, xml.getAttribute("margin", "0,0,0,0"));
+        fromString(padding, xml.getAttribute("padding", "0,0,0,0"));
+        block
+            .setId(id)
+            .setMargin(margin)
+            .setPadding(padding)
+            .setMinWidth(minWidth)
+            .setMaxWidth(maxWidth)
+            .setMinHeight(minHeight)
+            .setMaxHeight(maxHeight);
     }
 
-    sf::Vector2f Block::onInflate(const sf::Vector2f &containerSize)
+    namespace block
     {
-        auto size = inflateBlock(containerSize);
-        return size;
-    }
 
-    void Block::onPlace(const sf::Vector2f &position)
-    {
-        placeBlock(position);
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Block *block = nullptr;
+            if (value && typeid(*value) == typeid(Block) && (block = dynamic_cast<const Block *>(value)))
+            {
+                auto xml = cacto::toXml(*block);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Block")
+            {
+                auto block = std::make_shared<Block>();
+                cacto::fromXml(*block, xml);
+                Node::XmlStack.push(block);
+                return block.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

@@ -4,7 +4,10 @@
 #include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/RectUtils.hpp>
+#include <Cacto/Graphics/ColorUtils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 #include <Cacto/UI/Surface.hpp>
 
 namespace cacto
@@ -90,14 +93,9 @@ namespace cacto
         return *this;
     }
 
-    const Box &Surface::asBox() const
+    const sf::Transform &Surface::getVisualTransform() const
     {
-        return m_box;
-    }
-
-    Box &Surface::asBox()
-    {
-        return m_box;
+        return m_vTransform;
     }
 
     ParentNode *const Surface::getParent() const
@@ -125,6 +123,62 @@ namespace cacto
         m_parent = nullptr;
     }
 
+    sf::Vector2f Surface::compact()
+    {
+        setWidth(0);
+        setHeight(0);
+        m_invalid = true;
+        return {0, 0};
+    }
+
+    sf::Vector2f Surface::inflate(const sf::Vector2f &containerSize)
+    {
+        setWidth(containerSize.x);
+        setHeight(containerSize.y);
+        m_invalid = true;
+        return containerSize;
+    }
+
+    void Surface::place(const sf::Vector2f &position)
+    {
+        setLeft(position.x);
+        setTop(position.y);
+        m_invalid = true;
+    }
+
+    bool Surface::containsVisualPoint(const sf::Vector2f &point) const
+    {
+        if (m_geometry)
+        {
+            auto surface = m_geometry->getBounds();
+            auto _point = m_vTransform.getInverse().transformPoint(point);
+            auto result = m_geometry->containsPoint(mapPoint(_point, *this, surface));
+            return result;
+        }
+        return false;
+    }
+
+    Surface::Surface()
+        : m_id(),
+          m_parent(),
+          m_geometry(),
+          m_precision(1),
+          m_color(sf::Color::White),
+          m_texture(),
+          m_textureRect(),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::TriangleFan),
+          m_vTransform(sf::Transform::Identity)
+    {
+        if (m_texture)
+            setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
+    }
+
+    Surface::~Surface()
+    {
+        detach();
+    }
+
     void Surface::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_geometry)
@@ -135,60 +189,17 @@ namespace cacto
                 cacto::setColor(m_array, m_color);
                 if (m_texture)
                     cacto::setTexCoords(m_array, m_textureRect);
-                cacto::mapPositions(m_array, m_box);
+                cacto::mapPositions(m_array, *this);
                 m_invalid = false;
             }
-            if (m_box.getWidth() > 0 && m_box.getHeight() > 0)
+            if (getWidth() > 0 && getHeight() > 0)
             {
                 auto _states = states;
                 _states.texture = m_texture;
                 target.draw(m_array, _states);
+                m_vTransform = _states.transform;
             }
         }
-    }
-
-    sf::Vector2f Surface::compact()
-    {
-        m_box.setWidth(0);
-        m_box.setHeight(0);
-        m_invalid = true;
-        return {0, 0};
-    }
-
-    sf::Vector2f Surface::inflate(const sf::Vector2f &containerSize)
-    {
-        m_box.setWidth(containerSize.x);
-        m_box.setHeight(containerSize.y);
-        m_invalid = true;
-        return containerSize;
-    }
-
-    void Surface::place(const sf::Vector2f &position)
-    {
-        m_box.setLeft(position.x);
-        m_box.setTop(position.y);
-        m_invalid = true;
-    }
-
-    Surface::Surface()
-        : m_id(),
-          m_box(),
-          m_parent(),
-          m_geometry(),
-          m_precision(1),
-          m_color(),
-          m_texture(),
-          m_textureRect(),
-          m_invalid(true),
-          m_array(sf::PrimitiveType::TriangleFan)
-    {
-        if (m_texture)
-            setTextureRect({{0, 0}, sf::Vector2f(m_texture->getSize())});
-    }
-
-    Surface::~Surface()
-    {
-        detach();
     }
 
     XmlValue toXml(const Surface &surface)

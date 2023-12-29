@@ -1,7 +1,7 @@
 #include <fstream>
 #include <SFML/Graphics/Color.hpp>
-#include <Cacto/Lang/Utils.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Graphics/ColorUtils.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 
 namespace cacto
@@ -14,6 +14,7 @@ namespace cacto
 
     const std::string &ColorPack::getId(const sf::Color &value) const
     {
+        load();
         for (auto &pair : m_map)
             if (*pair.second == value)
                 return pair.first;
@@ -22,6 +23,7 @@ namespace cacto
 
     const sf::Color *const ColorPack::getResource(const std::string &id) const
     {
+        load();
         for (auto &pair : m_map)
             if (pair.first == id)
                 return pair.second.get();
@@ -30,37 +32,50 @@ namespace cacto
 
     ColorPack::ColorPack(const std::filesystem::path &path)
         : m_path(path),
+          m_loaded(),
           m_map()
     {
-        try
-        {
-            JsonValue json = nullptr;
-            json.fromFile(path);
-            for (auto &pair : json.asObject())
-            {
-                auto color = std::make_shared<sf::Color>();
-                cacto::fromString(*color, pair.second.getString("#00000000"));
-                m_map.insert({pair.first, color});
-            }
-        }
-        catch (...)
-        {
-        }
     }
 
     ColorPack::~ColorPack() = default;
 
     ColorPack::ColorPack(ColorPack &&other)
         : m_path(std::move(other.m_path)),
+          m_loaded(other.m_loaded),
           m_map(std::move(other.m_map))
     {
+        other.m_loaded = false;
     }
 
     ColorPack &ColorPack::operator=(ColorPack &&other)
     {
         m_path = std::move(other.m_path);
+        m_loaded = other.m_loaded;
         m_map = std::move(other.m_map);
+        other.m_loaded = false;
         return *this;
+    }
+
+    void ColorPack::load() const
+    {
+        if (!m_loaded)
+        {
+            try
+            {
+                JsonValue json = nullptr;
+                json.fromFile(m_path);
+                for (auto &pair : json.asObject())
+                {
+                    auto color = std::make_shared<sf::Color>();
+                    cacto::fromString(*color, pair.second.getString("#00000000"));
+                    m_map.insert({pair.first, color});
+                }
+            }
+            catch (...)
+            {
+            }
+            m_loaded = true;
+        }
     }
 
     const std::string &getId(const sf::Color &string)

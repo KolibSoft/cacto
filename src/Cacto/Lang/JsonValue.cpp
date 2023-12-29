@@ -2,8 +2,8 @@
 #include <fstream>
 #include <Cacto/Lang/JsonPrinter.hpp>
 #include <Cacto/Lang/JsonScanner.hpp>
+#include <Cacto/Lang/StringUtils.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
-#include <Cacto/Lang/Utils.hpp>
 
 namespace cacto
 {

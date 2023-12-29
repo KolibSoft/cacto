@@ -4,6 +4,8 @@
 #include <vector>
 #include <unordered_map>
 #include <filesystem>
+#include <ostream>
+#include <istream>
 #include <Cacto/Lang/Export.hpp>
 
 namespace cacto

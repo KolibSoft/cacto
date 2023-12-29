@@ -1,5 +1,4 @@
 #include <limits>
-#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -7,116 +6,69 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
-#include <Cacto/Window/EventNode.hpp>
+#include <Cacto/Graphics/GeometryPack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/FrameLayout.hpp>
 
 auto _ = false;
 
-class Frame
-    : public cacto::FrameLayout,
-      public virtual cacto::EventNode
-{
-
-public:
-    cacto::EventListener onClickListener;
-    cacto::Surface background{cacto::Surface::Rectangle};
-
-    bool onBubble(Node &target, const sf::Event &event)
-    {
-        if (event.type == sf::Event::MouseButtonReleased && onClickListener)
-        {
-            onClickListener(target, event);
-            return true;
-        }
-        else
-        {
-            auto handled = bubbleParent(target, event);
-            return handled;
-        }
-    }
-
-    Frame()
-    {
-        setBackground(&background);
-    }
-};
-
-class Square
-    : public cacto::Block,
-      public virtual cacto::EventNode
-{
-
-public:
-    cacto::EventListener onClickListener;
-    cacto::Surface background{cacto::Surface::Rectangle};
-
-    Square()
-    {
-        background.setColor(sf::Color::Cyan);
-        setBackground(&background);
-        setFixedWidth(100);
-        setFixedHeight(100);
-    }
-
-protected:
-    bool onEvent(const sf::Event &event) override
-    {
-        if (eventChildren(event))
-            return true;
-        else if (event.type == sf::Event::MouseButtonReleased && contains({float(event.mouseButton.x), float(event.mouseButton.y)}))
-        {
-            if (onClickListener)
-                onClickListener(*this, event);
-            else
-                bubbleParent(*this, event);
-            return true;
-        }
-        return false;
-    }
-};
-
-auto makeFrame(const sf::Color &color, cacto::Node &node, cacto::Box::Anchor hAnchor, cacto::Box::Anchor vAnchor)
-{
-    Frame frame{};
-    frame.background.setColor(color);
-    frame.append(node);
-    frame.setHorizontalAnchor(hAnchor);
-    frame.setVerticalAnchor(vAnchor);
-    frame.setMargin(10);
-    frame.setPadding(10);
-    return frame;
-}
-
 int main()
 {
 
+    cacto::GeometryPack geometries{"."};
+    cacto::TexturePack textures{"."};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    Square target{};
-    auto level1 = makeFrame(sf::Color::Green, target, cacto::Box::Center, cacto::Box::Center);
-    auto level2 = makeFrame(sf::Color::Blue, level1, cacto::Box::Center, cacto::Box::Center);
-    level2.setMaxWidth(0);
-    level2.setMaxHeight(0);
-    auto root = makeFrame(sf::Color::Red, level2, cacto::Box::Center, cacto::Box::Center);
+    cacto::Surface bgBlock{};
+    bgBlock
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Red);
 
-    root.onClickListener = [](auto &target, auto &event)
-    {
-        std::cout << "Clicked Bubbled!!!\n";
-    };
+    cacto::Block block{};
+    block
+        .setBackground(&bgBlock)
+        .setMargin(10)
+        .setMinWidth(100)
+        .setMaxHeight(100)
+        .setPadding(10);
+
+    cacto::Surface bgRoot{};
+    bgRoot
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Blue);
+
+    cacto::FrameLayout root{};
+    root
+        .setBackground(&bgRoot)
+        .setMargin(10)
+        .setMinWidth(100)
+        .setMaxHeight(100)
+        .setPadding(10);
+    root.append(block);
+
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/frame.xml");
+    cacto::fromXml(root, xml);
+    xml = cacto::toXml(root);
+    xml.toFile("res/frame.xml", 2);
 
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (!cacto::EventNode::event(root, event))
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if (event.type == sf::Event::Resized)
+                window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-                if (event.type == sf::Event::Resized)
-                    window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+                xml.fromFile("res/frame.xml");
+                cacto::fromXml(root, xml);
             }
         }
         root.compact();

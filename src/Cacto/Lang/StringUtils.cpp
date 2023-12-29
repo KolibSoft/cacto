@@ -1,5 +1,5 @@
 #include <fstream>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/StringUtils.hpp>
 
 namespace cacto
 {
@@ -12,18 +12,6 @@ namespace cacto
             string.replace(pos, oldStr.length(), newStr);
             pos += newStr.length();
         }
-    }
-
-    std::vector<std::string> split(const std::string &str, char delimiter)
-    {
-        std::vector<std::string> tokens;
-        std::istringstream stream(str);
-        std::string token;
-
-        while (std::getline(stream, token, delimiter))
-            tokens.push_back(token);
-
-        return std::move(tokens);
     }
 
     void toFile(const std::string &string, const std::filesystem::path &path)

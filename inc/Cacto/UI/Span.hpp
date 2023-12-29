@@ -1,10 +1,10 @@
-#ifndef CACTO_SPAN_HPP
-#define CACTO_SPAN_HPP
+#pragma once
 
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/TextDirection.hpp>
-#include <Cacto/UI/UINode.hpp>
+#include <Cacto/UI/Inflatable.hpp>
 
 namespace sf
 {
@@ -15,8 +15,10 @@ namespace cacto
 {
 
     class CACTO_UI_API Span
-        : public virtual ChildNode,
-          public virtual UINode
+        : public Box,
+          public virtual sf::Drawable,
+          public virtual Inflatable,
+          public virtual ChildNode
     {
 
     public:
@@ -40,16 +42,18 @@ namespace cacto
         const sf::Color &getColor() const;
         Span &setColor(const sf::Color &value);
 
+        const sf::Transform &getVisualTransform() const;
+
         ParentNode *const getParent() const override;
 
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
+
+        bool containsVisualPoint(const sf::Vector2f &point) const;
 
         Span();
         virtual ~Span();
@@ -60,6 +64,9 @@ namespace cacto
         Span(Span &&other) = delete;
         Span &operator=(Span &&other) = delete;
 
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
     private:
         std::string m_id;
         const sf::Font *m_font;
@@ -67,11 +74,11 @@ namespace cacto
         Direction m_direction;
         u32t m_characterSize;
         sf::Color m_color;
-        sf::Vector2f m_place;
         ParentNode *m_parent;
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
+        mutable sf::Transform m_vTransform;
     };
 
     XmlValue CACTO_UI_API toXml(const Span &span);
@@ -96,5 +103,3 @@ namespace cacto
     }
 
 }
-
-#endif

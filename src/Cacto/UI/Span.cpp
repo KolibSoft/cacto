@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Font.hpp>
-#include <Cacto/Core/Utils.hpp>
+#include <Cacto/Core/StringUtils.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/UI/Span.hpp>
@@ -79,6 +79,11 @@ namespace cacto
         return *this;
     }
 
+    const sf::Transform &Span::getVisualTransform() const
+    {
+        return m_vTransform;
+    }
+
     ParentNode *const Span::getParent() const
     {
         return m_parent;
@@ -115,15 +120,18 @@ namespace cacto
                 m_invalid = false;
             }
             auto _states = states;
-            _states.transform.translate(m_place);
+            _states.transform.translate({getLeft(), getTop()});
             _states.texture = &m_font->getTexture(m_characterSize);
             target.draw(m_array, _states);
+            m_vTransform = _states.transform;
         }
     }
 
     sf::Vector2f Span::compact()
     {
         auto bounds = m_array.getBounds();
+        setWidth(bounds.width);
+        setHeight(bounds.height);
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
@@ -131,6 +139,8 @@ namespace cacto
     sf::Vector2f Span::inflate(const sf::Vector2f &containerSize)
     {
         auto bounds = m_array.getBounds();
+        setWidth(bounds.width);
+        setHeight(bounds.height);
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
@@ -138,20 +148,28 @@ namespace cacto
     void Span::place(const sf::Vector2f &position)
     {
         auto bounds = m_array.getBounds();
-        m_place = {position.x - bounds.left, position.y - bounds.top};
+        setLeft(position.x - bounds.left);
+        setTop(position.y - bounds.top);
+    }
+
+    bool Span::containsVisualPoint(const sf::Vector2f &point) const
+    {
+        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
+        return result;
     }
 
     Span::Span()
-        : m_id(),
+        : Box(),
+          m_id(),
           m_font(),
           m_string(),
           m_direction(Direction::ToRight),
           m_characterSize(),
           m_color(sf::Color::White),
-          m_place(),
           m_parent(),
           m_invalid(true),
-          m_array(sf::PrimitiveType::Triangles)
+          m_array(sf::PrimitiveType::Triangles),
+          m_vTransform(sf::Transform::Identity)
     {
     }
 

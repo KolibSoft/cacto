@@ -1,48 +1,198 @@
 #include <SFML/Window/Event.hpp>
+#include <Cacto/Graphics/NodeUtils.hpp>
+#include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Graphics/TransformableUtils.hpp>
 #include <Cacto/UI/Surface.hpp>
+#include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
 
 namespace cacto
 {
 
-    const sf::Transformable &VirtualLayout::getTransformable() const
+    const sf::Transformable &VirtualLayout::asTransformable() const
     {
         return m_transformable;
     }
 
-    sf::Transformable &VirtualLayout::getTransformable()
+    sf::Transformable &VirtualLayout::asTransformable()
     {
         return m_transformable;
+    }
+
+    sf::Vector2f VirtualLayout::compact()
+    {
+        FrameLayout::compact();
+        auto size = compactBlock({0, 0});
+        m_surface.compact();
+        return size;
+    }
+
+    sf::Vector2f VirtualLayout::inflate(const sf::Vector2f &containerSize)
+    {
+        auto size = FrameLayout::inflate(containerSize);
+        auto contentBox = getContentBox();
+        m_surface.inflate({contentBox.getWidth(), contentBox.getHeight()});
+        return size;
+    }
+
+    void VirtualLayout::place(const sf::Vector2f &position)
+    {
+        placeBlock(position);
+        auto contentBox = getContentBox();
+        m_surface.place({contentBox.getLeft(), contentBox.getTop()});
+        auto child = getChild();
+        if (child)
+        {
+            auto &childBox = getChildBox();
+            contentBox.setLeft(0);
+            contentBox.setTop(0);
+            contentBox.setWidth(childBox.getWidth(), getHorizontalAnchor());
+            contentBox.setHeight(childBox.getHeight(), getVerticalAnchor());
+            cacto::place(*child, {contentBox.getLeft(), contentBox.getTop()});
+        }
+    }
+
+    bool VirtualLayout::handle(const sf::Event &event)
+    {
+        auto child = getChild();
+        if (child)
+        {
+            auto handled = false;
+            auto map = [&](const sf::Vector2f &point)
+            {
+                auto contentBox = getContentBox();
+                auto transform = m_transformable.getInverseTransform();
+                sf::Vector2f mappedPoint{point.x, point.y};
+                mappedPoint = getVisualTransform().getInverse().transformPoint(mappedPoint);
+                mappedPoint.x -= contentBox.getLeft();
+                mappedPoint.y -= contentBox.getTop();
+                mappedPoint = transform.transformPoint(mappedPoint);
+                return mappedPoint;
+            };
+            switch (event.type)
+            {
+            case sf::Event::MouseButtonPressed:
+            case sf::Event::MouseButtonReleased:
+            {
+                sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
+                if (m_surface.containsVisualPoint(point))
+                {
+                    point = map(point);
+                    auto _event = event;
+                    _event.mouseButton.x = point.x;
+                    _event.mouseButton.y = point.y;
+                    handled = cacto::handle(*child, _event);
+                }
+            }
+            break;
+            case sf::Event::MouseMoved:
+            {
+                sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
+                if (m_surface.containsVisualPoint(point))
+                {
+                    point = map(point);
+                    auto _event = event;
+                    _event.mouseMove.x = point.x;
+                    _event.mouseMove.y = point.y;
+                    handled = cacto::handle(*child, _event);
+                }
+            }
+            break;
+            case sf::Event::MouseWheelScrolled:
+            {
+                sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
+                if (m_surface.containsVisualPoint(point))
+                {
+                    point = map(point);
+                    auto _event = event;
+                    _event.mouseWheelScroll.x = point.x;
+                    _event.mouseWheelScroll.y = point.y;
+                    handled = cacto::handle(*child, _event);
+                }
+            }
+            break;
+            default:
+                handled = cacto::handle(*child, event);
+                break;
+            }
+            return handled;
+        }
+        return false;
+    }
+
+    bool VirtualLayout::bubble(Node &target, const sf::Event &event)
+    {
+        auto parent = getParent();
+        if (parent)
+        {
+            auto handled = false;
+            auto map = [&](const sf::Vector2f &point)
+            {
+                auto contentBox = getContentBox();
+                auto transform = m_transformable.getTransform();
+                sf::Vector2f mappedPoint{point.x, point.y};
+                mappedPoint = transform.transformPoint(mappedPoint);
+                mappedPoint.x += contentBox.getLeft();
+                mappedPoint.y += contentBox.getTop();
+                mappedPoint = getVisualTransform().transformPoint(mappedPoint);
+                return mappedPoint;
+            };
+            switch (event.type)
+            {
+            case sf::Event::MouseButtonPressed:
+            case sf::Event::MouseButtonReleased:
+            {
+                sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
+                point = map(point);
+                auto _event = event;
+                _event.mouseButton.x = point.x;
+                _event.mouseButton.y = point.y;
+                handled = cacto::bubble(*parent, target, _event);
+            }
+            break;
+            case sf::Event::MouseMoved:
+            {
+                sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
+                point = map(point);
+                auto _event = event;
+                _event.mouseMove.x = point.x;
+                _event.mouseMove.y = point.y;
+                handled = cacto::bubble(*parent, target, _event);
+            }
+            break;
+            case sf::Event::MouseWheelScrolled:
+            {
+                sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
+                point = map(point);
+                auto _event = event;
+                _event.mouseWheelScroll.x = point.x;
+                _event.mouseWheelScroll.y = point.y;
+                handled = cacto::bubble(*parent, target, _event);
+            }
+            break;
+            default:
+                handled = cacto::bubble(*parent, target, event);
+                break;
+            }
+            return handled;
+        }
+        return false;
     }
 
     VirtualLayout::VirtualLayout()
         : FrameLayout(),
           m_transformable(),
-          m_surface(Surface::Rectangle),
+          m_surface(),
           m_texture()
     {
-        m_surface.setColor(sf::Color::White);
+        m_surface
+            .setGeometry(&Rectangle::Identity)
+            .setColor(sf::Color::White);
     }
 
     VirtualLayout::~VirtualLayout() = default;
 
-    VirtualLayout::VirtualLayout(const VirtualLayout &other)
-        : FrameLayout(other),
-          m_transformable(other.m_transformable),
-          m_surface(other.m_surface),
-          m_texture()
-    {
-    }
-
-    VirtualLayout &VirtualLayout::operator=(const VirtualLayout &other)
-    {
-        FrameLayout::operator=(other);
-        m_transformable = other.m_transformable;
-        m_surface = other.m_surface;
-        return *this;
-    }
-
-    void VirtualLayout::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void VirtualLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
         auto child = getChild();
@@ -58,169 +208,57 @@ namespace cacto
                     m_surface.setTexture(&m_texture.getTexture());
                 }
                 m_texture.clear(sf::Color::Transparent);
-                DrawNode::draw(*child, m_texture, m_transformable.getTransform());
+                cacto::draw(*child, m_texture, m_transformable.getTransform());
                 m_texture.display();
                 target.draw(m_surface, states);
             }
         }
     }
 
-    sf::Vector2f VirtualLayout::onCompact()
+    XmlValue toXml(const VirtualLayout &_virtual)
     {
-        FrameLayout::onCompact();
-        auto size = compactBlock({0, 0});
-        m_surface.compact();
-        return size;
+        auto xml = cacto::toXml((const FrameLayout &)_virtual);
+        xml.setName("VirtualLayout");
+        auto transformable_xml = cacto::toXml(_virtual.asTransformable());
+        for (auto &pair : transformable_xml.asAttributes())
+            xml[pair.first] = pair.second;
+        return std::move(xml);
     }
 
-    sf::Vector2f VirtualLayout::onInflate(const sf::Vector2f &containerSize)
+    void fromXml(VirtualLayout &_virtual, const XmlValue &xml)
     {
-        auto size = FrameLayout::onInflate(containerSize);
-        auto contentBox = getContentBox();
-        m_surface.inflate({contentBox.getWidth(), contentBox.getHeight()});
-        return size;
+        cacto::fromXml((FrameLayout &)_virtual, xml);
+        cacto::fromXml(_virtual.asTransformable(), xml);
     }
 
-    void VirtualLayout::onPlace(const sf::Vector2f &position)
+    namespace _virtual
     {
-        placeBlock(position);
-        auto contentBox = getContentBox();
-        m_surface.place({contentBox.getLeft(), contentBox.getTop()});
-        auto holder = getHolder();
-        if (holder)
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
         {
-            auto &childBox = holder->getBox();
-            contentBox.setLeft(0);
-            contentBox.setTop(0);
-            contentBox.setWidth(childBox.getWidth(), getHorizontalAnchor());
-            contentBox.setHeight(childBox.getHeight(), getVerticalAnchor());
-            holder->place({contentBox.getLeft(), contentBox.getTop()});
+            const VirtualLayout *_virtual = nullptr;
+            if (value && typeid(*value) == typeid(VirtualLayout) && (_virtual = dynamic_cast<const VirtualLayout *>(value)))
+            {
+                auto xml = cacto::toXml(*_virtual);
+                return std::move(xml);
+            }
+            return nullptr;
         }
-    }
 
-    bool VirtualLayout::onEvent(const sf::Event &event)
-    {
-        auto child = getChild();
-        if (child)
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            auto handled = false;
-            auto map = [&](const sf::Vector2f &point)
+            if (xml.isTag() && xml.getName() == "VirtualLayout")
             {
-                auto contentBox = getContentBox();
-                auto transform = m_transformable.getInverseTransform();
-                sf::Vector2f mappedPoint{point.x, point.y};
-                mappedPoint.x -= contentBox.getLeft();
-                mappedPoint.y -= contentBox.getTop();
-                mappedPoint = transform.transformPoint(mappedPoint);
-                return mappedPoint;
-            };
-            switch (event.type)
-            {
-            case sf::Event::MouseButtonPressed:
-            case sf::Event::MouseButtonReleased:
-            {
-                sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
-                if (m_surface.contains(point))
-                {
-                    point = map(point);
-                    auto _event = event;
-                    _event.mouseButton.x = point.x;
-                    _event.mouseButton.y = point.y;
-                    handled = EventNode::event(*child, _event);
-                }
+                auto _virtual = std::make_shared<VirtualLayout>();
+                cacto::fromXml(*_virtual, xml);
+                Node::XmlStack.push(_virtual);
+                return _virtual.get();
             }
-            break;
-            case sf::Event::MouseMoved:
-            {
-                sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
-                if (m_surface.contains(point))
-                {
-                    point = map(point);
-                    auto _event = event;
-                    _event.mouseMove.x = point.x;
-                    _event.mouseMove.y = point.y;
-                    handled = EventNode::event(*child, _event);
-                }
-            }
-            break;
-            case sf::Event::MouseWheelScrolled:
-            {
-                sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
-                if (m_surface.contains(point))
-                {
-                    point = map(point);
-                    auto _event = event;
-                    _event.mouseWheelScroll.x = point.x;
-                    _event.mouseWheelScroll.y = point.y;
-                    handled = EventNode::event(*child, _event);
-                }
-            }
-            break;
-            default:
-                handled = EventNode::event(*child, event);
-                break;
-            }
-            return handled;
+            return nullptr;
         }
-        return false;
-    }
 
-    bool VirtualLayout::onBubble(Node &target, const sf::Event &event)
-    {
-        auto parent = getParent();
-        if (parent)
-        {
-            auto handled = false;
-            auto map = [&](const sf::Vector2f &point)
-            {
-                auto contentBox = getContentBox();
-                auto transform = m_transformable.getTransform();
-                sf::Vector2f mappedPoint{point.x, point.y};
-                mappedPoint = transform.transformPoint(mappedPoint);
-                mappedPoint.x += contentBox.getLeft();
-                mappedPoint.y += contentBox.getTop();
-                return mappedPoint;
-            };
-            switch (event.type)
-            {
-            case sf::Event::MouseButtonPressed:
-            case sf::Event::MouseButtonReleased:
-            {
-                sf::Vector2f point{f32t(event.mouseButton.x), f32t(event.mouseButton.y)};
-                point = map(point);
-                auto _event = event;
-                _event.mouseButton.x = point.x;
-                _event.mouseButton.y = point.y;
-                handled = EventNode::bubble(*parent, target, _event);
-            }
-            break;
-            case sf::Event::MouseMoved:
-            {
-                sf::Vector2f point{f32t(event.mouseMove.x), f32t(event.mouseMove.y)};
-                point = map(point);
-                auto _event = event;
-                _event.mouseMove.x = point.x;
-                _event.mouseMove.y = point.y;
-                handled = EventNode::bubble(*parent, target, _event);
-            }
-            break;
-            case sf::Event::MouseWheelScrolled:
-            {
-                sf::Vector2f point{f32t(event.mouseWheelScroll.x), f32t(event.mouseWheelScroll.y)};
-                point = map(point);
-                auto _event = event;
-                _event.mouseWheelScroll.x = point.x;
-                _event.mouseWheelScroll.y = point.y;
-                handled = EventNode::bubble(*parent, target, _event);
-            }
-            break;
-            default:
-                handled = EventNode::bubble(*parent, target, event);
-                break;
-            }
-            return handled;
-        }
-        return false;
+        XmlConverter Converter{};
+
     }
 
 }

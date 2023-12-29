@@ -1,5 +1,5 @@
 #include <sstream>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/StringUtils.hpp>
 #include <Cacto/Lang/JsonPrinter.hpp>
 
 namespace cacto

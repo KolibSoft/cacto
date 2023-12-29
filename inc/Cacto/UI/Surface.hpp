@@ -1,9 +1,9 @@
 #pragma once
 
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Core/Node.hpp>
+#include <Cacto/UI/Inflatable.hpp>
 #include <Cacto/UI/Box.hpp>
-#include <Cacto/UI/UINode.hpp>
 
 namespace sf
 {
@@ -16,8 +16,10 @@ namespace cacto
     class Geometry;
 
     class CACTO_UI_API Surface
-        : public virtual ChildNode,
-          public virtual UINode
+        : public Box,
+          public virtual sf::Drawable,
+          public virtual Inflatable,
+          public virtual ChildNode
     {
 
     public:
@@ -39,19 +41,18 @@ namespace cacto
         const sf::FloatRect &getTextureRect() const;
         Surface &setTextureRect(const sf::FloatRect &value);
 
-        const Box &asBox() const;
-        Box &asBox();
-
+        const sf::Transform &getVisualTransform() const;
+        
         ParentNode *const getParent() const override;
 
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
+
+        bool containsVisualPoint(const sf::Vector2f &point) const;
 
         Surface();
         virtual ~Surface();
@@ -62,9 +63,11 @@ namespace cacto
         Surface(Surface &&other) = delete;
         Surface &operator=(Surface &&other) = delete;
 
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
     private:
         std::string m_id;
-        Box m_box;
         const Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;
@@ -74,6 +77,7 @@ namespace cacto
 
         mutable bool m_invalid;
         mutable sf::VertexArray m_array;
+        mutable sf::Transform m_vTransform;
     };
 
     XmlValue CACTO_UI_API toXml(const Surface &surface);

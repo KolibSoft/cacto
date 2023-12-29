@@ -1,5 +1,4 @@
-#ifndef CACTO_SCROLL_LAYOUT_HPP
-#define CACTO_SCROLL_LAYOUT_HPP
+#pragma once
 
 #include <Cacto/Window/Scrollable.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
@@ -13,24 +12,41 @@ namespace cacto
     {
 
     public:
+        bool handle(const sf::Event &event) override;
+        
+        void scroll(sf::Mouse::Wheel wheel = sf::Mouse::Wheel::VerticalWheel, f32t delta = 0, i32t x = 0, i32t y = 0) override;
+
         ScrollLayout();
         virtual ~ScrollLayout();
 
-        ScrollLayout(const ScrollLayout &other);
-        ScrollLayout &operator=(const ScrollLayout &other);
-
     protected:
         bool canScroll(f32t delta) const;
-
-        bool onEvent(const sf::Event &event) override;
-
-        void onScroll(const sf::Event &event) override;
+        virtual void onScroll(const sf::Event &event);
 
     private:
         bool m_hovered;
         bool m_shift;
     };
 
-}
+    XmlValue CACTO_UI_API toXml(const ScrollLayout &scroll);
+    void CACTO_UI_API fromXml(ScrollLayout &scroll, const XmlValue &xml);
 
-#endif
+    namespace scroll
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
+}

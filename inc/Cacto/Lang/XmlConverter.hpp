@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-
 #include <Cacto/Config.hpp>
 
 namespace cacto

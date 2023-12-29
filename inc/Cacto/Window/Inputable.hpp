@@ -18,9 +18,6 @@ namespace cacto
 
         Inputable() = default;
         virtual ~Inputable() = default;
-
-    protected:
-        virtual void onInput(const sf::Event &event) = 0;
     };
 
 }

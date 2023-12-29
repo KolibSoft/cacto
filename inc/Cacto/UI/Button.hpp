@@ -1,6 +1,6 @@
-#ifndef CACTO_BUTTON_HPP
-#define CACTO_BUTTON_HPP
+#pragma once
 
+#include <Cacto/Window/EventListener.hpp>
 #include <Cacto/Window/Clickable.hpp>
 #include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
@@ -18,26 +18,45 @@ namespace cacto
         const EventListener &getOnClickListener() const;
         Button &setOnClickListener(const EventListener &value);
 
-        Button(const sf::Font &font, const sf::String &string = "", u32t characterSize = 30);
-        Button(sf::Font &&font, const sf::String &string = "", u32t characterSize = 30) = delete;
+        bool handle(const sf::Event &event) override;
 
+        void click(sf::Mouse::Button button = sf::Mouse::Left, const sf::Vector2f &position = {0, 0}) override;
+        void focus() override;
+        void unfocus() override;
+
+        Button();
         virtual ~Button();
 
         Button(const Button &other);
         Button &operator=(const Button &other);
 
     protected:
-        bool onEvent(const sf::Event &event) override;
-
-        void onClick(const sf::Event &event) override;
-        void onFocus(const sf::Event &event) override;
-        void onUnfocus(const sf::Event &event) override;
+        virtual void onClick(const sf::Event &event);
 
     private:
         EventListener m_onClick;
         bool m_focused;
     };
 
-}
+    XmlValue CACTO_UI_API toXml(const Button &button);
+    void CACTO_UI_API fromXml(Button &button, const XmlValue &xml);
 
-#endif
+    namespace button
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
+}

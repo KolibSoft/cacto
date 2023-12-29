@@ -4,16 +4,6 @@
 namespace cacto
 {
 
-    const Span &Label::getSpan() const
-    {
-        return m_span;
-    }
-
-    Span &Label::getSpan()
-    {
-        return m_span;
-    }
-
     Label::Anchor Label::getHorizontalAnchor() const
     {
         return m_hAnchor;
@@ -36,46 +26,30 @@ namespace cacto
         return *this;
     }
 
-    Label::Label(const sf::Font &font, const sf::String &string, u32t characterSize)
-        : Block(),
-          m_span(font, string, characterSize),
-          m_hAnchor(Start),
-          m_vAnchor(Start)
+    const Span &Label::asSpan() const
     {
+        return m_span;
     }
 
-    Label::~Label() = default;
-
-    Label::Label(const Label &other)
-        : Block(other),
-          m_span(other.m_span),
-          m_hAnchor(other.m_hAnchor),
-          m_vAnchor(other.m_vAnchor)
+    Span &Label::asSpan()
     {
+        return m_span;
     }
 
-    Label &Label::operator=(const Label &other)
-    {
-        m_span = other.m_span;
-        m_hAnchor = other.m_hAnchor;
-        m_vAnchor = other.m_vAnchor;
-        return *this;
-    }
-
-    void Label::onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    void Label::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
-        target.draw(dynamic_cast<const DrawNode &>(m_span), states);
+        target.draw(m_span, states);
     }
 
-    sf::Vector2f Label::onCompact()
+    sf::Vector2f Label::compact()
     {
         auto contentSize = m_span.compact();
         auto size = compactBlock(contentSize);
         return size;
     }
 
-    sf::Vector2f Label::onInflate(const sf::Vector2f &containerSize)
+    sf::Vector2f Label::inflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
         auto contentBox = getContentBox();
@@ -83,14 +57,75 @@ namespace cacto
         return size;
     }
 
-    void Label::onPlace(const sf::Vector2f &position)
+    void Label::place(const sf::Vector2f &position)
     {
         placeBlock(position);
         auto contentBox = getContentBox();
-        auto bounds = m_span.getLocalBounds();
-        contentBox.setWidth(bounds.width, m_hAnchor);
-        contentBox.setHeight(bounds.height, m_vAnchor);
+        contentBox.setWidth(m_span.getWidth(), m_hAnchor);
+        contentBox.setHeight(m_span.getHeight(), m_vAnchor);
         m_span.place({contentBox.getLeft(), contentBox.getTop()});
+    }
+
+    Label::Label()
+        : Block(),
+          m_span(),
+          m_hAnchor(Anchor::Start),
+          m_vAnchor(Anchor::Start)
+    {
+    }
+
+    Label::~Label() = default;
+
+    XmlValue CACTO_UI_API toXml(const Label &label)
+    {
+        auto xml = cacto::toXml((const Block &)label);
+        xml.setName("Label");
+        auto span_xml = cacto::toXml(label.asSpan());
+        for (auto &pair : span_xml.asAttributes())
+            xml[pair.first] = pair.second;
+        xml["horizontalAnchor"] = toString(label.getHorizontalAnchor());
+        xml["verticalAnchor"] = toString(label.getVerticalAnchor());
+        return std::move(xml);
+    }
+
+    void CACTO_UI_API fromXml(Label &label, const XmlValue &xml)
+    {
+        cacto::fromXml((Block &)label, xml);
+        cacto::fromXml(label.asSpan(), xml);
+        Box::Anchor hAnchor{};
+        Box::Anchor vAnchor{};
+        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
+        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+    }
+
+    namespace label
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const Label *label = nullptr;
+            if (value && typeid(*value) == typeid(Label) && (label = dynamic_cast<const Label *>(value)))
+            {
+                auto xml = cacto::toXml(*label);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "Label")
+            {
+                auto label = std::make_shared<Label>();
+                cacto::fromXml(*label, xml);
+                Node::XmlStack.push(label);
+                return label.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

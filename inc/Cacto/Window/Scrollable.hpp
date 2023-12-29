@@ -11,7 +11,7 @@ namespace sf
 namespace cacto
 {
 
-    class CACTO_WINDOW_API Scrollable
+    class Scrollable
     {
 
     public:

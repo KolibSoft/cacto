@@ -1,3 +1,4 @@
+#include <sstream>
 #include <Cacto/UI/Thickness.hpp>
 
 namespace cacto
@@ -64,6 +65,21 @@ namespace cacto
     Thickness::Thickness(f32t _left, f32t _top, f32t _right, f32t _bottom)
         : left(_left), top(_top), right(_right), bottom(_bottom)
     {
+    }
+
+    std::string toString(const Thickness &thickness)
+    {
+        std::stringstream stream{};
+        char separator = ',';
+        stream << thickness.left << separator << thickness.top << separator << thickness.right << separator << thickness.bottom;
+        return stream.str();
+    }
+
+    void fromString(Thickness &thickness, const std::string &string)
+    {
+        std::stringstream stream{string};
+        char separator = ',';
+        stream >> thickness.left >> separator >> thickness.top >> separator >> thickness.right >> separator >> thickness.bottom;
     }
 
 }

@@ -3,6 +3,11 @@
 #include <string>
 #include <Cacto/Core/Export.hpp>
 
+namespace sf
+{
+    class String;
+}
+
 namespace cacto
 {
 

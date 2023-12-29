@@ -1,7 +1,7 @@
-#ifndef CACTO_INPUT_HPP
-#define CACTO_INPUT_HPP
+#pragma once
 
 #include <SFML/System/String.hpp>
+#include <Cacto/Window/EventListener.hpp>
 #include <Cacto/Window/Inputable.hpp>
 #include <Cacto/Window/Focusable.hpp>
 #include <Cacto/UI/Label.hpp>
@@ -19,26 +19,42 @@ namespace cacto
         const EventListener &getOnInputListener() const;
         Input &setOnInputListener(const EventListener &value);
 
-        Input(const sf::Font &font, const sf::String &string = "", u32t characterSize = 30);
-        Input(sf::Font &&font, const sf::String &string = "", u32t characterSize = 30) = delete;
+        bool handle(const sf::Event &event) override;
 
+        void input(u32t unicode) override;
+        void focus() override;
+        void unfocus() override;
+
+        Input();
         virtual ~Input();
 
-        Input(const Input &other);
-        Input &operator=(const Input &other);
-
     protected:
-        bool onEvent(const sf::Event &event) override;
-
-        void onInput(const sf::Event &event) override;
-        void onFocus(const sf::Event &event) override;
-        void onUnfocus(const sf::Event &event) override;
+        virtual void onInput(const sf::Event &event);
 
     private:
         EventListener m_onInput;
         bool m_focused;
     };
 
-}
+    XmlValue CACTO_UI_API toXml(const Input &input);
+    void CACTO_UI_API fromXml(Input &input, const XmlValue &xml);
 
-#endif
+    namespace input
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
+}

@@ -1,5 +1,4 @@
-#ifndef CACTO_PICTURE_HPP
-#define CACTO_PICTURE_HPP
+#pragma once
 
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Block.hpp>
@@ -20,34 +19,29 @@ namespace cacto
         };
 
         Scale getScale() const;
-        Picture& setScale(Scale value);
+        Picture &setScale(Scale value);
 
-        const sf::FloatRect& getTextureRect() const;
-        Picture& setTextureRect(const sf::FloatRect& value);
+        const sf::FloatRect &getTextureRect() const;
+        Picture &setTextureRect(const sf::FloatRect &value);
 
         Anchor getHorizontalAnchor() const;
-        Picture& setHorizontalAnchor(Anchor value);
+        Picture &setHorizontalAnchor(Anchor value);
 
         Anchor getVerticalAnchor() const;
-        Picture& setVerticalAnchor(Anchor value);
+        Picture &setVerticalAnchor(Anchor value);
 
-        const Surface &getSurface() const;
-        Surface &getSurface();
+        const Surface &asSurface() const;
+        Surface &asSurface();
 
-        Picture(const sf::Texture &texture, Scale scale = Fill);
-        Picture(sf::Texture &&texture, Scale scale = Fill) = delete;
+        sf::Vector2f compact() override;
+        sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
+        void place(const sf::Vector2f &position = {0, 0}) override;
 
+        Picture();
         virtual ~Picture();
 
-        Picture(const Picture &other);
-        Picture &operator=(const Picture &other);
-
     protected:
-        void onDraw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
-        sf::Vector2f onCompact() override;
-        sf::Vector2f onInflate(const sf::Vector2f &containerSize) override;
-        void onPlace(const sf::Vector2f &position) override;
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         Surface m_surface;
@@ -57,6 +51,25 @@ namespace cacto
         Anchor m_vAnchor;
     };
 
-}
+    XmlValue CACTO_UI_API toXml(const Picture &picture);
+    void CACTO_UI_API fromXml(Picture &picture, const XmlValue &xml);
 
-#endif
+    namespace picture
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
+}

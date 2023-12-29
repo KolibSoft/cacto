@@ -3,7 +3,8 @@
 #include <Cacto/Graphics/RectPack.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/RectUtils.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 
 namespace cacto
@@ -107,16 +108,6 @@ namespace cacto
         return *this;
     }
 
-    const sf::Transformable &TileMap::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &TileMap::asTransformable()
-    {
-        return m_transformable;
-    }
-
     ParentNode *const TileMap::getParent() const
     {
         return m_parent;
@@ -140,6 +131,22 @@ namespace cacto
             return;
         m_parent->remove(*this);
         m_parent = nullptr;
+    }
+
+    TileMap::TileMap()
+        : m_id(),
+          m_texture(nullptr),
+          m_tileSize(),
+          m_area(),
+          m_parent(),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::Triangles)
+    {
+    }
+
+    TileMap::~TileMap()
+    {
+        detach();
     }
 
     void TileMap::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -166,29 +173,15 @@ namespace cacto
         }
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= m_transformable.getTransform();
+        _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
-
-    TileMap::TileMap()
-        : m_id(),
-          m_texture(nullptr),
-          m_tileSize(),
-          m_area(),
-          m_transformable(),
-          m_parent(),
-          m_invalid(true),
-          m_array(sf::PrimitiveType::Triangles)
-    {
-    }
-
-    TileMap::~TileMap() = default;
 
     const sf::FloatRect TileMap::NoTile{};
 
     XmlValue toXml(const TileMap &tileMap)
     {
-        auto xml = cacto::toXml(tileMap.asTransformable());
+        auto xml = cacto::toXml((const sf::Transformable &)tileMap);
         xml.setName("TileMap");
         auto texture = tileMap.getTexture();
         auto tileSize = tileMap.getTileSize();
@@ -215,7 +208,7 @@ namespace cacto
 
     void fromXml(TileMap &tileMap, const XmlValue &xml)
     {
-        cacto::fromXml(tileMap.asTransformable(), xml);
+        cacto::fromXml((sf::Transformable &)tileMap, xml);
         auto texture = getTexture(xml.getAttribute("texture"));
         sf::Vector2f tileSize{};
         sf::FloatRect area{};

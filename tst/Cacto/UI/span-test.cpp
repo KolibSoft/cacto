@@ -11,7 +11,6 @@
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/Span.hpp>
-#include <Cacto/Lang/Utils.hpp>
 
 auto _ = false;
 
@@ -34,8 +33,11 @@ int main()
         .setColor(sf::Color::Cyan);
     */
 
-    cacto::fromXmlFile(span, "res/span.xml");
-    cacto::toXmlFile(span, "res/span.xml", 4);
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/span.xml");
+    cacto::fromXml(span, xml);
+    xml = cacto::toXml(span);
+    xml.toFile("res/span.xml", 2);
 
     while (window.isOpen())
     {
@@ -47,7 +49,10 @@ int main()
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-                cacto::fromXmlFile(span, "res/span.xml");
+            {
+                xml.fromFile("res/span.xml");
+                cacto::fromXml(span, xml);
+            }
         }
         span.compact();
         span.inflate();

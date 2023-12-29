@@ -120,7 +120,7 @@ namespace cacto
         m_rect.height += thickness.getVertical();
     }
 
-    bool Box::contains(const sf::Vector2f &point) const
+    bool Box::containsPoint(const sf::Vector2f &point) const
     {
         auto result = m_rect.contains(point);
         return result;
@@ -138,6 +138,30 @@ namespace cacto
 
     Box::~Box()
     {
+    }
+
+    std::string toString(Box::Anchor anchor)
+    {
+        if (anchor == Box::Start)
+            return "Start";
+        else if (anchor == Box::End)
+            return "End";
+        else if (anchor == Box::Center)
+            return "Center";
+        else
+            throw std::runtime_error("Invalid anchor value");
+    }
+
+    void fromString(Box::Anchor &anchor, const std::string &string)
+    {
+        if (string == "Start")
+            anchor = Box::Start;
+        else if (string == "End")
+            anchor = Box::End;
+        else if (string == "Center")
+            anchor = Box::Center;
+        else
+            throw std::runtime_error("Invalid anchor value");
     }
 
 }

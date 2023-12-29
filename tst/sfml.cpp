@@ -9,6 +9,10 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
+    sf::Cursor cursor{};
+    cursor.loadFromSystem(sf::Cursor::Hand);
+    window.setMouseCursor(cursor);
+
     while (window.isOpen())
     {
         sf::Event event{};
@@ -17,7 +21,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        window.clear(sf::Color::White);
+        window.clear();
         window.display();
     }
 
