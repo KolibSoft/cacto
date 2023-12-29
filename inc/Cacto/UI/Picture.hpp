@@ -34,14 +34,15 @@ namespace cacto
         const Surface &asSurface() const;
         Surface &asSurface();
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
 
         Picture();
         virtual ~Picture();
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         Surface m_surface;

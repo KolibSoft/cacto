@@ -12,7 +12,7 @@
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/UI/Picture.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 auto _ = false;
 
@@ -42,8 +42,11 @@ int main()
         .setGeometry(cacto::getGeometry("res/rectangle.xml"))
         .setTexture(cacto::getTexture("res/image.png"));
 
-    cacto::toXmlFile(root, "res/picture.xml", 4);
-    cacto::fromXmlFile(root, "res/picture.xml");
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/picture.xml");
+    cacto::fromXml(root, xml);
+    xml = cacto::toXml(root);
+    xml.toFile("res/picture.xml", 2);
 
     while (window.isOpen())
     {
@@ -55,7 +58,10 @@ int main()
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-                cacto::fromXmlFile(root, "res/picture.xml");
+            {
+                xml.fromFile("res/picture.xml");
+                cacto::fromXml(root, xml);
+            }
         }
         root.compact();
         root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});

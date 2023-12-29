@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/UI/Picture.hpp>
 
 namespace cacto
@@ -58,12 +58,6 @@ namespace cacto
     Surface &Picture::asSurface()
     {
         return m_surface;
-    }
-
-    void Picture::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        drawBlock(target, states);
-        target.draw(m_surface, states);
     }
 
     sf::Vector2f Picture::compact()
@@ -124,6 +118,12 @@ namespace cacto
     }
 
     Picture::~Picture() = default;
+
+    void Picture::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        target.draw(m_surface, states);
+    }
 
     XmlValue CACTO_UI_API toXml(const Picture &picture)
     {
