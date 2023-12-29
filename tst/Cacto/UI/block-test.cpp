@@ -6,6 +6,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Core/XmlPack.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
@@ -19,6 +20,7 @@ auto _ = false;
 int main()
 {
 
+    cacto::XmlPack xmls{"."};
     cacto::GeometryPack geometries{"."};
     cacto::TexturePack textures{"."};
 

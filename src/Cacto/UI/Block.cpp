@@ -1,6 +1,7 @@
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <Cacto/Core/XmlPack.hpp>
 #include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Window/NodeUtils.hpp>
 #include <Cacto/UI/NodeUtils.hpp>
@@ -274,8 +275,16 @@ namespace cacto
         {
             XmlValue content{"Background", {}};
             auto background_xml = toXml(background);
-            content.asContent().push_back(background_xml);
-            xml.asContent().push_back(std::move(content));
+            auto id = getId(background_xml);
+            if (id != "")
+            {
+                xml["background"] = id;
+            }
+            else
+            {
+                content.asContent().push_back(background_xml);
+                xml.asContent().push_back(std::move(content));
+            }
         }
         xml["id"] = block.getId();
         xml["margin"] = toString(block.getMargin());
@@ -291,6 +300,15 @@ namespace cacto
     {
         block.setBackground(nullptr);
         auto id = xml.getAttribute("id");
+        auto background = getXml(xml.getAttribute("background"));
+        if (background)
+        {
+            Node *node = nullptr;
+            fromXml(node, *background);
+            ChildNode *child = dynamic_cast<ChildNode *>(node);
+            if (child)
+                block.setBackground(child);
+        }
         if (xml.isTag())
             for (auto &item : xml.asContent())
                 if (item.isTag() && item.getName() == "Background")
