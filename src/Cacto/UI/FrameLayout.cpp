@@ -49,7 +49,7 @@ namespace cacto
         if (m_child == &child)
             return;
         if (m_child != nullptr)
-            throw std::runtime_error("This node has another child already");
+            throw std::runtime_error("This node has already another child");
         if (child.getParent() != nullptr && child.getParent() != this)
             throw std::runtime_error("The node is already attached to another parent");
         if (hasAncestor(child))
