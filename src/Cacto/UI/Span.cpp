@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Font.hpp>
-#include <Cacto/Core/Utils.hpp>
+#include <Cacto/Core/StringUtils.hpp>
 #include <Cacto/Graphics/FontPack.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/UI/Span.hpp>
@@ -147,9 +147,9 @@ namespace cacto
         setTop(position.y - bounds.top);
     }
 
-    bool Span::containsVisually(const sf::Vector2f &point) const
+    bool Span::containsVisualPoint(const sf::Vector2f &point) const
     {
-        auto result = contains(m_vTransform.getInverse().transformPoint(point));
+        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
         return result;
     }
 

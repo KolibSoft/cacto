@@ -3,8 +3,9 @@
 
 #include <SFML/System/String.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/TextDirection.hpp>
-#include <Cacto/UI/UINode.hpp>
+#include <Cacto/UI/Inflatable.hpp>
 
 namespace sf
 {
@@ -16,8 +17,9 @@ namespace cacto
 
     class CACTO_UI_API Span
         : public Box,
-          public virtual ChildNode,
-          public virtual UINode
+          public virtual sf::Drawable,
+          public virtual Inflatable,
+          public virtual ChildNode
     {
 
     public:
@@ -46,13 +48,11 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
 
-        bool containsVisually(const sf::Vector2f &point) const;
+        bool containsVisualPoint(const sf::Vector2f &point) const;
 
         Span();
         virtual ~Span();
@@ -62,6 +62,9 @@ namespace cacto
 
         Span(Span &&other) = delete;
         Span &operator=(Span &&other) = delete;
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         std::string m_id;
