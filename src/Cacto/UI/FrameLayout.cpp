@@ -71,12 +71,12 @@ namespace cacto
     {
         drawBlock(target, states);
         if (m_child)
-            DrawNode::draw(*m_child, target, states);
+            cacto::draw(*m_child, target, states);
     }
 
     sf::Vector2f FrameLayout::compact()
     {
-        auto childSize = m_child ? InflatableNode::compact(*m_child) : sf::Vector2f{0, 0};
+        auto childSize = m_child ? cacto::compact(*m_child) : sf::Vector2f{0, 0};
         m_childBox.setWidth(childSize.x);
         m_childBox.setHeight(childSize.y);
         auto size = compactBlock(childSize);
@@ -89,7 +89,7 @@ namespace cacto
         if (m_child)
         {
             auto contentBox = getContentBox();
-            auto childSize = InflatableNode::inflate(*m_child, {contentBox.getWidth(), contentBox.getHeight()});
+            auto childSize = cacto::inflate(*m_child, {contentBox.getWidth(), contentBox.getHeight()});
             m_childBox.setWidth(childSize.x);
             m_childBox.setHeight(childSize.y);
         }
@@ -105,7 +105,7 @@ namespace cacto
             contentBox.setWidth(m_childBox.getWidth(), m_hAnchor);
             contentBox.setHeight(m_childBox.getHeight(), m_vAnchor);
             sf::Vector2f childPlace{contentBox.getLeft(), contentBox.getTop()};
-            InflatableNode::place(*m_child, childPlace);
+            cacto::place(*m_child, childPlace);
             m_childBox.setLeft(childPlace.x);
             m_childBox.setTop(childPlace.y);
         }
