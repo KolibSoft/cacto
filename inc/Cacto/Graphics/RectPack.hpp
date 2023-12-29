@@ -40,7 +40,10 @@ namespace cacto
         RectPack &operator=(RectPack &&other);
 
     private:
+        void load() const;
+
         std::filesystem::path m_path;
+        mutable bool m_loaded;
         mutable std::unordered_map<std::string, std::shared_ptr<sf::FloatRect>> m_map;
     };
 

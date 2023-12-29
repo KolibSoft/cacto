@@ -35,7 +35,10 @@ namespace cacto
         StringPack &operator=(StringPack &&other);
 
     private:
+        void load() const;
+
         std::filesystem::path m_path;
+        mutable bool m_loaded;
         mutable std::unordered_map<std::string, std::shared_ptr<sf::String>> m_map;
     };
 

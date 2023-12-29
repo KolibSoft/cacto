@@ -7,6 +7,7 @@
 namespace cacto
 {
 
+    class Node;
     class ParentNode;
     class ChildNode;
 
@@ -35,6 +36,36 @@ namespace cacto
         bool hasAncestor(const Node &node) const;
 
         static ResourceStack<Node> XmlStack;
+    };
+
+    class CACTO_CORE_API ParentNode
+        : public virtual Node
+    {
+
+    public:
+        ParentNode *const getParent() const override;
+        void clearChildren();
+
+        virtual void append(ChildNode &child) = 0;
+        virtual void remove(ChildNode &child) = 0;
+
+        ParentNode() = default;
+        virtual ~ParentNode() = default;
+    };
+
+    class CACTO_CORE_API ChildNode
+        : public virtual Node
+    {
+
+    public:
+        szt getChildCount() const override;
+        ChildNode *const getChild(szt index = 0) const override;
+
+        virtual void attach(ParentNode &parent) = 0;
+        virtual void detach() = 0;
+
+        ChildNode() = default;
+        virtual ~ChildNode() = default;
     };
 
     template class CACTO_CORE_API XmlConverter<Node>;
