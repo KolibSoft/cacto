@@ -68,6 +68,10 @@ int main()
                 window.close();
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            else if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                root.asTransformable().move({event.mouseWheelScroll.delta, 0});
+            }
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
                 /*

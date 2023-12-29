@@ -10,7 +10,7 @@
 #include "Cacto/UI/Input.cpp"
 #include "Cacto/UI/FrameLayout.cpp"
 #include "Cacto/UI/VirtualLayout.cpp"
-// #include "Cacto/UI/ScrollLayout.cpp"
+#include "Cacto/UI/ScrollLayout.cpp"
 // #include "Cacto/UI/AnchorLayout.cpp"
 // #include "Cacto/UI/RowLayout.cpp"
 // #include "Cacto/UI/ColumnLayout.cpp"

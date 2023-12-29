@@ -1,5 +1,4 @@
 #include <limits>
-#include <iostream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -7,85 +6,94 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
+#include <Cacto/Graphics/GeometryPack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/UI/Surface.hpp>
-#include <Cacto/UI/Block.hpp>
 #include <Cacto/UI/ScrollLayout.hpp>
-#include <Cacto/UI/Button.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 auto _ = false;
 
 int main()
 {
 
+    cacto::GeometryPack geometries{"."};
+    cacto::TexturePack textures{"."};
+
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    sf::Font font;
-    auto _ = font.loadFromFile("./res/Grandview.ttf");
+    cacto::Surface bgBlock{};
+    bgBlock
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Red);
 
-    auto background = cacto::Surface::Rectangle;
-    background.setColor(sf::Color::Red);
-
-    cacto::ScrollLayout root{};
-    root
-        .setBackground(&background)
-        .setMargin(10)
-        .setPadding(10);
-
-    cacto::ScrollLayout subscroll{};
-    auto bgSubscroll = background;
-    bgSubscroll.setColor(sf::Color::Yellow);
-    subscroll
-        .setBackground(&bgSubscroll)
-        .setMargin(10)
-        .setPadding(10);
-
-    cacto::Button button{font, "It Works"};
-    auto bgBlock = background;
-    bgBlock.setColor(sf::Color::Blue);
-    button
-        .setOnClickListener([](auto &node, auto &event)
-                            { std::cout << "Clicked\n"; })
-        .setHorizontalAnchor(cacto::Box::Center)
-        .setVerticalAnchor(cacto::Box::Center)
+    cacto::Block block{};
+    block
         .setBackground(&bgBlock)
         .setMargin(10)
         .setFixedWidth(400)
         .setFixedHeight(400)
         .setPadding(10);
 
-    subscroll.append(button);
+    cacto::Surface bgScroll{};
+    bgScroll
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Green);
 
-    subscroll
-        .setHorizontalAnchor(cacto::Block::Center)
-        .setVerticalAnchor(cacto::Block::Center)
+    cacto::ScrollLayout scroll{};
+    scroll
+        .setBackground(&bgScroll)
+        .setMargin(10)
         .setFixedWidth(300)
-        .setFixedHeight(300);
+        .setFixedHeight(300)
+        .setPadding(10);
+    scroll.append(block);
 
-    root.append(subscroll);
+    cacto::Surface bgRoot{};
+    bgRoot
+        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setColor(sf::Color::Blue);
 
+    cacto::ScrollLayout root{};
     root
-        .setHorizontalAnchor(cacto::Block::Center)
-        .setVerticalAnchor(cacto::Block::Center)
+        .setBackground(&bgRoot)
+        .setMargin(10)
         .setFixedWidth(200)
-        .setFixedHeight(200);
+        .setFixedHeight(200)
+        .setPadding(10);
+    root.append(scroll);
+
+    /*
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/scroll.xml");
+    cacto::fromXml(root, xml);
+    xml = cacto::toXml(root);
+    xml.toFile("res/scroll.xml", 2);
+    */
 
     while (window.isOpen())
     {
         sf::Event event{};
         while (window.pollEvent(event))
         {
-            if (!root.event(event))
+            if (root.handle(event))
+                break;
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if (event.type == sf::Event::Resized)
+                window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-                if (event.type == sf::Event::Resized)
-                    window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
+                /*
+                xml.fromFile("res/scroll.xml");
+                cacto::fromXml(root, xml);
+                */
             }
         }
         root.compact();
-        // root.inflate(sf::Vector2f{sf::Mouse::getPosition(window)});
-        root.inflate(sf::Vector2f{window.getSize()});
+        root.inflate();
         root.place();
         window.clear(sf::Color::Black);
         window.draw(root);

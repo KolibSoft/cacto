@@ -13,18 +13,16 @@ namespace cacto
     {
 
     public:
+        bool handle(const sf::Event &event) override;
+        
+        void scroll(sf::Mouse::Wheel wheel = sf::Mouse::Wheel::VerticalWheel, f32t delta = 0, i32t x = 0, i32t y = 0) override;
+
         ScrollLayout();
         virtual ~ScrollLayout();
 
-        ScrollLayout(const ScrollLayout &other);
-        ScrollLayout &operator=(const ScrollLayout &other);
-
     protected:
         bool canScroll(f32t delta) const;
-
-        bool onEvent(const sf::Event &event) override;
-
-        void onScroll(const sf::Event &event) override;
+        virtual void onScroll(const sf::Event &event);
 
     private:
         bool m_hovered;
