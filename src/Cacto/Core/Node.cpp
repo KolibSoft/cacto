@@ -42,6 +42,32 @@ namespace cacto
 
     ResourceStack<Node> Node::XmlStack{};
 
+    ParentNode *const ParentNode::getParent() const
+    {
+        return nullptr;
+    }
+
+    void ParentNode::clearChildren()
+    {
+        szt childCount = 0;
+        while ((childCount = getChildCount()))
+        {
+            auto child = getChild(childCount - 1);
+            if (child)
+                remove(*child);
+        }
+    }
+
+    szt ChildNode::getChildCount() const
+    {
+        return 0;
+    }
+
+    ChildNode *const ChildNode::getChild(szt index) const
+    {
+        return nullptr;
+    }
+
     XmlValue toXml(const Node *const &node)
     {
         auto xml = XmlConverter<Node>::xml(node);
