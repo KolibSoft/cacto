@@ -3,6 +3,7 @@
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf

@@ -3,6 +3,7 @@
 #include <vector>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
+#include <Cacto/Core/Node.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
