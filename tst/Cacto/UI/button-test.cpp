@@ -16,8 +16,6 @@
 #include <Cacto/UI/Button.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 
-auto _ = false;
-
 int main()
 {
 
@@ -58,7 +56,12 @@ int main()
         while (window.pollEvent(event))
         {
             if (root.handle(event))
-                break;
+            {
+                if (event.type == sf::Event::MouseMoved)
+                    std::cout << "Set Hand cursor\n";
+            }
+            else if (event.type == sf::Event::MouseMoved)
+                std::cout << "Set Arrow cursor\n";
             else if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::Resized)

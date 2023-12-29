@@ -17,7 +17,12 @@ namespace cacto
 
     bool Button::handle(const sf::Event &event)
     {
-        if (event.type == sf::Event::MouseButtonReleased && containsVisualPoint({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        if (event.type == sf::Event::MouseMoved && containsVisualPoint({f32t(event.mouseMove.x), f32t(event.mouseMove.y)}))
+        {
+            bubble(*this, event);
+            return true;
+        }
+        else if (event.type == sf::Event::MouseButtonReleased && containsVisualPoint({f32t(event.mouseButton.x), f32t(event.mouseButton.y)}))
         {
             onClick(event);
             return true;
@@ -34,8 +39,8 @@ namespace cacto
         sf::Event event{};
         event.type = sf::Event::MouseButtonReleased;
         event.mouseButton.button = button;
-        event.mouseButton.x = getLeft() + position.x;
-        event.mouseButton.y = getTop() + position.y;
+        event.mouseButton.x = position.x;
+        event.mouseButton.y = position.y;
         onClick(event);
     }
 
@@ -45,7 +50,7 @@ namespace cacto
         event.type = sf::Event::GainedFocus;
 
         m_focused = true;
-        cacto::bubbleParent(*this, *this, event);
+        bubble(*this, event);
     }
 
     void Button::unfocus()
@@ -54,7 +59,7 @@ namespace cacto
         event.type = sf::Event::LostFocus;
 
         m_focused = false;
-        cacto::bubbleParent(*this, *this, event);
+        bubble(*this, event);
     }
 
     Button::Button()
@@ -71,7 +76,7 @@ namespace cacto
         if (m_onClick)
             m_onClick(*this, event);
         else
-            cacto::bubbleParent(*this, *this, event);
+            bubble(*this, event);
         focus();
     }
 
