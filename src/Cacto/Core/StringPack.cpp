@@ -1,6 +1,6 @@
 #include <fstream>
 #include <SFML/System/String.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
 #include <Cacto/Core/StringPack.hpp>
 
 namespace cacto

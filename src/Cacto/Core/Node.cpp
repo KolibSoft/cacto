@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Core/Node.hpp>
 
 namespace cacto

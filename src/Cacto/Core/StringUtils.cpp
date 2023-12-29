@@ -1,5 +1,6 @@
+#include <SFML/System/String.hpp>
 #include <Cacto/Core/StringPack.hpp>
-#include <Cacto/Core/Utils.hpp>
+#include <Cacto/Core/StringUtils.hpp>
 
 namespace cacto
 {
