@@ -36,6 +36,27 @@ namespace cacto
         mutable sf::RenderTexture m_texture;
     };
 
+    XmlValue CACTO_UI_API toXml(const VirtualLayout &_virtual);
+    void CACTO_UI_API fromXml(VirtualLayout &_virtual, const XmlValue &xml);
+
+    namespace _virtual
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
 }
 
 #endif

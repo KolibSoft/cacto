@@ -73,4 +73,46 @@ namespace cacto
             asTransformable().move({0, event.mouseWheelScroll.delta * 5});
     }
 
+     XmlValue toXml(const ScrollLayout &scroll)
+    {
+        auto xml = cacto::toXml((const VirtualLayout &)scroll);
+        xml.setName("ScrollLayout");
+        return std::move(xml);
+    }
+
+    void fromXml(ScrollLayout &scroll, const XmlValue &xml)
+    {
+        cacto::fromXml((VirtualLayout &)scroll, xml);
+    }
+
+    namespace scroll
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const ScrollLayout *scroll = nullptr;
+            if (value && typeid(*value) == typeid(ScrollLayout) && (scroll = dynamic_cast<const ScrollLayout *>(value)))
+            {
+                auto xml = cacto::toXml(*scroll);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "ScrollLayout")
+            {
+                auto scroll = std::make_shared<ScrollLayout>();
+                cacto::fromXml(*scroll, xml);
+                Node::XmlStack.push(scroll);
+                return scroll.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
+    }
+
 }

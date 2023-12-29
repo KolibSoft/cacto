@@ -1,6 +1,7 @@
 #include <SFML/Window/Event.hpp>
 #include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
+#include <Cacto/Graphics/TransformableUtils.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
@@ -210,6 +211,52 @@ namespace cacto
                 target.draw(m_surface, states);
             }
         }
+    }
+
+    XmlValue toXml(const VirtualLayout &_virtual)
+    {
+        auto xml = cacto::toXml((const FrameLayout &)_virtual);
+        xml.setName("VirtualLayout");
+        auto transformable_xml = cacto::toXml(_virtual.asTransformable());
+        for (auto &pair : transformable_xml.asAttributes())
+            xml[pair.first] = pair.second;
+        return std::move(xml);
+    }
+
+    void fromXml(VirtualLayout &_virtual, const XmlValue &xml)
+    {
+        cacto::fromXml((FrameLayout &)_virtual, xml);
+        cacto::fromXml(_virtual.asTransformable(), xml);
+    }
+
+    namespace _virtual
+    {
+
+        XmlValue XmlConverter::toXml(const Node *const value) const
+        {
+            const VirtualLayout *_virtual = nullptr;
+            if (value && typeid(*value) == typeid(VirtualLayout) && (_virtual = dynamic_cast<const VirtualLayout *>(value)))
+            {
+                auto xml = cacto::toXml(*_virtual);
+                return std::move(xml);
+            }
+            return nullptr;
+        }
+
+        Node *XmlConverter::fromXml(const XmlValue &xml) const
+        {
+            if (xml.isTag() && xml.getName() == "VirtualLayout")
+            {
+                auto _virtual = std::make_shared<VirtualLayout>();
+                cacto::fromXml(*_virtual, xml);
+                Node::XmlStack.push(_virtual);
+                return _virtual.get();
+            }
+            return nullptr;
+        }
+
+        XmlConverter Converter{};
+
     }
 
 }

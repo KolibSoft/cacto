@@ -29,6 +29,27 @@ namespace cacto
         bool m_shift;
     };
 
+    XmlValue CACTO_UI_API toXml(const ScrollLayout &scroll);
+    void CACTO_UI_API fromXml(ScrollLayout &scroll, const XmlValue &xml);
+
+    namespace scroll
+    {
+
+        class CACTO_UI_API XmlConverter
+            : public virtual node::XmlConverter
+        {
+        public:
+            XmlValue toXml(const Node *const value) const override;
+            Node *fromXml(const XmlValue &xml) const override;
+
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+        extern XmlConverter CACTO_UI_API Converter;
+
+    }
+
 }
 
 #endif
