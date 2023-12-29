@@ -15,7 +15,8 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API TileMap
-        : public virtual sf::Drawable,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ChildNode
     {
 
@@ -37,9 +38,6 @@ namespace cacto
 
         TileMap &setTiles(const sf::IntRect &area, const sf::FloatRect &tile);
         TileMap &fill(const sf::FloatRect &tile);
-
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
 
         ParentNode *const getParent() const override;
 
@@ -66,7 +64,6 @@ namespace cacto
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;
         std::vector<sf::FloatRect> m_tiles;
-        sf::Transformable m_transformable;
         ParentNode *m_parent;
 
         mutable bool m_invalid;

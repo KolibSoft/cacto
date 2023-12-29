@@ -39,7 +39,8 @@ namespace cacto
     }
 
     class CACTO_GRAPHICS_API Skeleton
-        : public virtual sf::Drawable,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ParentNode,
           public virtual ChildNode
     {
@@ -50,9 +51,6 @@ namespace cacto
 
         const std::string &getId() const override;
         Skeleton &setId(const std::string &value);
-
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
 
         ParentNode *const getParent() const override;
 
@@ -85,7 +83,6 @@ namespace cacto
         struct holder;
 
         std::string m_id;
-        sf::Transformable m_transformable;
         ParentNode *m_parent;
         std::vector<holder> m_holders;
 

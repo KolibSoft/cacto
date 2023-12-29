@@ -4,6 +4,7 @@
 #include <Cacto/Graphics/Geometry.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Graphics/GeometryPack.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/RectUtils.hpp>
 #include <Cacto/Graphics/ColorUtils.hpp>
 #include <Cacto/Graphics/VertexArrayUtils.hpp>
@@ -142,8 +143,14 @@ namespace cacto
 
     bool Surface::containsVisually(const sf::Vector2f &point) const
     {
-        auto result = contains(m_vTransform.getInverse().transformPoint(point));
-        return result;
+        if (m_geometry)
+        {
+            auto surface = m_geometry->getBounds();
+            auto _point = m_vTransform.getInverse().transformPoint(point);
+            auto result = m_geometry->containsPoint(mapPoint(_point, *this, surface));
+            return result;
+        }
+        return false;
     }
 
     Surface::Surface()

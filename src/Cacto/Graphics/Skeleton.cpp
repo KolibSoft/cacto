@@ -54,16 +54,6 @@ namespace cacto
         return *this;
     }
 
-    const sf::Transformable &Skeleton::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &Skeleton::asTransformable()
-    {
-        return m_transformable;
-    }
-
     ParentNode *const Skeleton::getParent() const
     {
         return m_parent;
@@ -152,7 +142,6 @@ namespace cacto
 
     Skeleton::Skeleton()
         : m_id(),
-          m_transformable(),
           m_parent(),
           m_holders()
     {
@@ -175,7 +164,7 @@ namespace cacto
                 case Relation::Body:
                 {
                     auto _states = states;
-                    _states.transform *= m_transformable.getTransform();
+                    _states.transform *= getTransform();
                     _states.transform.translate(holder.options.getCoords());
                     cacto::draw(*holder.child, target, _states);
                 }
@@ -183,7 +172,7 @@ namespace cacto
                 case Relation::Bone:
                 {
                     auto _states = states;
-                    _states.transform.translate(m_transformable.getTransform().transformPoint(holder.options.getCoords()));
+                    _states.transform.translate(getTransform().transformPoint(holder.options.getCoords()));
                     cacto::draw(*holder.child, target, _states);
                 }
                 break;
@@ -216,7 +205,7 @@ namespace cacto
 
     XmlValue toXml(const Skeleton &skeleton)
     {
-        XmlValue xml = toXml(skeleton.asTransformable());
+        XmlValue xml = toXml((const sf::Transformable &)skeleton);
         xml.setName("Skeleton");
         xml["id"] = skeleton.getId();
         auto &content = xml.asContent();
@@ -238,7 +227,7 @@ namespace cacto
     void fromXml(Skeleton &skeleton, const XmlValue &xml)
     {
         skeleton.clearChildren();
-        fromXml(skeleton.asTransformable(), xml);
+        fromXml((sf::Transformable &)skeleton, xml);
         skeleton.setId(xml.getAttribute("id"));
         if (xml.isTag())
             for (auto &item : xml.asContent())

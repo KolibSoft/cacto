@@ -108,16 +108,6 @@ namespace cacto
         return *this;
     }
 
-    const sf::Transformable &TileMap::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &TileMap::asTransformable()
-    {
-        return m_transformable;
-    }
-
     ParentNode *const TileMap::getParent() const
     {
         return m_parent;
@@ -148,7 +138,6 @@ namespace cacto
           m_texture(nullptr),
           m_tileSize(),
           m_area(),
-          m_transformable(),
           m_parent(),
           m_invalid(true),
           m_array(sf::PrimitiveType::Triangles)
@@ -184,7 +173,7 @@ namespace cacto
         }
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= m_transformable.getTransform();
+        _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
 
@@ -192,7 +181,7 @@ namespace cacto
 
     XmlValue toXml(const TileMap &tileMap)
     {
-        auto xml = cacto::toXml(tileMap.asTransformable());
+        auto xml = cacto::toXml((const sf::Transformable &)tileMap);
         xml.setName("TileMap");
         auto texture = tileMap.getTexture();
         auto tileSize = tileMap.getTileSize();
@@ -219,7 +208,7 @@ namespace cacto
 
     void fromXml(TileMap &tileMap, const XmlValue &xml)
     {
-        cacto::fromXml(tileMap.asTransformable(), xml);
+        cacto::fromXml((sf::Transformable &)tileMap, xml);
         auto texture = getTexture(xml.getAttribute("texture"));
         sf::Vector2f tileSize{};
         sf::FloatRect area{};

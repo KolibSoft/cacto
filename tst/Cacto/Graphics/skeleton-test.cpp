@@ -7,18 +7,24 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Skeleton.hpp>
-#include <Cacto/Lang/Utils.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
+#include <Cacto/Lang/XmlValue.hpp>
 
 int main()
 {
+
+    cacto::ColorPack colors{"res/colors.json"};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Skeleton skeleton{};
 
     auto stackSize = cacto::Node::XmlStack.getSize();
-    cacto::fromXmlFile(skeleton, "res/skeleton.xml");
-    cacto::toXmlFile(skeleton, "res/skeleton.xml", 2);
+    cacto::XmlValue xml = nullptr;
+    xml.fromFile("res/skeleton.xml");
+    cacto::fromXml(skeleton, xml);
+    xml = cacto::toXml(skeleton);
+    xml.toFile("res/skeleton.xml", 2);
 
     std::cout << "Node Xml Stack: " << cacto::Node::XmlStack.getSize() << '\n';
     auto stack = cacto::Node::XmlStack.pop(cacto::Node::XmlStack.getSize() - stackSize);
@@ -36,18 +42,18 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
-                skeleton.asTransformable().setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                skeleton.setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
-                skeleton.asTransformable().rotate(sf::degrees(event.mouseWheelScroll.delta));
-                skeleton.asTransformable().setScale(skeleton.asTransformable().getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
+                skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
+                skeleton.setScale(skeleton.getScale() + sf::Vector2f{event.mouseWheelScroll.delta / 100, -event.mouseWheelScroll.delta / 100});
             }
             else if (event.type == sf::Event::KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::Left)
-                    left->asTransformable().rotate(sf::degrees(5));
+                    left->rotate(sf::degrees(5));
                 else if (event.key.code == sf::Keyboard::Right)
-                    right->asTransformable().rotate(sf::degrees(5));
+                    right->rotate(sf::degrees(5));
             }
         }
         window.clear();

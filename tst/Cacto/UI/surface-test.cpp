@@ -41,7 +41,7 @@ int main()
     std::cout << cacto::toXml(surface).toString(2) << '\n';
 
     sf::Transformable transformable{};
-    transformable.scale({0.5, 0.5});
+    transformable.scale({0.25, 0.25});
     transformable.move({200, 200});
     transformable.rotate(sf::degrees(30));
 

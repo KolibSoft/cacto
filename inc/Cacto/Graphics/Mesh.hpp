@@ -8,7 +8,7 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public virtual sf::Drawable,
+        : public sf::VertexArray,
           public virtual ChildNode
     {
 
@@ -33,12 +33,8 @@ namespace cacto
         Mesh(Mesh &&other) = delete;
         Mesh &operator=(Mesh &&other) = delete;
 
-    protected:
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
     private:
         std::string m_id;
-        sf::VertexArray m_array;
         ParentNode *m_parent;
     };
 
