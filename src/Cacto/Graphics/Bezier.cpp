@@ -1,5 +1,6 @@
 #include <math.h>
 #include <SFML/System/Vector2.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 
 namespace cacto

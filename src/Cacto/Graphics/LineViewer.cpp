@@ -1,6 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Graphics/Line.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 #include <Cacto/Graphics/LineViewer.hpp>
 
 namespace cacto

@@ -1,3 +1,5 @@
+#include <SFML/System/Vector2.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
 namespace cacto

@@ -1,7 +1,7 @@
 #include <fstream>
 #include <SFML/Graphics/Color.hpp>
-#include <Cacto/Lang/Utils.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Graphics/ColorUtils.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 
 namespace cacto

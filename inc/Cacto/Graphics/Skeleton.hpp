@@ -1,8 +1,9 @@
 #pragma once
 
 #include <vector>
+#include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
 {
@@ -37,9 +38,9 @@ namespace cacto
     }
 
     class CACTO_GRAPHICS_API Skeleton
-        : public virtual ParentNode,
-          public virtual ChildNode,
-          public virtual DrawNode
+        : public virtual sf::Drawable,
+          public virtual ParentNode,
+          public virtual ChildNode
     {
 
     public:
@@ -67,8 +68,6 @@ namespace cacto
         Skeleton &append(ChildNode &child, const Options &options);
         void remove(ChildNode &child) override;
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         Skeleton();
         virtual ~Skeleton();
 
@@ -77,6 +76,9 @@ namespace cacto
 
         Skeleton(Skeleton &&other) = delete;
         Skeleton &operator=(Skeleton &&other) = delete;
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         struct holder;

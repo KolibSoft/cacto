@@ -3,7 +3,8 @@
 #include <Cacto/Graphics/RectPack.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/RectUtils.hpp>
 #include <Cacto/Graphics/TileMap.hpp>
 
 namespace cacto
@@ -142,6 +143,23 @@ namespace cacto
         m_parent = nullptr;
     }
 
+    TileMap::TileMap()
+        : m_id(),
+          m_texture(nullptr),
+          m_tileSize(),
+          m_area(),
+          m_transformable(),
+          m_parent(),
+          m_invalid(true),
+          m_array(sf::PrimitiveType::Triangles)
+    {
+    }
+
+    TileMap::~TileMap()
+    {
+        detach();
+    }
+
     void TileMap::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_invalid)
@@ -169,20 +187,6 @@ namespace cacto
         _states.transform *= m_transformable.getTransform();
         target.draw(m_array, _states);
     }
-
-    TileMap::TileMap()
-        : m_id(),
-          m_texture(nullptr),
-          m_tileSize(),
-          m_area(),
-          m_transformable(),
-          m_parent(),
-          m_invalid(true),
-          m_array(sf::PrimitiveType::Triangles)
-    {
-    }
-
-    TileMap::~TileMap() = default;
 
     const sf::FloatRect TileMap::NoTile{};
 

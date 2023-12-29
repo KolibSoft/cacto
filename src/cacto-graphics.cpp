@@ -1,5 +1,4 @@
 #define CACTO_GRAPHICS_EXPORTS
-#include "Cacto/Graphics/DrawNode.cpp"
 #include "Cacto/Graphics/Line.cpp"
 #include "Cacto/Graphics/LineViewer.cpp"
 #include "Cacto/Graphics/Straight.cpp"
@@ -18,4 +17,10 @@
 #include "Cacto/Graphics/FontPack.cpp"
 #include "Cacto/Graphics/GeometryPack.cpp"
 #include "Cacto/Graphics/TextDirection.cpp"
-#include "Cacto/Graphics/Utils.cpp"
+#include "Cacto/Graphics/NodeUtils.cpp"
+#include "Cacto/Graphics/VectorUtils.cpp"
+#include "Cacto/Graphics/RectUtils.cpp"
+#include "Cacto/Graphics/PrimitiveTypeUtils.cpp"
+#include "Cacto/Graphics/ColorUtils.cpp"
+#include "Cacto/Graphics/VertexArrayUtils.cpp"
+#include "Cacto/Graphics/TransformableUtils.cpp"

@@ -3,7 +3,7 @@
 #include <vector>
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Graphics/DrawNode.hpp>
+#include <Cacto/Graphics/Export.hpp>
 
 namespace sf
 {
@@ -14,8 +14,8 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API TileMap
-        : public virtual ChildNode,
-          public virtual DrawNode
+        : public virtual sf::Drawable,
+          public virtual ChildNode
     {
 
     public:
@@ -45,8 +45,6 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
-
         TileMap();
         virtual ~TileMap();
 
@@ -57,6 +55,9 @@ namespace cacto
         TileMap &operator=(TileMap &&other) = delete;
 
         static const sf::FloatRect NoTile;
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         std::string m_id;

@@ -1,7 +1,6 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Core/Pack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 
 namespace cacto
@@ -53,11 +52,6 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        target.draw(m_array, states);
-    }
-
     Mesh::Mesh()
         : m_id(),
           m_array(),
@@ -68,6 +62,11 @@ namespace cacto
     Mesh::~Mesh()
     {
         detach();
+    }
+
+    void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        target.draw(m_array, states);
     }
 
     XmlValue toXml(const Mesh &mesh)

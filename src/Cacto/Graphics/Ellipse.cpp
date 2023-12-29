@@ -1,6 +1,6 @@
 #include <cmath>
 #include <SFML/Graphics/Rect.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 
 namespace cacto

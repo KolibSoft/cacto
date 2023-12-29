@@ -1,6 +1,8 @@
 #include <stdexcept>
 #include <SFML/Graphics/RenderStates.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/NodeUtils.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/TransformableUtils.hpp>
 #include <Cacto/Graphics/Skeleton.hpp>
 
 namespace cacto
@@ -148,6 +150,20 @@ namespace cacto
         }
     }
 
+    Skeleton::Skeleton()
+        : m_id(),
+          m_transformable(),
+          m_parent(),
+          m_holders()
+    {
+    }
+
+    Skeleton::~Skeleton()
+    {
+        detach();
+        clearChildren();
+    }
+
     void Skeleton::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_holders.size() > 0)
@@ -161,14 +177,14 @@ namespace cacto
                     auto _states = states;
                     _states.transform *= m_transformable.getTransform();
                     _states.transform.translate(holder.options.getCoords());
-                    DrawNode::draw(*holder.child, target, _states);
+                    cacto::draw(*holder.child, target, _states);
                 }
                 break;
                 case Relation::Bone:
                 {
                     auto _states = states;
                     _states.transform.translate(m_transformable.getTransform().transformPoint(holder.options.getCoords()));
-                    DrawNode::draw(*holder.child, target, _states);
+                    cacto::draw(*holder.child, target, _states);
                 }
                 break;
                 default:
@@ -176,20 +192,6 @@ namespace cacto
                 }
             }
         }
-    }
-
-    Skeleton::Skeleton()
-        : m_id(),
-          m_transformable(),
-          m_parent(),
-          m_holders()
-    {
-    }
-
-    Skeleton::~Skeleton()
-    {
-        detach();
-        clearChildren();
     }
 
     std::string toString(Skeleton::Relation relation)

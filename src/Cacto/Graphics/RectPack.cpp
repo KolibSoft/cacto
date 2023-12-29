@@ -1,7 +1,7 @@
 #include <fstream>
 #include <SFML/Graphics/Rect.hpp>
-#include <Cacto/Lang/Utils.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Lang/JsonValue.hpp>
+#include <Cacto/Graphics/RectUtils.hpp>
 #include <Cacto/Graphics/RectPack.hpp>
 
 namespace cacto
