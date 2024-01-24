@@ -1,4 +1,6 @@
 #include <stdexcept>
+#include <istream>
+#include <Cacto/Lang/Printable.hpp>
 #include <Cacto/Lang/Printer.hpp>
 
 namespace cacto
@@ -49,6 +51,11 @@ namespace cacto
         m_line += string;
     }
 
+    void Printer::print(const Printable &printable)
+    {
+        printable.print(*this);
+    }
+
     void Printer::println(c8t character)
     {
         m_line += character;
@@ -64,6 +71,19 @@ namespace cacto
     void Printer::println(const std::string &string)
     {
         m_line += string;
+        println();
+    }
+
+    void Printer::println(std::istream &stream)
+    {
+        std::string line{};
+        while (std::getline(stream, line))
+            println(line);
+    }
+
+    void Printer::println(const Printable &printable)
+    {
+        printable.print(*this);
         println();
     }
 
