@@ -2,6 +2,7 @@
 #include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/TransformableUtils.hpp>
+#include <Cacto/Window/NodeUtils.hpp>
 #include <Cacto/UI/Surface.hpp>
 #include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/VirtualLayout.hpp>
@@ -66,7 +67,6 @@ namespace cacto
                 mappedPoint = getVisualTransform().getInverse().transformPoint(mappedPoint);
                 mappedPoint.x -= contentBox.getLeft();
                 mappedPoint.y -= contentBox.getTop();
-                mappedPoint = transform.transformPoint(mappedPoint);
                 return mappedPoint;
             };
             switch (event.type)
@@ -131,7 +131,6 @@ namespace cacto
                 auto contentBox = getContentBox();
                 auto transform = m_transformable.getTransform();
                 sf::Vector2f mappedPoint{point.x, point.y};
-                mappedPoint = transform.transformPoint(mappedPoint);
                 mappedPoint.x += contentBox.getLeft();
                 mappedPoint.y += contentBox.getTop();
                 mappedPoint = getVisualTransform().transformPoint(mappedPoint);

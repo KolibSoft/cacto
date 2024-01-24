@@ -15,4 +15,5 @@
 // #include "Cacto/UI/RowLayout.cpp"
 // #include "Cacto/UI/ColumnLayout.cpp"
 // #include "Cacto/UI/UIRoot.cpp"
+#include "Cacto/UI/UIWindow.cpp"
 #include "Cacto/UI/NodeUtils.cpp"

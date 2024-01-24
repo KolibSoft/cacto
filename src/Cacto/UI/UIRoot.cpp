@@ -55,14 +55,14 @@ namespace cacto
     void UIRoot::onAppend(Node &child)
     {
         if (m_child != nullptr)
-            throw std::runtime_error("This node has another child already");
+            throw std::runtime_error("This node has already another child");
         m_child = &child;
     }
 
     void UIRoot::onRemove(Node &child)
     {
         if (m_child != &child)
-            throw std::runtime_error("This node has another child already");
+            throw std::runtime_error("This node has already another child");
         m_child = nullptr;
     }
 
