@@ -8,6 +8,8 @@
 namespace cacto
 {
 
+    class Scannable;
+
     class CACTO_LANG_API Scanner
     {
 
@@ -23,6 +25,8 @@ namespace cacto
 
         bool scanln();
         c8t available(i32t index = 0) const;
+
+        bool scanln(Scannable& scannable);
 
         std::string take();
         void drop();

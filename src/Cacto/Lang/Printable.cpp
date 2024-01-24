@@ -8,6 +8,7 @@ namespace cacto
     {
         Printer printer{stream};
         printable.print(printer);
+        printer.flush();
         return stream;
     }
 
