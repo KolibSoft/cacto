@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <Cacto/Lang/Printer.hpp>
 
 namespace cacto
@@ -48,6 +49,24 @@ namespace cacto
         m_line += string;
     }
 
+    void Printer::println(c8t character)
+    {
+        m_line += character;
+        println();
+    }
+
+    void Printer::println(const s8t &string)
+    {
+        m_line += string;
+        println();
+    }
+
+    void Printer::println(const std::string &string)
+    {
+        m_line += string;
+        println();
+    }
+
     void Printer::println()
     {
         *m_stream << m_line << '\n';
@@ -67,30 +86,44 @@ namespace cacto
 
     void Printer::backspaceln()
     {
-        m_line.clear();
+        m_line = std::string(m_pad, ' ');
     }
 
     void Printer::ident(szt times, bool apply)
     {
         auto pad = m_pad + times * m_identation;
-        m_pad = pad > 0 ? pad : 0;
-        if (apply)
-            m_line.insert(0, std::string(times * m_identation, ' '));
+        if (pad > m_pad)
+        {
+            m_pad = pad;
+            if (apply)
+                m_line.insert(0, std::string(times * m_identation, ' '));
+        }
+        else
+        {
+            println();
+        }
     }
 
     void Printer::dedent(szt times, bool apply)
     {
         auto pad = m_pad - times * m_identation;
-        m_pad = pad > 0 ? pad : 0;
-        if (apply)
-            m_line.erase(m_line.begin(), m_line.begin() + times * m_identation);
+        if (pad < m_pad)
+        {
+            m_pad = pad;
+            if (apply)
+                m_line.erase(m_line.begin(), m_line.begin() + times * m_identation);
+        }
+        else
+        {
+            backspaceln();
+        }
     }
 
     Printer::Printer(std::ostream &stream)
         : m_stream(&stream),
           m_line(),
           m_pad(),
-          m_identation()
+          m_identation(1)
     {
     }
 
