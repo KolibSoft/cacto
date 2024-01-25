@@ -2,7 +2,6 @@
 #include <fstream>
 #include <Cacto/Lang/XmlPrinter.hpp>
 #include <Cacto/Lang/XmlScanner.hpp>
-#include <Cacto/Lang/StringUtils.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 
 namespace cacto
@@ -126,193 +125,17 @@ namespace cacto
         return m_tag->content[index];
     }
 
-    void XmlValue::print(XmlPrinter &printer) const
+    void XmlValue::print(Printer &printer) const
     {
-        switch (m_kind)
-        {
-        case None:
-            break;
-        case Text:
-            printer.printText(*m_text);
-            break;
-        case Tag:
-            printer.print("<");
-            printer.printName(m_tag->name);
-            if (m_tag->attributes.size() > 0)
-            {
-                if (printer.getIdentation() > 0)
-                {
-                    printer.println();
-                    printer.ident();
-                }
-                else
-                    printer.print(" ");
-                auto it = m_tag->attributes.begin();
-                std::advance(it, m_tag->attributes.size() - 1);
-                auto last = &*it;
-                for (auto &pair : m_tag->attributes)
-                {
-                    printer.printAttribute(pair.first);
-                    printer.print("=");
-                    printer.printValue(pair.second);
-                    if (&pair.first != &last->first)
-                    {
-                        printer.print(" ");
-                        if (printer.getIdentation() > 0)
-                            printer.println();
-                    }
-                }
-            }
-            if (m_tag->content.size() > 0)
-            {
-                printer.print(">");
-                if (printer.getIdentation() > 0)
-                {
-                    printer.println();
-                    if (m_tag->attributes.size() == 0)
-                        printer.ident();
-                }
-                auto it = m_tag->content.begin();
-                std::advance(it, m_tag->content.size() - 1);
-                auto last = &*it;
-                for (auto &value : m_tag->content)
-                {
-                    value.print(printer);
-                    if (printer.getIdentation() > 0 && &value != last)
-                        printer.println();
-                }
-                if (printer.getIdentation() > 0)
-                {
-                    printer.println();
-                    printer.dedent();
-                }
-                printer.print("</");
-                printer.printName(m_tag->name);
-                printer.print(">");
-            }
-            else
-            {
-                printer.print(" />");
-                if (m_tag->attributes.size() > 0 && printer.getIdentation() > 0)
-                    printer.dedent(1, false);
-            }
-            break;
-        }
+        XmlPrinter xprinter{printer};
+        xprinter.printXml(*this);
     }
 
-    void XmlValue::scan(XmlScanner &scanner)
+    bool XmlValue::scan(Scanner &scanner)
     {
-        drop();
-        scanner.dropBlankln();
-        if (scanner.scanText())
-        {
-            auto token = scanner.take();
-            m_kind = Text;
-            m_text = new std::string(token);
-            replace(*m_text, "&lt;", "<");
-            replace(*m_text, "&gt;", ">");
-            replace(*m_text, "&quot;", "\"");
-            replace(*m_text, "&pos;", "\'");
-            replace(*m_text, "&amp;", "&");
-            return;
-        }
-        if (scanner.dropToken("<"))
-        {
-            m_kind = Tag;
-            m_tag = new tag();
-            scanner.dropBlankln();
-            if (!scanner.scanName())
-                throw std::runtime_error("XML parse error: expected tag name");
-            auto token = scanner.take();
-            m_tag->name = token;
-            scanner.dropBlankln();
-            if (scanner.dropToken("/>"))
-                return;
-            if (!scanner.dropToken(">"))
-            {
-            attribute_item:
-                scanner.dropBlankln();
-                if (!scanner.scanAttribute())
-                    throw std::runtime_error("XML parse error: expected attribute name");
-                token = scanner.take();
-                auto name = token;
-                scanner.dropBlankln();
-                if (!scanner.dropToken("="))
-                    throw std::runtime_error("XML parse error: expected '='");
-                scanner.dropBlankln();
-                if (!scanner.scanValue())
-                    throw std::runtime_error("XML parse error: expected attribute value");
-                token = scanner.take();
-                auto value = token.substr(1, token.size() - 2);
-                m_tag->attributes[name] = value;
-                scanner.dropBlankln();
-                if (scanner.dropToken("/>"))
-                    return;
-                if (!scanner.dropToken(">"))
-                    goto attribute_item;
-            }
-            scanner.dropBlankln();
-            if (!scanner.dropToken("</"))
-            {
-            content_item:
-                m_tag->content.push_back(nullptr);
-                m_tag->content.back().scan(scanner);
-                scanner.dropBlankln();
-                if (!scanner.dropToken("</"))
-                    goto content_item;
-            }
-            scanner.dropBlankln();
-            if (!scanner.dropToken(m_tag->name))
-                throw std::runtime_error("XML parse error: expected close tag name");
-            scanner.dropBlankln();
-            if (!scanner.dropToken(">"))
-                throw std::runtime_error("XML parse error: expected '>'");
-            return;
-        }
-        throw std::runtime_error("XML parse error: unknown value");
-    }
-
-    void XmlValue::toStream(std::ostream &stream, szt identation) const
-    {
-        XmlPrinter printer{stream};
-        printer.setIdentation(identation);
-        print(printer);
-        printer.flush();
-    }
-
-    void XmlValue::fromStream(std::istream &stream)
-    {
-        XmlScanner scanner{stream};
-        scan(scanner);
-    }
-
-    std::string XmlValue::toString(szt identation) const
-    {
-        std::stringstream stream{};
-        toStream(stream, identation);
-        return stream.str();
-    }
-
-    void XmlValue::fromString(const std::string &string)
-    {
-        std::stringstream stream{string};
-        fromStream(stream);
-    }
-
-    void XmlValue::toFile(const std::filesystem::path &path, szt identation) const
-    {
-        std::ofstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        toStream(stream, identation);
-    }
-
-    void XmlValue::fromFile(const std::filesystem::path &path)
-    {
-        std::ifstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        fromStream(stream);
+        XmlScanner xscanner{scanner};
+        auto success = xscanner.scanXml(*this);
+        return success;
     }
 
     XmlValue::XmlValue(std::nullptr_t)
@@ -451,18 +274,6 @@ namespace cacto
         }
         m_kind = None;
         m_text = nullptr;
-    }
-
-    std::ostream &operator<<(std::ostream &stream, const XmlValue &xml)
-    {
-        xml.toStream(stream);
-        return stream;
-    }
-
-    std::istream &operator>>(std::istream &stream, XmlValue &xml)
-    {
-        xml.fromStream(stream);
-        return stream;
     }
 
 }

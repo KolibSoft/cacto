@@ -1,4 +1,5 @@
 #include <stdexcept>
+#include <Cacto/Lang/Scannable.hpp>
 #include <Cacto/Lang/Scanner.hpp>
 
 namespace cacto
@@ -38,22 +39,26 @@ namespace cacto
     {
         m_start = 0;
         m_cursor = 0;
-        if (!m_stream->eof())
-        {
-            m_line.clear();
-            std::getline(*m_stream, m_line);
-            return true;
-        }
-        return false;
+        m_line.clear();
+        auto success = (bool)std::getline(*m_stream, m_line);
+        return success;
     }
 
     c8t Scanner::available(i32t index) const
     {
+        while (m_start == 0 && m_cursor == 0 && m_line.size() == 0 && !m_stream->eof() && !m_stream->fail())
+            std::getline(*m_stream, m_line);
         auto at = m_start + m_cursor + index;
         if (at >= m_line.size())
             return 0;
         auto c = m_line.at(at);
         return c;
+    }
+
+    bool Scanner::scanln(Scannable &scannable)
+    {
+        auto success = scannable.scan(*this);
+        return success;
     }
 
     std::string Scanner::take()

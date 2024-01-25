@@ -1,27 +1,37 @@
 #pragma once
 
-#include <Cacto/Lang/Scanner.hpp>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
 
+    class Scanner;
+    class JsonValue;
+
     class CACTO_LANG_API JsonScanner
-        : public Scanner
     {
 
     public:
-        bool scanExponent();
-        bool scanFraction();
-        bool scanNumber();
+        Scanner &getScanner() const;
+        void setScanner(Scanner &value);
 
-        bool scanEscape();
-        bool scanString();
-
-        bool scanBoolean();
+        bool scanNumber(f64t &number);
+        bool scanString(std::string &string);
+        bool scanBoolean(bool &boolean);
         bool scanNull();
 
-        JsonScanner(std::istream &stream);
+        bool scanArray(std::vector<JsonValue> &array);
+        bool scanObject(std::unordered_map<std::string, JsonValue> &object);
+        bool scanJson(JsonValue &json);
+
+        JsonScanner(Scanner &scanner);
         virtual ~JsonScanner();
+
+    private:
+        Scanner *m_scanner;
     };
 
 }

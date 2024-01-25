@@ -7,6 +7,8 @@
 namespace cacto
 {
 
+    class Printable;
+
     class CACTO_LANG_API Printer
     {
 
@@ -23,6 +25,14 @@ namespace cacto
         void print(c8t character);
         void print(const s8t &string);
         void print(const std::string &string);
+        void print(const Printable &printable);
+
+        void println(c8t character);
+        void println(const s8t &string);
+        void println(const std::string &string);
+        void println(std::istream &stream);
+        void println(const Printable &printable);
+
         void println();
         void flush();
 

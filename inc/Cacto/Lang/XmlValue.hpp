@@ -3,18 +3,18 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <filesystem>
-#include <ostream>
-#include <istream>
-#include <Cacto/Lang/Export.hpp>
+#include <Cacto/Lang/Printable.hpp>
+#include <Cacto/Lang/Scannable.hpp>
 
 namespace cacto
 {
 
-    class XmlPrinter;
-    class XmlScanner;
+    class Printer;
+    class Scanner;
 
     class CACTO_LANG_API XmlValue final
+        : public virtual Printable,
+          public virtual Scannable
     {
 
     public:
@@ -47,17 +47,8 @@ namespace cacto
         const XmlValue &operator[](szt index) const;
         XmlValue &operator[](szt index);
 
-        void print(XmlPrinter &printer) const;
-        void scan(XmlScanner &scanner);
-
-        void toStream(std::ostream &stream, szt identation = 0) const;
-        void fromStream(std::istream &stream);
-
-        std::string toString(szt identation = 0) const;
-        void fromString(const std::string &string);
-
-        void toFile(const std::filesystem::path &path, szt identation = 0) const;
-        void fromFile(const std::filesystem::path &path);
+        void print(Printer &printer) const override;
+        bool scan(Scanner &scanner) override;
 
         XmlValue(std::nullptr_t = 0);
         XmlValue(const std::string &text);
@@ -98,8 +89,5 @@ namespace cacto
             std::vector<XmlValue> content{};
         };
     };
-
-    std::ostream &CACTO_LANG_API operator<<(std::ostream &stream, const XmlValue &xml);
-    std::istream &CACTO_LANG_API operator>>(std::istream &stream, XmlValue &xml);
 
 }

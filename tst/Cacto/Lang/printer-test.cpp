@@ -1,37 +1,43 @@
+#include <sstream>
 #include <iostream>
 #include <fstream>
+#include <Cacto/Lang/Printable.hpp>
 #include <Cacto/Lang/Printer.hpp>
-#include <Cacto/Lang/Scanner.hpp>
+
+class PrintableClass : public cacto::Printable
+{
+
+public:
+    int value{0};
+
+    void print(cacto::Printer &printer) const override
+    {
+        printer.println("My Value Is:");
+        printer.ident(4);
+        printer.println(std::to_string(value));
+        printer.dedent(4);
+    }
+};
 
 int main()
 {
 
-    std::ofstream ofstream{"res/file.txt"};
-    cacto::Printer printer{ofstream};
-    printer.setIdentation(2);
-    printer.ident(1);
-    printer.print("Buffered ");
-    printer.print("line ");
-    printer.print("data");
+    cacto::Printer printer{std::cout};
+    printer.println("=== HEADER ===");
+    printer.ident(4);
+    printer.println("Idented line");
+    printer.ident(4);
+    printer.print("KEY");
+    printer.print(": ");
+    printer.print("VALUE");
+    printer.dedent(4);
     printer.println();
-    printer.print("Another buffered line error");
-    printer.backspace(5);
-    printer.println();
-    printer.print("error error error error");
-    printer.backspaceln();
-    printer.flush();
-    ofstream.close();
 
-    std::ifstream ifstream{"res/file.txt"};
-    cacto::Scanner scanner{ifstream};
-    while (scanner.available() || scanner.scanln())
-    {
-        scanner.dropBlank();
-        scanner.scanWord();
-        auto token = scanner.take();
-        std::cout << token << '\n';
-    }
-    ifstream.close();
+    std::ifstream fstream{"res/file.txt"};
+    printer.println(fstream);
+
+    PrintableClass printable{};
+    std::cout << printable;
 
     return 0;
 }

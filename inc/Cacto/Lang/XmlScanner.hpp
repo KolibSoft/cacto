@@ -1,25 +1,32 @@
 #pragma once
 
-#include <Cacto/Lang/Scanner.hpp>
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
 
+    class Scanner;
+    class XmlValue;
+
     class CACTO_LANG_API XmlScanner
-        : public Scanner
     {
 
     public:
-        i32t scanEscape();
-        i32t scanText();
+        Scanner &getScanner() const;
+        void setScanner(Scanner &value);
 
-        i32t scanIdentifier();
-        i32t scanName();
-        i32t scanAttribute();
-        i32t scanValue();
+        bool scanText(std::string &text);
+        bool scanTag(std::string &name, std::unordered_map<std::string, std::string> &attributes, std::vector<XmlValue> &content);
+        bool scanXml(XmlValue &xml);
 
-        XmlScanner(std::istream &stream);
+        XmlScanner(Scanner &scanner);
         virtual ~XmlScanner();
+
+    private:
+        Scanner *m_scanner;
     };
 
 }

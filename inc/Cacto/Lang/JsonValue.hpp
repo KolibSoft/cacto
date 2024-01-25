@@ -3,18 +3,18 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
-#include <filesystem>
-#include <ostream>
-#include <istream>
-#include <Cacto/Lang/Export.hpp>
+#include <Cacto/Lang/Printable.hpp>
+#include <Cacto/Lang/Scannable.hpp>
 
 namespace cacto
 {
 
-    class JsonPrinter;
-    class JsonScanner;
+    class Printer;
+    class Scanner;
 
     class CACTO_LANG_API JsonValue final
+        : public virtual Printable,
+          public virtual Scannable
     {
 
     public:
@@ -57,17 +57,8 @@ namespace cacto
         const JsonValue &operator[](const std::string &key) const;
         JsonValue &operator[](const std::string &key);
 
-        void print(JsonPrinter &printer) const;
-        void scan(JsonScanner &scanner);
-
-        void toStream(std::ostream &stream, szt identation = 0) const;
-        void fromStream(std::istream &stream);
-
-        std::string toString(szt identation = 0) const;
-        void fromString(const std::string &string);
-
-        void toFile(const std::filesystem::path &path, szt identation = 0) const;
-        void fromFile(const std::filesystem::path &path);
+        void print(Printer &printer) const override;
+        bool scan(Scanner &scanner) override;
 
         JsonValue(f64t number);
         JsonValue(f32t number);
@@ -112,8 +103,5 @@ namespace cacto
             std::unordered_map<std::string, JsonValue> *m_object;
         };
     };
-
-    std::ostream &CACTO_LANG_API operator<<(std::ostream &stream, const JsonValue &json);
-    std::istream &CACTO_LANG_API operator>>(std::istream &stream, JsonValue &json);
 
 }
