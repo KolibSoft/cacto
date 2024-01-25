@@ -127,78 +127,8 @@ namespace cacto
 
     void XmlValue::print(Printer &printer) const
     {
-        /*
-        switch (m_kind)
-        {
-        case None:
-            break;
-        case Text:
-            printer.printText(*m_text);
-            break;
-        case Tag:
-            printer.print("<");
-            printer.printName(m_tag->name);
-            if (m_tag->attributes.size() > 0)
-            {
-                if (printer.getIdentation() > 0)
-                {
-                    printer.println();
-                    printer.ident();
-                }
-                else
-                    printer.print(" ");
-                auto it = m_tag->attributes.begin();
-                std::advance(it, m_tag->attributes.size() - 1);
-                auto last = &*it;
-                for (auto &pair : m_tag->attributes)
-                {
-                    printer.printAttribute(pair.first);
-                    printer.print("=");
-                    printer.printValue(pair.second);
-                    if (&pair.first != &last->first)
-                    {
-                        printer.print(" ");
-                        if (printer.getIdentation() > 0)
-                            printer.println();
-                    }
-                }
-            }
-            if (m_tag->content.size() > 0)
-            {
-                printer.print(">");
-                if (printer.getIdentation() > 0)
-                {
-                    printer.println();
-                    if (m_tag->attributes.size() == 0)
-                        printer.ident();
-                }
-                auto it = m_tag->content.begin();
-                std::advance(it, m_tag->content.size() - 1);
-                auto last = &*it;
-                for (auto &value : m_tag->content)
-                {
-                    value.print(printer);
-                    if (printer.getIdentation() > 0 && &value != last)
-                        printer.println();
-                }
-                if (printer.getIdentation() > 0)
-                {
-                    printer.println();
-                    printer.dedent();
-                }
-                printer.print("</");
-                printer.printName(m_tag->name);
-                printer.print(">");
-            }
-            else
-            {
-                printer.print(" />");
-                if (m_tag->attributes.size() > 0 && printer.getIdentation() > 0)
-                    printer.dedent(1, false);
-            }
-            break;
-        }
-        */
+        XmlPrinter xprinter{printer};
+        xprinter.printXml(*this);
     }
 
     bool XmlValue::scan(Scanner &scanner)
