@@ -94,13 +94,13 @@ namespace cacto
             }
             auto it = object.begin();
             std::advance(it, object.size() - 1);
-            auto &last = (*it).second;
+            auto &last = *it;
             for (auto &value : object)
             {
                 printString(value.first);
                 m_printer->print(":");
                 printJson(value.second);
-                if (&value.second != &last)
+                if (&value != &last)
                 {
                     m_printer->print(",");
                     if (ident)
