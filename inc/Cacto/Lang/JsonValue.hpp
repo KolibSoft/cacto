@@ -57,17 +57,17 @@ namespace cacto
         const JsonValue &operator[](const std::string &key) const;
         JsonValue &operator[](const std::string &key);
 
-        void print(JsonPrinter &printer) const;
-        void scan(JsonScanner &scanner);
+        // void print(JsonPrinter &printer) const;
+        // void scan(JsonScanner &scanner);
 
-        void toStream(std::ostream &stream, szt identation = 0) const;
-        void fromStream(std::istream &stream);
+        // void toStream(std::ostream &stream, szt identation = 0) const;
+        // void fromStream(std::istream &stream);
 
-        std::string toString(szt identation = 0) const;
-        void fromString(const std::string &string);
+        // std::string toString(szt identation = 0) const;
+        // void fromString(const std::string &string);
 
-        void toFile(const std::filesystem::path &path, szt identation = 0) const;
-        void fromFile(const std::filesystem::path &path);
+        // void toFile(const std::filesystem::path &path, szt identation = 0) const;
+        // void fromFile(const std::filesystem::path &path);
 
         JsonValue(f64t number);
         JsonValue(f32t number);
@@ -113,7 +113,7 @@ namespace cacto
         };
     };
 
-    std::ostream &CACTO_LANG_API operator<<(std::ostream &stream, const JsonValue &json);
-    std::istream &CACTO_LANG_API operator>>(std::istream &stream, JsonValue &json);
+    // std::ostream &CACTO_LANG_API operator<<(std::ostream &stream, const JsonValue &json);
+    // std::istream &CACTO_LANG_API operator>>(std::istream &stream, JsonValue &json);
 
 }
