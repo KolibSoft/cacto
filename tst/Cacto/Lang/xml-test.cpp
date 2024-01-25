@@ -21,19 +21,9 @@ int main()
     auto content = xml.asContent();
 
     xml.asContent()[1].asContent().push_back(xml);
-    xml.toStream(std::cout, 2);
-    xml.toStream(std::cout, 0);
 
     xml = "Text: a <element /> tag";
     std::cout << xml.asText() << '\n';
-    std::cout << xml.toString() << '\n';
-    auto string = xml.toString();
-    xml.fromString(string);
-    std::cout << xml.toString() << '\n';
-
-    xml.toFile("res/xml.xml", 2);
-    xml.fromFile("res/xml.xml");
-    xml.toStream(std::cout, 2);
 
     return 0;
 }

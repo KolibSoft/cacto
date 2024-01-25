@@ -2,7 +2,6 @@
 #include <fstream>
 #include <Cacto/Lang/XmlPrinter.hpp>
 #include <Cacto/Lang/XmlScanner.hpp>
-#include <Cacto/Lang/StringUtils.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 
 namespace cacto
@@ -126,8 +125,9 @@ namespace cacto
         return m_tag->content[index];
     }
 
-    void XmlValue::print(XmlPrinter &printer) const
+    void XmlValue::print(Printer &printer) const
     {
+        /*
         switch (m_kind)
         {
         case None:
@@ -198,10 +198,12 @@ namespace cacto
             }
             break;
         }
+        */
     }
 
-    void XmlValue::scan(XmlScanner &scanner)
+    bool XmlValue::scan(Scanner &scanner)
     {
+        /*
         drop();
         scanner.dropBlankln();
         if (scanner.scanText())
@@ -270,49 +272,7 @@ namespace cacto
             return;
         }
         throw std::runtime_error("XML parse error: unknown value");
-    }
-
-    void XmlValue::toStream(std::ostream &stream, szt identation) const
-    {
-        XmlPrinter printer{stream};
-        printer.setIdentation(identation);
-        print(printer);
-        printer.flush();
-    }
-
-    void XmlValue::fromStream(std::istream &stream)
-    {
-        XmlScanner scanner{stream};
-        scan(scanner);
-    }
-
-    std::string XmlValue::toString(szt identation) const
-    {
-        std::stringstream stream{};
-        toStream(stream, identation);
-        return stream.str();
-    }
-
-    void XmlValue::fromString(const std::string &string)
-    {
-        std::stringstream stream{string};
-        fromStream(stream);
-    }
-
-    void XmlValue::toFile(const std::filesystem::path &path, szt identation) const
-    {
-        std::ofstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        toStream(stream, identation);
-    }
-
-    void XmlValue::fromFile(const std::filesystem::path &path)
-    {
-        std::ifstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        fromStream(stream);
+        */
     }
 
     XmlValue::XmlValue(std::nullptr_t)
@@ -451,18 +411,6 @@ namespace cacto
         }
         m_kind = None;
         m_text = nullptr;
-    }
-
-    std::ostream &operator<<(std::ostream &stream, const XmlValue &xml)
-    {
-        xml.toStream(stream);
-        return stream;
-    }
-
-    std::istream &operator>>(std::istream &stream, XmlValue &xml)
-    {
-        xml.fromStream(stream);
-        return stream;
     }
 
 }
