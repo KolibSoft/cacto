@@ -6,10 +6,10 @@ int main()
 {
 
     cacto::JsonValue json = nullptr;
-    std::ofstream stream{"res/json.json"};
+    std::ifstream stream{"res/json.json"};
+    stream >> json;
 
-    json = {std::pair{"A", 0}, std::pair{"B", 1}};
-    stream << json;
+    std::cout << json;
 
     return 0;
 }

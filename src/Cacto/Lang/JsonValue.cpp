@@ -2,7 +2,6 @@
 #include <fstream>
 #include <Cacto/Lang/JsonPrinter.hpp>
 #include <Cacto/Lang/JsonScanner.hpp>
-#include <Cacto/Lang/StringUtils.hpp>
 #include <Cacto/Lang/JsonValue.hpp>
 
 namespace cacto
@@ -166,6 +165,13 @@ namespace cacto
     {
         JsonPrinter jprinter{printer};
         jprinter.printJson(*this);
+    }
+
+    bool JsonValue::scan(Scanner &scanner)
+    {
+        JsonScanner jscanner{scanner};
+        auto success = jscanner.scanJson(*this);
+        return success;
     }
 
     JsonValue::JsonValue(f64t number)

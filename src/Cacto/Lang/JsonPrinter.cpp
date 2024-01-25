@@ -66,9 +66,11 @@ namespace cacto
             {
                 printJson(value);
                 if (&value != &last)
+                {
                     m_printer->print(",");
-                if (ident)
-                    m_printer->println();
+                    if (ident)
+                        m_printer->println();
+                }
             }
             if (ident)
             {

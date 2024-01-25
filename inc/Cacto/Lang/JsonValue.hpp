@@ -7,14 +7,17 @@
 #include <ostream>
 #include <istream>
 #include <Cacto/Lang/Printable.hpp>
+#include <Cacto/Lang/Scannable.hpp>
 
 namespace cacto
 {
 
     class Printer;
+    class Scanner;
 
     class CACTO_LANG_API JsonValue final
-        : public Printable
+        : public virtual Printable,
+          public virtual Scannable
     {
 
     public:
@@ -58,6 +61,7 @@ namespace cacto
         JsonValue &operator[](const std::string &key);
 
         void print(Printer &printer) const override;
+        bool scan(Scanner &scanner) override;
 
         JsonValue(f64t number);
         JsonValue(f32t number);

@@ -46,6 +46,8 @@ namespace cacto
 
     c8t Scanner::available(i32t index) const
     {
+        while (m_start == 0 && m_cursor == 0 && m_line.size() == 0 && !m_stream->eof() && !m_stream->fail())
+            std::getline(*m_stream, m_line);
         auto at = m_start + m_cursor + index;
         if (at >= m_line.size())
             return 0;

@@ -52,7 +52,7 @@ namespace cacto
 
     private:
         std::istream *m_stream;
-        std::string m_line;
+        mutable std::string m_line;
         i32t m_start;
         i32t m_cursor;
     };
