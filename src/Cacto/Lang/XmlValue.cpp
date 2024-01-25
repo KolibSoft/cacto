@@ -133,76 +133,9 @@ namespace cacto
 
     bool XmlValue::scan(Scanner &scanner)
     {
-        /*
-        drop();
-        scanner.dropBlankln();
-        if (scanner.scanText())
-        {
-            auto token = scanner.take();
-            m_kind = Text;
-            m_text = new std::string(token);
-            replace(*m_text, "&lt;", "<");
-            replace(*m_text, "&gt;", ">");
-            replace(*m_text, "&quot;", "\"");
-            replace(*m_text, "&pos;", "\'");
-            replace(*m_text, "&amp;", "&");
-            return;
-        }
-        if (scanner.dropToken("<"))
-        {
-            m_kind = Tag;
-            m_tag = new tag();
-            scanner.dropBlankln();
-            if (!scanner.scanName())
-                throw std::runtime_error("XML parse error: expected tag name");
-            auto token = scanner.take();
-            m_tag->name = token;
-            scanner.dropBlankln();
-            if (scanner.dropToken("/>"))
-                return;
-            if (!scanner.dropToken(">"))
-            {
-            attribute_item:
-                scanner.dropBlankln();
-                if (!scanner.scanAttribute())
-                    throw std::runtime_error("XML parse error: expected attribute name");
-                token = scanner.take();
-                auto name = token;
-                scanner.dropBlankln();
-                if (!scanner.dropToken("="))
-                    throw std::runtime_error("XML parse error: expected '='");
-                scanner.dropBlankln();
-                if (!scanner.scanValue())
-                    throw std::runtime_error("XML parse error: expected attribute value");
-                token = scanner.take();
-                auto value = token.substr(1, token.size() - 2);
-                m_tag->attributes[name] = value;
-                scanner.dropBlankln();
-                if (scanner.dropToken("/>"))
-                    return;
-                if (!scanner.dropToken(">"))
-                    goto attribute_item;
-            }
-            scanner.dropBlankln();
-            if (!scanner.dropToken("</"))
-            {
-            content_item:
-                m_tag->content.push_back(nullptr);
-                m_tag->content.back().scan(scanner);
-                scanner.dropBlankln();
-                if (!scanner.dropToken("</"))
-                    goto content_item;
-            }
-            scanner.dropBlankln();
-            if (!scanner.dropToken(m_tag->name))
-                throw std::runtime_error("XML parse error: expected close tag name");
-            scanner.dropBlankln();
-            if (!scanner.dropToken(">"))
-                throw std::runtime_error("XML parse error: expected '>'");
-            return;
-        }
-        throw std::runtime_error("XML parse error: unknown value");
-        */
+        XmlScanner xscanner{scanner};
+        auto success = xscanner.scanXml(*this);
+        return success;
     }
 
     XmlValue::XmlValue(std::nullptr_t)

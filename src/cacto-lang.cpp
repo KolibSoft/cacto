@@ -8,5 +8,5 @@
 #include "Cacto/Lang/JsonScanner.cpp"
 #include "Cacto/Lang/XmlValue.cpp"
 #include "Cacto/Lang/XmlPrinter.cpp"
-// #include "Cacto/Lang/XmlScanner.cpp"
+#include "Cacto/Lang/XmlScanner.cpp"
 #include "Cacto/Lang/StringUtils.cpp"

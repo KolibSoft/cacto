@@ -141,7 +141,7 @@ namespace cacto
             if (!m_scanner->dropToken("}"))
             {
             property_item:
-                std::string name;
+                std::string name{};
                 m_scanner->dropBlankln();
                 if (!scanString(name))
                     throw std::runtime_error("Expected property name");

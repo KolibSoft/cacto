@@ -83,7 +83,11 @@ namespace cacto
         {
             m_printer->print("/>");
             if (ident)
+            {
                 m_printer->println();
+                if (attributes.size() > 0)
+                    m_printer->dedent();
+            }
         }
     }
 
