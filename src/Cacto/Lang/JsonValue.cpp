@@ -162,6 +162,12 @@ namespace cacto
         return m_object->operator[](key);
     }
 
+    void JsonValue::print(Printer &printer) const
+    {
+        JsonPrinter jprinter{printer};
+        jprinter.printJson(*this);
+    }
+
     JsonValue::JsonValue(f64t number)
         : m_kind(Number),
           m_number(number)
