@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <Cacto/Config.hpp>
+#include <Cacto/Lang/Export.hpp>
 
 namespace cacto
 {
@@ -21,8 +21,6 @@ namespace cacto
 
         static JsonValue json(const T *const value);
         static T *value(const JsonValue &json);
-
-        static szt getConverterCount();
 
     private:
         static std::vector<const JsonConverter<T> *> s_Converters;
