@@ -22,11 +22,15 @@ namespace cacto
         static XmlValue xml(const T *const value);
         static T *value(const XmlValue &xml);
 
-        static szt getConverterCount();
-
     private:
         static std::vector<const XmlConverter<T> *> s_Converters;
     };
+
+    template <typename T>
+    XmlValue toXml(const T *const value);
+
+    template <typename T>
+    T *fromXml(const XmlValue &xml);
 
 }
 

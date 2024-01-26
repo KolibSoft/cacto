@@ -50,4 +50,18 @@ namespace cacto
     template <typename T>
     inline std::vector<const JsonConverter<T> *> JsonConverter<T>::s_Converters{};
 
+    template <typename T>
+    inline JsonValue toJson(const T *const value)
+    {
+        auto json = JsonConverter<T>::json(value);
+        return std::move(json);
+    }
+
+    template <typename T>
+    inline T *fromJson(const JsonValue &json)
+    {
+        auto value = JsonConverter<T>::value(json);
+        return value;
+    }
+
 }
