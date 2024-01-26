@@ -27,6 +27,12 @@ namespace cacto
         static std::vector<const Pack<T> *> Packs;
     };
 
+    template <typename T>
+    const std::string &getId(const T &value);
+
+    template <typename T>
+    const T *const getResource(const std::string &id);
+
 }
 
 #include <Cacto/Core/Pack.inl>

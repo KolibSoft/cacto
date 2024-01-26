@@ -50,4 +50,18 @@ namespace cacto
     template <typename T>
     inline std::vector<const Pack<T> *> Pack<T>::Packs{};
 
+    template <typename T>
+    inline const std::string &getId(const T &value)
+    {
+        auto &id = Pack<T>::id(value);
+        return id;
+    }
+
+    template <typename T>
+    inline const T *const getResource(const std::string &id)
+    {
+        auto resource = Pack<T>::resource(id);
+        return resource;
+    }
+
 }
