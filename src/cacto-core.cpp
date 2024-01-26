@@ -5,3 +5,5 @@
 #include "Cacto/Core/StringPack.cpp"
 #include "Cacto/Core/JsonPack.cpp"
 #include "Cacto/Core/XmlPack.cpp"
+#include "Cacto/Core/TimePrinter.cpp"
+#include "Cacto/Core/TimeUtils.cpp"
