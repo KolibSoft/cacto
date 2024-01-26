@@ -1,7 +1,7 @@
 #pragma once
 
+#include <string>
 #include <Cacto/Lang/XmlConverter.hpp>
-#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
@@ -29,13 +29,11 @@ namespace cacto
         template <typename T = Node>
         T *const firstAncestor(const std::string &id) const;
 
-        Node() = default;
-        virtual ~Node() = default;
-
         bool hasDescendant(const Node &node) const;
         bool hasAncestor(const Node &node) const;
 
-        static ResourceStack<Node> XmlStack;
+        Node() = default;
+        virtual ~Node() = default;
     };
 
     class CACTO_CORE_API ParentNode
@@ -69,9 +67,6 @@ namespace cacto
     };
 
     template class CACTO_CORE_API XmlConverter<Node>;
-
-    XmlValue CACTO_CORE_API toXml(const Node *const &node);
-    void CACTO_CORE_API fromXml(Node *&node, const XmlValue &xml);
 
     namespace node
     {

@@ -40,8 +40,6 @@ namespace cacto
         return false;
     }
 
-    ResourceStack<Node> Node::XmlStack{};
-
     ParentNode *const ParentNode::getParent() const
     {
         return nullptr;
@@ -66,18 +64,6 @@ namespace cacto
     ChildNode *const ChildNode::getChild(szt index) const
     {
         return nullptr;
-    }
-
-    XmlValue toXml(const Node *const &node)
-    {
-        auto xml = XmlConverter<Node>::xml(node);
-        return std::move(xml);
-    }
-
-    void fromXml(Node *&node, const XmlValue &xml)
-    {
-        auto value = XmlConverter<Node>::value(xml);
-        node = value;
     }
 
 }
