@@ -14,20 +14,4 @@ namespace cacto
         }
     }
 
-    void toFile(const std::string &string, const std::filesystem::path &path)
-    {
-        std::ofstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        stream << string;
-    }
-
-    void fromFile(std::string &string, const std::filesystem::path &path)
-    {
-        std::ifstream stream{path};
-        if (!stream.is_open())
-            throw std::runtime_error("Can not open the file");
-        string = {std::istreambuf_iterator<c8t>(stream), std::istreambuf_iterator<c8t>()};
-    }
-
 }

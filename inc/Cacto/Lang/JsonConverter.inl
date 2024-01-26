@@ -48,13 +48,6 @@ namespace cacto
     }
 
     template <typename T>
-    inline szt JsonConverter<T>::getConverterCount()
-    {
-        auto count = JsonConverter<T>::s_Converters.size();
-        return count;
-    }
-
-    template <typename T>
     inline std::vector<const JsonConverter<T> *> JsonConverter<T>::s_Converters{};
 
 }
