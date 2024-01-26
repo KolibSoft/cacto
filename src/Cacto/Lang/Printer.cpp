@@ -147,6 +147,9 @@ namespace cacto
     {
     }
 
-    Printer::~Printer() = default;
+    Printer::~Printer()
+    {
+        flush();
+    }
 
 }
