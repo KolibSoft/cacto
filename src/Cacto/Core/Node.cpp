@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    i32t Node::getChildIndex(const ChildNode &child) const
+    i32t Node::getChildIndex(const Node &child) const
     {
         auto childCount = getChildCount();
         for (szt i = 0; i < childCount; i++)
@@ -38,32 +38,6 @@ namespace cacto
         if (parent && parent->hasAncestor(node))
             return true;
         return false;
-    }
-
-    ParentNode *const ParentNode::getParent() const
-    {
-        return nullptr;
-    }
-
-    void ParentNode::clearChildren()
-    {
-        szt childCount = 0;
-        while ((childCount = getChildCount()))
-        {
-            auto child = getChild(childCount - 1);
-            if (child)
-                remove(*child);
-        }
-    }
-
-    szt ChildNode::getChildCount() const
-    {
-        return 0;
-    }
-
-    ChildNode *const ChildNode::getChild(szt index) const
-    {
-        return nullptr;
     }
 
 }
