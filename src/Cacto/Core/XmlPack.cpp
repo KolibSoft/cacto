@@ -27,7 +27,7 @@ namespace cacto
         if (std::filesystem::exists(path))
         {
             auto xml = std::make_shared<XmlValue>();
-            std::ifstream stream{m_path};
+            std::ifstream stream{path};
             stream >> *xml;
             m_map.insert({id, xml});
             return xml.get();

@@ -64,11 +64,12 @@ namespace cacto
                 JsonValue json = nullptr;
                 std::ifstream stream{m_path};
                 stream >> json;
-                for (auto &pair : json.asObject())
-                {
-                    auto string = std::make_shared<sf::String>(pair.second.getString(""));
-                    m_map.insert({pair.first, string});
-                }
+                if (json.isObject())
+                    for (auto &pair : json.asObject())
+                    {
+                        auto string = std::make_shared<sf::String>(pair.second.getString(""));
+                        m_map.insert({pair.first, string});
+                    }
             }
             catch (...)
             {

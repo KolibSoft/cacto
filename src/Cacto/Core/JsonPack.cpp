@@ -27,7 +27,7 @@ namespace cacto
         if (std::filesystem::exists(path))
         {
             auto json = std::make_shared<JsonValue>();
-            std::ifstream stream{m_path};
+            std::ifstream stream{path};
             stream >> *json;
             m_map.insert({id, json});
             return json.get();
