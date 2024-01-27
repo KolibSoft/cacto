@@ -1,13 +1,18 @@
+#include <sstream>
 #include <iostream>
 #include <SFML/System/Time.hpp>
 #include <Cacto/Core/TimeUtils.hpp>
 
 using cacto::operator<<;
+using cacto::operator>>;
 
 int main()
 {
 
-    auto time = sf::seconds(60 * 60 * 30);
+    std::stringstream stream{"-20m 20s"};
+    sf::Time time{};
+
+    stream >> time;
     std::cout << time;
 
     return 0;

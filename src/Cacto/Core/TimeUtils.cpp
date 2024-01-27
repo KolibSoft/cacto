@@ -1,6 +1,8 @@
 #include <sstream>
 #include <Cacto/Lang/Printer.hpp>
+#include <Cacto/Lang/Scanner.hpp>
 #include <Cacto/Core/TimePrinter.hpp>
+#include <Cacto/Core/TimeScanner.hpp>
 #include <Cacto/Core/TimeUtils.hpp>
 
 namespace cacto
@@ -31,6 +33,9 @@ namespace cacto
 
     std::istream &operator>>(std::istream &stream, sf::Time &time)
     {
+        Scanner scanner{stream};
+        TimeScanner tscanner{scanner};
+        tscanner.scanTime(time);
         return stream;
     }
 

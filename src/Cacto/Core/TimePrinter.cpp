@@ -72,8 +72,7 @@ namespace cacto
 
     void TimePrinter::printTime(const sf::Time &time)
     {
-        i64t US = 1;
-        i64t MS = 1000 * US;
+        i64t MS = 1000;
         i64t S = 1000 * MS;
         i64t M = 60 * S;
         i64t H = 60 * M;
