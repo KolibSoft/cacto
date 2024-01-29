@@ -3,8 +3,12 @@
 #include <string>
 #include <ostream>
 #include <istream>
-#include <SFML/System/Angle.hpp>
 #include <Cacto/Core/Export.hpp>
+
+namespace sf
+{
+    class Angle;
+}
 
 namespace cacto
 {

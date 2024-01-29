@@ -3,8 +3,12 @@
 #include <string>
 #include <ostream>
 #include <istream>
-#include <SFML/System/Time.hpp>
 #include <Cacto/Core/Export.hpp>
+
+namespace sf
+{
+    class Time;
+}
 
 namespace cacto
 {

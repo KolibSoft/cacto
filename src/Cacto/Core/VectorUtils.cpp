@@ -1,4 +1,5 @@
 #include <sstream>
+#include <SFML/System/Vector2.hpp>
 #include <Cacto/Lang/Printer.hpp>
 #include <Cacto/Lang/Scanner.hpp>
 #include <Cacto/Core/VectorPrinter.hpp>

@@ -1,4 +1,5 @@
 #include <sstream>
+#include <SFML/System/Angle.hpp>
 #include <Cacto/Lang/Printer.hpp>
 #include <Cacto/Lang/Scanner.hpp>
 #include <Cacto/Core/AnglePrinter.hpp>

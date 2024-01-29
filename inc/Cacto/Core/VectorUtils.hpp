@@ -3,8 +3,17 @@
 #include <string>
 #include <ostream>
 #include <istream>
-#include <SFML/System/Vector2.hpp>
 #include <Cacto/Core/Export.hpp>
+
+namespace sf
+{
+
+    template <typename T>
+    class Vector2;
+
+    using Vector2f = Vector2<float>;
+
+}
 
 namespace cacto
 {
