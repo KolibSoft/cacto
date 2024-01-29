@@ -26,6 +26,12 @@ namespace cacto
         static std::vector<const JsonConverter<T> *> s_Converters;
     };
 
+    template <typename T>
+    JsonValue toJson(const T *const value);
+
+    template <typename T>
+    T *fromJson(const JsonValue &json);
+
 }
 
 #include <Cacto/Lang/JsonConverter.inl>

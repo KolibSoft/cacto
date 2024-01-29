@@ -36,7 +36,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<XmlValue>> m_map;
     };
 
-    const std::string &CACTO_CORE_API getId(const XmlValue &xml);
-    const XmlValue *const CACTO_CORE_API getXml(const std::string &id);
-
 }

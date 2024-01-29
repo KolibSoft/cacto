@@ -27,7 +27,8 @@ namespace cacto
         if (std::filesystem::exists(path))
         {
             auto json = std::make_shared<JsonValue>();
-            json->fromFile(path);
+            std::ifstream stream{path};
+            stream >> *json;
             m_map.insert({id, json});
             return json.get();
         }
@@ -57,18 +58,6 @@ namespace cacto
         m_path = std::move(other.m_path);
         m_map = std::move(other.m_map);
         return *this;
-    }
-
-    const std::string &getId(const JsonValue &json)
-    {
-        auto &id = Pack<JsonValue>::id(json);
-        return id;
-    }
-
-    const JsonValue *const getJson(const std::string &id)
-    {
-        auto resource = Pack<JsonValue>::resource(id);
-        return resource;
     }
 
 }

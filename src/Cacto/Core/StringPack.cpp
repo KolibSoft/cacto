@@ -62,30 +62,20 @@ namespace cacto
             try
             {
                 JsonValue json = nullptr;
-                json.fromFile(m_path);
-                for (auto &pair : json.asObject())
-                {
-                    auto string = std::make_shared<sf::String>(pair.second.getString(""));
-                    m_map.insert({pair.first, string});
-                }
+                std::ifstream stream{m_path};
+                stream >> json;
+                if (json.isObject())
+                    for (auto &pair : json.asObject())
+                    {
+                        auto string = std::make_shared<sf::String>(pair.second.getString(""));
+                        m_map.insert({pair.first, string});
+                    }
             }
             catch (...)
             {
             }
             m_loaded = true;
         }
-    }
-
-    const std::string &getId(const sf::String &string)
-    {
-        auto &id = Pack<sf::String>::id(string);
-        return id;
-    }
-
-    const sf::String *const getString(const std::string &id)
-    {
-        auto string = Pack<sf::String>::resource(id);
-        return string;
     }
 
 }

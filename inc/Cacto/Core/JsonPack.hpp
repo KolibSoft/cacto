@@ -36,7 +36,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<JsonValue>> m_map;
     };
 
-    const std::string &CACTO_CORE_API getId(const JsonValue &json);
-    const JsonValue *const CACTO_CORE_API getJson(const std::string &id);
-
 }

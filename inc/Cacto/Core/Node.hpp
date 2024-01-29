@@ -1,27 +1,22 @@
 #pragma once
 
+#include <string>
 #include <Cacto/Lang/XmlConverter.hpp>
-#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Core/Export.hpp>
 
 namespace cacto
 {
-
-    class Node;
-    class ParentNode;
-    class ChildNode;
 
     class CACTO_CORE_API Node
     {
 
     public:
         virtual const std::string &getId() const = 0;
-
-        virtual ParentNode *const getParent() const = 0;
+        virtual Node *const getParent() const = 0;
 
         virtual szt getChildCount() const = 0;
-        virtual ChildNode *const getChild(szt index = 0) const = 0;
-        i32t getChildIndex(const ChildNode &child) const;
+        virtual Node *const getChild(szt index = 0) const = 0;
+        i32t getChildIndex(const Node &child) const;
 
         template <typename T = Node>
         T *const firstDescendant(const std::string &id) const;
@@ -29,62 +24,14 @@ namespace cacto
         template <typename T = Node>
         T *const firstAncestor(const std::string &id) const;
 
-        Node() = default;
-        virtual ~Node() = default;
-
         bool hasDescendant(const Node &node) const;
         bool hasAncestor(const Node &node) const;
 
-        static ResourceStack<Node> XmlStack;
-    };
-
-    class CACTO_CORE_API ParentNode
-        : public virtual Node
-    {
-
-    public:
-        ParentNode *const getParent() const override;
-        void clearChildren();
-
-        virtual void append(ChildNode &child) = 0;
-        virtual void remove(ChildNode &child) = 0;
-
-        ParentNode() = default;
-        virtual ~ParentNode() = default;
-    };
-
-    class CACTO_CORE_API ChildNode
-        : public virtual Node
-    {
-
-    public:
-        szt getChildCount() const override;
-        ChildNode *const getChild(szt index = 0) const override;
-
-        virtual void attach(ParentNode &parent) = 0;
-        virtual void detach() = 0;
-
-        ChildNode() = default;
-        virtual ~ChildNode() = default;
+        Node() = default;
+        virtual ~Node() = default;
     };
 
     template class CACTO_CORE_API XmlConverter<Node>;
-
-    XmlValue CACTO_CORE_API toXml(const Node *const &node);
-    void CACTO_CORE_API fromXml(Node *&node, const XmlValue &xml);
-
-    namespace node
-    {
-
-        class CACTO_CORE_API XmlConverter
-            : public virtual cacto::XmlConverter<Node>
-        {
-        public:
-            XmlConverter() = default;
-            virtual ~XmlConverter() = default;
-        };
-
-    }
 
 }
 
