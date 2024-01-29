@@ -9,5 +9,8 @@
 #include "Cacto/Core/TimeScanner.cpp"
 #include "Cacto/Core/AnglePrinter.cpp"
 #include "Cacto/Core/AngleScanner.cpp"
+#include "Cacto/Core/VectorPrinter.cpp"
+#include "Cacto/Core/VectorScanner.cpp"
 #include "Cacto/Core/TimeUtils.cpp"
 #include "Cacto/Core/AngleUtils.cpp"
+#include "Cacto/Core/VectorUtils.cpp"

@@ -11,6 +11,7 @@ namespace cacto
 {
 
     class Printer;
+    
     class CACTO_CORE_API AnglePrinter
     {
 
