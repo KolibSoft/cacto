@@ -20,16 +20,16 @@ namespace cacto
             throw std::runtime_error("Invalid direction value");
     }
 
-    void fromString(TextDirection &direction, const std::string &string)
+    TextDirection toTextDirection(const std::string &string)
     {
         if (string == "ToLeft")
-            direction = TextDirection::ToLeft;
+            return TextDirection::ToLeft;
         else if (string == "ToRight")
-            direction = TextDirection::ToRight;
+            return TextDirection::ToRight;
         else if (string == "ToTop")
-            direction = TextDirection::ToTop;
+            return TextDirection::ToTop;
         else if (string == "ToBottom")
-            direction = TextDirection::ToBottom;
+            return TextDirection::ToBottom;
         else
             throw std::runtime_error("Invalid direction value");
     }

@@ -1,8 +1,11 @@
 #include <SFML/System/String.hpp>
-#include <SFML/Graphics/VertexArray.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Core/VectorUtils.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/PrimitiveTypeUtils.hpp>
+#include <Cacto/Graphics/ColorUtils.hpp>
 #include <Cacto/Graphics/VertexArrayUtils.hpp>
 
 namespace cacto
@@ -23,7 +26,7 @@ namespace cacto
         setPositions(vertexes, _points, count);
     }
 
-    void setColor(sf::Vertex *const vertexes, const sf::Color &color, szt count)
+    void setColor(sf::Vertex *const vertexes, szt count, const sf::Color &color)
     {
         for (szt i = 0; i < count; i++)
             vertexes[i].color = color;
@@ -33,10 +36,10 @@ namespace cacto
     {
         auto count = array.getVertexCount();
         auto *vertexes = &(array[0]);
-        setColor(vertexes, color, count);
+        setColor(vertexes, count, color);
     }
 
-    void setTexCoords(sf::Vertex *const vertexes, const sf::FloatRect bounds, const sf::FloatRect texRect, szt count)
+    void setTexCoords(sf::Vertex *const vertexes, szt count, const sf::FloatRect bounds, const sf::FloatRect texRect)
     {
         for (szt i = 0; i < count; i++)
         {
@@ -51,10 +54,10 @@ namespace cacto
         auto count = array.getVertexCount();
         auto *vertexes = &(array[0]);
         auto bounds = array.getBounds();
-        setTexCoords(vertexes, bounds, texRect, count);
+        setTexCoords(vertexes, count, bounds, texRect);
     }
 
-    void mapPositions(sf::Vertex *const vertexes, const sf::FloatRect bounds, const sf::FloatRect surface, szt count)
+    void mapPositions(sf::Vertex *const vertexes, szt count, const sf::FloatRect bounds, const sf::FloatRect surface)
     {
         for (szt i = 0; i < count; i++)
         {
@@ -68,12 +71,11 @@ namespace cacto
         auto count = array.getVertexCount();
         auto *vertexes = &(array[0]);
         auto bounds = array.getBounds();
-        mapPositions(vertexes, bounds, surface, count);
+        mapPositions(vertexes, count, bounds, surface);
     }
 
-    void setGlyphs(sf::Vertex *const vertexes, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness, szt count)
+    void setGlyphs(sf::Vertex *const vertexes, const c32t *const codes, szt count, TextDirection direction, const sf::Font &font, u32t characterSize, bool bold, f32t outlineThickness)
     {
-        count /= 6;
         f32t offset = 0;
         sf::Vertex glyph_vertexes[4]{};
 
@@ -101,10 +103,10 @@ namespace cacto
         case TextDirection::ToLeft:
             for (szt i = 0; i < count; i++)
             {
-                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &glyph = font.getGlyph(codes[i], characterSize, bold, outlineThickness);
                 auto &bounds = glyph.bounds;
 
-                offset += glyph.advance + font.getKerning(string[i], string[i + 1], characterSize, bold);
+                offset += glyph.advance + font.getKerning(codes[i], codes[i + 1], characterSize, bold);
                 glyph_vertexes[0].position = {bounds.left - offset, bounds.top};
                 glyph_vertexes[1].position = {bounds.left + bounds.width - offset, bounds.top};
                 glyph_vertexes[2].position = {bounds.left - offset, bounds.top + bounds.height};
@@ -117,14 +119,14 @@ namespace cacto
         case TextDirection::ToRight:
             for (szt i = 0; i < count; i++)
             {
-                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &glyph = font.getGlyph(codes[i], characterSize, bold, outlineThickness);
                 auto &bounds = glyph.bounds;
 
                 glyph_vertexes[0].position = {bounds.left + offset, bounds.top};
                 glyph_vertexes[1].position = {bounds.left + bounds.width + offset, bounds.top};
                 glyph_vertexes[2].position = {bounds.left + offset, bounds.top + bounds.height};
                 glyph_vertexes[3].position = {bounds.left + bounds.width + offset, bounds.top + bounds.height};
-                offset += glyph.advance + font.getKerning(string[i], string[i + 1], characterSize, bold);
+                offset += glyph.advance + font.getKerning(codes[i], codes[i + 1], characterSize, bold);
 
                 setTexCoords(glyph.textureRect);
                 appendGlyph(i);
@@ -133,7 +135,7 @@ namespace cacto
         case TextDirection::ToTop:
             for (szt i = 0; i < count; i++)
             {
-                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &glyph = font.getGlyph(codes[i], characterSize, bold, outlineThickness);
                 auto &bounds = glyph.bounds;
 
                 offset += font.getLineSpacing(characterSize);
@@ -149,7 +151,7 @@ namespace cacto
         case TextDirection::ToBottom:
             for (szt i = 0; i < count; i++)
             {
-                auto &glyph = font.getGlyph(string[i], characterSize, bold, outlineThickness);
+                auto &glyph = font.getGlyph(codes[i], characterSize, bold, outlineThickness);
                 auto &bounds = glyph.bounds;
 
                 glyph_vertexes[0].position = {bounds.left, bounds.top + offset};
@@ -165,61 +167,61 @@ namespace cacto
         }
     }
 
-    void setGlyphs(sf::VertexArray &array, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness)
+    void setGlyphs(sf::VertexArray &array, const sf::String &string, TextDirection direction, const sf::Font &font, u32t characterSize, bool bold, f32t outlineThickness)
     {
         array.resize(string.getSize() * 6);
         auto count = array.getVertexCount();
         auto *vertexes = &(array[0]);
-        setGlyphs(vertexes, font, string, direction, characterSize, bold, outlineThickness, count);
+        setGlyphs(vertexes, string.getData(), string.getSize(), direction, font, characterSize, bold, outlineThickness);
     }
 
     XmlValue toXml(const sf::Vertex &vertex)
     {
         XmlValue xml{"Vertex", {}};
-        xml["position"] = cacto::toString(vertex.position);
-        xml["texCoords"] = cacto::toString(vertex.texCoords);
-        xml["color"] = cacto::toAttribute(vertex.color);
+        xml["position"] = toString(vertex.position);
+        xml["texCoords"] = toString(vertex.texCoords);
+        xml["color"] = toString(vertex.color);
         return std::move(xml);
     }
 
-    void fromXml(sf::Vertex &vertex, const XmlValue &xml)
+    sf::Vertex toVertex(const XmlValue &xml)
     {
-        vertex = {};
+        sf::Vertex vertex = {};
         auto position = xml.getAttribute("position", "0,0");
         auto texCoords = xml.getAttribute("texCoords", "0,0");
         auto color = xml.getAttribute("color", "#FFFFFFFF");
-        cacto::fromString(vertex.position, position);
-        cacto::fromString(vertex.texCoords, texCoords);
-        cacto::fromAttribute(vertex.color, color);
+        vertex.position = toVector(position);
+        vertex.texCoords = toVector(texCoords);
+        vertex.color = toColor(color);
+        return std::move(vertex);
     }
 
     XmlValue toXml(const sf::VertexArray &array)
     {
         XmlValue xml{"VertexArray", {}};
         auto &content = xml.asContent();
-        xml["primitive"] = cacto::toString(array.getPrimitiveType());
+        xml["primitive"] = toString(array.getPrimitiveType());
         for (szt i = 0; i < array.getVertexCount(); i++)
         {
             auto &vertex = array[i];
-            auto vertex_xml = cacto::toXml(vertex);
+            auto vertex_xml = toXml(vertex);
             content.push_back(std::move(vertex_xml));
         }
         return std::move(xml);
     }
 
-    void fromXml(sf::VertexArray &array, const XmlValue &xml)
+    sf::VertexArray toVertexArray(const XmlValue &xml)
     {
-        array = {};
-        sf::PrimitiveType primitive;
-        cacto::fromString(primitive, xml.getAttribute("primitive", "Points"));
-        array.setPrimitiveType(primitive);
+        sf::VertexArray array = {};
+        auto primitive = xml.getAttribute("primitive", "Points");
+        array.setPrimitiveType(toPrimitiveType(primitive));
         if (xml.isTag())
             for (auto &vertex_xml : xml.asContent())
             {
-                sf::Vertex vertex{};
-                cacto::fromXml(vertex, vertex_xml);
+                sf::Vertex vertex = toVertex(vertex_xml);
                 array.append(vertex);
             }
+        return std::move(array);
     }
 
 }

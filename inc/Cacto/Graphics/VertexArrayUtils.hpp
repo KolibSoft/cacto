@@ -33,22 +33,22 @@ namespace cacto
     void CACTO_GRAPHICS_API setPositions(sf::Vertex *const vertexes, const sf::Vector2f *positions, szt count);
     void CACTO_GRAPHICS_API setPositions(sf::VertexArray &array, const std::vector<sf::Vector2f> &positions);
 
-    void CACTO_GRAPHICS_API setColor(sf::Vertex *const vertexes, const sf::Color &color, szt count);
+    void CACTO_GRAPHICS_API setColor(sf::Vertex *const vertexes, szt count, const sf::Color &color);
     void CACTO_GRAPHICS_API setColor(sf::VertexArray &array, const sf::Color &color);
 
-    void CACTO_GRAPHICS_API setTexCoords(sf::Vertex *const vertexes, const sf::FloatRect bounds, const sf::FloatRect texRect, szt count);
+    void CACTO_GRAPHICS_API setTexCoords(sf::Vertex *const vertexes, szt count, const sf::FloatRect bounds, const sf::FloatRect texRect);
     void CACTO_GRAPHICS_API setTexCoords(sf::VertexArray &array, const sf::FloatRect texRect);
 
-    void CACTO_GRAPHICS_API mapPositions(sf::Vertex *const vertexes, const sf::FloatRect bounds, const sf::FloatRect surface, szt count);
+    void CACTO_GRAPHICS_API mapPositions(sf::Vertex *const vertexes, szt count, const sf::FloatRect bounds, const sf::FloatRect surface);
     void CACTO_GRAPHICS_API mapPositions(sf::VertexArray &array, const sf::FloatRect surface);
 
-    void CACTO_GRAPHICS_API setGlyphs(sf::Vertex *const vertexes, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness, szt count);
-    void CACTO_GRAPHICS_API setGlyphs(sf::VertexArray &array, const sf::Font &font, const sf::String &string, TextDirection direction, u32t characterSize, bool bold, f32t outlineThickness);
+    void CACTO_GRAPHICS_API setGlyphs(sf::Vertex *const vertexes, const c32t *const codes, szt count, TextDirection direction, const sf::Font &font, u32t characterSize, bool bold, f32t outlineThickness);
+    void CACTO_GRAPHICS_API setGlyphs(sf::VertexArray &array, const sf::String &string, TextDirection direction, const sf::Font &font, u32t characterSize, bool bold, f32t outlineThickness);
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Vertex &vertex);
-    void CACTO_GRAPHICS_API fromXml(sf::Vertex &vertex, const XmlValue &xml);
+    sf::Vertex CACTO_GRAPHICS_API toVertex(const XmlValue &xml);
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::VertexArray &array);
-    void CACTO_GRAPHICS_API fromXml(sf::VertexArray &array, const XmlValue &xml);
+    sf::VertexArray CACTO_GRAPHICS_API toVertexArray(const XmlValue &xml);
 
 }

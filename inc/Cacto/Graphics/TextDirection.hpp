@@ -15,6 +15,6 @@ namespace cacto
     };
 
     std::string CACTO_GRAPHICS_API toString(TextDirection direction);
-    void CACTO_GRAPHICS_API fromString(TextDirection &direction, const std::string &string);
+    TextDirection CACTO_GRAPHICS_API toTextDirection(const std::string &string);
 
 }

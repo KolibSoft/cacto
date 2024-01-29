@@ -13,30 +13,14 @@ namespace cacto
         return stream.str();
     }
 
-    void fromString(sf::Color &color, const std::string &string)
+    sf::Color toColor(const std::string &string)
     {
         std::stringstream stream{string};
         stream.get();
         u32t integer;
         stream >> std::hex >> integer;
-        color = sf::Color(integer);
-    }
-
-    std::string toAttribute(const sf::Color &color)
-    {
-        auto &id = getId(color);
-        if (id != "")
-            return id;
-        return toString(color);
-    }
-
-    void fromAttribute(sf::Color &color, const std::string &attribute)
-    {
-        auto value = getColor(attribute);
-        if (value)
-            color = *value;
-        else
-            fromString(color, attribute);
+        sf::Color color{integer};
+        return std::move(color);
     }
 
 }

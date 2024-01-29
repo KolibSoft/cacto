@@ -8,6 +8,6 @@ namespace cacto
 {
 
     std::string CACTO_GRAPHICS_API toString(const sf::PrimitiveType &primitive);
-    void CACTO_GRAPHICS_API fromString(sf::PrimitiveType &primitive, const std::string &string);
+    sf::PrimitiveType CACTO_GRAPHICS_API toPrimitiveType(const std::string &string);
 
 }

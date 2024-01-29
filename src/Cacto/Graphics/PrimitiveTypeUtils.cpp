@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <Cacto/Graphics/PrimitiveTypeUtils.hpp>
 
 namespace cacto
@@ -21,20 +22,20 @@ namespace cacto
             throw std::runtime_error("Unsupported primitive type");
     }
 
-    void fromString(sf::PrimitiveType &primitive, const std::string &string)
+    sf::PrimitiveType toPrimitiveType(const std::string &string)
     {
         if (string == "Points")
-            primitive = sf::PrimitiveType::Points;
+            return sf::PrimitiveType::Points;
         else if (string == "Lines")
-            primitive = sf::PrimitiveType::Lines;
+            return sf::PrimitiveType::Lines;
         else if (string == "LineStrip")
-            primitive = sf::PrimitiveType::LineStrip;
+            return sf::PrimitiveType::LineStrip;
         else if (string == "Triangles")
-            primitive = sf::PrimitiveType::Triangles;
+            return sf::PrimitiveType::Triangles;
         else if (string == "TriangleStrip")
-            primitive = sf::PrimitiveType::TriangleStrip;
+            return sf::PrimitiveType::TriangleStrip;
         else if (string == "TriangleFan")
-            primitive = sf::PrimitiveType::TriangleFan;
+            return sf::PrimitiveType::TriangleFan;
         else
             throw std::runtime_error("Unsupported primitive type");
     }
