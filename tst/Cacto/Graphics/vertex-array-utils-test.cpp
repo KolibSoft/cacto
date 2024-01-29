@@ -1,17 +1,22 @@
+#include <vector>
+
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Graphics/Utils.hpp>
-#include <Cacto/Graphics/Rectangle.hpp>
-#include <Cacto/Graphics/TexturePack.hpp>
+#include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 
 auto makeSquare(const sf::Color &color, const sf::FloatRect &rect)
 {
-    sf::VertexArray array(sf::PrimitiveType::TriangleFan);
-    cacto::setPoints(array, cacto::Rectangle::Identity);
+    std::vector<sf::Vector2f> points = {{rect.left, rect.top},
+                                        {rect.left + rect.width, rect.top},
+                                        {rect.left + rect.width, rect.top + rect.height},
+                                        {rect.left, rect.top + rect.height}};
+    sf::VertexArray array{sf::PrimitiveType::TriangleFan, 4};
+    cacto::setPositions(&(array[0]), points.data(), points.size());
     cacto::setColor(array, color);
     cacto::mapPositions(array, rect);
     return array;
@@ -19,14 +24,6 @@ auto makeSquare(const sf::Color &color, const sf::FloatRect &rect)
 
 int main()
 {
-
-    cacto::TexturePack pack{"res/textures"};
-
-    // sf::Texture texture;
-    // auto _ = texture.loadFromFile("res/fondo.png");
-    // pack.setTexture("my_texture.png", texture);
-
-    auto p = pack.getTexture("my_texture.png").getSize();
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     auto container = makeSquare(sf::Color::Red, {{10, 10}, {300, 200}});
@@ -42,7 +39,6 @@ int main()
         }
 
         cacto::mapPositions(container, {{10, 10}, sf::Vector2f(sf::Mouse::getPosition(window))});
-
         auto scale = cacto::fitSize({content.getBounds().width, content.getBounds().height}, {container.getBounds().width, container.getBounds().height});
         cacto::mapPositions(content, {{10, 10}, scale});
 
