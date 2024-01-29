@@ -9,7 +9,7 @@ using cacto::operator>>;
 int main()
 {
 
-    std::stringstream stream{"-20m 20s"};
+    std::stringstream stream{"-200m 20s"};
     sf::Time time{};
 
     stream >> time;

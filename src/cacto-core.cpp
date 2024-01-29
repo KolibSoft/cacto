@@ -7,4 +7,7 @@
 #include "Cacto/Core/XmlPack.cpp"
 #include "Cacto/Core/TimePrinter.cpp"
 #include "Cacto/Core/TimeScanner.cpp"
+#include "Cacto/Core/AnglePrinter.cpp"
+#include "Cacto/Core/AngleScanner.cpp"
 #include "Cacto/Core/TimeUtils.cpp"
+#include "Cacto/Core/AngleUtils.cpp"
