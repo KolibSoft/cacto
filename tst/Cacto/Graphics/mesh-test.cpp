@@ -34,9 +34,20 @@ int main()
                 window.close();
             else if (event.type == sf::Event::KeyPressed)
             {
-                std::ifstream istream{"res/mesh.xml"};
-                istream >> xml;
-                mesh.fromXml(xml);
+                if (event.key.code == sf::Keyboard::Space)
+                {
+                    std::ifstream istream{"res/mesh.xml"};
+                    istream >> xml;
+                    mesh.fromXml(xml);
+                }
+                else if (event.key.code == sf::Keyboard::Left)
+                    mesh.move({-1, 0});
+                else if (event.key.code == sf::Keyboard::Right)
+                    mesh.move({+1, 0});
+                else if (event.key.code == sf::Keyboard::Up)
+                    mesh.move({0, -1});
+                else if (event.key.code == sf::Keyboard::Down)
+                    mesh.move({0, +1});
             }
         }
         window.clear();

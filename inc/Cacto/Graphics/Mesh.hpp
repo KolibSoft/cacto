@@ -3,6 +3,7 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/ChildNode.hpp>
+#include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
@@ -10,12 +11,13 @@ namespace cacto
 
     class CACTO_GRAPHICS_API Mesh
         : public virtual sf::Drawable,
-          public virtual ChildNode
+          public virtual ChildNode,
+          public virtual TransformableChains
     {
 
     public:
         const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
+        sf::Transformable &asTransformable() override;
 
         const sf::VertexArray &asArray() const;
         sf::VertexArray &asArray();
