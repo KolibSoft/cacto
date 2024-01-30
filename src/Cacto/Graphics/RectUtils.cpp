@@ -1,6 +1,9 @@
 #include <sstream>
 #include <SFML/Graphics/Rect.hpp>
-#include <Cacto/Graphics/RectPack.hpp>
+#include <Cacto/Lang/Printer.hpp>
+#include <Cacto/Lang/Scanner.hpp>
+#include <Cacto/Graphics/RectPrinter.hpp>
+#include <Cacto/Graphics/RectScanner.hpp>
 #include <Cacto/Graphics/RectUtils.hpp>
 
 namespace cacto
@@ -53,33 +56,33 @@ namespace cacto
     std::string toString(const sf::FloatRect &rect)
     {
         std::stringstream stream{};
-        char separator = ',';
-        stream << rect.left << separator << rect.top << separator << rect.width << separator << rect.height;
-        return stream.str();
+        stream << rect;
+        auto string = stream.str();
+        return std::move(string);
     }
 
-    void fromString(sf::FloatRect &rect, const std::string &string)
+    sf::FloatRect CACTO_GRAPHICS_API toRect(const std::string &string)
     {
+        sf::FloatRect rect{};
         std::stringstream stream{string};
-        char separator = ',';
-        stream >> rect.left >> separator >> rect.top >> separator >> rect.width >> separator >> rect.height;
+        stream >> rect;
+        return std::move(rect);
     }
 
-    std::string toAttribute(const sf::FloatRect &rect)
+    std::ostream &CACTO_GRAPHICS_API operator<<(std::ostream &stream, const sf::FloatRect &rect)
     {
-        auto &id = getId(rect);
-        if (id != "")
-            return id;
-        return toString(rect);
+        Printer printer{stream};
+        RectPrinter rprinter{printer};
+        rprinter.printRect(rect);
+        return stream;
     }
 
-    void fromAttribute(sf::FloatRect &rect, const std::string &attribute)
+    std::istream &CACTO_GRAPHICS_API operator>>(std::istream &stream, sf::FloatRect &rect)
     {
-        auto value = getRect(attribute);
-        if (value)
-            rect = *value;
-        else
-            fromString(rect, attribute);
+        Scanner scanner{stream};
+        RectScanner rscanner{scanner};
+        rscanner.scanRect(rect);
+        return stream;
     }
 
 }
