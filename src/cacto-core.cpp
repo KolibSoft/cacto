@@ -14,3 +14,4 @@
 #include "Cacto/Core/TimeUtils.cpp"
 #include "Cacto/Core/AngleUtils.cpp"
 #include "Cacto/Core/VectorUtils.cpp"
+#include "Cacto/Core/StringUtils.cpp"

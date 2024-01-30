@@ -8,10 +8,13 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Lang/XmlValue.hpp>
+#include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/VertexArrayUtils.hpp>
 
 int main()
 {
+
+    // cacto::ColorPack pack("res/colors.json");
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     sf::VertexArray array{};

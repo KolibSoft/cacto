@@ -19,4 +19,7 @@ namespace cacto
     std::ostream &CACTO_GRAPHICS_API operator<<(std::ostream &stream, const sf::Color &color);
     std::istream &CACTO_GRAPHICS_API operator>>(std::istream &stream, sf::Color &color);
 
+    std::string CACTO_GRAPHICS_API getExpression(const sf::Color& color);
+    sf::Color CACTO_GRAPHICS_API getColor(const std::string &expression);
+
 }

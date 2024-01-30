@@ -180,7 +180,7 @@ namespace cacto
         XmlValue xml{"Vertex", {}};
         xml["position"] = toString(vertex.position);
         xml["texCoords"] = toString(vertex.texCoords);
-        xml["color"] = toString(vertex.color);
+        xml["color"] = getExpression(vertex.color);
         return std::move(xml);
     }
 
@@ -192,7 +192,7 @@ namespace cacto
         auto color = xml.getAttribute("color", "#FFFFFFFF");
         vertex.position = toVector(position);
         vertex.texCoords = toVector(texCoords);
-        vertex.color = toColor(color);
+        vertex.color = getColor(color);
         return std::move(vertex);
     }
 

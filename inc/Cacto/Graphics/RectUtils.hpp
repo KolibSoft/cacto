@@ -27,4 +27,7 @@ namespace cacto
     std::ostream &CACTO_GRAPHICS_API operator<<(std::ostream &stream, const sf::FloatRect &rect);
     std::istream &CACTO_GRAPHICS_API operator>>(std::istream &stream, sf::FloatRect &rect);
 
+    std::string CACTO_GRAPHICS_API getExpression(const sf::FloatRect& rect);
+    sf::FloatRect CACTO_GRAPHICS_API getRect(const std::string &expression);
+
 }
