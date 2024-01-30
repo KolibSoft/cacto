@@ -1,11 +1,32 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
-#include <Cacto/Core/Pack.hpp>
+#include <Cacto/Core/ParentNode.hpp>
+#include <Cacto/Graphics/TransformableUtils.hpp>
 #include <Cacto/Graphics/VertexArrayUtils.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 
 namespace cacto
 {
+
+    const sf::Transformable &Mesh::asTransformable() const
+    {
+        return m_transformable;
+    }
+
+    sf::Transformable &Mesh::asTransformable()
+    {
+        return m_transformable;
+    }
+
+    const sf::VertexArray &Mesh::asArray() const
+    {
+        return m_array;
+    }
+
+    sf::VertexArray &Mesh::asArray()
+    {
+        return m_array;
+    }
 
     const std::string &Mesh::getId() const
     {
@@ -18,7 +39,7 @@ namespace cacto
         return *this;
     }
 
-    ParentNode *const Mesh::getParent() const
+    Node *const Mesh::getParent() const
     {
         return m_parent;
     }
@@ -43,8 +64,31 @@ namespace cacto
         m_parent = nullptr;
     }
 
+    XmlValue Mesh::toXml() const
+    {
+        XmlValue xml{"Mesh", {}};
+        xml["id"] = getId();
+        auto txml = cacto::toXml(m_transformable);
+        auto axml = cacto::toXml(m_array);
+        for (auto &pair : txml.asAttributes())
+            xml[pair.first] = pair.second;
+        for (auto &pair : axml.asAttributes())
+            xml[pair.first] = pair.second;
+        xml.asContent() = std::move(axml.asContent());
+        return std::move(xml);
+    }
+
+    void Mesh::fromXml(const XmlValue &xml)
+    {
+        setId(xml.getAttribute("id"));
+        m_transformable = toTransformable(xml);
+        m_array = toVertexArray(xml);
+    }
+
     Mesh::Mesh()
-        : m_id(),
+        : m_transformable(),
+          m_array(),
+          m_id(),
           m_parent()
     {
     }
@@ -54,18 +98,11 @@ namespace cacto
         detach();
     }
 
-    XmlValue toXml(const Mesh &mesh)
+    void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        auto xml = cacto::toXml((const sf::VertexArray &)mesh);
-        xml.setName("Mesh");
-        xml["id"] = mesh.getId();
-        return std::move(xml);
-    }
-
-    void fromXml(Mesh &mesh, const XmlValue &xml)
-    {
-        cacto::fromXml((sf::VertexArray &)mesh, xml);
-        mesh.setId(xml.getAttribute("id"));
+        auto _states = states;
+        _states.transform *= m_transformable.getTransform();
+        target.draw(m_array, _states);
     }
 
     namespace mesh
@@ -76,7 +113,7 @@ namespace cacto
             const Mesh *mesh = nullptr;
             if (value && typeid(*value) == typeid(Mesh) && (mesh = dynamic_cast<const Mesh *>(value)))
             {
-                auto xml = cacto::toXml(*mesh);
+                auto xml = mesh->toXml();
                 return std::move(xml);
             }
             return nullptr;
@@ -86,10 +123,9 @@ namespace cacto
         {
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
             {
-                auto mesh = std::make_shared<Mesh>();
-                cacto::fromXml(*mesh, xml);
-                Node::XmlStack.push(mesh);
-                return mesh.get();
+                auto mesh = new Mesh();
+                mesh->fromXml(xml);
+                return mesh;
             }
             return nullptr;
         }

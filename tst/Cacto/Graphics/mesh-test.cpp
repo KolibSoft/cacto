@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -6,10 +7,9 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
-#include <Cacto/Graphics/Utils.hpp>
-#include <Cacto/Lang/Utils.hpp>
 
 int main()
 {
@@ -19,9 +19,11 @@ int main()
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
     cacto::Mesh mesh{};
-    cacto::fromXmlFile(mesh, "res/mesh.xml");
-    std::cout << cacto::toXml(mesh).toString(2) << "\n";
-    cacto::toXmlFile(mesh, "res/mesh.xml", 2);
+    cacto::XmlValue xml = nullptr;
+
+    std::ifstream istream{"res/mesh.xml"};
+    istream >> xml;
+    mesh.fromXml(xml);
 
     while (window.isOpen())
     {
@@ -30,11 +32,21 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            else if (event.type == sf::Event::KeyPressed)
+            {
+                std::ifstream istream{"res/mesh.xml"};
+                istream >> xml;
+                mesh.fromXml(xml);
+            }
         }
         window.clear();
         window.draw(mesh);
         window.display();
     }
+
+    std::ofstream ostream{"res/mesh.xml"};
+    xml = mesh.toXml();
+    ostream << xml;
 
     return 0;
 }
