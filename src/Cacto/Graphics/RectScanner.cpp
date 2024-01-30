@@ -56,7 +56,7 @@ namespace cacto
         f64t height = 0;
         if (scanRect(left, top, width, height))
         {
-            rect = {{left, top}, {width, height}};
+            rect = {{f32t(left), f32t(top)}, {f32t(width), f32t(height)}};
             return true;
         }
         return false;
