@@ -26,5 +26,5 @@
 #include "Cacto/Graphics/ColorScanner.cpp"
 #include "Cacto/Graphics/ColorUtils.cpp"
 #include "Cacto/Graphics/TextDirection.cpp"
-// #include "Cacto/Graphics/TransformableUtils.cpp"
+#include "Cacto/Graphics/TransformableUtils.cpp"
 #include "Cacto/Graphics/VertexArrayUtils.cpp"

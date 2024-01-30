@@ -14,7 +14,7 @@
 int main()
 {
 
-    // cacto::ColorPack pack("res/colors.json");
+    cacto::ColorPack pack("res/colors.json");
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     sf::VertexArray array{};

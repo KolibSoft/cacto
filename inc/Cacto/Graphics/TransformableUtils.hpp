@@ -14,9 +14,9 @@ namespace cacto
     class XmlValue;
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Transform &transform);
-    void CACTO_GRAPHICS_API fromXml(sf::Transform &transform, const XmlValue &xml);
+    sf::Transform CACTO_GRAPHICS_API toTransform(const XmlValue &xml);
 
     XmlValue CACTO_GRAPHICS_API toXml(const sf::Transformable &transformable);
-    void CACTO_GRAPHICS_API fromXml(sf::Transformable &transformable, const XmlValue &xml);
+    sf::Transformable CACTO_GRAPHICS_API toTransformable(const XmlValue &xml);
 
 }
