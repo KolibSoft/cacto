@@ -1,24 +1,69 @@
 #pragma once
 
 #include <vector>
+#include <memory>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
-#include <Cacto/Core/Node.hpp>
+#include <Cacto/Core/ParentNode.hpp>
+#include <Cacto/Core/ChildNode.hpp>
+#include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
 {
 
-    namespace skeleton
+    class CACTO_GRAPHICS_API Skeleton
+        : public virtual sf::Drawable,
+          public virtual TransformableChains,
+          public virtual ParentNode,
+          public virtual ChildNode
     {
 
+    public:
         enum Relation
         {
             Body,
             Bone
         };
 
-        class CACTO_GRAPHICS_API Options
+        class Options;
+
+        const sf::Transformable &asTransformable() const;
+        sf::Transformable &asTransformable() override;
+
+        const std::string &getId() const override;
+        Skeleton &setId(const std::string &value);
+
+        Node *const getParent() const override;
+
+        szt getChildCount() const override;
+        Node *const getChild(szt index = 0) const override;
+
+        const Options *const getOptions(const Node &child) const;
+        Options *const getOptions(const Node &child);
+
+        void attach(ParentNode &parent) override;
+        void detach() override;
+
+        void append(ChildNode &child) override;
+        void remove(ChildNode &child) override;
+
+        Skeleton &append(ChildNode &child, const Options &options);
+        Skeleton &append(const std::shared_ptr<ChildNode> &child, const Options &options);
+
+        XmlValue toXml() const;
+        void fromXml(const XmlValue &xml);
+
+        Skeleton();
+        virtual ~Skeleton();
+
+        Skeleton(const Skeleton &other) = delete;
+        Skeleton &operator=(const Skeleton &other) = delete;
+
+        Skeleton(Skeleton &&other) = delete;
+        Skeleton &operator=(Skeleton &&other) = delete;
+
+        class Options
         {
 
         public:
@@ -36,55 +81,17 @@ namespace cacto
             Relation m_relation;
         };
 
-    }
-
-    class CACTO_GRAPHICS_API Skeleton
-        : public sf::Transformable,
-          public virtual sf::Drawable,
-          public virtual ParentNode,
-          public virtual ChildNode
-    {
-
-    public:
-        using Relation = skeleton::Relation;
-        using Options = skeleton::Options;
-
-        const std::string &getId() const override;
-        Skeleton &setId(const std::string &value);
-
-        ParentNode *const getParent() const override;
-
-        szt getChildCount() const override;
-        ChildNode *const getChild(szt index = 0) const override;
-
-        const Options *const getOptions(const Node &child) const;
-        Options *const getOptions(const Node &child);
-
-        void attach(ParentNode &parent) override;
-        void detach() override;
-
-        void append(ChildNode &child) override;
-        Skeleton &append(ChildNode &child, const Options &options);
-        void remove(ChildNode &child) override;
-
-        Skeleton();
-        virtual ~Skeleton();
-
-        Skeleton(const Skeleton &other) = delete;
-        Skeleton &operator=(const Skeleton &other) = delete;
-
-        Skeleton(Skeleton &&other) = delete;
-        Skeleton &operator=(Skeleton &&other) = delete;
-
     protected:
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         struct holder;
 
+        sf::Transformable m_transformable;
+        std::vector<std::shared_ptr<Node>> m_bag;
         std::string m_id;
-        ParentNode *m_parent;
         std::vector<holder> m_holders;
+        ParentNode *m_parent;
 
         struct holder
         {
@@ -94,16 +101,13 @@ namespace cacto
     };
 
     std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
-    void CACTO_GRAPHICS_API fromString(Skeleton::Relation &relation, const std::string &string);
-
-    XmlValue CACTO_GRAPHICS_API toXml(const Skeleton &skeleton);
-    void CACTO_GRAPHICS_API fromXml(Skeleton &skeleton, const XmlValue &xml);
+    Skeleton::Relation CACTO_GRAPHICS_API toRelation(const std::string &string);
 
     namespace skeleton
     {
 
         class CACTO_GRAPHICS_API XmlConverter
-            : public virtual node::XmlConverter
+            : public virtual cacto::XmlConverter<Node>
         {
 
         public:
