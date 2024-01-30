@@ -214,7 +214,7 @@ namespace cacto
     {
         sf::VertexArray array = {};
         auto primitive = xml.getAttribute("primitive", "Points");
-        array.setPrimitiveType(toPrimitiveType(primitive));
+        array.setPrimitiveType(toPrimitive(primitive));
         if (xml.isTag())
             for (auto &vertex_xml : xml.asContent())
             {

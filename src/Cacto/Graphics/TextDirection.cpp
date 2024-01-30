@@ -20,7 +20,7 @@ namespace cacto
             throw std::runtime_error("Invalid direction value");
     }
 
-    TextDirection toTextDirection(const std::string &string)
+    TextDirection toDirection(const std::string &string)
     {
         if (string == "ToLeft")
             return TextDirection::ToLeft;
@@ -32,6 +32,21 @@ namespace cacto
             return TextDirection::ToBottom;
         else
             throw std::runtime_error("Invalid direction value");
+    }
+
+    std::ostream &operator<<(std::ostream &stream, TextDirection direction)
+    {
+        auto string = toString(direction);
+        stream << string;
+        return stream;
+    }
+
+    std::istream &operator>>(std::istream &stream, TextDirection &direction)
+    {
+        std::string string{};
+        stream >> string;
+        direction = toDirection(string);
+        return stream;
     }
 
 }

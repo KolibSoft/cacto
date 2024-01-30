@@ -4,7 +4,7 @@
 namespace cacto
 {
 
-    std::string toString(const sf::PrimitiveType &primitive)
+    std::string toString(sf::PrimitiveType primitive)
     {
         if (primitive == sf::PrimitiveType::Points)
             return "Points";
@@ -22,7 +22,7 @@ namespace cacto
             throw std::runtime_error("Unsupported primitive type");
     }
 
-    sf::PrimitiveType toPrimitiveType(const std::string &string)
+    sf::PrimitiveType toPrimitive(const std::string &string)
     {
         if (string == "Points")
             return sf::PrimitiveType::Points;
@@ -38,6 +38,21 @@ namespace cacto
             return sf::PrimitiveType::TriangleFan;
         else
             throw std::runtime_error("Unsupported primitive type");
+    }
+
+    std::ostream &operator<<(std::ostream &stream, sf::PrimitiveType primitive)
+    {
+        auto string = toString(primitive);
+        stream << string;
+        return stream;
+    }
+
+    std::istream &operator>>(std::istream &stream, sf::PrimitiveType &primitive)
+    {
+        std::string string{};
+        stream >> string;
+        primitive = toPrimitive(string);
+        return stream;
     }
 
 }
