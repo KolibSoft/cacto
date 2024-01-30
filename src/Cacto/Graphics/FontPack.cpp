@@ -59,16 +59,4 @@ namespace cacto
         return *this;
     }
 
-    const std::string &getId(const sf::Font &font)
-    {
-        auto &id = Pack<sf::Font>::id(font);
-        return id;
-    }
-
-    const sf::Font *const getFont(const std::string &id)
-    {
-        auto font = Pack<sf::Font>::resource(id);
-        return font;
-    }
-
 }

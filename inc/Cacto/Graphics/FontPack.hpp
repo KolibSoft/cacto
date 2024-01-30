@@ -39,7 +39,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Font>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const sf::Font &font);
-    const sf::Font *const CACTO_GRAPHICS_API getFont(const std::string &id);
-
 }
