@@ -16,6 +16,8 @@
 #include "Cacto/Graphics/TexturePack.cpp"
 #include "Cacto/Graphics/FontPack.cpp"
 // #include "Cacto/Graphics/GeometryPack.cpp"
+#include "Cacto/Graphics/TransformChains.cpp"
+#include "Cacto/Graphics/TransformableChains.cpp"
 // #include "Cacto/Graphics/NodeUtils.cpp"
 #include "Cacto/Graphics/VectorUtils.cpp"
 #include "Cacto/Graphics/RectPrinter.cpp"
