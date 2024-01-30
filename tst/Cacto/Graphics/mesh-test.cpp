@@ -10,11 +10,13 @@
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
+#include <Cacto/Graphics/TexturePack.hpp>
 
 int main()
 {
 
     cacto::ColorPack colors{"res/colors.json"};
+    cacto::TexturePack textures{"res/textures"};
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 

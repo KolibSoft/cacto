@@ -1,8 +1,10 @@
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/Graphics/Texture.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
 #include <Cacto/Core/ParentNode.hpp>
 #include <Cacto/Graphics/TransformableUtils.hpp>
 #include <Cacto/Graphics/VertexArrayUtils.hpp>
+#include <Cacto/Graphics/TextureUtils.hpp>
 #include <Cacto/Graphics/Mesh.hpp>
 
 namespace cacto
@@ -26,6 +28,17 @@ namespace cacto
     sf::VertexArray &Mesh::asArray()
     {
         return m_array;
+    }
+
+    const sf::Texture *Mesh::getTexture() const
+    {
+        return m_texture;
+    }
+
+    Mesh &Mesh::setTexture(const sf::Texture *value)
+    {
+        m_texture = value;
+        return *this;
     }
 
     const std::string &Mesh::getId() const
@@ -68,6 +81,7 @@ namespace cacto
     {
         XmlValue xml{"Mesh", {}};
         xml["id"] = getId();
+        xml["texture"] = getExpression(m_texture);
         auto txml = cacto::toXml(m_transformable);
         auto axml = cacto::toXml(m_array);
         for (auto &pair : txml.asAttributes())
@@ -81,6 +95,7 @@ namespace cacto
     void Mesh::fromXml(const XmlValue &xml)
     {
         setId(xml.getAttribute("id"));
+        setTexture(cacto::getTexture(xml.getAttribute("texture")));
         m_transformable = toTransformable(xml);
         m_array = toVertexArray(xml);
     }
@@ -88,6 +103,7 @@ namespace cacto
     Mesh::Mesh()
         : m_transformable(),
           m_array(),
+          m_texture(),
           m_id(),
           m_parent()
     {
@@ -101,6 +117,7 @@ namespace cacto
     void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         auto _states = states;
+        _states.texture = m_texture;
         _states.transform *= m_transformable.getTransform();
         target.draw(m_array, _states);
     }

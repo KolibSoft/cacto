@@ -6,6 +6,11 @@
 #include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
+namespace sf
+{
+    class Texture;
+}
+
 namespace cacto
 {
 
@@ -21,6 +26,9 @@ namespace cacto
 
         const sf::VertexArray &asArray() const;
         sf::VertexArray &asArray();
+
+        const sf::Texture *getTexture() const;
+        Mesh &setTexture(const sf::Texture *value);
 
         const std::string &getId() const override;
         Mesh &setId(const std::string &value);
@@ -48,6 +56,7 @@ namespace cacto
     private:
         sf::Transformable m_transformable;
         sf::VertexArray m_array;
+        const sf::Texture *m_texture;
         std::string m_id;
         ParentNode *m_parent;
     };
