@@ -27,6 +27,8 @@ namespace cacto
         bool hasDescendant(const Node &node) const;
         bool hasAncestor(const Node &node) const;
 
+        virtual Node *clone() const = 0;
+
         Node() = default;
         virtual ~Node() = default;
     };

@@ -77,6 +77,12 @@ namespace cacto
         m_parent = nullptr;
     }
 
+    Mesh *Mesh::clone() const
+    {
+        auto mesh = new Mesh(*this);
+        return mesh;
+    }
+
     Mesh::Mesh()
         : m_transformable(),
           m_array(),
@@ -119,6 +125,7 @@ namespace cacto
         m_array = std::move(other.m_array);
         m_texture = other.m_texture;
         m_id = std::move(other.m_id);
+        other.m_texture = nullptr;
         other.detach();
         return *this;
     }
@@ -164,7 +171,7 @@ namespace cacto
             const Mesh *mesh = nullptr;
             if (value && typeid(*value) == typeid(Mesh) && (mesh = dynamic_cast<const Mesh *>(value)))
             {
-                auto xml = cacto::toXml(mesh);
+                auto xml = cacto::toXml(*mesh);
                 return std::move(xml);
             }
             return nullptr;

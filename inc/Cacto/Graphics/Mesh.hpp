@@ -38,6 +38,8 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
+        Mesh *clone() const override;
+
         Mesh();
         virtual ~Mesh();
 

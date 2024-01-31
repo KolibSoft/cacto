@@ -23,9 +23,8 @@ int main()
     cacto::Skeleton skeleton{};
     cacto::XmlValue xml = nullptr;
 
-    std::ifstream istream{"res/skeleton.xml"};
-    istream >> xml;
-    skeleton.fromXml(xml);
+    xml.fromFile("res/skeleton.xml");
+    skeleton = cacto::toSkeleton(xml);
 
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
@@ -56,9 +55,8 @@ int main()
         window.display();
     }
 
-    std::ofstream ostream{"res/skeleton.xml"};
-    xml = skeleton.toXml();
-    ostream << xml;
+    xml = cacto::toXml(skeleton);
+    xml.toFile("res/skeleton.xml");
 
     return 0;
 }

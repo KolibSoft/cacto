@@ -115,6 +115,12 @@ namespace cacto
         }
     }
 
+    Skeleton *Skeleton::clone() const
+    {
+        auto skeleton = new Skeleton(*this);
+        return skeleton;
+    }
+
     Skeleton &Skeleton::append(ChildNode &child, const Options &options)
     {
         append(child);
@@ -138,62 +144,12 @@ namespace cacto
         return *this;
     }
 
-    XmlValue Skeleton::toXml() const
-    {
-        XmlValue xml{"Skeleton", {}};
-        xml["id"] = m_id;
-        auto txml = cacto::toXml(m_transformable);
-        for (auto &pair : txml.asAttributes())
-            xml[pair.first] = pair.second;
-        auto &content = xml.asContent();
-        for (szt i = 0; i < getChildCount(); i++)
-        {
-            auto child = getChild(i);
-            if (child)
-            {
-                auto options = getOptions(*child);
-                auto child_xml = cacto::toXml(child);
-                child_xml["options:coords"] = toString(options->getCoords());
-                child_xml["options:relation"] = toString(options->getRelation());
-                content.push_back(std::move(child_xml));
-            }
-        }
-        return std::move(xml);
-    }
-
-    void Skeleton::fromXml(const XmlValue &xml)
-    {
-        clearChildren();
-        m_id = xml.getAttribute("id");
-        m_transformable = toTransformable(xml);
-        if (xml.isTag())
-            for (auto &item : xml.asContent())
-            {
-                Node *node = cacto::fromXml<Node>(item);
-                if (node)
-                {
-                    auto child = dynamic_cast<ChildNode *>(node);
-                    if (child)
-                    {
-                        std::shared_ptr<ChildNode> ptr{child};
-                        sf::Vector2f coords = toVector(item.getAttribute("options:coords", "0,0"));
-                        Skeleton::Relation relation = toRelation(item.getAttribute("options:relation", "Body"));
-                        append(ptr,
-                               Options()
-                                   .setCoords(coords)
-                                   .setRelation(relation));
-                    }
-                    else
-                        delete node;
-                }
-            }
-    }
-
     Skeleton::Skeleton()
         : m_transformable(),
+          m_bag(),
           m_id(),
-          m_parent(),
-          m_holders()
+          m_holders(),
+          m_parent()
     {
     }
 
@@ -201,6 +157,59 @@ namespace cacto
     {
         detach();
         clearChildren();
+    }
+
+    Skeleton::Skeleton(const Skeleton &other)
+        : m_transformable(other.m_transformable),
+          m_bag(),
+          m_id(other.m_id),
+          m_holders(),
+          m_parent()
+    {
+        for (auto &holder : other.m_holders)
+        {
+            auto node = holder.child->clone();
+            if (node)
+            {
+                auto child = dynamic_cast<ChildNode *>(node);
+                if (child)
+                {
+                    std::shared_ptr<ChildNode> ptr{child};
+                    append(ptr, holder.options);
+                }
+                else
+                    delete node;
+            }
+        }
+    }
+
+    Skeleton &Skeleton::operator=(const Skeleton &other)
+    {
+        Skeleton copy{other};
+        *this = std::move(copy);
+        return *this;
+    }
+
+    Skeleton::Skeleton(Skeleton &&other)
+        : Skeleton()
+    {
+        *this = std::move(other);
+    }
+
+    Skeleton &Skeleton::operator=(Skeleton &&other)
+    {
+        clearChildren();
+        m_transformable = std::move(other.m_transformable);
+        m_bag = std::move(other.m_bag);
+        m_id = std::move(other.m_id);
+        m_holders = std::move(other.m_holders);
+        for (auto &holder : m_holders)
+        {
+            holder.child->detach();
+            holder.child->attach(*this);
+        }
+        other.detach();
+        return *this;
     }
 
     void Skeleton::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -283,6 +292,58 @@ namespace cacto
             throw std::runtime_error("Unsupported relation");
     }
 
+    XmlValue toXml(const Skeleton &skeleton)
+    {
+        XmlValue xml{"Skeleton", {}};
+        xml["id"] = skeleton.getId();
+        auto txml = toXml(skeleton.asTransformable());
+        for (auto &pair : txml.asAttributes())
+            xml[pair.first] = pair.second;
+        auto &content = xml.asContent();
+        for (szt i = 0; i < skeleton.getChildCount(); i++)
+        {
+            auto child = skeleton.getChild(i);
+            if (child)
+            {
+                auto options = skeleton.getOptions(*child);
+                auto child_xml = toXml(child);
+                child_xml["options:coords"] = toString(options->getCoords());
+                child_xml["options:relation"] = toString(options->getRelation());
+                content.push_back(std::move(child_xml));
+            }
+        }
+        return std::move(xml);
+    }
+
+    Skeleton toSkeleton(const XmlValue &xml)
+    {
+        Skeleton skeleton{};
+        skeleton.setId(xml.getAttribute("id"));
+        skeleton.asTransformable() = toTransformable(xml);
+        if (xml.isTag())
+            for (auto &item : xml.asContent())
+            {
+                Node *node = cacto::fromXml<Node>(item);
+                if (node)
+                {
+                    auto child = dynamic_cast<ChildNode *>(node);
+                    if (child)
+                    {
+                        std::shared_ptr<ChildNode> ptr{child};
+                        sf::Vector2f coords = toVector(item.getAttribute("options:coords", "0,0"));
+                        Skeleton::Relation relation = toRelation(item.getAttribute("options:relation", "Body"));
+                        skeleton.append(ptr,
+                                        Skeleton::Options()
+                                            .setCoords(coords)
+                                            .setRelation(relation));
+                    }
+                    else
+                        delete node;
+                }
+            }
+        return std::move(skeleton);
+    }
+
     namespace skeleton
     {
 
@@ -291,7 +352,7 @@ namespace cacto
             const Skeleton *skeleton = nullptr;
             if (value && typeid(*value) == typeid(Skeleton) && (skeleton = dynamic_cast<const Skeleton *>(value)))
             {
-                auto xml = skeleton->toXml();
+                auto xml = cacto::toXml(*skeleton);
                 return std::move(xml);
             }
             return nullptr;
@@ -302,7 +363,7 @@ namespace cacto
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Skeleton")
             {
                 auto skeleton = new Skeleton();
-                skeleton->fromXml(xml);
+                *skeleton = toSkeleton(xml);
                 return skeleton;
             }
             return nullptr;

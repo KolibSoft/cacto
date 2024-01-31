@@ -48,21 +48,20 @@ namespace cacto
         void append(ChildNode &child) override;
         void remove(ChildNode &child) override;
 
+        Skeleton *clone() const override;
+
         Skeleton &append(ChildNode &child, const Options &options);
         Skeleton &append(const std::shared_ptr<ChildNode> &child);
         Skeleton &append(const std::shared_ptr<ChildNode> &child, const Options &options);
 
-        XmlValue toXml() const;
-        void fromXml(const XmlValue &xml);
-
         Skeleton();
         virtual ~Skeleton();
 
-        Skeleton(const Skeleton &other) = delete;
-        Skeleton &operator=(const Skeleton &other) = delete;
+        Skeleton(const Skeleton &other);
+        Skeleton &operator=(const Skeleton &other);
 
-        Skeleton(Skeleton &&other) = delete;
-        Skeleton &operator=(Skeleton &&other) = delete;
+        Skeleton(Skeleton &&other);
+        Skeleton &operator=(Skeleton &&other);
 
         class Options
         {
@@ -103,6 +102,9 @@ namespace cacto
 
     std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
     Skeleton::Relation CACTO_GRAPHICS_API toRelation(const std::string &string);
+
+    XmlValue CACTO_GRAPHICS_API toXml(const Skeleton &skeleton);
+    Skeleton CACTO_GRAPHICS_API toSkeleton(const XmlValue &xml);
 
     namespace skeleton
     {
