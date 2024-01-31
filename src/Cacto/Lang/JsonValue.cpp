@@ -156,20 +156,6 @@ namespace cacto
         m_array->resize(count);
     }
 
-    const std::vector<JsonValue> &JsonValue::asArray() const
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
-        return *m_array;
-    }
-
-    std::vector<JsonValue> &JsonValue::asArray()
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
-        return *m_array;
-    }
-
     const JsonValue &JsonValue::operator[](szt index) const
     {
         if (m_kind != Array)
@@ -184,6 +170,20 @@ namespace cacto
         if (m_kind != Array)
             throw std::runtime_error("Json is not an array value");
         return m_array->operator[](index);
+    }
+
+    const std::vector<JsonValue> &JsonValue::asArray() const
+    {
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        return *m_array;
+    }
+
+    std::vector<JsonValue> &JsonValue::asArray()
+    {
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        return *m_array;
     }
 
     bool JsonValue::isObject() const
@@ -215,20 +215,6 @@ namespace cacto
         return getObject();
     }
 
-    const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const
-    {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return *m_object;
-    }
-
-    std::unordered_map<std::string, JsonValue> &JsonValue::asObject()
-    {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return *m_object;
-    }
-
     const JsonValue &JsonValue::operator[](const std::string &key) const
     {
         if (m_kind != Object)
@@ -244,6 +230,20 @@ namespace cacto
         if (m_kind != Object)
             throw std::runtime_error("Json is not an object value");
         return m_object->operator[](key);
+    }
+
+    const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const
+    {
+        if (m_kind != Object)
+            throw std::runtime_error("Json is not an object value");
+        return *m_object;
+    }
+
+    std::unordered_map<std::string, JsonValue> &JsonValue::asObject()
+    {
+        if (m_kind != Object)
+            throw std::runtime_error("Json is not an object value");
+        return *m_object;
     }
 
     void JsonValue::print(Printer &printer) const

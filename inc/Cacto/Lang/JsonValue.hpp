@@ -52,24 +52,23 @@ namespace cacto
         std::vector<JsonValue> getArray(const std::vector<JsonValue> &def = {}) const;
         void setArray(const std::vector<JsonValue> &value);
         explicit operator std::vector<JsonValue>() const;
-
         void append(const JsonValue &value);
         void resize(szt count);
+        const JsonValue &operator[](szt index) const;
+        JsonValue &operator[](szt index);
 
         const std::vector<JsonValue> &asArray() const;
         std::vector<JsonValue> &asArray();
-        const JsonValue &operator[](szt index) const;
-        JsonValue &operator[](szt index);
 
         bool isObject() const;
         std::unordered_map<std::string, JsonValue> getObject(const std::unordered_map<std::string, JsonValue> &def = {}) const;
         void setObject(const std::unordered_map<std::string, JsonValue> &value);
         explicit operator std::unordered_map<std::string, JsonValue>() const;
+        const JsonValue &operator[](const std::string &key) const;
+        JsonValue &operator[](const std::string &key);
 
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
-        const JsonValue &operator[](const std::string &key) const;
-        JsonValue &operator[](const std::string &key);
 
         void print(Printer &printer) const override;
         bool scan(Scanner &scanner) override;
