@@ -36,7 +36,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<Geometry>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const Geometry &geometry);
-    const Geometry *const CACTO_GRAPHICS_API getGeometry(const std::string &id);
-
 }

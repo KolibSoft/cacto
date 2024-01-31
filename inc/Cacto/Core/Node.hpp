@@ -27,11 +27,27 @@ namespace cacto
         bool hasDescendant(const Node &node) const;
         bool hasAncestor(const Node &node) const;
 
+        virtual Node *clone() const = 0;
+
         Node() = default;
         virtual ~Node() = default;
     };
 
     template class CACTO_CORE_API XmlConverter<Node>;
+
+    namespace node
+    {
+
+        class CACTO_CORE_API XmlConverter
+            : public cacto::XmlConverter<Node>
+        {
+
+        public:
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+    }
 
 }
 

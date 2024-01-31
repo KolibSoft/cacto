@@ -60,16 +60,4 @@ namespace cacto
         return *this;
     }
 
-    const std::string &getId(const sf::Texture &texture)
-    {
-        auto &id = Pack<sf::Texture>::id(texture);
-        return id;
-    }
-
-    const sf::Texture *const getTexture(const std::string &id)
-    {
-        auto texture = Pack<sf::Texture>::resource(id);
-        return std::move(texture);
-    }
-
 }

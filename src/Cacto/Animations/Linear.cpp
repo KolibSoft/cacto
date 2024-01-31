@@ -1,3 +1,4 @@
+#include <Cacto/Core/TimeUtils.hpp>
 #include <Cacto/Animations/Linear.hpp>
 
 namespace cacto
@@ -49,11 +50,16 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Linear &linear, const XmlValue &xml)
+    Linear CACTO_ANIMATIONS_API toLinear(const XmlValue &xml)
     {
-        fromXml((Animation &)linear, xml);
+        Linear linear{};
+        linear.setDelay(toTime(xml.getAttribute("delay", "0s")));
+        linear.setDuration(toTime(xml.getAttribute("duration", "0s")));
+        linear.setDirection(toAnimationDirection(xml.getAttribute("direction", "Forward")));
+        linear.setMode(toAnimationMode(xml.getAttribute("mode", "Once")));
         linear.setFrom(std::stof(xml.getAttribute("from", "0")));
         linear.setTo(std::stof(xml.getAttribute("to", "0")));
+        return std::move(linear);
     }
 
     namespace linear
@@ -74,10 +80,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Linear")
             {
-                auto linear = std::make_shared<Linear>();
-                cacto::fromXml(*linear, xml);
-                Animation::XmlStack.push(linear);
-                return linear.get();
+                auto linear = new Linear();
+                *linear = toLinear(xml);
+                return linear;
             }
             return nullptr;
         }

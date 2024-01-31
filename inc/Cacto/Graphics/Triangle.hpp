@@ -40,7 +40,7 @@ namespace cacto
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Triangle &triangle);
-    void CACTO_GRAPHICS_API fromXml(Triangle &triangle, const XmlValue &xml);
+    Triangle CACTO_GRAPHICS_API toTriangle(const XmlValue &xml);
 
     namespace triangle
     {

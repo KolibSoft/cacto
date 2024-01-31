@@ -25,14 +25,12 @@ namespace cacto
 
         Geometry() = default;
         virtual ~Geometry() = default;
-
-        static ResourceStack<Geometry> XmlStack;
     };
 
     template class CACTO_GRAPHICS_API cacto::XmlConverter<Geometry>;
 
     XmlValue CACTO_GRAPHICS_API toXml(const Geometry *const &geometry);
-    void CACTO_GRAPHICS_API fromXml(Geometry *&geometry, const XmlValue &xml);
+    Geometry *CACTO_GRAPHICS_API toGeometry(const XmlValue &xml);
 
     namespace geometry
     {

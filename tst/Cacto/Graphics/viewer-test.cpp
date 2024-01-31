@@ -10,16 +10,19 @@
 #include <Cacto/Graphics/Ellipse.hpp>
 #include <Cacto/Graphics/Triangle.hpp>
 #include <Cacto/Graphics/LineViewer.hpp>
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 
 int main()
 {
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
+    cacto::XmlValue xml = nullptr;
 
     cacto::Straight straight{{10, 10}, {100, 200}};
-    straight.toFile("res/lines/straight.json");
-    straight.fromFile("res/lines/straight.json");
+    xml = toXml(straight);
+    xml.toFile("res/straight.xml");
+    xml.fromFile("res/straight.xml");
+    straight = cacto::toStraight(xml);
 
     cacto::Bezier bezier{{
         {100, 300},
@@ -27,28 +30,31 @@ int main()
         {300, 500},
         {400, 300},
     }};
-    bezier.toFile("res/lines/bezier.json");
-    bezier.fromFile("res/lines/bezier.json");
+    xml = toXml(bezier);
+    xml.toFile("res/bezier.xml");
+    xml.fromFile("res/bezier.xml");
+    bezier = cacto::toBezier(xml);
 
     cacto::Rectangle rectangle{{100, 10}, {100, 100}};
-    rectangle.toFile("res/geometries/rectangle.json");
-    rectangle.fromFile("res/geometries/rectangle.json");
+    xml = toXml(rectangle);
+    xml.toFile("res/rectangle.xml");
+    xml.fromFile("res/rectangle.xml");
+    rectangle = cacto::toRectangle(xml);
 
     cacto::Ellipse ellipse{{200, 200}, {100, 50}};
-    ellipse.toFile("res/geometries/ellipse.json");
-    ellipse.fromFile("res/geometries/ellipse.json");
+    xml = toXml(ellipse);
+    xml.toFile("res/ellipse.xml");
+    xml.fromFile("res/ellipse.xml");
+    ellipse = cacto::toEllipse(xml);
 
     cacto::Triangle triangle{{300, 300}, {400, 350}, {350, 400}};
-    triangle.toFile("res/geometries/triangle.json");
-    triangle.fromFile("res/geometries/triangle.json");
+    xml = toXml(triangle);
+    xml.toFile("res/triangle.xml");
+    xml.fromFile("res/triangle.xml");
+    triangle = cacto::toTriangle(xml);
 
     cacto::LineViewer viewer{};
-
-    cacto::JsonValue json = nullptr;
-    json.fromFile("res/vertex_array.json");
-    json.toFile("res/vertex_array.json");
     sf::VertexArray array{};
-    cacto::vertexArrayFromJson(array, json);
 
     while (window.isOpen())
     {
@@ -68,7 +74,7 @@ int main()
         window.draw(viewer);
 
         viewer.setLine(&bezier);
-        viewer.setPrecision(1);
+        viewer.setPrecision(5);
         viewer.setColor(sf::Color::Green);
         viewer.setClosed(false);
         window.draw(viewer);
@@ -80,7 +86,7 @@ int main()
         window.draw(viewer);
 
         viewer.setLine(&ellipse);
-        viewer.setPrecision(1);
+        viewer.setPrecision(5);
         viewer.setColor(sf::Color::Yellow);
         viewer.setClosed(true);
         window.draw(viewer);

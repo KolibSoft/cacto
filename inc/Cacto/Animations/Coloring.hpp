@@ -28,7 +28,7 @@ namespace cacto
     };
 
     XmlValue CACTO_ANIMATIONS_API toXml(const Coloring &coloring);
-    void CACTO_ANIMATIONS_API fromXml(Coloring &coloring, const XmlValue &xml);
+    Coloring CACTO_ANIMATIONS_API toColoring(const XmlValue &xml);
 
     namespace coloring
     {

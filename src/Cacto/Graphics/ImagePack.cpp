@@ -59,16 +59,4 @@ namespace cacto
         return *this;
     }
 
-    const std::string &getId(const sf::Image &image)
-    {
-        auto &id = Pack<sf::Image>::id(image);
-        return id;
-    }
-
-    const sf::Image *const getImage(const std::string &id)
-    {
-        auto image = Pack<sf::Image>::resource(id);
-        return image;
-    }
-
 }

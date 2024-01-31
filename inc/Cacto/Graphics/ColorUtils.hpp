@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <ostream>
+#include <istream>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -12,9 +14,12 @@ namespace cacto
 {
 
     std::string CACTO_GRAPHICS_API toString(const sf::Color &color);
-    void CACTO_GRAPHICS_API fromString(sf::Color &color, const std::string &string);
+    sf::Color CACTO_GRAPHICS_API toColor(const std::string &string);
 
-    std::string CACTO_GRAPHICS_API toAttribute(const sf::Color &color);
-    void CACTO_GRAPHICS_API fromAttribute(sf::Color &color, const std::string &attribute);
+    std::ostream &CACTO_GRAPHICS_API operator<<(std::ostream &stream, const sf::Color &color);
+    std::istream &CACTO_GRAPHICS_API operator>>(std::istream &stream, sf::Color &color);
+
+    std::string CACTO_GRAPHICS_API getExpression(const sf::Color& color);
+    sf::Color CACTO_GRAPHICS_API getColor(const std::string &expression);
 
 }

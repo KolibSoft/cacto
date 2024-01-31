@@ -63,11 +63,12 @@ namespace cacto
             try
             {
                 JsonValue json = nullptr;
-                json.fromFile(m_path);
+                std::ifstream stream{m_path};
+                stream >> json;
                 for (auto &pair : json.asObject())
                 {
                     auto rect = std::make_shared<sf::FloatRect>();
-                    cacto::fromString(*rect, pair.second.getString("0,0,0,0"));
+                    *rect = toRect(pair.second.getString("0,0,0,0"));
                     m_map.insert({pair.first, rect});
                 }
             }
@@ -76,18 +77,6 @@ namespace cacto
             }
             m_loaded = true;
         }
-    }
-
-    const std::string &getId(const sf::FloatRect &string)
-    {
-        auto &id = Pack<sf::FloatRect>::id(string);
-        return id;
-    }
-
-    const sf::FloatRect *const getRect(const std::string &id)
-    {
-        auto rect = Pack<sf::FloatRect>::resource(id);
-        return rect;
     }
 
 }

@@ -63,11 +63,12 @@ namespace cacto
             try
             {
                 JsonValue json = nullptr;
-                json.fromFile(m_path);
+                std::ifstream stream{m_path};
+                stream >> json;
                 for (auto &pair : json.asObject())
                 {
                     auto color = std::make_shared<sf::Color>();
-                    cacto::fromString(*color, pair.second.getString("#00000000"));
+                    *color = toColor(pair.second.getString("#00000000"));
                     m_map.insert({pair.first, color});
                 }
             }
@@ -76,18 +77,6 @@ namespace cacto
             }
             m_loaded = true;
         }
-    }
-
-    const std::string &getId(const sf::Color &string)
-    {
-        auto &id = Pack<sf::Color>::id(string);
-        return id;
-    }
-
-    const sf::Color *const getColor(const std::string &id)
-    {
-        auto color = Pack<sf::Color>::resource(id);
-        return color;
     }
 
 }

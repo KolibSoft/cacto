@@ -40,7 +40,7 @@ namespace cacto
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Ellipse &ellipse);
-    void CACTO_GRAPHICS_API fromXml(Ellipse &ellipse, const XmlValue &xml);
+    Ellipse CACTO_GRAPHICS_API toEllipse(const XmlValue &xml);
 
     namespace ellipse
     {

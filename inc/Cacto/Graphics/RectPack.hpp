@@ -47,7 +47,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<sf::FloatRect>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const sf::FloatRect &rect);
-    const sf::FloatRect *const CACTO_GRAPHICS_API getRect(const std::string &id);
-
 }

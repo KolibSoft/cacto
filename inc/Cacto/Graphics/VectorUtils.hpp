@@ -1,6 +1,5 @@
 #pragma once
 
-#include <string>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -23,9 +22,5 @@ namespace cacto
 
     sf::Vector2f CACTO_GRAPHICS_API mapPoint(const sf::Vector2f &point, const sf::FloatRect &bounds, const sf::FloatRect &surface);
     sf::Vector2f CACTO_GRAPHICS_API fitSize(const sf::Vector2f &contentSize, const sf::Vector2f &containerSize);
-
-    std::string CACTO_GRAPHICS_API toString(const sf::Vector2f &point);
-    void CACTO_GRAPHICS_API fromString(sf::Vector2f &point, const std::string &string);
-
 
 }

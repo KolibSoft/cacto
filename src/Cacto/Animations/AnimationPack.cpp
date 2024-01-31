@@ -30,8 +30,8 @@ namespace cacto
             Animation *animation = nullptr;
             XmlValue xml = nullptr;
             xml.fromFile(path);
-            cacto::fromXml(animation, xml);
-            m_map.insert({id, Animation::XmlStack.pop()});
+            animation = cacto::fromXml<Animation>(xml);
+            m_map.insert({id, std::shared_ptr<Animation>(animation)});
             return animation;
         }
         else
@@ -60,18 +60,6 @@ namespace cacto
         m_path = std::move(other.m_path);
         m_map = std::move(other.m_map);
         return *this;
-    }
-
-    const std::string &getId(const Animation &animation)
-    {
-        auto &id = Pack<Animation>::id(animation);
-        return id;
-    }
-
-    const Animation *const getAnimation(const std::string &id)
-    {
-        auto animation = Pack<Animation>::resource(id);
-        return animation;
     }
 
 }

@@ -4,3 +4,4 @@
 #include "Cacto/Animations/Coloring.cpp"
 #include "Cacto/Animations/AnimationPack.cpp"
 #include "Cacto/Animations/NodeUtils.cpp"
+#include "Cacto/Animations/AnimationUtils.cpp"

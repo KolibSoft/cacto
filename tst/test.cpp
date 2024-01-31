@@ -4,8 +4,13 @@
 
 #include <Dylib/dylib.hpp>
 
+class Ax{};
+
 int main()
 {
+
+    auto *source = new Ax{};
+    auto *destination = std::move(source);
 
     dylib lib("./lib.dll");
 

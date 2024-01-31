@@ -1,3 +1,4 @@
+#include <Cacto/Core/TimeUtils.hpp>
 #include <Cacto/Animations/Animation.hpp>
 
 namespace cacto
@@ -123,7 +124,7 @@ namespace cacto
 
     Animation::~Animation() = default;
 
-    std::string toString(const Animation::Direction &direction)
+    std::string toString(Animation::Direction direction)
     {
         if (direction == Animation::Forward)
             return "Forward";
@@ -133,17 +134,17 @@ namespace cacto
             throw std::runtime_error("Not supported direction value");
     }
 
-    void fromString(Animation::Direction &direction, const std::string &string)
+    Animation::Direction toAnimationDirection(const std::string &string)
     {
         if (string == "Forward")
-            direction = Animation::Forward;
+            return Animation::Forward;
         else if (string == "Reverse")
-            direction = Animation::Reverse;
+            return Animation::Reverse;
         else
             throw std::runtime_error("Not supported direction value");
     }
 
-    std::string toString(const Animation::Mode &mode)
+    std::string toString(Animation::Mode mode)
     {
         if (mode == Animation::Once)
             return "Once";
@@ -155,14 +156,14 @@ namespace cacto
             throw std::runtime_error("Not supported mode value");
     }
 
-    void fromString(Animation::Mode &mode, const std::string &string)
+    Animation::Mode toAnimationMode(const std::string &string)
     {
         if (string == "Once")
-            mode = Animation::Once;
+            return Animation::Once;
         else if (string == "Repeat")
-            mode = Animation::Repeat;
+            return Animation::Repeat;
         else if (string == "Flip")
-            mode = Animation::Flip;
+            return Animation::Flip;
         else
             throw std::runtime_error("Not supported mode value");
     }
@@ -170,23 +171,21 @@ namespace cacto
     XmlValue toXml(const Animation &animation)
     {
         XmlValue xml{"Animation", {}};
-        xml["delay"] = std::to_string(animation.getDelay().asSeconds());
-        xml["duration"] = std::to_string(animation.getDuration().asSeconds());
+        xml["delay"] = toString(animation.getDelay());
+        xml["duration"] = toString(animation.getDuration());
         xml["direction"] = toString(animation.getDirection());
         xml["mode"] = toString(animation.getMode());
         return std::move(xml);
     }
 
-    void fromXml(Animation &animation, const XmlValue &xml)
+    Animation toBasicAnimation(const XmlValue &xml)
     {
-        animation.setDelay(sf::seconds(std::stof(xml.getAttribute("delay", "0"))));
-        animation.setDuration(sf::seconds(std::stof(xml.getAttribute("duration", "0"))));
-        Animation::Direction direction{};
-        fromString(direction, xml.getAttribute("direction", "Forward"));
-        animation.setDirection(direction);
-        Animation::Mode mode{};
-        fromString(mode, xml.getAttribute("mode", "Once"));
-        animation.setMode(mode);
+        Animation animation{};
+        animation.setDelay(toTime(xml.getAttribute("delay", "0s")));
+        animation.setDuration(toTime(xml.getAttribute("duration", "0s")));
+        animation.setDirection(toAnimationDirection(xml.getAttribute("direction", "Forward")));
+        animation.setMode(toAnimationMode(xml.getAttribute("mode", "Once")));
+        return std::move(animation);
     }
 
     XmlValue toXml(const Animation *const &animation)
@@ -195,10 +194,10 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Animation *&animation, const XmlValue &xml)
+    Animation *toAnimation(const XmlValue &xml)
     {
         auto value = XmlConverter<Animation>::value(xml);
-        animation = value;
+        return value;
     }
 
     namespace animation
@@ -219,10 +218,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Animation")
             {
-                auto animation = std::make_shared<Animation>();
-                cacto::fromXml(*animation, xml);
-                Animation::XmlStack.push(animation);
-                return animation.get();
+                auto animation = new Animation();
+                *animation = toBasicAnimation(xml);
+                return animation;
             }
             return nullptr;
         }
@@ -230,7 +228,5 @@ namespace cacto
         XmlConverter Converter{};
 
     }
-
-    ResourceStack<Animation> Animation::XmlStack{};
 
 }

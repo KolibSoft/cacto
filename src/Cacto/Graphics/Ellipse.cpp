@@ -1,5 +1,6 @@
 #include <cmath>
 #include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Core/VectorUtils.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Ellipse.hpp>
 
@@ -96,15 +97,14 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Ellipse &ellipse, const XmlValue &xml)
+    Ellipse toEllipse(const XmlValue &xml)
     {
-        ellipse = {};
-        sf::Vector2f center{};
-        sf::Vector2f diameters{};
-        fromString(center, xml.getAttribute("center", "0,0"));
-        fromString(diameters, xml.getAttribute("diameters", "0,0"));
-        ellipse.setCenter(center);
-        ellipse.setDiameters(diameters);
+        Ellipse ellipse{};
+        auto center = xml.getAttribute("center", "0,0");
+        auto diameters = xml.getAttribute("diameters", "0,0");
+        ellipse.setCenter(toVector(center));
+        ellipse.setDiameters(toVector(diameters));
+        return std::move(ellipse);
     }
 
     namespace ellipse
@@ -125,11 +125,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Ellipse")
             {
-                auto ellipse = std::make_shared<Ellipse>();
-                cacto::fromXml(*ellipse, xml);
-                Line::XmlStack.push(ellipse);
-                Geometry::XmlStack.push(ellipse);
-                return ellipse.get();
+                auto ellipse = new Ellipse();
+                *ellipse = toEllipse(xml);
+                return ellipse;
             }
             return nullptr;
         }

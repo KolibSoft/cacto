@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cacto/Lang/XmlConverter.hpp>
-#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -14,6 +13,7 @@ namespace sf
 
     class Vertex;
     class VertexArray;
+
 }
 
 namespace cacto
@@ -28,8 +28,6 @@ namespace cacto
 
         Line() = default;
         virtual ~Line() = default;
-
-        static ResourceStack<Line> XmlStack;
     };
 
     void CACTO_GRAPHICS_API setPoints(sf::Vertex *const vertexes, const Line &line, szt count, szt precision = 0);
@@ -37,16 +35,12 @@ namespace cacto
 
     template class CACTO_GRAPHICS_API cacto::XmlConverter<Line>;
 
-    XmlValue CACTO_GRAPHICS_API toXml(const Line *const &line);
-    void CACTO_GRAPHICS_API fromXml(Line *&line, const XmlValue &xml);
-
     namespace line
     {
 
         class CACTO_GRAPHICS_API XmlConverter
             : public virtual cacto::XmlConverter<Line>
         {
-
         public:
             XmlConverter() = default;
             virtual ~XmlConverter() = default;

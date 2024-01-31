@@ -1,8 +1,8 @@
 #pragma once
 
+#include <string>
 #include <SFML/System/Time.hpp>
 #include <Cacto/Lang/XmlConverter.hpp>
-#include <Cacto/Core/ResourceStack.hpp>
 #include <Cacto/Animations/Export.hpp>
 
 namespace cacto
@@ -43,8 +43,6 @@ namespace cacto
         Animation(const sf::Time &delay = sf::Time::Zero, const sf::Time &duration = sf::Time::Zero, Direction direction = Forward, Mode mode = Once);
         virtual ~Animation();
 
-        static ResourceStack<Animation> XmlStack;
-
     private:
         sf::Time m_delay;
         sf::Time m_duration;
@@ -52,11 +50,17 @@ namespace cacto
         Mode m_mode;
     };
 
+    std::string CACTO_ANIMATIONS_API toString(Animation::Direction direction);
+    Animation::Direction CACTO_ANIMATIONS_API toAnimationDirection(const std::string &string);
+
+    std::string CACTO_ANIMATIONS_API toString(Animation::Mode mode);
+    Animation::Mode CACTO_ANIMATIONS_API toAnimationMode(const std::string &string);
+
     XmlValue CACTO_ANIMATIONS_API toXml(const Animation &animation);
-    void CACTO_ANIMATIONS_API fromXml(Animation &animation, const XmlValue &xml);
+    Animation CACTO_ANIMATIONS_API toBasicAnimation(const XmlValue &xml);
 
     XmlValue CACTO_ANIMATIONS_API toXml(const Animation *const &animation);
-    void CACTO_ANIMATIONS_API fromXml(Animation *&animation, const XmlValue &xml);
+    Animation *CACTO_ANIMATIONS_API toAnimation(const XmlValue &xml);
 
     template class CACTO_ANIMATIONS_API XmlConverter<Animation>;
 

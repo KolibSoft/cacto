@@ -27,7 +27,7 @@ namespace cacto
     };
 
     XmlValue CACTO_ANIMATIONS_API toXml(const Linear &linear);
-    void CACTO_ANIMATIONS_API fromXml(Linear &linear, const XmlValue &xml);
+    Linear CACTO_ANIMATIONS_API toLinear(const XmlValue &xml);
 
     namespace linear
     {

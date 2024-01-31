@@ -42,7 +42,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<sf::Color>> m_map;
     };
 
-    const std::string &CACTO_GRAPHICS_API getId(const sf::Color &color);
-    const sf::Color *const CACTO_GRAPHICS_API getColor(const std::string &id);
-
 }

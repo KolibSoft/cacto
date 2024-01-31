@@ -1,4 +1,3 @@
-#include <sstream>
 #include <SFML/Graphics/Rect.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
 
@@ -32,21 +31,6 @@ namespace cacto
             size = containerSize;
         }
         return size;
-    }
-
-    std::string toString(const sf::Vector2f &point)
-    {
-        std::stringstream stream{};
-        char separator = ',';
-        stream << point.x << separator << point.y;
-        return stream.str();
-    }
-
-    void fromString(sf::Vector2f &point, const std::string &string)
-    {
-        std::stringstream stream{string};
-        char separator = ',';
-        stream >> point.x >> separator >> point.y;
     }
 
 }

@@ -29,13 +29,13 @@ namespace cacto
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Straight &straight);
-    void CACTO_GRAPHICS_API fromXml(Straight &straight, const XmlValue &xml);
+    Straight CACTO_GRAPHICS_API toStraight(const XmlValue &xml);
 
     namespace straight
     {
 
         class CACTO_GRAPHICS_API XmlConverter
-            : public line::XmlConverter
+            : public cacto::XmlConverter<Line>
         {
 
         public:

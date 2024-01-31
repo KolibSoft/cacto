@@ -4,7 +4,7 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
-#include <Cacto/Graphics/Utils.hpp>
+#include <Cacto/Graphics/VertexArrayUtils.hpp>
 
 int main()
 {
@@ -15,11 +15,10 @@ int main()
     auto _ = font.loadFromFile("res/font.ttf");
 
     sf::VertexArray array(sf::PrimitiveType::Triangles);
-    cacto::setGlyphs(array, font, "It Works AV", cacto::TextDirection::ToTop, 32, false, 0);
+    cacto::setGlyphs(array, "It Works AV", cacto::TextDirection::ToRight, font, 32, false, 0);
     cacto::setColor(array, sf::Color::Red);
 
     sf::Transformable transformable{};
-
     sf::Text text{font, "It Works AV", 32};
 
     while (window.isOpen())
@@ -34,7 +33,6 @@ int main()
         transformable.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
 
         window.clear();
-
         window.draw(text);
 
         auto states = sf::RenderStates::Default;
