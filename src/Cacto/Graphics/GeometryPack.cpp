@@ -63,16 +63,4 @@ namespace cacto
         return *this;
     }
 
-    const std::string &getId(const Geometry &geometry)
-    {
-        auto &id = Pack<Geometry>::id(geometry);
-        return id;
-    }
-
-    const Geometry *const getGeometry(const std::string &id)
-    {
-        auto geometry = Pack<Geometry>::resource(id);
-        return geometry;
-    }
-
 }

@@ -1,3 +1,4 @@
+#include <Cacto/Core/TimeUtils.hpp>
 #include <Cacto/Graphics/ColorUtils.hpp>
 #include <Cacto/Animations/Coloring.hpp>
 
@@ -52,20 +53,21 @@ namespace cacto
     {
         auto xml = toXml((const Animation &)coloring);
         xml.setName("Coloring");
-        xml["from"] = toAttribute(coloring.getFrom());
-        xml["to"] = toAttribute(coloring.getTo());
+        xml["from"] = getExpression(coloring.getFrom());
+        xml["to"] = getExpression(coloring.getTo());
         return std::move(xml);
     }
 
-    void fromXml(Coloring &coloring, const XmlValue &xml)
+    Coloring toColoring(const XmlValue &xml)
     {
-        fromXml((Animation &)coloring, xml);
-        sf::Color from{};
-        sf::Color to{};
-        fromAttribute(from, xml.getAttribute("from", "#FFFFFFFF"));
-        fromAttribute(to, xml.getAttribute("to", "#FFFFFFFF"));
-        coloring.setFrom(from);
-        coloring.setTo(to);
+        Coloring coloring{};
+        coloring.setDelay(toTime(xml.getAttribute("delay", "0s")));
+        coloring.setDuration(toTime(xml.getAttribute("duration", "0s")));
+        coloring.setDirection(toAnimationDirection(xml.getAttribute("direction", "Forward")));
+        coloring.setMode(toAnimationMode(xml.getAttribute("mode", "Once")));
+        coloring.setFrom(getColor(xml.getAttribute("from", "#FFFFFFFF")));
+        coloring.setTo(getColor(xml.getAttribute("to", "#FFFFFFFF")));
+        return std::move(coloring);
     }
 
     namespace coloring
@@ -86,10 +88,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Coloring")
             {
-                auto coloring = std::make_shared<Coloring>();
-                cacto::fromXml(*coloring, xml);
-                Animation::XmlStack.push(coloring);
-                return coloring.get();
+                auto coloring = new Coloring();
+                *coloring = toColoring(xml);
+                return coloring;
             }
             return nullptr;
         }

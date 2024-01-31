@@ -36,7 +36,4 @@ namespace cacto
         mutable std::unordered_map<std::string, std::shared_ptr<Animation>> m_map;
     };
 
-    const std::string &CACTO_ANIMATIONS_API getId(const Animation &tileSet);
-    const Animation *const CACTO_ANIMATIONS_API getAnimation(const std::string &id);
-
 }

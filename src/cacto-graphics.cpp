@@ -28,6 +28,7 @@
 #include "Cacto/Graphics/ColorScanner.cpp"
 #include "Cacto/Graphics/ColorUtils.cpp"
 #include "Cacto/Graphics/TextDirection.cpp"
+#include "Cacto/Graphics/GeometryUtils.cpp"
 #include "Cacto/Graphics/TransformPrinter.cpp"
 #include "Cacto/Graphics/TransformScanner.cpp"
 #include "Cacto/Graphics/TransformUtils.cpp"
