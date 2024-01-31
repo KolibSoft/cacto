@@ -191,13 +191,14 @@ namespace cacto
                 {
                     if (item.getName() == "Chunk")
                     {
+                        auto area = toRect(item.getAttribute("area", "0,0,0,0"));
                         auto &tiles = item.asContent();
-                        for (i32t y = 0; y < m_area.height; y++)
-                            for (i32t x = 0; x < m_area.width; x++)
+                        for (i32t y = 0; y < area.height; y++)
+                            for (i32t x = 0; x < area.width; x++)
                             {
-                                auto &tile_xml = tiles[y * m_area.width + x];
+                                auto &tile_xml = tiles[y * area.width + x];
                                 auto tile = getRect(tile_xml.getAttribute("tile", "0,0,0,0"));
-                                setTile(tile, {i32t(m_area.left) + x, i32t(m_area.top) + y});
+                                setTile(tile, {i32t(area.left) + x, i32t(area.top) + y});
                             }
                     }
                     else if (item.getName() == "Tile")
