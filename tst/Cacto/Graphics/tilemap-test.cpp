@@ -24,9 +24,9 @@ int main()
     cacto::TileMap tileMap{};
     cacto::XmlValue xml = nullptr;
 
-    std::ifstream istream{"res/tilemap.xml"};
-    istream >> xml;
-    tileMap.fromXml(xml);
+    xml.fromFile("res/tilemap.xml");
+    tileMap = cacto::toTileMap(xml);
+    auto clone = tileMap;
 
     while (window.isOpen())
     {
@@ -35,21 +35,24 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            else if (event.type == sf::Event::MouseButtonPressed)
+            {
+                tileMap.place(sf::Vector2f(sf::Mouse::getPosition(window)));
+            }
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
-                std::ifstream istream{"res/tilemap.xml"};
-                istream >> xml;
-                tileMap.fromXml(xml);
+                xml.fromFile("res/tilemap.xml");
+                tileMap = cacto::toTileMap(xml);
             }
         }
-        window.clear();
+        window.clear(sf::Color::White);
         window.draw(tileMap);
+        window.draw(clone);
         window.display();
     }
 
-    std::ofstream ostream{"res/tilemap.xml"};
-    xml = tileMap.toXml();
-    ostream << xml;
+    xml = cacto::toXml(tileMap);
+    xml.toFile("res/tilemap.xml");
 
     return 0;
 }

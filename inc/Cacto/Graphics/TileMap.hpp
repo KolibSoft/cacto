@@ -49,17 +49,16 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        XmlValue toXml() const;
-        void fromXml(const XmlValue &xml);
+        TileMap *clone() const override;
 
         TileMap();
         virtual ~TileMap();
 
-        TileMap(const TileMap &other) = delete;
-        TileMap &operator=(const TileMap &other) = delete;
+        TileMap(const TileMap &other);
+        TileMap &operator=(const TileMap &other);
 
-        TileMap(TileMap &&other) = delete;
-        TileMap &operator=(TileMap &&other) = delete;
+        TileMap(TileMap &&other);
+        TileMap &operator=(TileMap &&other);
 
         static const sf::FloatRect NoTile;
 
@@ -79,10 +78,13 @@ namespace cacto
         mutable sf::VertexArray m_array;
     };
 
+    XmlValue CACTO_GRAPHICS_API toXml(const TileMap &tileMap);
+    TileMap CACTO_GRAPHICS_API toTileMap(const XmlValue &xml);
+
     namespace tile_map
     {
 
-        class XmlConverter
+        class CACTO_GRAPHICS_API XmlConverter
             : public virtual cacto::XmlConverter<Node>
         {
 
