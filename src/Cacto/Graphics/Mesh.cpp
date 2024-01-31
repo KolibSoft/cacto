@@ -80,7 +80,7 @@ namespace cacto
     XmlValue Mesh::toXml() const
     {
         XmlValue xml{"Mesh", {}};
-        xml["id"] = getId();
+        xml["id"] = m_id;
         xml["texture"] = getExpression(m_texture);
         auto txml = cacto::toXml(m_transformable);
         auto axml = cacto::toXml(m_array);
@@ -94,8 +94,8 @@ namespace cacto
 
     void Mesh::fromXml(const XmlValue &xml)
     {
-        setId(xml.getAttribute("id"));
-        setTexture(cacto::getTexture(xml.getAttribute("texture")));
+        m_id = xml.getAttribute("id");
+        m_texture = cacto::getTexture(xml.getAttribute("texture"));
         m_transformable = toTransformable(xml);
         m_array = toVertexArray(xml);
     }

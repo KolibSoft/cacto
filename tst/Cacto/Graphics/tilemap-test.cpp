@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -22,10 +23,10 @@ int main()
 
     cacto::TileMap tileMap{};
     cacto::XmlValue xml = nullptr;
-    xml.fromFile("res/tilemap.xml");
-    cacto::fromXml(tileMap, xml);
-    xml = cacto::toXml(tileMap);
-    xml.toFile("res/tilemap.xml", 2);
+
+    std::ifstream istream{"res/tilemap.xml"};
+    istream >> xml;
+    tileMap.fromXml(xml);
 
     while (window.isOpen())
     {
@@ -36,14 +37,19 @@ int main()
                 window.close();
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
-                xml.fromFile("res/tilemap.xml");
-                cacto::fromXml(tileMap, xml);
+                std::ifstream istream{"res/tilemap.xml"};
+                istream >> xml;
+                tileMap.fromXml(xml);
             }
         }
         window.clear();
         window.draw(tileMap);
         window.display();
     }
+
+    std::ofstream ostream{"res/tilemap.xml"};
+    xml = tileMap.toXml();
+    ostream << xml;
 
     return 0;
 }

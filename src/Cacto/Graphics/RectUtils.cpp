@@ -102,7 +102,7 @@ namespace cacto
     {
         if (expression.compare(0, 6, "@rect/") == 0)
         {
-            auto id = expression.substr(8);
+            auto id = expression.substr(6);
             auto rect = getResource<sf::FloatRect>(id);
             if (rect)
                 return *rect;
