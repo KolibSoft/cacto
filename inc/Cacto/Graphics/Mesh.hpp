@@ -38,17 +38,14 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        XmlValue toXml() const;
-        void fromXml(const XmlValue &xml);
-
         Mesh();
         virtual ~Mesh();
 
-        Mesh(const Mesh &other) = delete;
-        Mesh &operator=(const Mesh &other) = delete;
+        Mesh(const Mesh &other);
+        Mesh &operator=(const Mesh &other);
 
-        Mesh(Mesh &&other) = delete;
-        Mesh &operator=(Mesh &&other) = delete;
+        Mesh(Mesh &&other);
+        Mesh &operator=(Mesh &&other);
 
     protected:
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
@@ -60,6 +57,9 @@ namespace cacto
         std::string m_id;
         ParentNode *m_parent;
     };
+
+    XmlValue CACTO_GRAPHICS_API toXml(const Mesh &mesh);
+    Mesh CACTO_GRAPHICS_API toMesh(const XmlValue &xml);
 
     namespace mesh
     {

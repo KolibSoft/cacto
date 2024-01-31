@@ -23,9 +23,8 @@ int main()
     cacto::Mesh mesh{};
     cacto::XmlValue xml = nullptr;
 
-    std::ifstream istream{"res/mesh.xml"};
-    istream >> xml;
-    mesh.fromXml(xml);
+    xml.fromFile("res/mesh.xml");
+    mesh = cacto::toMesh(xml);
 
     while (window.isOpen())
     {
@@ -34,13 +33,20 @@ int main()
         {
             if (event.type == sf::Event::Closed)
                 window.close();
+            else if (event.type == sf::Event::MouseButtonPressed)
+            {
+                mesh.place(sf::Vector2f(sf::Mouse::getPosition(window)));
+            }
+            else if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                mesh.rotate(sf::degrees(event.mouseWheelScroll.delta));
+            }
             else if (event.type == sf::Event::KeyPressed)
             {
                 if (event.key.code == sf::Keyboard::Space)
                 {
-                    std::ifstream istream{"res/mesh.xml"};
-                    istream >> xml;
-                    mesh.fromXml(xml);
+                    xml.fromFile("res/mesh.xml");
+                    mesh = cacto::toMesh(xml);
                 }
                 else if (event.key.code == sf::Keyboard::Left)
                     mesh.move({-1, 0});
@@ -57,9 +63,8 @@ int main()
         window.display();
     }
 
-    std::ofstream ostream{"res/mesh.xml"};
-    xml = mesh.toXml();
-    ostream << xml;
+    xml = cacto::toXml(mesh);
+    xml.toFile("res/mesh.xml");
 
     return 0;
 }

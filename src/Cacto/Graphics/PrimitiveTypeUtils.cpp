@@ -22,7 +22,7 @@ namespace cacto
             throw std::runtime_error("Unsupported primitive type");
     }
 
-    sf::PrimitiveType toPrimitive(const std::string &string)
+    sf::PrimitiveType toPrimitiveType(const std::string &string)
     {
         if (string == "Points")
             return sf::PrimitiveType::Points;
@@ -51,7 +51,7 @@ namespace cacto
     {
         std::string string{};
         stream >> string;
-        primitive = toPrimitive(string);
+        primitive = toPrimitiveType(string);
         return stream;
     }
 

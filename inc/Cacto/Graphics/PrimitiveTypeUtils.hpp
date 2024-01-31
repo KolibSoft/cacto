@@ -10,7 +10,7 @@ namespace cacto
 {
 
     std::string CACTO_GRAPHICS_API toString(sf::PrimitiveType primitive);
-    sf::PrimitiveType CACTO_GRAPHICS_API toPrimitive(const std::string &string);
+    sf::PrimitiveType CACTO_GRAPHICS_API toPrimitiveType(const std::string &string);
 
     std::ostream &CACTO_GRAPHICS_API operator<<(std::ostream &stream, sf::PrimitiveType primitive);
     std::istream &CACTO_GRAPHICS_API operator>>(std::istream &stream, sf::PrimitiveType& primitive);

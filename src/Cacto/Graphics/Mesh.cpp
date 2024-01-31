@@ -77,29 +77,6 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    XmlValue Mesh::toXml() const
-    {
-        XmlValue xml{"Mesh", {}};
-        xml["id"] = m_id;
-        xml["texture"] = getExpression(m_texture);
-        auto txml = cacto::toXml(m_transformable);
-        auto axml = cacto::toXml(m_array);
-        for (auto &pair : txml.asAttributes())
-            xml[pair.first] = pair.second;
-        for (auto &pair : axml.asAttributes())
-            xml[pair.first] = pair.second;
-        xml.asContent() = std::move(axml.asContent());
-        return std::move(xml);
-    }
-
-    void Mesh::fromXml(const XmlValue &xml)
-    {
-        m_id = xml.getAttribute("id");
-        m_texture = cacto::getTexture(xml.getAttribute("texture"));
-        m_transformable = toTransformable(xml);
-        m_array = toVertexArray(xml);
-    }
-
     Mesh::Mesh()
         : m_transformable(),
           m_array(),
@@ -114,12 +91,69 @@ namespace cacto
         detach();
     }
 
+    Mesh::Mesh(const Mesh &other)
+        : m_transformable(other.m_transformable),
+          m_array(other.m_array),
+          m_texture(other.m_texture),
+          m_id(other.m_id),
+          m_parent(nullptr)
+    {
+    }
+
+    Mesh &Mesh::operator=(const Mesh &other)
+    {
+        Mesh copy{other};
+        *this = std::move(copy);
+        return *this;
+    }
+
+    Mesh::Mesh(Mesh &&other)
+        : Mesh()
+    {
+        *this = std::move(other);
+    }
+
+    Mesh &Mesh::operator=(Mesh &&other)
+    {
+        m_transformable = std::move(other.m_transformable);
+        m_array = std::move(other.m_array);
+        m_texture = other.m_texture;
+        m_id = std::move(other.m_id);
+        other.detach();
+        return *this;
+    }
+
     void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         auto _states = states;
         _states.texture = m_texture;
         _states.transform *= m_transformable.getTransform();
         target.draw(m_array, _states);
+    }
+
+    XmlValue toXml(const Mesh &mesh)
+    {
+        XmlValue xml{"Mesh", {}};
+        xml["id"] = mesh.getId();
+        xml["texture"] = getExpression(mesh.getTexture());
+        auto txml = toXml(mesh.asTransformable());
+        auto axml = toXml(mesh.asArray());
+        for (auto &pair : txml.asAttributes())
+            xml[pair.first] = pair.second;
+        for (auto &pair : axml.asAttributes())
+            xml[pair.first] = pair.second;
+        xml.asContent() = std::move(axml.asContent());
+        return std::move(xml);
+    }
+
+    Mesh toMesh(const XmlValue &xml)
+    {
+        Mesh mesh{};
+        mesh.setId(xml.getAttribute("id"));
+        mesh.setTexture(getTexture(xml.getAttribute("texture")));
+        mesh.asTransformable() = toTransformable(xml);
+        mesh.asArray() = toVertexArray(xml);
+        return std::move(mesh);
     }
 
     namespace mesh
@@ -130,7 +164,7 @@ namespace cacto
             const Mesh *mesh = nullptr;
             if (value && typeid(*value) == typeid(Mesh) && (mesh = dynamic_cast<const Mesh *>(value)))
             {
-                auto xml = mesh->toXml();
+                auto xml = cacto::toXml(mesh);
                 return std::move(xml);
             }
             return nullptr;
@@ -141,7 +175,7 @@ namespace cacto
             if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
             {
                 auto mesh = new Mesh();
-                mesh->fromXml(xml);
+                *mesh = toMesh(xml);
                 return mesh;
             }
             return nullptr;
