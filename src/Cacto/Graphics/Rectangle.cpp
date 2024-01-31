@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Core/VectorUtils.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 
@@ -93,15 +94,14 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Rectangle &rectangle, const XmlValue &xml)
+    Rectangle toRectangle(const XmlValue &xml)
     {
-        rectangle = {};
-        sf::Vector2f position{};
-        sf::Vector2f size{};
-        fromString(position, xml.getAttribute("position"));
-        fromString(size, xml.getAttribute("size"));
-        rectangle.setPosition(position);
-        rectangle.setSize(size);
+        Rectangle rectangle{};
+        auto position = xml.getAttribute("position", "0,0");
+        auto size = xml.getAttribute("size", "0,0");
+        rectangle.setPosition(toVector(position));
+        rectangle.setSize(toVector(size));
+        return std::move(rectangle);
     }
 
     namespace rectangle
@@ -122,11 +122,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Rectangle")
             {
-                auto rectangle = std::make_shared<Rectangle>();
-                cacto::fromXml(*rectangle, xml);
-                Line::XmlStack.push(rectangle);
-                Geometry::XmlStack.push(rectangle);
-                return rectangle.get();
+                auto rectangle = new Rectangle();
+                *rectangle = toRectangle(xml);
+                return rectangle;
             }
             return nullptr;
         }

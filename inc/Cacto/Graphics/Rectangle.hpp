@@ -38,7 +38,7 @@ namespace cacto
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Rectangle &rectangle);
-    void CACTO_GRAPHICS_API fromXml(Rectangle &rectangle, const XmlValue &xml);
+    Rectangle CACTO_GRAPHICS_API toRectangle(const XmlValue &xml);
 
     namespace rectangle
     {
@@ -54,7 +54,7 @@ namespace cacto
             XmlConverter() = default;
             virtual ~XmlConverter() = default;
         };
-        
+
         extern XmlConverter CACTO_GRAPHICS_API Converter;
 
     }

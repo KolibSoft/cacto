@@ -1,4 +1,5 @@
 #include <SFML/System/Vector2.hpp>
+#include <Cacto/Core/VectorUtils.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Straight.hpp>
 
@@ -57,15 +58,14 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Straight &straight, const XmlValue &xml)
+    Straight toStraight(const XmlValue &xml)
     {
-        straight = {};
-        sf::Vector2f begin{};
-        sf::Vector2f end{};
-        fromString(begin, xml.getAttribute("begin", "0,0"));
-        fromString(end, xml.getAttribute("end", "0,0"));
-        straight.setBegin(begin);
-        straight.setEnd(end);
+        Straight straight{};
+        auto begin = xml.getAttribute("begin", "0,0");
+        auto end = xml.getAttribute("end", "0,0");
+        straight.setBegin(toVector(begin));
+        straight.setEnd(toVector(end));
+        return std::move(straight);
     }
 
     namespace straight
@@ -86,10 +86,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Straight")
             {
-                auto straight = std::make_shared<Straight>();
-                cacto::fromXml(*straight, xml);
-                Line::XmlStack.push(straight);
-                return straight.get();
+                auto straight = new Straight();
+                *straight = toStraight(xml);
+                return straight;
             }
             return nullptr;
         }

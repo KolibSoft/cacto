@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <cmath>
 #include <SFML/Graphics/Rect.hpp>
+#include <Cacto/Core/VectorUtils.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Triangle.hpp>
 
@@ -117,18 +118,16 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Triangle &triangle, const XmlValue &xml)
+    Triangle toTriangle(const XmlValue &xml)
     {
-        triangle = {};
-        sf::Vector2f pointA{};
-        sf::Vector2f pointB{};
-        sf::Vector2f pointC{};
-        fromString(pointA, xml.getAttribute("pointA", "0,0"));
-        fromString(pointB, xml.getAttribute("pointB", "0,0"));
-        fromString(pointC, xml.getAttribute("pointC", "0,0"));
-        triangle.setPointA(pointA);
-        triangle.setPointB(pointB);
-        triangle.setPointC(pointC);
+        Triangle triangle{};
+        auto pointA = xml.getAttribute("pointA", "0,0");
+        auto pointB = xml.getAttribute("pointB", "0,0");
+        auto pointC = xml.getAttribute("pointC", "0,0");
+        triangle.setPointA(toVector(pointA));
+        triangle.setPointB(toVector(pointB));
+        triangle.setPointC(toVector(pointC));
+        return std::move(triangle);
     }
 
     namespace triangle
@@ -149,11 +148,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Triangle")
             {
-                auto triangle = std::make_shared<Triangle>();
-                cacto::fromXml(*triangle, xml);
-                Line::XmlStack.push(triangle);
-                Geometry::XmlStack.push(triangle);
-                return triangle.get();
+                auto triangle = new Triangle();
+                *triangle = toTriangle(xml);
+                return triangle;
             }
             return nullptr;
         }

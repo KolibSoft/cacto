@@ -13,7 +13,7 @@ namespace sf
 
     class Vertex;
     class VertexArray;
-    
+
 }
 
 namespace cacto
@@ -34,5 +34,18 @@ namespace cacto
     void CACTO_GRAPHICS_API setPoints(sf::VertexArray &array, const Line &line, szt precision = 0);
 
     template class CACTO_GRAPHICS_API cacto::XmlConverter<Line>;
+
+    namespace line
+    {
+
+        class CACTO_GRAPHICS_API XmlConverter
+            : public virtual cacto::XmlConverter<Line>
+        {
+        public:
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+    }
 
 }

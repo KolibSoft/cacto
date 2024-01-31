@@ -27,13 +27,13 @@ namespace cacto
     };
 
     XmlValue CACTO_GRAPHICS_API toXml(const Bezier &bezier);
-    void CACTO_GRAPHICS_API fromXml(Bezier &bezier, const XmlValue &xml);
+    Bezier CACTO_GRAPHICS_API toBezier( const XmlValue &xml);
 
     namespace bezier
     {
 
         class CACTO_GRAPHICS_API XmlConverter
-            : public line::XmlConverter
+            : public cacto::XmlConverter<Line>
         {
 
         public:

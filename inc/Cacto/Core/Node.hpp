@@ -33,6 +33,20 @@ namespace cacto
 
     template class CACTO_CORE_API XmlConverter<Node>;
 
+    namespace node
+    {
+
+        class CACTO_CORE_API XmlConverter
+            : public cacto::XmlConverter<Node>
+        {
+
+        public:
+            XmlConverter() = default;
+            virtual ~XmlConverter() = default;
+        };
+
+    }
+
 }
 
 #include <Cacto/Core/Node.inl>

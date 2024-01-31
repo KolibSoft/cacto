@@ -1,5 +1,6 @@
 #include <math.h>
 #include <SFML/System/Vector2.hpp>
+#include <Cacto/Core/VectorUtils.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
 #include <Cacto/Graphics/Bezier.hpp>
 
@@ -65,19 +66,19 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Bezier &bezier, const XmlValue &xml)
+    Bezier toBezier(const XmlValue &xml)
     {
-        bezier = {};
+        Bezier bezier{};
         if (xml.isTag())
         {
             auto &points = bezier.asPoints();
             for (auto &point_xml : xml.asContent())
             {
-                sf::Vector2f point{};
-                fromString(point, point_xml.getAttribute("position", "0,0"));
+                auto point = toVector(point_xml.getAttribute("position", "0,0"));
                 points.push_back(point);
             }
         }
+        return std::move(bezier);
     }
 
     namespace bezier
@@ -98,10 +99,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Bezier")
             {
-                auto bezier = std::make_shared<Bezier>();
-                cacto::fromXml(*bezier, xml);
-                Line::XmlStack.push(bezier);
-                return bezier.get();
+                auto bezier = new Bezier();
+                *bezier = toBezier(xml);
+                return bezier;
             }
             return nullptr;
         }
