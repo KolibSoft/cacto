@@ -24,18 +24,21 @@ namespace cacto
         return m_number;
     }
 
-    const f64t &JsonValue::asNumber() const
+    void JsonValue::setNumber(f64t value)
     {
-        if (m_kind != Number)
-            throw std::runtime_error("Json is not an number value");
-        return m_number;
+        if (m_kind == Number)
+            m_number = value;
+        else
+        {
+            drop();
+            m_kind = Number;
+            m_number = value;
+        }
     }
 
-    f64t &JsonValue::asNumber()
+    JsonValue::operator f64t() const
     {
-        if (m_kind != Number)
-            throw std::runtime_error("Json is not an number value");
-        return m_number;
+        return getNumber();
     }
 
     bool JsonValue::isString() const
@@ -50,18 +53,35 @@ namespace cacto
         return *m_string;
     }
 
+    void JsonValue::setString(const std::string &value)
+    {
+        if (m_kind == String)
+            *m_string = value;
+        else
+        {
+            drop();
+            m_kind = String;
+            m_string = new std::string(value);
+        }
+    }
+
     const std::string &JsonValue::asString() const
     {
         if (m_kind != String)
-            throw std::runtime_error("Json is not an string value");
+            throw std::runtime_error("Json is not a string value");
         return *m_string;
     }
 
     std::string &JsonValue::asString()
     {
         if (m_kind != String)
-            throw std::runtime_error("Json is not an string value");
+            throw std::runtime_error("Json is not a string value");
         return *m_string;
+    }
+
+    JsonValue::operator std::string() const
+    {
+        return getString();
     }
 
     bool JsonValue::isBoolean() const
@@ -76,23 +96,57 @@ namespace cacto
         return m_boolean;
     }
 
-    const bool &JsonValue::asBoolean() const
+    void JsonValue::setBoolean(bool value)
     {
-        if (m_kind != Boolean)
-            throw std::runtime_error("Json is not an boolean value");
-        return m_boolean;
+        if (m_kind == Boolean)
+            m_boolean = value;
+        else
+        {
+            drop();
+            m_kind = Boolean;
+            m_boolean = value;
+        }
     }
 
-    bool &JsonValue::asBoolean()
+    JsonValue::operator bool() const
     {
-        if (m_kind != Boolean)
-            throw std::runtime_error("Json is not an boolean value");
-        return m_boolean;
+        return getBoolean();
     }
 
     bool JsonValue::isArray() const
     {
         return m_kind == Array;
+    }
+
+    std::vector<JsonValue> JsonValue::getArray(const std::vector<JsonValue> &def) const
+    {
+        if (m_kind != Array)
+            return def;
+        return *m_array;
+    }
+
+    void JsonValue::setArray(const std::vector<JsonValue> &value)
+    {
+        if (m_kind == Array)
+            *m_array = value;
+        else
+        {
+            drop();
+            m_kind = Array;
+            m_array = new std::vector<JsonValue>(value);
+        }
+    }
+
+    JsonValue::operator std::vector<JsonValue>() const
+    {
+        return getArray();
+    }
+
+    void JsonValue::append(const JsonValue &value)
+    {
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        m_array->push_back(value);
     }
 
     const std::vector<JsonValue> &JsonValue::asArray() const
@@ -128,6 +182,30 @@ namespace cacto
     bool JsonValue::isObject() const
     {
         return m_kind == Object;
+    }
+
+    std::unordered_map<std::string, JsonValue> JsonValue::getObject(const std::unordered_map<std::string, JsonValue> &def) const
+    {
+        if (m_kind != Object)
+            return def;
+        return *m_object;
+    }
+
+    void JsonValue::setObject(const std::unordered_map<std::string, JsonValue> &value)
+    {
+        if (m_kind == Object)
+            *m_object = value;
+        else
+        {
+            drop();
+            m_kind = Object;
+            m_object = new std::unordered_map<std::string, JsonValue>(value);
+        }
+    }
+
+    JsonValue::operator std::unordered_map<std::string, JsonValue>() const
+    {
+        return getObject();
     }
 
     const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const

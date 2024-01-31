@@ -121,13 +121,13 @@ namespace cacto
         switch (json.getKind())
         {
         case JsonValue::Number:
-            printNumber(json.asNumber());
+            printNumber(json.getNumber());
             break;
         case JsonValue::String:
             printString(json.asString());
             break;
         case JsonValue::Boolean:
-            printBoolean(json.asBoolean());
+            printBoolean(json.getBoolean());
             break;
         case JsonValue::Null:
             printNull();

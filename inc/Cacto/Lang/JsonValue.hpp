@@ -32,26 +32,39 @@ namespace cacto
 
         bool isNumber() const;
         f64t getNumber(f64t def = 0) const;
-        const f64t &asNumber() const;
-        f64t &asNumber();
+        void setNumber(f64t value);
+        explicit operator f64t() const;
 
         bool isString() const;
         std::string getString(const std::string &def = "") const;
+        void setString(const std::string &value);
+        explicit operator std::string() const;
+
         const std::string &asString() const;
         std::string &asString();
 
         bool isBoolean() const;
         bool getBoolean(bool def = false) const;
-        const bool &asBoolean() const;
-        bool &asBoolean();
+        void setBoolean(bool value);
+        explicit operator bool() const;
 
         bool isArray() const;
+        std::vector<JsonValue> getArray(const std::vector<JsonValue> &def = {}) const;
+        void setArray(const std::vector<JsonValue> &value);
+        explicit operator std::vector<JsonValue>() const;
+
+        void append(const JsonValue &value);
+
         const std::vector<JsonValue> &asArray() const;
         std::vector<JsonValue> &asArray();
         const JsonValue &operator[](szt index) const;
         JsonValue &operator[](szt index);
 
         bool isObject() const;
+        std::unordered_map<std::string, JsonValue> getObject(const std::unordered_map<std::string, JsonValue> &def = {}) const;
+        void setObject(const std::unordered_map<std::string, JsonValue> &value);
+        explicit operator std::unordered_map<std::string, JsonValue>() const;
+
         const std::unordered_map<std::string, JsonValue> &asObject() const;
         std::unordered_map<std::string, JsonValue> &asObject();
         const JsonValue &operator[](const std::string &key) const;
