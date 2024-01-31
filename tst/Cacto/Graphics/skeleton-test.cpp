@@ -29,6 +29,8 @@ int main()
     auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
     auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
 
+    auto clone = skeleton;
+
     while (window.isOpen())
     {
         sf::Event event{};
@@ -52,6 +54,7 @@ int main()
         }
         window.clear();
         window.draw(skeleton);
+        window.draw(clone);
         window.display();
     }
 
