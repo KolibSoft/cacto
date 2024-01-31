@@ -146,8 +146,8 @@ namespace cacto
             {
                 auto options = getOptions(*child);
                 auto child_xml = cacto::toXml(child);
-                child_xml["options:coords"] = cacto::toString(options->getCoords());
-                child_xml["options:relation"] = cacto::toString(options->getRelation());
+                child_xml["options:coords"] = toString(options->getCoords());
+                child_xml["options:relation"] = toString(options->getRelation());
                 content.push_back(std::move(child_xml));
             }
         }
