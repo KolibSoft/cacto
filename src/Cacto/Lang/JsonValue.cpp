@@ -149,6 +149,13 @@ namespace cacto
         m_array->push_back(value);
     }
 
+    void JsonValue::resize(szt count)
+    {
+        if (m_kind != Array)
+            throw std::runtime_error("Json is not an array value");
+        m_array->resize(count);
+    }
+
     const std::vector<JsonValue> &JsonValue::asArray() const
     {
         if (m_kind != Array)

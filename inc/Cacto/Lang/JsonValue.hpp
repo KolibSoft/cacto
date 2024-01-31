@@ -54,6 +54,7 @@ namespace cacto
         explicit operator std::vector<JsonValue>() const;
 
         void append(const JsonValue &value);
+        void resize(szt count);
 
         const std::vector<JsonValue> &asArray() const;
         std::vector<JsonValue> &asArray();
