@@ -53,6 +53,6 @@ namespace cacto
     };
 
     std::string CACTO_UI_API toString(Box::Anchor anchor);
-    void CACTO_UI_API fromString(Box::Anchor &anchor, const std::string &string);
+    Box::Anchor CACTO_UI_API toBoxAnchor(const std::string &string);
 
 }

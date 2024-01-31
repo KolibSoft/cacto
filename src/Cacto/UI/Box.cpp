@@ -1,5 +1,4 @@
-#define COLIB_UI_EXPORTS
-#include <SFML/System/Vector2.hpp>
+#include <stdexcept>
 #include <Cacto/UI/Thickness.hpp>
 #include <Cacto/UI/Box.hpp>
 
@@ -152,14 +151,14 @@ namespace cacto
             throw std::runtime_error("Invalid anchor value");
     }
 
-    void fromString(Box::Anchor &anchor, const std::string &string)
+    Box::Anchor CACTO_UI_API toBoxAnchor(const std::string &string)
     {
         if (string == "Start")
-            anchor = Box::Start;
+            return Box::Start;
         else if (string == "End")
-            anchor = Box::End;
+            return Box::End;
         else if (string == "Center")
-            anchor = Box::Center;
+            return Box::Center;
         else
             throw std::runtime_error("Invalid anchor value");
     }
