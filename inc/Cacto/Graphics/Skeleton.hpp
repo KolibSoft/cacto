@@ -49,6 +49,7 @@ namespace cacto
         void remove(ChildNode &child) override;
 
         Skeleton &append(ChildNode &child, const Options &options);
+        Skeleton &append(const std::shared_ptr<ChildNode> &child);
         Skeleton &append(const std::shared_ptr<ChildNode> &child, const Options &options);
 
         XmlValue toXml() const;

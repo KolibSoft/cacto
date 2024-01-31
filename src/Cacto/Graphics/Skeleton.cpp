@@ -124,6 +124,13 @@ namespace cacto
         return *this;
     }
 
+    Skeleton &Skeleton::append(const std::shared_ptr<ChildNode> &child)
+    {
+        append(*child);
+        m_bag.push_back(child);
+        return *this;
+    }
+
     Skeleton &Skeleton::append(const std::shared_ptr<ChildNode> &child, const Options &options)
     {
         append(*child, options);
