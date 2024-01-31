@@ -16,8 +16,8 @@ namespace cacto
 
     class CACTO_GRAPHICS_API Mesh
         : public virtual sf::Drawable,
-          public virtual ChildNode,
-          public virtual TransformableChains
+          public virtual TransformableChains,
+          public virtual ChildNode
     {
 
     public:
