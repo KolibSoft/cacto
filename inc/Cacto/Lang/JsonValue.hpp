@@ -109,6 +109,9 @@ namespace cacto
         bool operator!=(const JsonValue &other) const;
 
         static const JsonValue Null;
+        static const JsonString EmptyString;
+        static const JsonArray EmptyArray;
+        static const JsonObject EmptyObject;
 
     private:
         void drop();

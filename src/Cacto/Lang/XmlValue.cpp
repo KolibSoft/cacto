@@ -58,7 +58,7 @@ namespace cacto
     const XmlText &XmlValue::asText() const
     {
         if (m_type != XmlType::Text)
-            throw std::runtime_error("Xml is not an text value");
+            return EmptyText;
         return *m_text;
     }
 
@@ -101,7 +101,7 @@ namespace cacto
     const XmlTag &XmlValue::asTag() const
     {
         if (m_type != XmlType::Tag)
-            return NoTag;
+            return EmptyTag;
         return *m_tag;
     }
 
@@ -115,7 +115,7 @@ namespace cacto
     const XmlString &XmlValue::getName() const
     {
         if (m_type != XmlType::Tag)
-            return NoTag.name;
+            return EmptyTag.name;
         return m_tag->name;
     }
 
@@ -169,7 +169,7 @@ namespace cacto
     const XmlAttributes &XmlValue::asAttributes() const
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
+            return EmptyTag.attributes;
         return m_tag->attributes;
     }
 
@@ -183,7 +183,7 @@ namespace cacto
     const XmlContent &XmlValue::asContent() const
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
+            EmptyTag.content;
         return m_tag->content;
     }
 
@@ -325,7 +325,8 @@ namespace cacto
     }
 
     const XmlValue XmlValue::Empty = nullptr;
-    const XmlTag XmlValue::NoTag = {};
+    const XmlText XmlValue::EmptyText{};
+    const XmlTag XmlValue::EmptyTag{};
 
     void XmlValue::drop()
     {

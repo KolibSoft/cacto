@@ -73,7 +73,7 @@ namespace cacto
     const JsonString &JsonValue::asString() const
     {
         if (m_type != JsonType::String)
-            throw std::runtime_error("Json is not a string value");
+            return EmptyString;
         return *m_string;
     }
 
@@ -180,7 +180,7 @@ namespace cacto
     const JsonArray &JsonValue::asArray() const
     {
         if (m_type != JsonType::Array)
-            throw std::runtime_error("Json is not an array value");
+            return EmptyArray;
         return *m_array;
     }
 
@@ -240,7 +240,7 @@ namespace cacto
     const JsonObject &JsonValue::asObject() const
     {
         if (m_type != JsonType::Object)
-            throw std::runtime_error("Json is not an object value");
+            return EmptyObject;
         return *m_object;
     }
 
@@ -435,6 +435,9 @@ namespace cacto
     }
 
     const JsonValue JsonValue::Null = nullptr;
+    const JsonString JsonValue::EmptyString{};
+    const JsonArray JsonValue::EmptyArray{};
+    const JsonObject JsonValue::EmptyObject{};
 
     void JsonValue::drop()
     {

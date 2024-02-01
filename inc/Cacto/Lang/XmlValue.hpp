@@ -94,7 +94,8 @@ namespace cacto
         bool operator!=(const XmlValue &other) const;
 
         static const XmlValue Empty;
-        static const XmlTag NoTag;
+        static const XmlText EmptyText;
+        static const XmlTag EmptyTag;
 
     private:
         void drop();
