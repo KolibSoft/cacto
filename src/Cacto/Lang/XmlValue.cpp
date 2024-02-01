@@ -7,76 +7,128 @@
 namespace cacto
 {
 
-    XmlValue::Kind XmlValue::getKind() const
+    XmlTag::XmlTag(const XmlString &_name, const XmlAttributes &_attributes, const XmlContent &_content)
+        : name(_name),
+          attributes(_attributes),
+          content(_content)
     {
-        return m_kind;
+    }
+
+    XmlTag::~XmlTag() = default;
+
+    XmlType XmlValue::getType() const
+    {
+        return m_type;
+    }
+
+    bool XmlValue::isEmpty() const
+    {
+        return m_type == XmlType::Empty;
     }
 
     bool XmlValue::isText() const
     {
-        return m_kind == Text;
+        return m_type == XmlType::Text;
     }
 
-    std::string XmlValue::getText(const std::string &def) const
+    XmlText XmlValue::getText(const XmlText &def) const
     {
-        if (m_kind != Text)
+        if (m_type != XmlType::Text)
             return def;
         return *m_text;
     }
 
-    void XmlValue::setText(const std::string &value)
+    void XmlValue::setText(const XmlText &value)
     {
-        if (m_kind == Text)
+        if (m_type == XmlType::Text)
             *m_text = value;
         else
         {
             drop();
-            m_kind = Text;
-            m_text = new std::string(value);
+            m_type = XmlType::Text;
+            m_text = new XmlText(value);
         }
     }
 
-    XmlValue::operator std::string() const
+    XmlValue::operator XmlText() const
     {
         return getText();
     }
 
-    const std::string &XmlValue::asText() const
+    const XmlText &XmlValue::asText() const
     {
-        if (m_kind != Text)
+        if (m_type != XmlType::Text)
             throw std::runtime_error("Xml is not an text value");
         return *m_text;
     }
 
-    std::string &XmlValue::asText()
+    XmlText &XmlValue::asText()
     {
-        if (m_kind != Text)
+        if (m_type != XmlType::Text)
             throw std::runtime_error("Xml is not an text value");
         return *m_text;
     }
 
     bool XmlValue::isTag() const
     {
-        return m_kind == Tag;
+        return m_type == XmlType::Tag;
     }
 
-    const std::string &XmlValue::getName() const
+    XmlTag XmlValue::getTag(const XmlTag &def) const
     {
-        if (m_kind != Tag)
+        if (m_type != XmlType::Tag)
+            return def;
+        return *m_tag;
+    }
+
+    void XmlValue::setTag(const XmlTag &value)
+    {
+        if (m_type == XmlType::Tag)
+            *m_tag = value;
+        else
+        {
+            drop();
+            m_type = XmlType::Tag;
+            m_tag = new XmlTag(value);
+        }
+    }
+
+    XmlValue::operator XmlTag() const
+    {
+        return getTag();
+    }
+
+    const XmlTag &XmlValue::asTag() const
+    {
+        if (m_type != XmlType::Tag)
+            return NoTag;
+        return *m_tag;
+    }
+
+    XmlTag &XmlValue::asTag()
+    {
+        if (m_type != XmlType::Tag)
             throw std::runtime_error("Xml is not an tag value");
+        return *m_tag;
+    }
+
+    const XmlString &XmlValue::getName() const
+    {
+        if (m_type != XmlType::Tag)
+            return NoTag.name;
         return m_tag->name;
     }
 
-    void XmlValue::setName(const std::string &value)
+    void XmlValue::setName(const XmlString &value)
     {
-        if (m_kind != Tag)
+        if (m_type != XmlType::Tag)
             throw std::runtime_error("Xml is not an tag value");
         m_tag->name = value;
     }
 
-    std::string XmlValue::getAttribute(const std::string &name, const std::string &def) const
+    XmlString XmlValue::getAttribute(const XmlString &name, const XmlString &def) const
     {
-        if (m_kind != Tag)
+        if (m_type != XmlType::Tag)
             return def;
         for (auto &pair : m_tag->attributes)
             if (pair.first == name)
@@ -84,62 +136,62 @@ namespace cacto
         return def;
     }
 
-    const std::unordered_map<std::string, std::string> &XmlValue::asAttributes() const
+    const XmlString &XmlValue::operator[](const XmlString &key) const
     {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->attributes;
-    }
-
-    const std::string &XmlValue::operator[](const std::string &key) const
-    {
-        if (m_kind != Tag)
+        if (m_type != XmlType::Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->attributes.at(key);
     }
 
-    std::string &XmlValue::operator[](const std::string &key)
+    XmlString &XmlValue::operator[](const XmlString &key)
     {
-        if (m_kind != Tag)
+        if (m_type != XmlType::Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->attributes[key];
     }
 
-    std::unordered_map<std::string, std::string> &XmlValue::asAttributes()
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->attributes;
-    }
-
-    const std::vector<XmlValue> &XmlValue::asContent() const
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->content;
-    }
-
-    std::vector<XmlValue> &XmlValue::asContent()
-    {
-        if (m_kind != Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->content;
-    }
-
     const XmlValue &XmlValue::operator[](szt index) const
     {
-        if (m_kind != Tag)
-            return NoneValue;
+        if (m_type != XmlType::Tag)
+            return Empty;
         if (index >= m_tag->content.size())
-            return NoneValue;
+            return Empty;
         return m_tag->content.at(index);
     }
 
     XmlValue &XmlValue::operator[](szt index)
     {
-        if (m_kind != Tag)
+        if (m_type != XmlType::Tag)
             throw std::runtime_error("Xml is not an tag value");
         return m_tag->content[index];
+    }
+
+    const XmlAttributes &XmlValue::asAttributes() const
+    {
+        if (m_type != XmlType::Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->attributes;
+    }
+
+    XmlAttributes &XmlValue::asAttributes()
+    {
+        if (m_type != XmlType::Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->attributes;
+    }
+
+    const XmlContent &XmlValue::asContent() const
+    {
+        if (m_type != XmlType::Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->content;
+    }
+
+    XmlContent &XmlValue::asContent()
+    {
+        if (m_type != XmlType::Tag)
+            throw std::runtime_error("Xml is not an tag value");
+        return m_tag->content;
     }
 
     void XmlValue::print(Printer &printer) const
@@ -156,35 +208,35 @@ namespace cacto
     }
 
     XmlValue::XmlValue(std::nullptr_t)
-        : m_kind(None),
+        : m_type(XmlType::Empty),
           m_text(nullptr)
     {
     }
 
-    XmlValue::XmlValue(const std::string &text)
-        : m_kind(Text),
-          m_text(new std::string(text))
+    XmlValue::XmlValue(const XmlText &text)
+        : m_type(XmlType::Text),
+          m_text(new XmlText(text))
     {
     }
 
     XmlValue::XmlValue(const s8t &text)
-        : m_kind(Text),
-          m_text(new std::string(text))
+        : m_type(XmlType::Text),
+          m_text(new XmlText(text))
     {
     }
 
-    XmlValue::XmlValue(const std::string &name, const std::unordered_map<std::string, std::string> &attributes, const std::vector<XmlValue> &content)
-        : m_kind(Tag),
-          m_tag(new tag())
+    XmlValue::XmlValue(const XmlString &name, const XmlAttributes &attributes, const XmlContent &content)
+        : m_type(XmlType::Tag),
+          m_tag(new XmlTag())
     {
         m_tag->name = name;
         m_tag->attributes = attributes;
         m_tag->content = content;
     }
 
-    XmlValue::XmlValue(const std::string &name, std::initializer_list<std::pair<const std::string, std::string>> attributes, std::initializer_list<XmlValue> content)
-        : m_kind(Tag),
-          m_tag(new tag())
+    XmlValue::XmlValue(const XmlString &name, std::initializer_list<std::pair<const XmlString, XmlString>> attributes, std::initializer_list<XmlValue> content)
+        : m_type(XmlType::Tag),
+          m_tag(new XmlTag())
     {
         m_tag->name = name;
         m_tag->attributes = attributes;
@@ -197,18 +249,18 @@ namespace cacto
     }
 
     XmlValue::XmlValue(const XmlValue &other)
-        : m_kind(other.m_kind)
+        : m_type(other.m_type)
     {
-        switch (m_kind)
+        switch (m_type)
         {
-        case None:
+        case XmlType::Empty:
             m_text = nullptr;
             break;
-        case Text:
-            m_text = new std::string(*other.m_text);
+        case XmlType::Text:
+            m_text = new XmlText(*other.m_text);
             break;
-        case Tag:
-            m_tag = new tag();
+        case XmlType::Tag:
+            m_tag = new XmlTag();
             m_tag->name = other.m_tag->name;
             m_tag->attributes = other.m_tag->attributes;
             m_tag->content = other.m_tag->content;
@@ -232,35 +284,35 @@ namespace cacto
     XmlValue &XmlValue::operator=(XmlValue &&other)
     {
         drop();
-        m_kind = other.m_kind;
-        switch (m_kind)
+        m_type = other.m_type;
+        switch (m_type)
         {
-        case None:
+        case XmlType::Empty:
             m_text = nullptr;
             break;
-        case Text:
+        case XmlType::Text:
             m_text = other.m_text;
             break;
-        case Tag:
+        case XmlType::Tag:
             m_tag = other.m_tag;
             break;
         }
-        other.m_kind = None;
+        other.m_type = XmlType::Empty;
         other.m_text = nullptr;
         return *this;
     }
 
     bool XmlValue::operator==(const XmlValue &other) const
     {
-        if (m_kind == other.m_kind)
+        if (m_type == other.m_type)
         {
-            switch (m_kind)
+            switch (m_type)
             {
-            case None:
+            case XmlType::Empty:
                 return true;
-            case Text:
+            case XmlType::Text:
                 return *m_text == *other.m_text;
-            case Tag:
+            case XmlType::Tag:
                 return m_tag->name == other.m_tag->name && m_tag->attributes == other.m_tag->attributes && m_tag->content == other.m_tag->content;
             }
         }
@@ -272,24 +324,23 @@ namespace cacto
         return !(*this == other);
     }
 
-    const XmlValue XmlValue::NoneValue = nullptr;
-    const XmlValue XmlValue::TextValue = "";
-    const XmlValue XmlValue::TagValue = {"", {}};
+    const XmlValue XmlValue::Empty = nullptr;
+    const XmlTag XmlValue::NoTag = {};
 
     void XmlValue::drop()
     {
-        switch (m_kind)
+        switch (m_type)
         {
-        case Text:
+        case XmlType::Text:
             delete m_text;
             break;
-        case Tag:
+        case XmlType::Tag:
             delete m_tag;
             break;
         default:
             break;
         }
-        m_kind = None;
+        m_type = XmlType::Empty;
         m_text = nullptr;
     }
 

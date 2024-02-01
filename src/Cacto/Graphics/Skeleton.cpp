@@ -360,7 +360,7 @@ namespace cacto
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getKind() == XmlValue::Tag && xml.getName() == "Skeleton")
+            if (xml.getType() == XmlValue::Tag && xml.getName() == "Skeleton")
             {
                 auto skeleton = new Skeleton();
                 *skeleton = toSkeleton(xml);

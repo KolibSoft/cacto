@@ -179,7 +179,7 @@ namespace cacto
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
+            if (xml.getType() == XmlValue::Tag && xml.getName() == "Mesh")
             {
                 auto mesh = new Mesh();
                 *mesh = toMesh(xml);

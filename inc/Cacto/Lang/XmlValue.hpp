@@ -9,6 +9,30 @@
 namespace cacto
 {
 
+    enum class XmlType
+    {
+        Empty,
+        Text,
+        Tag
+    };
+
+    class XmlValue;
+
+    using XmlText = std::string;
+    using XmlString = std::string;
+    using XmlAttributes = std::unordered_map<XmlString, XmlString>;
+    using XmlContent = std::vector<XmlValue>;
+
+    struct CACTO_LANG_API XmlTag
+    {
+        XmlTag(const XmlString &_name = "", const XmlAttributes &_attributes = {}, const XmlContent &_content = {});
+        ~XmlTag();
+
+        XmlString name{};
+        XmlAttributes attributes{};
+        XmlContent content{};
+    };
+
     class Printer;
     class Scanner;
 
@@ -18,46 +42,46 @@ namespace cacto
     {
 
     public:
-        enum Kind
-        {
-            None,
-            Text,
-            Tag
-        };
-
-        Kind getKind() const;
+        XmlType getType() const;
+        bool isEmpty() const;
 
         bool isText() const;
-        std::string getText(const std::string &def = "") const;
-        void setText(const std::string &value);
-        explicit operator std::string() const;
+        XmlText getText(const XmlText &def = "") const;
+        void setText(const XmlText &value = "");
+        explicit operator XmlText() const;
 
-        const std::string &asText() const;
-        std::string &asText();
+        const XmlText &asText() const;
+        XmlText &asText();
 
         bool isTag() const;
-        const std::string &getName() const;
-        void setName(const std::string &value);
+        XmlTag getTag(const XmlTag &def = {}) const;
+        void setTag(const XmlTag &value = {});
+        explicit operator XmlTag() const;
 
-        std::string getAttribute(const std::string &name, const std::string &def = "") const;
-        const std::unordered_map<std::string, std::string> &asAttributes() const;
-        std::unordered_map<std::string, std::string> &asAttributes();
-        const std::string &operator[](const std::string &key) const;
-        std::string &operator[](const std::string &key);
+        const XmlTag &asTag() const;
+        XmlTag &asTag();
 
-        const std::vector<XmlValue> &asContent() const;
-        std::vector<XmlValue> &asContent();
+        const XmlString &getName() const;
+        void setName(const XmlString &value);
+        XmlString getAttribute(const XmlString &name, const XmlString &def = "") const;
+        const XmlString &operator[](const XmlString &key) const;
+        XmlString &operator[](const XmlString &key);
         const XmlValue &operator[](szt index) const;
         XmlValue &operator[](szt index);
+
+        const XmlAttributes &asAttributes() const;
+        XmlAttributes &asAttributes();
+        const XmlContent &asContent() const;
+        XmlContent &asContent();
 
         void print(Printer &printer) const override;
         bool scan(Scanner &scanner) override;
 
         XmlValue(std::nullptr_t = 0);
-        XmlValue(const std::string &text);
+        XmlValue(const XmlText &text);
         XmlValue(const s8t &text);
-        XmlValue(const std::string &name, const std::unordered_map<std::string, std::string> &attributes, const std::vector<XmlValue> &content = {});
-        XmlValue(const std::string &name, std::initializer_list<std::pair<const std::string, std::string>> attributes, std::initializer_list<XmlValue> content = {});
+        XmlValue(const XmlString &name, const XmlAttributes &attributes, const XmlContent &content = {});
+        XmlValue(const XmlString &name, std::initializer_list<std::pair<const XmlString, XmlString>> attributes, std::initializer_list<XmlValue> content = {});
         virtual ~XmlValue();
 
         XmlValue(const XmlValue &other);
@@ -69,27 +93,17 @@ namespace cacto
         bool operator==(const XmlValue &other) const;
         bool operator!=(const XmlValue &other) const;
 
-        static const XmlValue NoneValue;
-        static const XmlValue TextValue;
-        static const XmlValue TagValue;
+        static const XmlValue Empty;
+        static const XmlTag NoTag;
 
     private:
-        struct tag;
-
         void drop();
 
-        Kind m_kind;
+        XmlType m_type;
         union
         {
-            std::string *m_text;
-            tag *m_tag;
-        };
-
-        struct tag
-        {
-            std::string name{};
-            std::unordered_map<std::string, std::string> attributes{};
-            std::vector<XmlValue> content{};
+            XmlText *m_text;
+            XmlTag *m_tag;
         };
     };
 

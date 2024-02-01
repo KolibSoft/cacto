@@ -12,6 +12,11 @@ namespace cacto
         return m_type;
     }
 
+    bool JsonValue::isNull() const
+    {
+        return m_type == JsonType::Null;
+    }
+
     bool JsonValue::isNumber() const
     {
         return m_type == JsonType::Number;

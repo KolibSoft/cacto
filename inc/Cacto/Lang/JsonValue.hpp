@@ -38,6 +38,7 @@ namespace cacto
 
     public:
         JsonType getType() const;
+        bool isNull() const;
 
         bool isNumber() const;
         JsonNumber getNumber(JsonNumber def = 0) const;
@@ -61,6 +62,7 @@ namespace cacto
         JsonArray getArray(const JsonArray &def = {}) const;
         void setArray(const JsonArray &value = {});
         explicit operator JsonArray() const;
+
         void append(const JsonValue &value);
         void resize(szt count);
         const JsonValue &operator[](szt index) const;
@@ -73,6 +75,7 @@ namespace cacto
         JsonObject getObject(const JsonObject &def = {}) const;
         void setObject(const JsonObject &value = {});
         explicit operator JsonObject() const;
+
         const JsonValue &operator[](const JsonString &key) const;
         JsonValue &operator[](const JsonString &key);
 
