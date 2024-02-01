@@ -29,6 +29,9 @@ namespace cacto
 
         bool isText() const;
         std::string getText(const std::string &def = "") const;
+        void setText(const std::string &value);
+        explicit operator std::string() const;
+
         const std::string &asText() const;
         std::string &asText();
 

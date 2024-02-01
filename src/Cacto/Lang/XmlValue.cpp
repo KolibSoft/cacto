@@ -24,6 +24,23 @@ namespace cacto
         return *m_text;
     }
 
+    void XmlValue::setText(const std::string &value)
+    {
+        if (m_kind == Text)
+            *m_text = value;
+        else
+        {
+            drop();
+            m_kind = Text;
+            m_text = new std::string(value);
+        }
+    }
+
+    XmlValue::operator std::string() const
+    {
+        return getText();
+    }
+
     const std::string &XmlValue::asText() const
     {
         if (m_kind != Text)
