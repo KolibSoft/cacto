@@ -101,7 +101,8 @@ namespace cacto
             printText(xml.asText());
             break;
         case XmlType::Tag:
-            printTag(xml.getName(), xml.asAttributes(), xml.asContent());
+            auto &tag = xml.asTag();
+            printTag(tag.name, tag.attributes, tag.content);
             break;
         }
     }

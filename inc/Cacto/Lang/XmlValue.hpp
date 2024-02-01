@@ -63,16 +63,15 @@ namespace cacto
 
         const XmlString &getName() const;
         void setName(const XmlString &value);
+
         XmlString getAttribute(const XmlString &name, const XmlString &def = "") const;
         const XmlString &operator[](const XmlString &key) const;
         XmlString &operator[](const XmlString &key);
+
+        void append(const XmlValue &value);
+        void resize(szt count);
         const XmlValue &operator[](szt index) const;
         XmlValue &operator[](szt index);
-
-        const XmlAttributes &asAttributes() const;
-        XmlAttributes &asAttributes();
-        const XmlContent &asContent() const;
-        XmlContent &asContent();
 
         void print(Printer &printer) const override;
         bool scan(Scanner &scanner) override;

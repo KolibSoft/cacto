@@ -108,7 +108,7 @@ namespace cacto
     XmlTag &XmlValue::asTag()
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
+            throw std::runtime_error("Xml is not a tag value");
         return *m_tag;
     }
 
@@ -122,7 +122,7 @@ namespace cacto
     void XmlValue::setName(const XmlString &value)
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
+            throw std::runtime_error("Xml is not a tag value");
         m_tag->name = value;
     }
 
@@ -149,7 +149,7 @@ namespace cacto
     XmlString &XmlValue::operator[](const XmlString &key)
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
+            throw std::runtime_error("Xml is not a tag value");
         return m_tag->attributes[key];
     }
 
@@ -162,39 +162,25 @@ namespace cacto
         return m_tag->content.at(index);
     }
 
+    void XmlValue::append(const XmlValue &value)
+    {
+        if (m_type != XmlType::Tag)
+            throw std::runtime_error("Xml is not a tag value");
+        m_tag->content.push_back(value);
+    }
+
+    void XmlValue::resize(szt count)
+    {
+        if (m_type != XmlType::Tag)
+            throw std::runtime_error("Xml is not a tag value");
+        m_tag->content.resize(count);
+    }
+
     XmlValue &XmlValue::operator[](szt index)
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
+            throw std::runtime_error("Xml is not a tag value");
         return m_tag->content[index];
-    }
-
-    const XmlAttributes &XmlValue::asAttributes() const
-    {
-        if (m_type != XmlType::Tag)
-            return EmptyTag.attributes;
-        return m_tag->attributes;
-    }
-
-    XmlAttributes &XmlValue::asAttributes()
-    {
-        if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->attributes;
-    }
-
-    const XmlContent &XmlValue::asContent() const
-    {
-        if (m_type != XmlType::Tag)
-            return EmptyTag.content;
-        return m_tag->content;
-    }
-
-    XmlContent &XmlValue::asContent()
-    {
-        if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->content;
     }
 
     void XmlValue::print(Printer &printer) const

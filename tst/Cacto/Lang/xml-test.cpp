@@ -17,10 +17,9 @@ int main()
     xml = {"element", {std::pair{"attrA", "valA"}, std::pair{"attrB", "valB"}}, {"Text", {"element", {}}, {"element", {}}, {"element", {}}, {"element", {}}}};
     kind = xml.getType();
     comparison = xml == cacto::XmlValue{"element", {std::pair{"attrA", "valA"}, std::pair{"attrB", "valB"}}, {"Text", {"element", {}}}};
-    auto attributes = xml.asAttributes();
-    auto content = xml.asContent();
+    auto tag = xml.asTag();
 
-    xml[1].asContent().push_back(xml);
+    xml[1].append(xml);
 
     xml = nullptr;
     const auto &cxml = xml;
