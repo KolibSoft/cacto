@@ -22,8 +22,9 @@ int main()
 
     xml[1].asContent().push_back(xml);
 
-    xml = "Text: a <element /> tag";
-    std::cout << xml.asText() << '\n';
+    xml = nullptr;
+    const auto &cxml = xml;
+    std::cout << cxml[0][0][0][0].getAttribute("attribute", "Default");
 
     return 0;
 }

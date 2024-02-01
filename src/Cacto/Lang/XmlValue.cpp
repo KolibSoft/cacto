@@ -139,8 +139,11 @@ namespace cacto
     const XmlString &XmlValue::operator[](const XmlString &key) const
     {
         if (m_type != XmlType::Tag)
-            throw std::runtime_error("Xml is not an tag value");
-        return m_tag->attributes.at(key);
+            return EmptyTag.name;
+        for (auto &pair : m_tag->attributes)
+            if (pair.first == key)
+                return pair.second;
+        return EmptyTag.name;
     }
 
     XmlString &XmlValue::operator[](const XmlString &key)
@@ -183,7 +186,7 @@ namespace cacto
     const XmlContent &XmlValue::asContent() const
     {
         if (m_type != XmlType::Tag)
-            EmptyTag.content;
+            return EmptyTag.content;
         return m_tag->content;
     }
 

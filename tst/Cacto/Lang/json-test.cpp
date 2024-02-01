@@ -47,7 +47,9 @@ int main()
     json.append({std::pair{"number", 25}, std::pair{"string", "String"}, std::pair{"boolean", true}, std::pair{"null", nullptr}, std::pair{"array", std::vector<cacto::JsonValue>()}, std::pair{"object", std::unordered_map<std::string, cacto::JsonValue>()}});
     json[5]["object"] = json;
 
-    std::cout << json;
+    json = nullptr;
+    const auto& cjson = json;
+    std::cout << cjson[0][0][0][0]["Property"]["SubProperty"].getNumber(23);
 
     return 0;
 }
