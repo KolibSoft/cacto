@@ -248,13 +248,13 @@ namespace cacto
         xml["tileSize"] = toString(tileMap.getTileSize());
         xml["area"] = toString(sf::FloatRect(tileMap.getArea()));
         auto txml = cacto::toXml(tileMap.asTransformable());
-        for (auto &pair : txml.asAttributes())
+        for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
-        auto &content = xml.asContent();
+        auto &content = xml.asTag().content;
         XmlValue chunk{"Chunk", {}};
         auto area{tileMap.getArea()};
         chunk["area"] = toString(sf::FloatRect(area));
-        auto &tiles = chunk.asContent();
+        auto &tiles = chunk.asTag().content;
         for (i32t y = 0; y < area.height; y++)
             for (i32t x = 0; x < area.width; x++)
             {
@@ -278,7 +278,7 @@ namespace cacto
         tileMap.asTransformable() = toTransformable(xml);
         if (xml.isTag())
         {
-            auto &content = xml.asContent();
+            auto &content = xml.asTag().content;
             for (auto &item : content)
             {
                 if (item.isTag())
@@ -286,7 +286,7 @@ namespace cacto
                     if (item.getName() == "Chunk")
                     {
                         auto area = toRect(item.getAttribute("area", "0,0,0,0"));
-                        auto &tiles = item.asContent();
+                        auto &tiles = item.asTag().content;
                         for (i32t y = 0; y < area.height; y++)
                             for (i32t x = 0; x < area.width; x++)
                             {

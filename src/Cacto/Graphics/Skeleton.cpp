@@ -297,9 +297,9 @@ namespace cacto
         XmlValue xml{"Skeleton", {}};
         xml["id"] = skeleton.getId();
         auto txml = toXml(skeleton.asTransformable());
-        for (auto &pair : txml.asAttributes())
+        for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
-        auto &content = xml.asContent();
+        auto &content = xml.asTag().content;
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
             auto child = skeleton.getChild(i);
@@ -321,7 +321,7 @@ namespace cacto
         skeleton.setId(xml.getAttribute("id"));
         skeleton.asTransformable() = toTransformable(xml);
         if (xml.isTag())
-            for (auto &item : xml.asContent())
+            for (auto &item : xml.asTag().content)
             {
                 Node *node = cacto::fromXml<Node>(item);
                 if (node)
@@ -360,7 +360,7 @@ namespace cacto
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getType() == XmlValue::Tag && xml.getName() == "Skeleton")
+            if (xml.isTag() && xml.getName() == "Skeleton")
             {
                 auto skeleton = new Skeleton();
                 *skeleton = toSkeleton(xml);

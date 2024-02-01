@@ -145,11 +145,11 @@ namespace cacto
         xml["texture"] = getExpression(mesh.getTexture());
         auto txml = toXml(mesh.asTransformable());
         auto axml = toXml(mesh.asArray());
-        for (auto &pair : txml.asAttributes())
+        for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
-        for (auto &pair : axml.asAttributes())
+        for (auto &pair : axml.asTag().attributes)
             xml[pair.first] = pair.second;
-        xml.asContent() = std::move(axml.asContent());
+        xml.asTag().content = std::move(axml.asTag().content);
         return std::move(xml);
     }
 
@@ -179,7 +179,7 @@ namespace cacto
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getType() == XmlValue::Tag && xml.getName() == "Mesh")
+            if (xml.isTag() && xml.getName() == "Mesh")
             {
                 auto mesh = new Mesh();
                 *mesh = toMesh(xml);
