@@ -35,7 +35,7 @@ int main()
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
             {
-                mesh.locate(sf::Vector2f(sf::Mouse::getPosition(window)));
+                mesh.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
             }
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
@@ -49,13 +49,13 @@ int main()
                     mesh = cacto::toMesh(xml);
                 }
                 else if (event.key.code == sf::Keyboard::Left)
-                    mesh.acquire({-1, 0});
+                    mesh.move({-1, 0});
                 else if (event.key.code == sf::Keyboard::Right)
-                    mesh.acquire({+1, 0});
+                    mesh.move({+1, 0});
                 else if (event.key.code == sf::Keyboard::Up)
-                    mesh.acquire({0, -1});
+                    mesh.move({0, -1});
                 else if (event.key.code == sf::Keyboard::Down)
-                    mesh.acquire({0, +1});
+                    mesh.move({0, +1});
             }
         }
         window.clear();

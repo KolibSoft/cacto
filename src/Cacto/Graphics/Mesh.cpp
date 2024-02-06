@@ -10,16 +10,6 @@
 namespace cacto
 {
 
-    const sf::Transformable &Mesh::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &Mesh::asTransformable()
-    {
-        return m_transformable;
-    }
-
     const sf::VertexArray &Mesh::asArray() const
     {
         return m_array;
@@ -35,10 +25,10 @@ namespace cacto
         return m_texture;
     }
 
-    Mesh &Mesh::setTexture(const sf::Texture *value) &
+    Mesh &&Mesh::setTexture(const sf::Texture *value)
     {
         m_texture = value;
-        return *this;
+        return std::move(*this);
     }
 
     const std::string &Mesh::getId() const
@@ -46,10 +36,10 @@ namespace cacto
         return m_id;
     }
 
-    Mesh &Mesh::setId(const std::string &value) &
+    Mesh &&Mesh::setId(const std::string &value)
     {
         m_id = value;
-        return *this;
+        return std::move(*this);
     }
 
     Node *const Mesh::getParent() const
@@ -90,8 +80,7 @@ namespace cacto
     }
 
     Mesh::Mesh()
-        : m_transformable(),
-          m_array(),
+        : m_array(),
           m_texture(),
           m_id(),
           m_parent()
@@ -104,18 +93,17 @@ namespace cacto
     }
 
     Mesh::Mesh(const Mesh &other)
-        : m_transformable(other.m_transformable),
-          m_array(other.m_array),
-          m_texture(other.m_texture),
-          m_id(other.m_id),
-          m_parent(nullptr)
+        : Mesh()
     {
+        *this = other;
     }
 
     Mesh &Mesh::operator=(const Mesh &other)
     {
-        Mesh copy{other};
-        *this = std::move(copy);
+        sf::Transformable::operator=(other);
+        m_array = other.m_array;
+        m_texture = other.m_texture;
+        m_id = other.m_id;
         return *this;
     }
 
@@ -127,7 +115,7 @@ namespace cacto
 
     Mesh &Mesh::operator=(Mesh &&other)
     {
-        m_transformable = std::move(other.m_transformable);
+        sf::Transformable::operator=(std::move(other));
         m_array = std::move(other.m_array);
         m_texture = other.m_texture;
         m_id = std::move(other.m_id);
@@ -140,7 +128,7 @@ namespace cacto
     {
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= m_transformable.getTransform();
+        _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
 
@@ -149,7 +137,7 @@ namespace cacto
         XmlValue xml{"Mesh", {}};
         xml["id"] = mesh.getId();
         xml["texture"] = getExpression(mesh.getTexture());
-        auto txml = toXml(mesh.asTransformable());
+        auto txml = toXml((const sf::Transformable &)mesh);
         auto axml = toXml(mesh.asArray());
         for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
@@ -164,7 +152,7 @@ namespace cacto
         Mesh mesh{};
         mesh.setId(xml.getAttribute("id"));
         mesh.setTexture(getTexture(xml.getAttribute("texture")));
-        mesh.asTransformable() = toTransformable(xml);
+        (sf::Transformable &)mesh = toTransformable(xml);
         mesh.asArray() = toVertexArray(xml);
         return std::move(mesh);
     }

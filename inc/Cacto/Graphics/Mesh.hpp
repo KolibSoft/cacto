@@ -3,7 +3,6 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/ChildNode.hpp>
-#include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -15,25 +14,20 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public virtual sf::Drawable,
-          public virtual TransformableChains,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ChildNode
     {
 
     public:
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable() override;
-
         const sf::VertexArray &asArray() const;
         sf::VertexArray &asArray();
 
         const sf::Texture *getTexture() const;
-        Mesh &setTexture(const sf::Texture *value) &;
-        inline Mesh &&setTexture(const sf::Texture *value) &&;
+        Mesh &&setTexture(const sf::Texture *value);
 
         const std::string &getId() const override;
-        Mesh &setId(const std::string &value) &;
-        inline Mesh &&setId(const std::string &value) &&;
+        Mesh &&setId(const std::string &value);
 
         Node *const getParent() const override;
 
@@ -56,7 +50,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        sf::Transformable m_transformable;
         sf::VertexArray m_array;
         const sf::Texture *m_texture;
         std::string m_id;
@@ -85,5 +78,3 @@ namespace cacto
     }
 
 }
-
-#include <Cacto/Graphics/Mesh.inl>
