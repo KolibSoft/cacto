@@ -30,7 +30,7 @@ namespace cacto
             std::ifstream stream{path};
             stream >> *xml;
             m_map.insert({id, xml});
-            return xml.get();
+            return xml;
         }
         else
         {
