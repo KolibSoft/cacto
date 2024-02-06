@@ -38,30 +38,30 @@ namespace cacto
 
     public:
         JsonType getType() const;
-        bool isNull() const;
+        inline bool isNull() const;
 
-        bool isNumber() const;
+        inline bool isNumber() const;
         JsonNumber getNumber(JsonNumber def = 0) const;
         void setNumber(JsonNumber value = 0);
-        explicit operator JsonNumber() const;
+        inline explicit operator JsonNumber() const;
 
-        bool isString() const;
+        inline bool isString() const;
         JsonString getString(const JsonString &def = "") const;
         void setString(const JsonString &value = "");
-        explicit operator JsonString() const;
+        inline explicit operator JsonString() const;
 
         const JsonString &asString() const;
         JsonString &asString();
 
-        bool isBoolean() const;
+        inline bool isBoolean() const;
         JsonBoolean getBoolean(JsonBoolean def = false) const;
         void setBoolean(JsonBoolean value = false);
-        explicit operator JsonBoolean() const;
+        inline explicit operator JsonBoolean() const;
 
-        bool isArray() const;
+        inline bool isArray() const;
         JsonArray getArray(const JsonArray &def = {}) const;
         void setArray(const JsonArray &value = {});
-        explicit operator JsonArray() const;
+        inline explicit operator JsonArray() const;
 
         void append(const JsonValue &value);
         void resize(szt count);
@@ -71,10 +71,10 @@ namespace cacto
         const JsonArray &asArray() const;
         JsonArray &asArray();
 
-        bool isObject() const;
+        inline bool isObject() const;
         JsonObject getObject(const JsonObject &def = {}) const;
         void setObject(const JsonObject &value = {});
-        explicit operator JsonObject() const;
+        inline explicit operator JsonObject() const;
 
         const JsonValue &operator[](const JsonString &key) const;
         JsonValue &operator[](const JsonString &key);
