@@ -12,16 +12,6 @@ namespace cacto
         return m_type;
     }
 
-    bool JsonValue::isNull() const
-    {
-        return m_type == JsonType::Null;
-    }
-
-    bool JsonValue::isNumber() const
-    {
-        return m_type == JsonType::Number;
-    }
-
     JsonNumber JsonValue::getNumber(JsonNumber def) const
     {
         if (m_type != JsonType::Number)
@@ -39,16 +29,6 @@ namespace cacto
             m_type = JsonType::Number;
             m_number = value;
         }
-    }
-
-    JsonValue::operator JsonNumber() const
-    {
-        return getNumber();
-    }
-
-    bool JsonValue::isString() const
-    {
-        return m_type == JsonType::String;
     }
 
     JsonString JsonValue::getString(const JsonString &def) const
@@ -84,16 +64,6 @@ namespace cacto
         return *m_string;
     }
 
-    JsonValue::operator std::string() const
-    {
-        return getString();
-    }
-
-    bool JsonValue::isBoolean() const
-    {
-        return m_type == JsonType::Boolean;
-    }
-
     JsonBoolean JsonValue::getBoolean(JsonBoolean def) const
     {
         if (m_type != JsonType::Boolean)
@@ -113,16 +83,6 @@ namespace cacto
         }
     }
 
-    JsonValue::operator JsonBoolean() const
-    {
-        return getBoolean();
-    }
-
-    bool JsonValue::isArray() const
-    {
-        return m_type == JsonType::Array;
-    }
-
     JsonArray JsonValue::getArray(const JsonArray &def) const
     {
         if (m_type != JsonType::Array)
@@ -140,11 +100,6 @@ namespace cacto
             m_type = JsonType::Array;
             m_array = new JsonArray(value);
         }
-    }
-
-    JsonValue::operator JsonArray() const
-    {
-        return getArray();
     }
 
     void JsonValue::append(const JsonValue &value)
@@ -191,11 +146,6 @@ namespace cacto
         return *m_array;
     }
 
-    bool JsonValue::isObject() const
-    {
-        return m_type == JsonType::Object;
-    }
-
     JsonObject JsonValue::getObject(const JsonObject &def) const
     {
         if (m_type != JsonType::Object)
@@ -213,11 +163,6 @@ namespace cacto
             m_type = JsonType::Object;
             m_object = new JsonObject(value);
         }
-    }
-
-    JsonValue::operator JsonObject() const
-    {
-        return getObject();
     }
 
     const JsonValue &JsonValue::operator[](const JsonString &key) const
@@ -275,11 +220,13 @@ namespace cacto
           m_number(number)
     {
     }
+
     JsonValue::JsonValue(i64t number)
         : m_type(JsonType::Number),
           m_number(number)
     {
     }
+    
     JsonValue::JsonValue(i32t number)
         : m_type(JsonType::Number),
           m_number(number)

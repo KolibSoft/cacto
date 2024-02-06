@@ -128,3 +128,5 @@ namespace cacto
     };
 
 }
+
+#include <Cacto/Lang/JsonValue.inl>

@@ -108,3 +108,5 @@ namespace cacto
     };
 
 }
+
+#include <Cacto/Lang/XmlValue.inl>
