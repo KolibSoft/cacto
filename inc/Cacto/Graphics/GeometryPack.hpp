@@ -33,7 +33,7 @@ namespace cacto
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, std::shared_ptr<Geometry>> m_map;
+        mutable std::unordered_map<std::string, Geometry *> m_map;
     };
 
 }

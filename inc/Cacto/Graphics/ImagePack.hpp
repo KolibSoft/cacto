@@ -21,7 +21,7 @@ namespace cacto
 
     public:
         const std::filesystem::path &getPath() const;
-        
+
         const std::string &getId(const sf::Image &value) const override;
         const sf::Image *const getResource(const std::string &id) const override;
 
@@ -36,7 +36,7 @@ namespace cacto
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, std::shared_ptr<sf::Image>> m_map;
+        mutable std::unordered_map<std::string, sf::Image *> m_map;
     };
 
 }

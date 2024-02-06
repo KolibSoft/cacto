@@ -13,7 +13,7 @@ namespace cacto
     const std::string &ImagePack::getId(const sf::Image &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (pair.second == &value)
                 return pair.first;
         return NoId;
     }
@@ -22,14 +22,14 @@ namespace cacto
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            auto image = std::make_shared<sf::Image>();
+            auto image = new sf::Image();
             auto _ = image->loadFromFile(path);
             m_map.insert({id, image});
-            return image.get();
+            return image;
         }
         else
         {
@@ -44,7 +44,15 @@ namespace cacto
     {
     }
 
-    ImagePack::~ImagePack() = default;
+    ImagePack::~ImagePack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     ImagePack::ImagePack(ImagePack &&other)
         : m_path(std::move(other.m_path)),

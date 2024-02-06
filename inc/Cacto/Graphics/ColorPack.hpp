@@ -39,7 +39,7 @@ namespace cacto
 
         std::filesystem::path m_path;
         mutable bool m_loaded;
-        mutable std::unordered_map<std::string, std::shared_ptr<sf::Color>> m_map;
+        mutable std::unordered_map<std::string, sf::Color *> m_map;
     };
 
 }

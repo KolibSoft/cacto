@@ -13,7 +13,7 @@ namespace cacto
     const std::string &FontPack::getId(const sf::Font &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (pair.second == &value)
                 return pair.first;
         return NoId;
     }
@@ -22,14 +22,14 @@ namespace cacto
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            auto font = std::make_shared<sf::Font>();
+            auto font = new sf::Font();
             auto _ = font->loadFromFile(path);
             m_map.insert({id, font});
-            return font.get();
+            return font;
         }
         else
         {
@@ -44,7 +44,15 @@ namespace cacto
     {
     }
 
-    FontPack::~FontPack() = default;
+    FontPack::~FontPack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     FontPack::FontPack(FontPack &&other)
         : m_path(std::move(other.m_path)),
