@@ -28,17 +28,20 @@ namespace cacto
         sf::VertexArray &asArray();
 
         const sf::Texture *getTexture() const;
-        Mesh &setTexture(const sf::Texture *value);
+        Mesh &setTexture(const sf::Texture *value) &;
+        inline Mesh &&setTexture(const sf::Texture *value) &&;
 
         const std::string &getId() const override;
-        Mesh &setId(const std::string &value);
+        Mesh &setId(const std::string &value) &;
+        inline Mesh &&setId(const std::string &value) &&;
 
         Node *const getParent() const override;
 
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        Mesh *clone() const override;
+        Mesh *copy() const override;
+        Mesh *move() override;
 
         Mesh();
         virtual ~Mesh();
@@ -82,3 +85,5 @@ namespace cacto
     }
 
 }
+
+#include <Cacto/Graphics/Mesh.inl>

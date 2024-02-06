@@ -40,4 +40,10 @@ namespace cacto
         return *this;
     }
 
+    TransformableChains &TransformableChains::rotate(const sf::Angle &angle) &
+    {
+        asTransformable().rotate(angle);
+        return *this;
+    }
+
 }

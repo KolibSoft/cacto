@@ -27,29 +27,37 @@ namespace cacto
         sf::Transformable &asTransformable() override;
 
         const std::string &getId() const override;
-        TileMap &setId(const std::string &value);
+        TileMap &setId(const std::string &value) &;
+        inline TileMap &&setId(const std::string &value) &&;
 
         const sf::Texture *const getTexture() const;
-        TileMap &setTexture(const sf::Texture *const value);
+        TileMap &setTexture(const sf::Texture *const value) &;
+        inline TileMap &&setTexture(const sf::Texture *const value) &&;
 
         const sf::Vector2f &getTileSize() const;
-        TileMap &setTileSize(const sf::Vector2f &value);
+        TileMap &setTileSize(const sf::Vector2f &value) &;
+        inline TileMap &&setTileSize(const sf::Vector2f &value) &&;
 
         const sf::IntRect &getArea() const;
-        TileMap &setArea(const sf::IntRect &value);
+        TileMap &setArea(const sf::IntRect &value) &;
+        inline TileMap &&setArea(const sf::IntRect &value) &&;
 
         const sf::FloatRect &getTile(const sf::Vector2i &position) const;
-        TileMap &setTile(const sf::FloatRect &tile, const sf::Vector2i &position);
+        TileMap &setTile(const sf::FloatRect &tile, const sf::Vector2i &position) &;
+        inline TileMap &&setTile(const sf::FloatRect &tile, const sf::Vector2i &position) &&;
 
-        TileMap &setTiles(const sf::FloatRect &tile, const sf::IntRect &area);
-        TileMap &fill(const sf::FloatRect &tile);
+        TileMap &setTiles(const sf::FloatRect &tile, const sf::IntRect &area) &;
+        inline TileMap &&setTiles(const sf::FloatRect &tile, const sf::IntRect &area) &&;
+        TileMap &fill(const sf::FloatRect &tile) &;
+        inline TileMap &&fill(const sf::FloatRect &tile) &&;
 
         Node *const getParent() const override;
 
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        TileMap *clone() const override;
+        TileMap *copy() const override;
+        TileMap *move() override;
 
         TileMap();
         virtual ~TileMap();
@@ -101,3 +109,5 @@ namespace cacto
     }
 
 }
+
+#include <Cacto/Graphics/TileMap.inl>

@@ -24,7 +24,7 @@ namespace cacto
         return m_id;
     }
 
-    Skeleton &Skeleton::setId(const std::string &value)
+    Skeleton &Skeleton::setId(const std::string &value) &
     {
         m_id = value;
         return *this;
@@ -102,51 +102,45 @@ namespace cacto
     void Skeleton::remove(ChildNode &child)
     {
         auto index = getChildIndex(child);
-        if (getChildIndex(child) >= 0)
+        if (index >= 0)
         {
+            auto holder = m_holders[index];
             m_holders.erase(m_holders.begin() + index);
             child.detach();
-            for (auto it = m_bag.begin(); it != m_bag.end(); ++it)
-                if (it->get() == &child)
-                {
-                    m_bag.erase(it);
-                    break;
-                }
+            if (holder.owned)
+                delete holder.child;
         }
     }
 
-    Skeleton *Skeleton::clone() const
+    Skeleton *Skeleton::copy() const
     {
         auto skeleton = new Skeleton(*this);
         return skeleton;
     }
 
-    Skeleton &Skeleton::append(ChildNode &child, const Options &options)
+    Skeleton *Skeleton::move()
+    {
+        auto skeleton = new Skeleton(std::move(*this));
+        return skeleton;
+    }
+
+    Skeleton &Skeleton::append(ChildNode &child, const Options &options) &
     {
         append(child);
-        auto _options = getOptions(child);
-        if (_options)
-            *_options = options;
+        m_holders.back().options = options;
         return *this;
     }
 
-    Skeleton &Skeleton::append(const std::shared_ptr<ChildNode> &child)
+    Skeleton &Skeleton::append(ChildNode &&child, const Options &options) &
     {
-        append(*child);
-        m_bag.push_back(child);
-        return *this;
-    }
-
-    Skeleton &Skeleton::append(const std::shared_ptr<ChildNode> &child, const Options &options)
-    {
-        append(*child, options);
-        m_bag.push_back(child);
+        auto _child = dynamic_cast<ChildNode *>(child.move());
+        append(*_child, options);
+        m_holders.back().owned = true;
         return *this;
     }
 
     Skeleton::Skeleton()
         : m_transformable(),
-          m_bag(),
           m_id(),
           m_holders(),
           m_parent()
@@ -161,21 +155,20 @@ namespace cacto
 
     Skeleton::Skeleton(const Skeleton &other)
         : m_transformable(other.m_transformable),
-          m_bag(),
           m_id(other.m_id),
           m_holders(),
           m_parent()
     {
         for (auto &holder : other.m_holders)
         {
-            auto node = holder.child->clone();
+            auto node = holder.child->copy();
             if (node)
             {
                 auto child = dynamic_cast<ChildNode *>(node);
                 if (child)
                 {
-                    std::shared_ptr<ChildNode> ptr{child};
-                    append(ptr, holder.options);
+                    append(*child, holder.options);
+                    m_holders.back().owned = true;
                 }
                 else
                     delete node;
@@ -200,7 +193,6 @@ namespace cacto
     {
         clearChildren();
         m_transformable = std::move(other.m_transformable);
-        m_bag = std::move(other.m_bag);
         m_id = std::move(other.m_id);
         m_holders = std::move(other.m_holders);
         for (auto &holder : m_holders)
@@ -329,10 +321,9 @@ namespace cacto
                     auto child = dynamic_cast<ChildNode *>(node);
                     if (child)
                     {
-                        std::shared_ptr<ChildNode> ptr{child};
                         sf::Vector2f coords = toVector(item.getAttribute("options:coords", "0,0"));
                         Skeleton::Relation relation = toRelation(item.getAttribute("options:relation", "Body"));
-                        skeleton.append(ptr,
+                        skeleton.append(std::move(*child),
                                         Skeleton::Options()
                                             .setCoords(coords)
                                             .setRelation(relation));

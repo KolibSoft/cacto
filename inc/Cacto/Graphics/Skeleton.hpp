@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <memory>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
 #include <Cacto/Core/ParentNode.hpp>
@@ -32,7 +31,8 @@ namespace cacto
         sf::Transformable &asTransformable() override;
 
         const std::string &getId() const override;
-        Skeleton &setId(const std::string &value);
+        Skeleton &setId(const std::string &value) &;
+        inline Skeleton &&setId(const std::string &value) &&;
 
         Node *const getParent() const override;
 
@@ -48,11 +48,14 @@ namespace cacto
         void append(ChildNode &child) override;
         void remove(ChildNode &child) override;
 
-        Skeleton *clone() const override;
+        Skeleton *copy() const override;
+        Skeleton *move() override;
 
-        Skeleton &append(ChildNode &child, const Options &options);
-        Skeleton &append(const std::shared_ptr<ChildNode> &child);
-        Skeleton &append(const std::shared_ptr<ChildNode> &child, const Options &options);
+        Skeleton &append(ChildNode &child, const Options &options) &;
+        inline Skeleton &&append(ChildNode &child, const Options &options) &&;
+
+        Skeleton &append(ChildNode &&child, const Options &options) &;
+        inline Skeleton &&append(ChildNode &&child, const Options &options) &&;
 
         Skeleton();
         virtual ~Skeleton();
@@ -88,13 +91,13 @@ namespace cacto
         struct holder;
 
         sf::Transformable m_transformable;
-        std::vector<std::shared_ptr<Node>> m_bag;
         std::string m_id;
         std::vector<holder> m_holders;
         ParentNode *m_parent;
 
         struct holder
         {
+            bool owned{};
             ChildNode *child{};
             Options options{};
         };
@@ -126,3 +129,5 @@ namespace cacto
     }
 
 }
+
+#include <Cacto/Graphics/Skeleton.inl>

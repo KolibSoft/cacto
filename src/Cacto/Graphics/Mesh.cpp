@@ -35,7 +35,7 @@ namespace cacto
         return m_texture;
     }
 
-    Mesh &Mesh::setTexture(const sf::Texture *value)
+    Mesh &Mesh::setTexture(const sf::Texture *value) &
     {
         m_texture = value;
         return *this;
@@ -46,7 +46,7 @@ namespace cacto
         return m_id;
     }
 
-    Mesh &Mesh::setId(const std::string &value)
+    Mesh &Mesh::setId(const std::string &value) &
     {
         m_id = value;
         return *this;
@@ -77,9 +77,15 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    Mesh *Mesh::clone() const
+    Mesh *Mesh::copy() const
     {
         auto mesh = new Mesh(*this);
+        return mesh;
+    }
+
+    Mesh *Mesh::move()
+    {
+        auto mesh = new Mesh(std::move(*this));
         return mesh;
     }
 
