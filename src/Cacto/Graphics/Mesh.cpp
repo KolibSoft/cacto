@@ -35,7 +35,7 @@ namespace cacto
         return m_texture;
     }
 
-    Mesh &Mesh::setTexture(const sf::Texture *value)
+    Mesh &Mesh::setTexture(const sf::Texture *value) &
     {
         m_texture = value;
         return *this;
@@ -46,7 +46,7 @@ namespace cacto
         return m_id;
     }
 
-    Mesh &Mesh::setId(const std::string &value)
+    Mesh &Mesh::setId(const std::string &value) &
     {
         m_id = value;
         return *this;
@@ -80,6 +80,12 @@ namespace cacto
     Mesh *Mesh::clone() const
     {
         auto mesh = new Mesh(*this);
+        return mesh;
+    }
+
+    Mesh *Mesh::acquire()
+    {
+        auto mesh = new Mesh(std::move(*this));
         return mesh;
     }
 
@@ -145,11 +151,11 @@ namespace cacto
         xml["texture"] = getExpression(mesh.getTexture());
         auto txml = toXml(mesh.asTransformable());
         auto axml = toXml(mesh.asArray());
-        for (auto &pair : txml.asAttributes())
+        for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
-        for (auto &pair : axml.asAttributes())
+        for (auto &pair : axml.asTag().attributes)
             xml[pair.first] = pair.second;
-        xml.asContent() = std::move(axml.asContent());
+        xml.asTag().content = std::move(axml.asTag().content);
         return std::move(xml);
     }
 
@@ -179,7 +185,7 @@ namespace cacto
 
         Node *XmlConverter::fromXml(const XmlValue &xml) const
         {
-            if (xml.getKind() == XmlValue::Tag && xml.getName() == "Mesh")
+            if (xml.isTag() && xml.getName() == "Mesh")
             {
                 auto mesh = new Mesh();
                 *mesh = toMesh(xml);

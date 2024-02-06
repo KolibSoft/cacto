@@ -9,6 +9,25 @@
 namespace cacto
 {
 
+    enum class JsonType
+    {
+        Null,
+        Number,
+        String,
+        Boolean,
+        Array,
+        Object
+    };
+
+    class JsonValue;
+
+    using JsonNumber = f64t;
+    using JsonString = std::string;
+    using JsonBoolean = bool;
+    using JsonNull = std::nullptr_t;
+    using JsonArray = std::vector<JsonValue>;
+    using JsonObject = std::unordered_map<JsonString, JsonValue>;
+
     class Printer;
     class Scanner;
 
@@ -18,60 +37,66 @@ namespace cacto
     {
 
     public:
-        enum Kind
-        {
-            Number,
-            String,
-            Boolean,
-            Null,
-            Array,
-            Object
-        };
+        JsonType getType() const;
+        inline bool isNull() const;
 
-        Kind getKind() const;
+        inline bool isNumber() const;
+        JsonNumber getNumber(JsonNumber def = 0) const;
+        void setNumber(JsonNumber value = 0);
+        inline explicit operator JsonNumber() const;
 
-        bool isNumber() const;
-        f64t getNumber(f64t def = 0) const;
-        const f64t &asNumber() const;
-        f64t &asNumber();
+        inline bool isString() const;
+        JsonString getString(const JsonString &def = "") const;
+        void setString(const JsonString &value = "");
+        inline explicit operator JsonString() const;
 
-        bool isString() const;
-        std::string getString(const std::string &def = "") const;
-        const std::string &asString() const;
-        std::string &asString();
+        const JsonString &asString() const;
+        JsonString &asString();
 
-        bool isBoolean() const;
-        bool getBoolean(bool def = false) const;
-        const bool &asBoolean() const;
-        bool &asBoolean();
+        inline bool isBoolean() const;
+        JsonBoolean getBoolean(JsonBoolean def = false) const;
+        void setBoolean(JsonBoolean value = false);
+        inline explicit operator JsonBoolean() const;
 
-        bool isArray() const;
-        const std::vector<JsonValue> &asArray() const;
-        std::vector<JsonValue> &asArray();
+        inline bool isArray() const;
+        JsonArray getArray(const JsonArray &def = {}) const;
+        void setArray(const JsonArray &value = {});
+        inline explicit operator JsonArray() const;
+
+        void append(const JsonValue &value);
+        void resize(szt count);
         const JsonValue &operator[](szt index) const;
         JsonValue &operator[](szt index);
 
-        bool isObject() const;
-        const std::unordered_map<std::string, JsonValue> &asObject() const;
-        std::unordered_map<std::string, JsonValue> &asObject();
-        const JsonValue &operator[](const std::string &key) const;
-        JsonValue &operator[](const std::string &key);
+        const JsonArray &asArray() const;
+        JsonArray &asArray();
+
+        inline bool isObject() const;
+        JsonObject getObject(const JsonObject &def = {}) const;
+        void setObject(const JsonObject &value = {});
+        inline explicit operator JsonObject() const;
+
+        const JsonValue &operator[](const JsonString &key) const;
+        JsonValue &operator[](const JsonString &key);
+
+        const JsonObject &asObject() const;
+        JsonObject &asObject();
 
         void print(Printer &printer) const override;
         bool scan(Scanner &scanner) override;
 
-        JsonValue(f64t number);
+        JsonValue(JsonNumber number);
         JsonValue(f32t number);
         JsonValue(i64t number);
         JsonValue(i32t number);
-        JsonValue(const std::string &string);
+        JsonValue(const JsonString &string);
         JsonValue(const s8t &string);
-        JsonValue(bool boolean);
-        JsonValue(std::nullptr_t = 0);
-        JsonValue(const std::vector<JsonValue> &array);
+        JsonValue(JsonBoolean boolean);
+        JsonValue(JsonNull = 0);
+        JsonValue(const JsonArray &array);
         JsonValue(std::initializer_list<JsonValue> array);
-        JsonValue(const std::unordered_map<std::string, JsonValue> &object);
-        JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object);
+        JsonValue(const JsonObject &object);
+        JsonValue(std::initializer_list<std::pair<const JsonString, JsonValue>> object);
         virtual ~JsonValue();
 
         JsonValue(const JsonValue &other);
@@ -83,25 +108,25 @@ namespace cacto
         bool operator==(const JsonValue &other) const;
         bool operator!=(const JsonValue &other) const;
 
-        static const JsonValue NumberValue;
-        static const JsonValue StringValue;
-        static const JsonValue BooleanValue;
-        static const JsonValue NullValue;
-        static const JsonValue ArrayValue;
-        static const JsonValue ObjectValue;
+        static const JsonValue Null;
+        static const JsonString EmptyString;
+        static const JsonArray EmptyArray;
+        static const JsonObject EmptyObject;
 
     private:
         void drop();
 
-        Kind m_kind;
+        JsonType m_type;
         union
         {
-            f64t m_number;
-            std::string *m_string;
-            bool m_boolean;
-            std::vector<JsonValue> *m_array;
-            std::unordered_map<std::string, JsonValue> *m_object;
+            JsonNumber m_number;
+            JsonString *m_string;
+            JsonBoolean m_boolean;
+            JsonArray *m_array;
+            JsonObject *m_object;
         };
     };
 
 }
+
+#include <Cacto/Lang/JsonValue.inl>

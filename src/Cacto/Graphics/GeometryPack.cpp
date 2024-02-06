@@ -15,7 +15,7 @@ namespace cacto
     const std::string &GeometryPack::getId(const Geometry &value) const
     {
         for (auto &pair : m_map)
-            if (pair.second.get() == &value)
+            if (pair.second == &value)
                 return pair.first;
         return NoId;
     }
@@ -24,7 +24,7 @@ namespace cacto
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
@@ -32,7 +32,7 @@ namespace cacto
             XmlValue xml = nullptr;
             xml.fromFile(path);
             geometry = fromXml<Geometry>(xml);
-            m_map.insert({id, std::shared_ptr<Geometry>(geometry)});
+            m_map.insert({id, geometry});
             return geometry;
         }
         else
@@ -48,7 +48,15 @@ namespace cacto
     {
     }
 
-    GeometryPack::~GeometryPack() = default;
+    GeometryPack::~GeometryPack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     GeometryPack::GeometryPack(GeometryPack &&other)
         : m_path(std::move(other.m_path)),

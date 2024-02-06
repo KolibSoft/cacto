@@ -26,13 +26,22 @@ namespace cacto
     public:
         virtual sf::Transform &asTransform() = 0;
 
-        TransformChains &translate(const sf::Vector2f &offset);
-        TransformChains &scale(const sf::Vector2f &factors);
-        TransformChains &rotate(const sf::Angle &angle);
-        TransformChains &combine(const sf::Transform& transform);
+        TransformChains &translate(const sf::Vector2f &offset) &;
+        inline TransformChains &&translate(const sf::Vector2f &offset) &&;
+
+        TransformChains &scale(const sf::Vector2f &factors) &;
+        inline TransformChains &&scale(const sf::Vector2f &factors) &&;
+
+        TransformChains &rotate(const sf::Angle &angle) &;
+        inline TransformChains &&rotate(const sf::Angle &angle) &&;
+
+        TransformChains &combine(const sf::Transform &transform) &;
+        inline TransformChains &&combine(const sf::Transform &transform) &&;
 
         TransformChains() = default;
         virtual ~TransformChains() = default;
     };
 
 }
+
+#include <Cacto/Graphics/TransformChains.inl>

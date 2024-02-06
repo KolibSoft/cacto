@@ -7,158 +7,193 @@
 namespace cacto
 {
 
-    JsonValue::Kind JsonValue::getKind() const
+    JsonType JsonValue::getType() const
     {
-        return m_kind;
+        return m_type;
     }
 
-    bool JsonValue::isNumber() const
+    JsonNumber JsonValue::getNumber(JsonNumber def) const
     {
-        return m_kind == Number;
-    }
-
-    f64t JsonValue::getNumber(f64t def) const
-    {
-        if (m_kind != Number)
+        if (m_type != JsonType::Number)
             return def;
         return m_number;
     }
 
-    const f64t &JsonValue::asNumber() const
+    void JsonValue::setNumber(JsonNumber value)
     {
-        if (m_kind != Number)
-            throw std::runtime_error("Json is not an number value");
-        return m_number;
+        if (m_type == JsonType::Number)
+            m_number = value;
+        else
+        {
+            drop();
+            m_type = JsonType::Number;
+            m_number = value;
+        }
     }
 
-    f64t &JsonValue::asNumber()
+    JsonString JsonValue::getString(const JsonString &def) const
     {
-        if (m_kind != Number)
-            throw std::runtime_error("Json is not an number value");
-        return m_number;
-    }
-
-    bool JsonValue::isString() const
-    {
-        return m_kind == String;
-    }
-
-    std::string JsonValue::getString(const std::string &def) const
-    {
-        if (m_kind != String)
+        if (m_type != JsonType::String)
             return def;
         return *m_string;
     }
 
-    const std::string &JsonValue::asString() const
+    void JsonValue::setString(const JsonString &value)
     {
-        if (m_kind != String)
-            throw std::runtime_error("Json is not an string value");
+        if (m_type == JsonType::String)
+            *m_string = value;
+        else
+        {
+            drop();
+            m_type = JsonType::String;
+            m_string = new JsonString(value);
+        }
+    }
+
+    const JsonString &JsonValue::asString() const
+    {
+        if (m_type != JsonType::String)
+            return EmptyString;
         return *m_string;
     }
 
-    std::string &JsonValue::asString()
+    JsonString &JsonValue::asString()
     {
-        if (m_kind != String)
-            throw std::runtime_error("Json is not an string value");
+        if (m_type != JsonType::String)
+            throw std::runtime_error("Json is not a string value");
         return *m_string;
     }
 
-    bool JsonValue::isBoolean() const
+    JsonBoolean JsonValue::getBoolean(JsonBoolean def) const
     {
-        return m_kind == Boolean;
-    }
-
-    bool JsonValue::getBoolean(bool def) const
-    {
-        if (m_kind != Boolean)
+        if (m_type != JsonType::Boolean)
             return def;
         return m_boolean;
     }
 
-    const bool &JsonValue::asBoolean() const
+    void JsonValue::setBoolean(JsonBoolean value)
     {
-        if (m_kind != Boolean)
-            throw std::runtime_error("Json is not an boolean value");
-        return m_boolean;
+        if (m_type == JsonType::Boolean)
+            m_boolean = value;
+        else
+        {
+            drop();
+            m_type = JsonType::Boolean;
+            m_boolean = value;
+        }
     }
 
-    bool &JsonValue::asBoolean()
+    JsonArray JsonValue::getArray(const JsonArray &def) const
     {
-        if (m_kind != Boolean)
-            throw std::runtime_error("Json is not an boolean value");
-        return m_boolean;
-    }
-
-    bool JsonValue::isArray() const
-    {
-        return m_kind == Array;
-    }
-
-    const std::vector<JsonValue> &JsonValue::asArray() const
-    {
-        if (m_kind != Array)
-            throw std::runtime_error("Json is not an array value");
+        if (m_type != JsonType::Array)
+            return def;
         return *m_array;
     }
 
-    std::vector<JsonValue> &JsonValue::asArray()
+    void JsonValue::setArray(const JsonArray &value)
     {
-        if (m_kind != Array)
+        if (m_type == JsonType::Array)
+            *m_array = value;
+        else
+        {
+            drop();
+            m_type = JsonType::Array;
+            m_array = new JsonArray(value);
+        }
+    }
+
+    void JsonValue::append(const JsonValue &value)
+    {
+        if (m_type != JsonType::Array)
             throw std::runtime_error("Json is not an array value");
-        return *m_array;
+        m_array->push_back(value);
+    }
+
+    void JsonValue::resize(szt count)
+    {
+        if (m_type != JsonType::Array)
+            throw std::runtime_error("Json is not an array value");
+        m_array->resize(count);
     }
 
     const JsonValue &JsonValue::operator[](szt index) const
     {
-        if (m_kind != Array)
-            return NullValue;
+        if (m_type != JsonType::Array)
+            return Null;
         if (index >= m_array->size())
-            return NullValue;
+            return Null;
         return m_array->at(index);
     }
 
     JsonValue &JsonValue::operator[](szt index)
     {
-        if (m_kind != Array)
+        if (m_type != JsonType::Array)
             throw std::runtime_error("Json is not an array value");
         return m_array->operator[](index);
     }
 
-    bool JsonValue::isObject() const
+    const JsonArray &JsonValue::asArray() const
     {
-        return m_kind == Object;
+        if (m_type != JsonType::Array)
+            return EmptyArray;
+        return *m_array;
     }
 
-    const std::unordered_map<std::string, JsonValue> &JsonValue::asObject() const
+    JsonArray &JsonValue::asArray()
     {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
+        if (m_type != JsonType::Array)
+            throw std::runtime_error("Json is not an array value");
+        return *m_array;
+    }
+
+    JsonObject JsonValue::getObject(const JsonObject &def) const
+    {
+        if (m_type != JsonType::Object)
+            return def;
         return *m_object;
     }
 
-    std::unordered_map<std::string, JsonValue> &JsonValue::asObject()
+    void JsonValue::setObject(const JsonObject &value)
     {
-        if (m_kind != Object)
-            throw std::runtime_error("Json is not an object value");
-        return *m_object;
+        if (m_type == JsonType::Object)
+            *m_object = value;
+        else
+        {
+            drop();
+            m_type = JsonType::Object;
+            m_object = new JsonObject(value);
+        }
     }
 
-    const JsonValue &JsonValue::operator[](const std::string &key) const
+    const JsonValue &JsonValue::operator[](const JsonString &key) const
     {
-        if (m_kind != Object)
-            return NullValue;
+        if (m_type != JsonType::Object)
+            return Null;
         for (auto &pair : *m_object)
             if (pair.first == key)
                 return pair.second;
-        return NullValue;
+        return Null;
     }
 
-    JsonValue &JsonValue::operator[](const std::string &key)
+    JsonValue &JsonValue::operator[](const JsonString &key)
     {
-        if (m_kind != Object)
+        if (m_type != JsonType::Object)
             throw std::runtime_error("Json is not an object value");
         return m_object->operator[](key);
+    }
+
+    const JsonObject &JsonValue::asObject() const
+    {
+        if (m_type != JsonType::Object)
+            return EmptyObject;
+        return *m_object;
+    }
+
+    JsonObject &JsonValue::asObject()
+    {
+        if (m_type != JsonType::Object)
+            throw std::runtime_error("Json is not an object value");
+        return *m_object;
     }
 
     void JsonValue::print(Printer &printer) const
@@ -174,73 +209,75 @@ namespace cacto
         return success;
     }
 
-    JsonValue::JsonValue(f64t number)
-        : m_kind(Number),
+    JsonValue::JsonValue(JsonNumber number)
+        : m_type(JsonType::Number),
           m_number(number)
     {
     }
 
     JsonValue::JsonValue(f32t number)
-        : m_kind(Number),
-          m_number(number)
-    {
-    }
-    JsonValue::JsonValue(i64t number)
-        : m_kind(Number),
-          m_number(number)
-    {
-    }
-    JsonValue::JsonValue(i32t number)
-        : m_kind(Number),
+        : m_type(JsonType::Number),
           m_number(number)
     {
     }
 
-    JsonValue::JsonValue(const std::string &string)
-        : m_kind(String),
-          m_string(new std::string(string))
+    JsonValue::JsonValue(i64t number)
+        : m_type(JsonType::Number),
+          m_number(number)
+    {
+    }
+    
+    JsonValue::JsonValue(i32t number)
+        : m_type(JsonType::Number),
+          m_number(number)
+    {
+    }
+
+    JsonValue::JsonValue(const JsonString &string)
+        : m_type(JsonType::String),
+          m_string(new JsonString(string))
     {
     }
 
     JsonValue::JsonValue(const s8t &string)
-        : m_kind(String),
-          m_string(new std::string(string))
+        : m_type(JsonType::String),
+          m_string(new JsonString(string))
     {
     }
 
-    JsonValue::JsonValue(bool boolean)
-        : m_kind(Boolean),
+    JsonValue::JsonValue(JsonBoolean boolean)
+        : m_type(JsonType::Boolean),
           m_boolean(boolean)
     {
     }
 
-    JsonValue::JsonValue(std::nullptr_t)
-        : m_kind(Null),
+    JsonValue::JsonValue(JsonNull)
+        : m_type(JsonType::Null),
           m_number(0)
     {
     }
 
-    JsonValue::JsonValue(const std::vector<JsonValue> &array)
-        : m_kind(Array),
-          m_array(new std::vector<JsonValue>(array))
+    JsonValue::JsonValue(const JsonArray &array)
+        : m_type(JsonType::Array),
+          m_array(new JsonArray(array))
     {
     }
 
     JsonValue::JsonValue(std::initializer_list<JsonValue> array)
-        : m_kind(Array),
-          m_array(new std::vector<JsonValue>(array))
+        : m_type(JsonType::Array),
+          m_array(new JsonArray(array))
     {
     }
 
-    JsonValue::JsonValue(const std::unordered_map<std::string, JsonValue> &object)
-        : m_kind(Object),
-          m_object(new std::unordered_map<std::string, JsonValue>(object))
+    JsonValue::JsonValue(const JsonObject &object)
+        : m_type(JsonType::Object),
+          m_object(new JsonObject(object))
     {
     }
 
-    JsonValue::JsonValue(std::initializer_list<std::pair<const std::string, JsonValue>> object)
-        : m_kind(Object),
-          m_object(new std::unordered_map<std::string, JsonValue>(object))
+    JsonValue::JsonValue(std::initializer_list<std::pair<const JsonString, JsonValue>> object)
+        : m_type(JsonType::Object),
+          m_object(new JsonObject(object))
     {
     }
 
@@ -250,27 +287,27 @@ namespace cacto
     }
 
     JsonValue::JsonValue(const JsonValue &other)
-        : m_kind(other.m_kind)
+        : m_type(other.m_type)
     {
-        switch (m_kind)
+        switch (m_type)
         {
-        case Number:
+        case JsonType::Number:
             m_number = other.m_number;
             break;
-        case String:
-            m_string = new std::string(*other.m_string);
+        case JsonType::String:
+            m_string = new JsonString(*other.m_string);
             break;
-        case Boolean:
+        case JsonType::Boolean:
             m_boolean = other.m_boolean;
             break;
-        case Null:
+        case JsonType::Null:
             m_number = 0;
             break;
-        case Array:
-            m_array = new std::vector<JsonValue>(*other.m_array);
+        case JsonType::Array:
+            m_array = new JsonArray(*other.m_array);
             break;
-        case Object:
-            m_object = new std::unordered_map<std::string, JsonValue>(*other.m_object);
+        case JsonType::Object:
+            m_object = new JsonObject(*other.m_object);
             break;
         }
     }
@@ -291,49 +328,49 @@ namespace cacto
     JsonValue &JsonValue::operator=(JsonValue &&other)
     {
         drop();
-        m_kind = other.m_kind;
-        switch (m_kind)
+        m_type = other.m_type;
+        switch (m_type)
         {
-        case Number:
+        case JsonType::Number:
             m_number = other.m_number;
             break;
-        case String:
+        case JsonType::String:
             m_string = other.m_string;
             break;
-        case Boolean:
+        case JsonType::Boolean:
             m_boolean = other.m_boolean;
             break;
-        case Null:
+        case JsonType::Null:
             m_number = 0;
             break;
-        case Array:
+        case JsonType::Array:
             m_array = other.m_array;
             break;
-        case Object:
+        case JsonType::Object:
             m_object = other.m_object;
             break;
         }
-        other.m_kind = Null;
+        other.m_type = JsonType::Null;
         other.m_number = 0;
         return *this;
     }
 
     bool JsonValue::operator==(const JsonValue &other) const
     {
-        if (m_kind == other.m_kind)
-            switch (m_kind)
+        if (m_type == other.m_type)
+            switch (m_type)
             {
-            case Number:
+            case JsonType::Number:
                 return m_number == other.m_number;
-            case String:
+            case JsonType::String:
                 return *m_string == *other.m_string;
-            case Boolean:
+            case JsonType::Boolean:
                 return m_boolean == other.m_boolean;
-            case Null:
+            case JsonType::Null:
                 return true;
-            case Array:
+            case JsonType::Array:
                 return *m_array == *other.m_array;
-            case Object:
+            case JsonType::Object:
                 return *m_object == *other.m_object;
             }
         return false;
@@ -344,30 +381,28 @@ namespace cacto
         return !(*this == other);
     }
 
-    const JsonValue JsonValue::NumberValue = 0.0;
-    const JsonValue JsonValue::StringValue = std::string();
-    const JsonValue JsonValue::BooleanValue = false;
-    const JsonValue JsonValue::NullValue = nullptr;
-    const JsonValue JsonValue::ArrayValue = std::vector<JsonValue>();
-    const JsonValue JsonValue::ObjectValue = std::unordered_map<std::string, JsonValue>();
+    const JsonValue JsonValue::Null = nullptr;
+    const JsonString JsonValue::EmptyString{};
+    const JsonArray JsonValue::EmptyArray{};
+    const JsonObject JsonValue::EmptyObject{};
 
     void JsonValue::drop()
     {
-        switch (m_kind)
+        switch (m_type)
         {
-        case String:
+        case JsonType::String:
             delete m_string;
             break;
-        case Array:
+        case JsonType::Array:
             delete m_array;
             break;
-        case Object:
+        case JsonType::Object:
             delete m_object;
             break;
         default:
             break;
         }
-        m_kind = Null;
+        m_type = JsonType::Null;
         m_number = 0;
     }
 

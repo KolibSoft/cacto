@@ -22,15 +22,15 @@ namespace cacto
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            auto json = std::make_shared<JsonValue>();
+            auto json = new JsonValue();
             std::ifstream stream{path};
             stream >> *json;
             m_map.insert({id, json});
-            return json.get();
+            return json;
         }
         else
         {
@@ -45,7 +45,15 @@ namespace cacto
     {
     }
 
-    JsonPack::~JsonPack() = default;
+    JsonPack::~JsonPack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     JsonPack::JsonPack(JsonPack &&other)
         : m_path(std::move(other.m_path)),

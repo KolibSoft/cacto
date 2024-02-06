@@ -118,24 +118,24 @@ namespace cacto
 
     void JsonPrinter::printJson(const JsonValue &json)
     {
-        switch (json.getKind())
+        switch (json.getType())
         {
-        case JsonValue::Number:
-            printNumber(json.asNumber());
+        case JsonType::Number:
+            printNumber(json.getNumber());
             break;
-        case JsonValue::String:
+        case JsonType::String:
             printString(json.asString());
             break;
-        case JsonValue::Boolean:
-            printBoolean(json.asBoolean());
+        case JsonType::Boolean:
+            printBoolean(json.getBoolean());
             break;
-        case JsonValue::Null:
+        case JsonType::Null:
             printNull();
             break;
-        case JsonValue::Array:
+        case JsonType::Array:
             printArray(json.asArray());
             break;
-        case JsonValue::Object:
+        case JsonType::Object:
             printObject(json.asObject());
             break;
         }

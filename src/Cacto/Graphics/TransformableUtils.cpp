@@ -31,7 +31,7 @@ namespace cacto
         transformable.setPosition(position);
         transformable.setRotation(rotation);
         if (xml.isTag())
-            for (auto &item : xml.asContent())
+            for (auto &item : xml.asTag().content)
                 if (item.isTag())
                 {
                     if (item.getName() == "Scale")

@@ -36,7 +36,7 @@ namespace cacto
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, std::shared_ptr<sf::Texture>> m_map;
+        mutable std::unordered_map<std::string, sf::Texture *> m_map;
     };
 
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 namespace cacto
 {
 
@@ -8,10 +10,13 @@ namespace cacto
 
     public:
         template <typename T>
-        const T &ref() const;
+        const T &ref() const &;
 
         template <typename T>
-        T &ref();
+        T &ref() &;
+
+        template <typename T>
+        T &&ref() &&;
 
         template <typename T>
         const T *ptr() const;

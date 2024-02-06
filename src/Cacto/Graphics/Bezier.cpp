@@ -56,7 +56,7 @@ namespace cacto
     XmlValue toXml(const Bezier &bezier)
     {
         XmlValue xml("Bezier", {});
-        auto &content = xml.asContent();
+        auto &content = xml.asTag().content;
         for (auto &point : bezier.asPoints())
         {
             XmlValue point_xml{"Point", {}};
@@ -72,7 +72,7 @@ namespace cacto
         if (xml.isTag())
         {
             auto &points = bezier.asPoints();
-            for (auto &point_xml : xml.asContent())
+            for (auto &point_xml : xml.asTag().content)
             {
                 auto point = toVector(point_xml.getAttribute("position", "0,0"));
                 points.push_back(point);
