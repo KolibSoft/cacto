@@ -62,8 +62,8 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        Surface *copy() const override;
-        Surface *move() override;
+        Surface *clone() const override;
+        Surface *acquire() override;
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;

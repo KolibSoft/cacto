@@ -10,7 +10,7 @@ namespace cacto
         return *this;
     }
 
-    TransformableChains &TransformableChains::place(const sf::Vector2f &position) &
+    TransformableChains &TransformableChains::locate(const sf::Vector2f &position) &
     {
         asTransformable().setPosition(position);
         return *this;

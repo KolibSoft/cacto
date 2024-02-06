@@ -37,7 +37,7 @@ int main()
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
             {
-                tileMap.place(sf::Vector2f(sf::Mouse::getPosition(window)));
+                tileMap.locate(sf::Vector2f(sf::Mouse::getPosition(window)));
             }
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {

@@ -77,13 +77,13 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    Mesh *Mesh::copy() const
+    Mesh *Mesh::clone() const
     {
         auto mesh = new Mesh(*this);
         return mesh;
     }
 
-    Mesh *Mesh::move()
+    Mesh *Mesh::acquire()
     {
         auto mesh = new Mesh(std::move(*this));
         return mesh;

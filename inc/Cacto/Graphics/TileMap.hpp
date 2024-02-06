@@ -56,8 +56,8 @@ namespace cacto
         void attach(ParentNode &parent) override;
         void detach() override;
 
-        TileMap *copy() const override;
-        TileMap *move() override;
+        TileMap *clone() const override;
+        TileMap *acquire() override;
 
         TileMap();
         virtual ~TileMap();

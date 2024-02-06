@@ -145,13 +145,13 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    Surface *Surface::copy() const
+    Surface *Surface::clone() const
     {
         auto surface = new Surface(*this);
         return surface;
     }
 
-    Surface *Surface::move()
+    Surface *Surface::acquire()
     {
         auto surface = new Surface(std::move(*this));
         return surface;

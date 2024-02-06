@@ -11,9 +11,9 @@ namespace cacto
         return std::move(spawn(origin));
     }
 
-    inline TransformableChains &&TransformableChains::place(const sf::Vector2f &position) &&
+    inline TransformableChains &&TransformableChains::locate(const sf::Vector2f &position) &&
     {
-        return std::move(place(position));
+        return std::move(locate(position));
     }
 
     inline TransformableChains &&TransformableChains::resize(const sf::Vector2f &factors) &&

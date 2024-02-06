@@ -48,8 +48,8 @@ namespace cacto
         void append(ChildNode &child) override;
         void remove(ChildNode &child) override;
 
-        Skeleton *copy() const override;
-        Skeleton *move() override;
+        Skeleton *clone() const override;
+        Skeleton *acquire() override;
 
         Skeleton &append(ChildNode &child, const Options &options) &;
         inline Skeleton &&append(ChildNode &child, const Options &options) &&;

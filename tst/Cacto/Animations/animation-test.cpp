@@ -55,7 +55,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Button::Right)
-                skeleton.place(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                skeleton.locate(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::MouseWheelScrolled)
                 skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));
             else if (event.type == sf::Event::KeyPressed)

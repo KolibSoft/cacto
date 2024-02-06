@@ -112,13 +112,13 @@ namespace cacto
         }
     }
 
-    Skeleton *Skeleton::copy() const
+    Skeleton *Skeleton::clone() const
     {
         auto skeleton = new Skeleton(*this);
         return skeleton;
     }
 
-    Skeleton *Skeleton::move()
+    Skeleton *Skeleton::acquire()
     {
         auto skeleton = new Skeleton(std::move(*this));
         return skeleton;
@@ -133,7 +133,7 @@ namespace cacto
 
     Skeleton &Skeleton::append(ChildNode &&child, const Options &options) &
     {
-        auto _child = dynamic_cast<ChildNode *>(child.move());
+        auto _child = dynamic_cast<ChildNode *>(child.acquire());
         append(*_child, options);
         m_holders.back().owned = true;
         return *this;
@@ -161,7 +161,7 @@ namespace cacto
     {
         for (auto &holder : other.m_holders)
         {
-            auto node = holder.child->copy();
+            auto node = holder.child->clone();
             if (node)
             {
                 auto child = dynamic_cast<ChildNode *>(node);

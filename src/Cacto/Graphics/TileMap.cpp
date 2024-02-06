@@ -144,13 +144,13 @@ namespace cacto
         m_parent = nullptr;
     }
 
-    TileMap *TileMap::copy() const
+    TileMap *TileMap::clone() const
     {
         auto tileMap = new TileMap(*this);
         return tileMap;
     }
 
-    TileMap *TileMap::move()
+    TileMap *TileMap::acquire()
     {
         auto tileMap = new TileMap(std::move(*this));
         return tileMap;

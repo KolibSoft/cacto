@@ -29,8 +29,8 @@ namespace cacto
         TransformableChains &spawn(const sf::Vector2f &origin) &;
         inline TransformableChains &&spawn(const sf::Vector2f &origin) &&;
 
-        TransformableChains &place(const sf::Vector2f &position) &;
-        inline TransformableChains &&place(const sf::Vector2f &position) &&;
+        TransformableChains &locate(const sf::Vector2f &position) &;
+        inline TransformableChains &&locate(const sf::Vector2f &position) &&;
 
         TransformableChains &resize(const sf::Vector2f &factors) &;
         inline TransformableChains &&resize(const sf::Vector2f &factors) &&;

@@ -51,13 +51,13 @@ int main()
                     surface = cacto::toSurface(xml);
                 }
                 else if (event.key.code == sf::Keyboard::Left)
-                    surface.ref<cacto::TransformableChains>().move({-1, 0});
+                    surface.move({-1, 0});
                 else if (event.key.code == sf::Keyboard::Right)
-                    surface.ref<cacto::TransformableChains>().move({+1, 0});
+                    surface.move({+1, 0});
                 else if (event.key.code == sf::Keyboard::Up)
-                    surface.ref<cacto::TransformableChains>().move({0, -1});
+                    surface.move({0, -1});
                 else if (event.key.code == sf::Keyboard::Down)
-                    surface.ref<cacto::TransformableChains>().move({0, +1});
+                    surface.move({0, +1});
             }
         }
 
