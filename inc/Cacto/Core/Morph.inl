@@ -6,17 +6,24 @@ namespace cacto
 {
 
     template <typename T>
-    inline const T &Morph::ref() const
+    inline const T &Morph::ref() const &
     {
         auto &cast = dynamic_cast<const T &>(*this);
         return cast;
     }
 
     template <typename T>
-    inline T &Morph::ref()
+    inline T &Morph::ref() &
     {
         auto &cast = dynamic_cast<T &>(*this);
         return cast;
+    }
+
+    template <typename T>
+    inline T &&Morph::ref() &&
+    {
+        auto &cast = dynamic_cast<T &>(*this);
+        return std::move(cast);
     }
 
     template <typename T>

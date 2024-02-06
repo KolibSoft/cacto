@@ -33,7 +33,7 @@ namespace cacto
 
     private:
         std::filesystem::path m_path;
-        mutable std::unordered_map<std::string, std::shared_ptr<JsonValue>> m_map;
+        mutable std::unordered_map<std::string, JsonValue *> m_map;
     };
 
 }

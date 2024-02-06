@@ -21,5 +21,7 @@ int main()
     instance->ptr<SubMorphClass>()->subValue = 32;
     auto result = instance->ref<SubMorphClass>().subValue;
 
+    auto rinstance = SubMorphClass().ref<MorphClass>().ref<SubMorphClass>();
+
     return 0;
 }
