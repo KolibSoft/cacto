@@ -3,7 +3,6 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Core/ChildNode.hpp>
-#include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/UI/Inflatable.hpp>
 #include <Cacto/UI/Box.hpp>
 
@@ -19,43 +18,52 @@ namespace cacto
 
     class CACTO_UI_API Surface
         : public virtual sf::Drawable,
-          public virtual TransformableChains,
           public virtual Inflatable,
           public virtual ChildNode
     {
 
     public:
         const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable() override;
+        sf::Transformable &asTransformable();
+
+        const sf::Vector2f &getOrigin() const;
+        Surface &&setOrigin(const sf::Vector2f &value);
+
+        const sf::Vector2f &getPosition() const;
+        Surface &&setPosition(const sf::Vector2f &value);
+
+        const sf::Vector2f &getScale() const;
+        Surface &&setScale(const sf::Vector2f &value);
+
+        sf::Angle getRotation() const;
+        Surface &&setRotation(sf::Angle value);
+
+        Surface &&move(const sf::Vector2f &offset);
+        Surface &&scale(const sf::Vector2f &factors);
+        Surface &&rotate(const sf::Angle &angle);
 
         const Box &asBox() const;
         Box &asBox();
 
         const Geometry *const getGeometry() const;
-        Surface &setGeometry(const Geometry *const value) &;
-        inline Surface &&setGeometry(const Geometry *const value) &&;
+        Surface &&setGeometry(const Geometry *const value);
 
         szt getPrecision() const;
-        Surface &setPrecision(szt value) &;
-        inline Surface &&setPrecision(szt value) &&;
+        Surface &&setPrecision(szt value);
 
         const sf::Color &getColor() const;
-        Surface &setColor(const sf::Color &value) &;
-        inline Surface &&setColor(const sf::Color &value) &&;
+        Surface &&setColor(const sf::Color &value);
 
         const sf::Texture *const getTexture() const;
-        Surface &setTexture(const sf::Texture *const value, bool resetRect = true) &;
-        inline Surface &&setTexture(const sf::Texture *const value, bool resetRect = true) &&;
+        Surface &&setTexture(const sf::Texture *const value, bool resetRect = true);
 
         const sf::FloatRect &getTextureRect() const;
-        Surface &setTextureRect(const sf::FloatRect &value) &;
-        inline Surface &&setTextureRect(const sf::FloatRect &value) &&;
+        Surface &&setTextureRect(const sf::FloatRect &value);
 
         const sf::Transform &getVisualTransform() const;
 
         const std::string &getId() const override;
-        Surface &setId(const std::string &value) &;
-        inline Surface &&setId(const std::string &value) &&;
+        Surface &&setId(const std::string &value);
 
         Node *const getParent() const override;
 
@@ -122,5 +130,3 @@ namespace cacto
     }
 
 }
-
-#include <Cacto/UI/Surface.inl>
