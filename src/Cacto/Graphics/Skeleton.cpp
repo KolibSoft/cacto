@@ -390,8 +390,7 @@ namespace cacto
                                             .setCoords(coords)
                                             .setRelation(relation));
                     }
-                    else
-                        delete node;
+                    delete node;
                 }
             }
         return std::move(skeleton);
