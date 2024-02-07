@@ -17,23 +17,23 @@ namespace cacto
     class Geometry;
 
     class CACTO_UI_API Surface
-        : public sf::Transformable,
+        : public Box,
           public virtual sf::Drawable,
           public virtual Inflatable,
           public virtual ChildNode
     {
 
     public:
-        Surface &&setOrigin(const sf::Vector2f &value);
-        Surface &&setPosition(const sf::Vector2f &value);
-        Surface &&setScale(const sf::Vector2f &value);
-        Surface &&setRotation(sf::Angle value);
+        Surface &&setLeft(f32t value, bool resize = false);
+        Surface &&setRight(f32t value, bool resize = false);
+        Surface &&setTop(f32t value, bool resize = false);
+        Surface &&setBottom(f32t value, bool resize = false);
 
-        Surface &&move(const sf::Vector2f &offset);
-        Surface &&scale(const sf::Vector2f &factors);
-        Surface &&rotate(const sf::Angle &angle);
+        Surface &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Surface &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
 
-        operator const Box &() const;
+        Surface &&shrink(const Thickness &thickness);
+        Surface &&expand(const Thickness &thickness);
 
         const Geometry *const getGeometry() const;
         Surface &&setGeometry(const Geometry *const value);
@@ -82,7 +82,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        Box m_box;
         const Geometry *m_geometry;
         szt m_precision;
         sf::Color m_color;

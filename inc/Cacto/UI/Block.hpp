@@ -1,7 +1,8 @@
 #pragma once
 
+#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/Node.hpp>
+#include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Window/Handler.hpp>
 #include <Cacto/UI/Thickness.hpp>
 #include <Cacto/UI/Inflatable.hpp>
@@ -24,9 +25,6 @@ namespace cacto
     {
 
     public:
-        const std::string &getId() const override;
-        Block &setId(const std::string &value);
-
         Node *const getBackground() const;
         Block &setBackground(Node *const value);
 
@@ -56,7 +54,10 @@ namespace cacto
 
         const sf::Transform &getVisualTransform() const;
 
-        ParentNode *const getParent() const override;
+        const std::string &getId() const override;
+        Block &setId(const std::string &value);
+
+        Node *const getParent() const override;
 
         bool containsVisualPoint(const sf::Vector2f &point) const;
 

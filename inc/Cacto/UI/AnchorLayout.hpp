@@ -23,15 +23,15 @@ namespace cacto
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
-        Anchor getHorizontalAnchor(const Node &child) const;
-        Anchor getHorizontalAnchor(Node &&child) const = delete;
+        BoxAnchor getHorizontalAnchor(const Node &child) const;
+        BoxAnchor getHorizontalAnchor(Node &&child) const = delete;
 
-        AnchorLayout &setHorizontalAnchor(Node &child, Anchor value);
+        AnchorLayout &setHorizontalAnchor(Node &child, BoxAnchor value);
 
-        Anchor getVerticalAnchor(const Node &child) const;
-        Anchor getVerticalAnchor(Node &&child) const = delete;
+        BoxAnchor getVerticalAnchor(const Node &child) const;
+        BoxAnchor getVerticalAnchor(Node &&child) const = delete;
 
-        AnchorLayout &setVerticalAnchor(Node &child, Anchor value);
+        AnchorLayout &setVerticalAnchor(Node &child, BoxAnchor value);
 
         f32t getHorizontalWeight(const Node &child) const;
         f32t getHorizontalWeight(Node &&child) const = delete;

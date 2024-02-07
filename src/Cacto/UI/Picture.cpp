@@ -28,23 +28,23 @@ namespace cacto
         return *this;
     }
 
-    Picture::Anchor Picture::getHorizontalAnchor() const
+    Picture::BoxAnchor Picture::getHorizontalAnchor() const
     {
         return m_hAnchor;
     }
 
-    Picture &Picture::setHorizontalAnchor(Anchor value)
+    Picture &Picture::setHorizontalAnchor(BoxAnchor value)
     {
         m_hAnchor = value;
         return *this;
     }
 
-    Picture::Anchor Picture::getVerticalAnchor() const
+    Picture::BoxAnchor Picture::getVerticalAnchor() const
     {
         return m_vAnchor;
     }
 
-    Picture &Picture::setVerticalAnchor(Anchor value)
+    Picture &Picture::setVerticalAnchor(BoxAnchor value)
     {
         m_vAnchor = value;
         return *this;
@@ -141,8 +141,8 @@ namespace cacto
     {
         cacto::fromXml((Block &)picture, xml);
         cacto::fromXml(picture.asSurface(), xml);
-        Box::Anchor hAnchor{};
-        Box::Anchor vAnchor{};
+        Box::BoxAnchor hAnchor{};
+        Box::BoxAnchor vAnchor{};
         cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
         cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
     }

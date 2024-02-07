@@ -10,51 +10,52 @@
 namespace cacto
 {
 
-    Span &&Span::setOrigin(const sf::Vector2f &value)
+    Span &&Span::setLeft(f32t value, bool resize)
     {
-        sf::Transformable::setOrigin(value);
+        Box::setLeft(value, resize);
         return std::move(*this);
     }
 
-    Span &&Span::setPosition(const sf::Vector2f &value)
+    Span &&Span::setRight(f32t value, bool resize)
     {
-        sf::Transformable::setPosition(value);
+        Box::setRight(value, resize);
         return std::move(*this);
     }
 
-    Span &&Span::setScale(const sf::Vector2f &value)
+    Span &&Span::setTop(f32t value, bool resize)
     {
-        sf::Transformable::setScale(value);
+        Box::setTop(value, resize);
         return std::move(*this);
     }
 
-    Span &&Span::setRotation(sf::Angle value)
+    Span &&Span::setBottom(f32t value, bool resize)
     {
-        sf::Transformable::setRotation(value);
+        Box::setBottom(value, resize);
         return std::move(*this);
     }
 
-    Span &&Span::move(const sf::Vector2f &offset)
+    Span &&Span::setWidth(f32t value, BoxAnchor anchor)
     {
-        sf::Transformable::move(offset);
+        Box::setWidth(value, anchor);
         return std::move(*this);
     }
 
-    Span &&Span::scale(const sf::Vector2f &factors)
+    Span &&Span::setHeight(f32t value, BoxAnchor anchor)
     {
-        sf::Transformable::scale(factors);
+        Box::setHeight(value, anchor);
         return std::move(*this);
     }
 
-    Span &&Span::rotate(const sf::Angle &angle)
+    Span &&Span::shrink(const Thickness &thickness)
     {
-        sf::Transformable::rotate(angle);
+        Box::shrink(thickness);
         return std::move(*this);
     }
 
-    Span::operator const Box &() const
+    Span &&Span::expand(const Thickness &thickness)
     {
-        return m_box;
+        Box::expand(thickness);
+        return std::move(*this);
     }
 
     const sf::Font *const Span::getFont() const
@@ -173,8 +174,8 @@ namespace cacto
     sf::Vector2f Span::compact()
     {
         auto bounds = m_array.getBounds();
-        m_box.setWidth(bounds.width);
-        m_box.setHeight(bounds.height);
+        setWidth(bounds.width);
+        setHeight(bounds.height);
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
@@ -182,8 +183,8 @@ namespace cacto
     sf::Vector2f Span::inflate(const sf::Vector2f &containerSize)
     {
         auto bounds = m_array.getBounds();
-        m_box.setWidth(bounds.width);
-        m_box.setHeight(bounds.height);
+        setWidth(bounds.width);
+        setHeight(bounds.height);
         sf::Vector2f size{bounds.width, bounds.height};
         return size;
     }
@@ -191,19 +192,18 @@ namespace cacto
     void Span::place(const sf::Vector2f &position)
     {
         auto bounds = m_array.getBounds();
-        m_box.setLeft(position.x - bounds.left);
-        m_box.setTop(position.y - bounds.top);
+        setLeft(position.x - bounds.left);
+        setTop(position.y - bounds.top);
     }
 
     bool Span::containsVisualPoint(const sf::Vector2f &point) const
     {
-        auto result = m_box.containsPoint(m_vTransform.getInverse().transformPoint(point));
+        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
         return result;
     }
 
     Span::Span()
-        : sf::Transformable(),
-          m_box(),
+        : Box(),
           m_font(),
           m_string(),
           m_direction(TextDirection::ToRight),
@@ -230,8 +230,7 @@ namespace cacto
 
     Span &Span::operator=(const Span &other)
     {
-        sf::Transformable::operator=(other);
-        m_box = other.m_box;
+        Box::operator=(other);
         m_font = other.m_font;
         m_string = other.m_string;
         m_direction = other.m_direction;
@@ -252,8 +251,7 @@ namespace cacto
 
     Span &Span::operator=(Span &&other)
     {
-        sf::Transformable::operator=(std::move(other));
-        m_box = std::move(other.m_box);
+        Box::operator=(std::move(other));
         m_font = other.m_font;
         m_string = std::move(other.m_string);
         m_direction = other.m_direction;
@@ -281,7 +279,7 @@ namespace cacto
                 m_invalid = false;
             }
             auto _states = states;
-            _states.transform.translate({m_box.getLeft(), m_box.getTop()});
+            _states.transform.translate({getLeft(), getTop()});
             _states.texture = &m_font->getTexture(m_characterSize);
             target.draw(m_array, _states);
             m_vTransform = _states.transform;

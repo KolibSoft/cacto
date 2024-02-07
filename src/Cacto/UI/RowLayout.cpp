@@ -18,7 +18,7 @@ namespace cacto
         return &holder.getNode();
     }
 
-    RowLayout::Anchor RowLayout::getVerticalAnchor(const Node &child) const
+    RowLayout::BoxAnchor RowLayout::getVerticalAnchor(const Node &child) const
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -27,7 +27,7 @@ namespace cacto
         return holder.getVerticalAnchor();
     }
 
-    RowLayout &RowLayout::setVerticalAnchor(Node &child, Anchor value)
+    RowLayout &RowLayout::setVerticalAnchor(Node &child, BoxAnchor value)
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -37,12 +37,12 @@ namespace cacto
         return *this;
     }
 
-    RowLayout::Anchor RowLayout::getHorizontalAnchor() const
+    RowLayout::BoxAnchor RowLayout::getHorizontalAnchor() const
     {
         return m_hAnchor;
     }
 
-    RowLayout &RowLayout::setHorizontalAnchor(Anchor value)
+    RowLayout &RowLayout::setHorizontalAnchor(BoxAnchor value)
     {
         m_hAnchor = value;
         return *this;
@@ -242,12 +242,12 @@ namespace cacto
     namespace row_layout
     {
 
-        RowLayout::Anchor Holder::getVerticalAnchor() const
+        RowLayout::BoxAnchor Holder::getVerticalAnchor() const
         {
             return m_vAnchor;
         }
 
-        Holder &Holder::setVerticalAnchor(RowLayout::Anchor value)
+        Holder &Holder::setVerticalAnchor(RowLayout::BoxAnchor value)
         {
             m_vAnchor = value;
             return *this;

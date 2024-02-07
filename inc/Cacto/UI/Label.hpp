@@ -11,7 +11,7 @@ namespace cacto
     {
 
     public:
-        using Anchor = Box::Anchor;
+        using Anchor = Box::BoxAnchor;
 
         Anchor getHorizontalAnchor() const;
         Label &setHorizontalAnchor(Anchor value);

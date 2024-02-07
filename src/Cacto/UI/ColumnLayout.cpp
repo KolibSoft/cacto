@@ -18,7 +18,7 @@ namespace cacto
         return &holder.getNode();
     }
 
-    ColumnLayout::Anchor ColumnLayout::getHorizontalAnchor(const Node &child) const
+    ColumnLayout::BoxAnchor ColumnLayout::getHorizontalAnchor(const Node &child) const
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -27,7 +27,7 @@ namespace cacto
         return holder.getHorizontalAnchor();
     }
 
-    ColumnLayout &ColumnLayout::setHorizontalAnchor(Node &child, Anchor value)
+    ColumnLayout &ColumnLayout::setHorizontalAnchor(Node &child, BoxAnchor value)
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -37,12 +37,12 @@ namespace cacto
         return *this;
     }
 
-    ColumnLayout::Anchor ColumnLayout::getVerticalAnchor() const
+    ColumnLayout::BoxAnchor ColumnLayout::getVerticalAnchor() const
     {
         return m_vAnchor;
     }
 
-    ColumnLayout &ColumnLayout::setVerticalAnchor(Anchor value)
+    ColumnLayout &ColumnLayout::setVerticalAnchor(BoxAnchor value)
     {
         m_vAnchor = value;
         return *this;

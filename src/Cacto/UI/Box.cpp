@@ -66,16 +66,16 @@ namespace cacto
         return m_rect.width;
     }
 
-    void Box::setWidth(f32t value, Anchor anchor)
+    void Box::setWidth(f32t value, BoxAnchor anchor)
     {
         switch (anchor)
         {
-        case Start:
+        case BoxAnchor::Start:
             break;
-        case End:
+        case BoxAnchor::End:
             m_rect.left -= value - m_rect.width;
             break;
-        case Center:
+        case BoxAnchor::Center:
             m_rect.left -= (value - m_rect.width) / 2;
             break;
         }
@@ -87,16 +87,16 @@ namespace cacto
         return m_rect.height;
     }
 
-    void Box::setHeight(f32t value, Anchor anchor)
+    void Box::setHeight(f32t value, BoxAnchor anchor)
     {
         switch (anchor)
         {
-        case Start:
+        case BoxAnchor::Start:
             break;
-        case End:
+        case BoxAnchor::End:
             m_rect.top -= value - m_rect.height;
             break;
-        case Center:
+        case BoxAnchor::Center:
             m_rect.top -= (value - m_rect.height) / 2;
             break;
         }
@@ -139,26 +139,26 @@ namespace cacto
     {
     }
 
-    std::string toString(Box::Anchor anchor)
+    std::string toString(BoxAnchor anchor)
     {
-        if (anchor == Box::Start)
+        if (anchor == BoxAnchor::Start)
             return "Start";
-        else if (anchor == Box::End)
+        else if (anchor == BoxAnchor::End)
             return "End";
-        else if (anchor == Box::Center)
+        else if (anchor == BoxAnchor::Center)
             return "Center";
         else
             throw std::runtime_error("Invalid anchor value");
     }
 
-    Box::Anchor CACTO_UI_API toBoxAnchor(const std::string &string)
+    BoxAnchor CACTO_UI_API toBoxAnchor(const std::string &string)
     {
         if (string == "Start")
-            return Box::Start;
+            return BoxAnchor::Start;
         else if (string == "End")
-            return Box::End;
+            return BoxAnchor::End;
         else if (string == "Center")
-            return Box::Center;
+            return BoxAnchor::Center;
         else
             throw std::runtime_error("Invalid anchor value");
     }

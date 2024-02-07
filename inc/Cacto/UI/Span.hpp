@@ -17,23 +17,23 @@ namespace cacto
 {
 
     class CACTO_UI_API Span
-        : public sf::Transformable,
+        : public Box,
           public virtual sf::Drawable,
           public virtual Inflatable,
           public virtual ChildNode
     {
 
     public:
-        Span &&setOrigin(const sf::Vector2f &value);
-        Span &&setPosition(const sf::Vector2f &value);
-        Span &&setScale(const sf::Vector2f &value);
-        Span &&setRotation(sf::Angle value);
+        Span &&setLeft(f32t value, bool resize = false);
+        Span &&setRight(f32t value, bool resize = false);
+        Span &&setTop(f32t value, bool resize = false);
+        Span &&setBottom(f32t value, bool resize = false);
 
-        Span &&move(const sf::Vector2f &offset);
-        Span &&scale(const sf::Vector2f &factors);
-        Span &&rotate(const sf::Angle &angle);
+        Span &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Span &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
 
-        operator const Box &() const;
+        Span &&shrink(const Thickness &thickness);
+        Span &&expand(const Thickness &thickness);
 
         const sf::Font *const getFont() const;
         Span &&setFont(const sf::Font *const value);
@@ -81,7 +81,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        Box m_box;
         const sf::Font *m_font;
         sf::String m_string;
         TextDirection m_direction;

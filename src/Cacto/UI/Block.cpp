@@ -1,6 +1,7 @@
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <Cacto/Core/ParentNode.hpp>
 #include <Cacto/Core/XmlPack.hpp>
 #include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Window/NodeUtils.hpp>
@@ -9,17 +10,6 @@
 
 namespace cacto
 {
-
-    const std::string &Block::getId() const
-    {
-        return m_id;
-    }
-
-    Block &Block::setId(const std::string &value)
-    {
-        m_id = value;
-        return *this;
-    }
 
     Node *const Block::getBackground() const
     {
@@ -138,7 +128,19 @@ namespace cacto
         return m_vTransform;
     }
 
-    ParentNode *const Block::getParent() const
+
+    const std::string &Block::getId() const
+    {
+        return m_id;
+    }
+
+    Block &Block::setId(const std::string &value)
+    {
+        m_id = value;
+        return *this;
+    }
+
+    Node *const Block::getParent() const
     {
         return m_parent;
     }
