@@ -21,7 +21,11 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::TileMap tileMap{};
+    auto tileMap = cacto::TileMap()
+                       .setTexture(cacto::getResource<sf::Texture>("res/tiles.png"))
+                       .setArea({{0, 0}, {10, 10}})
+                       .setTileSize({32, 32})
+                       .setTiles(*cacto::getResource<sf::FloatRect>("Pilar"), {{0, 0}, {10, 10}});
     cacto::XmlValue xml = nullptr;
 
     xml.fromFile("res/tilemap.xml");
@@ -37,7 +41,7 @@ int main()
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
             {
-                tileMap.locate(sf::Vector2f(sf::Mouse::getPosition(window)));
+                tileMap.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
             }
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {

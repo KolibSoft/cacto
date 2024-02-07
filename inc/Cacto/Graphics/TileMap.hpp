@@ -5,7 +5,6 @@
 #include <SFML/Graphics/VertexArray.hpp>
 #include <Cacto/Lang/XmlConverter.hpp>
 #include <Cacto/Core/ChildNode.hpp>
-#include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace sf
@@ -17,39 +16,38 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API TileMap
-        : public virtual sf::Drawable,
-          public virtual TransformableChains,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ChildNode
     {
 
     public:
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable() override;
+        TileMap &&setOrigin(const sf::Vector2f &value);
+        TileMap &&setPosition(const sf::Vector2f &value);
+        TileMap &&setScale(const sf::Vector2f &value);
+        TileMap &&setRotation(sf::Angle value);
 
-        const std::string &getId() const override;
-        TileMap &setId(const std::string &value) &;
-        inline TileMap &&setId(const std::string &value) &&;
+        TileMap &&move(const sf::Vector2f &offset);
+        TileMap &&scale(const sf::Vector2f &factors);
+        TileMap &&rotate(const sf::Angle &angle);
 
         const sf::Texture *const getTexture() const;
-        TileMap &setTexture(const sf::Texture *const value) &;
-        inline TileMap &&setTexture(const sf::Texture *const value) &&;
+        TileMap &&setTexture(const sf::Texture *const value);
 
         const sf::Vector2f &getTileSize() const;
-        TileMap &setTileSize(const sf::Vector2f &value) &;
-        inline TileMap &&setTileSize(const sf::Vector2f &value) &&;
+        TileMap &&setTileSize(const sf::Vector2f &value);
 
         const sf::IntRect &getArea() const;
-        TileMap &setArea(const sf::IntRect &value) &;
-        inline TileMap &&setArea(const sf::IntRect &value) &&;
+        TileMap &&setArea(const sf::IntRect &value);
 
         const sf::FloatRect &getTile(const sf::Vector2i &position) const;
-        TileMap &setTile(const sf::FloatRect &tile, const sf::Vector2i &position) &;
-        inline TileMap &&setTile(const sf::FloatRect &tile, const sf::Vector2i &position) &&;
+        TileMap &&setTile(const sf::FloatRect &tile, const sf::Vector2i &position);
 
-        TileMap &setTiles(const sf::FloatRect &tile, const sf::IntRect &area) &;
-        inline TileMap &&setTiles(const sf::FloatRect &tile, const sf::IntRect &area) &&;
-        TileMap &fill(const sf::FloatRect &tile) &;
-        inline TileMap &&fill(const sf::FloatRect &tile) &&;
+        TileMap &&setTiles(const sf::FloatRect &tile, const sf::IntRect &area);
+        TileMap &&fill(const sf::FloatRect &tile);
+
+        const std::string &getId() const override;
+        TileMap &&setId(const std::string &value);
 
         Node *const getParent() const override;
 
@@ -74,7 +72,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        sf::Transformable m_transformable;
         const sf::Texture *m_texture;
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;
@@ -109,5 +106,3 @@ namespace cacto
     }
 
 }
-
-#include <Cacto/Graphics/TileMap.inl>

@@ -24,11 +24,11 @@ namespace cacto
         const sf::FloatRect &getTextureRect() const;
         Picture &setTextureRect(const sf::FloatRect &value);
 
-        Anchor getHorizontalAnchor() const;
-        Picture &setHorizontalAnchor(Anchor value);
+        BoxAnchor getHorizontalAnchor() const;
+        Picture &setHorizontalAnchor(BoxAnchor value);
 
-        Anchor getVerticalAnchor() const;
-        Picture &setVerticalAnchor(Anchor value);
+        BoxAnchor getVerticalAnchor() const;
+        Picture &setVerticalAnchor(BoxAnchor value);
 
         const Surface &asSurface() const;
         Surface &asSurface();
@@ -47,8 +47,8 @@ namespace cacto
         Surface m_surface;
         Scale m_scale;
         sf::FloatRect m_textureRect;
-        Anchor m_hAnchor;
-        Anchor m_vAnchor;
+        BoxAnchor m_hAnchor;
+        BoxAnchor m_vAnchor;
     };
 
     XmlValue CACTO_UI_API toXml(const Picture &picture);

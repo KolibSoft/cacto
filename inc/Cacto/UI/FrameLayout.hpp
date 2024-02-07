@@ -11,11 +11,11 @@ namespace cacto
     {
 
     public:
-        Anchor getHorizontalAnchor() const;
-        FrameLayout &setHorizontalAnchor(Anchor value);
+        BoxAnchor getHorizontalAnchor() const;
+        FrameLayout &setHorizontalAnchor(BoxAnchor value);
 
-        Anchor getVerticalAnchor() const;
-        FrameLayout &setVerticalAnchor(Anchor value);
+        BoxAnchor getVerticalAnchor() const;
+        FrameLayout &setVerticalAnchor(BoxAnchor value);
 
         ParentNode *const getParent() const override;
 
@@ -38,8 +38,8 @@ namespace cacto
         const Box &getChildBox() const;
 
     private:
-        Anchor m_hAnchor;
-        Anchor m_vAnchor;
+        BoxAnchor m_hAnchor;
+        BoxAnchor m_vAnchor;
         Box m_childBox;
         ChildNode *m_child;
     };

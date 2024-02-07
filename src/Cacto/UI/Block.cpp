@@ -1,6 +1,7 @@
 #include <cmath>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <Cacto/Core/ParentNode.hpp>
 #include <Cacto/Core/XmlPack.hpp>
 #include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Window/NodeUtils.hpp>
@@ -10,15 +11,52 @@
 namespace cacto
 {
 
-    const std::string &Block::getId() const
+    Block &&Block::setLeft(f32t value, bool resize)
     {
-        return m_id;
+        Box::setLeft(value, resize);
+        return std::move(*this);
     }
 
-    Block &Block::setId(const std::string &value)
+    Block &&Block::setRight(f32t value, bool resize)
     {
-        m_id = value;
-        return *this;
+        Box::setRight(value, resize);
+        return std::move(*this);
+    }
+
+    Block &&Block::setTop(f32t value, bool resize)
+    {
+        Box::setTop(value, resize);
+        return std::move(*this);
+    }
+
+    Block &&Block::setBottom(f32t value, bool resize)
+    {
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    Block &&Block::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    Block &&Block::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    Block &&Block::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    Block &&Block::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
     }
 
     Node *const Block::getBackground() const
@@ -26,7 +64,7 @@ namespace cacto
         return m_background;
     }
 
-    Block &Block::setBackground(Node *const value)
+    Block &&Block::setBackground(Node *const value)
     {
         Node *current = this;
         while (current)
@@ -36,7 +74,7 @@ namespace cacto
             current = current->getParent();
         }
         m_background = value;
-        return *this;
+        return std::move(*this);
     }
 
     const Thickness &Block::getMargin() const
@@ -44,10 +82,10 @@ namespace cacto
         return m_margin;
     }
 
-    Block &Block::setMargin(const Thickness &value)
+    Block &&Block::setMargin(const Thickness &value)
     {
         m_margin = value;
-        return *this;
+        return std::move(*this);
     }
 
     const Thickness &Block::getPadding() const
@@ -55,10 +93,10 @@ namespace cacto
         return m_padding;
     }
 
-    Block &Block::setPadding(const Thickness &value)
+    Block &&Block::setPadding(const Thickness &value)
     {
         m_padding = value;
-        return *this;
+        return std::move(*this);
     }
 
     f32t Block::getMinWidth() const
@@ -66,10 +104,10 @@ namespace cacto
         return m_minWidth;
     }
 
-    Block &Block::setMinWidth(f32t value)
+    Block &&Block::setMinWidth(f32t value)
     {
         m_minWidth = value;
-        return *this;
+        return std::move(*this);
     }
 
     f32t Block::getMaxWidth() const
@@ -77,10 +115,10 @@ namespace cacto
         return m_maxWidth;
     }
 
-    Block &Block::setMaxWidth(f32t value)
+    Block &&Block::setMaxWidth(f32t value)
     {
         m_maxWidth = value;
-        return *this;
+        return std::move(*this);
     }
 
     f32t Block::getMinHeight() const
@@ -88,10 +126,10 @@ namespace cacto
         return m_minHeight;
     }
 
-    Block &Block::setMinHeight(f32t value)
+    Block &&Block::setMinHeight(f32t value)
     {
         m_minHeight = value;
-        return *this;
+        return std::move(*this);
     }
 
     f32t Block::getMaxHeight() const
@@ -99,24 +137,24 @@ namespace cacto
         return m_maxHeight;
     }
 
-    Block &Block::setMaxHeight(f32t value)
+    Block &&Block::setMaxHeight(f32t value)
     {
         m_maxHeight = value;
-        return *this;
+        return std::move(*this);
     }
 
-    Block &Block::setFixedWidth(f32t value)
+    Block &&Block::setFixedWidth(f32t value)
     {
         m_minWidth = value;
         m_maxWidth = value;
-        return *this;
+        return std::move(*this);
     }
 
-    Block &Block::setFixedHeight(f32t value)
+    Block &&Block::setFixedHeight(f32t value)
     {
         m_minHeight = value;
         m_maxHeight = value;
-        return *this;
+        return std::move(*this);
     }
 
     Box Block::getContainerBox() const
@@ -138,7 +176,18 @@ namespace cacto
         return m_vTransform;
     }
 
-    ParentNode *const Block::getParent() const
+    const std::string &Block::getId() const
+    {
+        return m_id;
+    }
+
+    Block &&Block::setId(const std::string &value)
+    {
+        m_id = value;
+        return std::move(*this);
+    }
+
+    Node *const Block::getParent() const
     {
         return m_parent;
     }
@@ -161,6 +210,18 @@ namespace cacto
             return;
         m_parent->remove(*this);
         m_parent = nullptr;
+    }
+
+    Block *Block::clone() const
+    {
+        auto block = new Block(*this);
+        return block;
+    }
+
+    Block *Block::acquire()
+    {
+        auto block = new Block(std::move(*this));
+        return block;
     }
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
@@ -256,12 +317,14 @@ namespace cacto
 
     Block::Block()
         : Box(),
-          m_id(),
           m_background(nullptr),
           m_margin(0),
           m_padding(0),
-          m_minWidth(0), m_maxWidth(std::numeric_limits<f32t>::infinity()),
-          m_minHeight(0), m_maxHeight(std::numeric_limits<f32t>::infinity()),
+          m_minWidth(0),
+          m_maxWidth(std::numeric_limits<f32t>::infinity()),
+          m_minHeight(0),
+          m_maxHeight(std::numeric_limits<f32t>::infinity()),
+          m_id(),
           m_parent(),
           m_vTransform(sf::Transform::Identity)
     {
@@ -272,25 +335,57 @@ namespace cacto
         detach();
     }
 
+    Block::Block(const Block &other)
+        : Block()
+    {
+        *this = other;
+    }
+
+    Block &Block::operator=(const Block &other)
+    {
+        Box::operator=(other);
+        m_background = other.m_background->clone();
+        m_margin = other.m_margin;
+        m_padding = other.m_padding;
+        m_minWidth = other.m_minWidth;
+        m_maxWidth = other.m_maxWidth;
+        m_minHeight = other.m_minHeight;
+        m_maxHeight = other.m_maxHeight;
+        m_id = other.m_id;
+        m_vTransform = other.m_vTransform;
+        return *this;
+    }
+
+    Block::Block(Block &&other)
+        : Block()
+    {
+        *this = std::move(other);
+    }
+
+    Block &Block::operator=(Block &&other)
+    {
+        Box::operator=(std::move(other));
+        m_background = other.m_background;
+        m_margin = std::move(other.m_margin);
+        m_padding = std::move(other.m_padding);
+        m_minWidth = other.m_minWidth;
+        m_maxWidth = other.m_maxWidth;
+        m_minHeight = other.m_minHeight;
+        m_maxHeight = other.m_maxHeight;
+        m_id = std::move(other.m_id);
+        m_vTransform = std::move(other.m_vTransform);
+        other.m_background = nullptr;
+        other.m_minWidth = 0;
+        other.m_maxWidth = 0;
+        other.m_minHeight = 0;
+        other.m_maxHeight = 0;
+        other.detach();
+        return *this;
+    }
+
     XmlValue toXml(const Block &block)
     {
         XmlValue xml{"Block", {}};
-        auto background = block.getBackground();
-        if (background)
-        {
-            XmlValue content{"Background", {}};
-            auto background_xml = toXml(background);
-            auto id = getId(background_xml);
-            if (id != "")
-            {
-                xml["background"] = id;
-            }
-            else
-            {
-                content.asContent().push_back(background_xml);
-                xml.asContent().push_back(std::move(content));
-            }
-        }
         xml["id"] = block.getId();
         xml["margin"] = toString(block.getMargin());
         xml["padding"] = toString(block.getPadding());
@@ -301,38 +396,17 @@ namespace cacto
         return std::move(xml);
     }
 
-    void fromXml(Block &block, const XmlValue &xml)
+    Block CACTO_UI_API toBlock(const XmlValue &xml)
     {
+        Block block{};
         block.setBackground(nullptr);
         auto id = xml.getAttribute("id");
-        auto background = getXml(xml.getAttribute("background"));
-        if (background)
-        {
-            Node *node = nullptr;
-            fromXml(node, *background);
-            ChildNode *child = dynamic_cast<ChildNode *>(node);
-            if (child)
-                block.setBackground(child);
-        }
-        if (xml.isTag())
-            for (auto &item : xml.asContent())
-                if (item.isTag() && item.getName() == "Background")
-                    for (auto &background_xml : item.asContent())
-                    {
-                        Node *node = nullptr;
-                        fromXml(node, background_xml);
-                        ChildNode *child = dynamic_cast<ChildNode *>(node);
-                        if (child)
-                            block.setBackground(child);
-                    }
-        Thickness margin{};
-        Thickness padding{};
+        auto margin = toTickness(xml.getAttribute("margin", "0,0,0,0"));
+        auto padding = toTickness(xml.getAttribute("padding", "0,0,0,0"));
         auto minWidth = std::stof(xml.getAttribute("minWidth", "0"));
         auto maxWidth = std::stof(xml.getAttribute("maxWidth", "inf"));
         auto minHeight = std::stof(xml.getAttribute("minHeight", "0"));
         auto maxHeight = std::stof(xml.getAttribute("maxHeight", "inf"));
-        fromString(margin, xml.getAttribute("margin", "0,0,0,0"));
-        fromString(padding, xml.getAttribute("padding", "0,0,0,0"));
         block
             .setId(id)
             .setMargin(margin)
@@ -341,6 +415,7 @@ namespace cacto
             .setMaxWidth(maxWidth)
             .setMinHeight(minHeight)
             .setMaxHeight(maxHeight);
+        return std::move(block);
     }
 
     namespace block
@@ -361,10 +436,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Block")
             {
-                auto block = std::make_shared<Block>();
-                cacto::fromXml(*block, xml);
-                Node::XmlStack.push(block);
-                return block.get();
+                auto block = new Block();
+                *block = toBlock(xml);
+                return block;
             }
             return nullptr;
         }

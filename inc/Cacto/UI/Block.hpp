@@ -1,7 +1,8 @@
 #pragma once
 
+#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/Node.hpp>
+#include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Window/Handler.hpp>
 #include <Cacto/UI/Thickness.hpp>
 #include <Cacto/UI/Inflatable.hpp>
@@ -24,44 +25,58 @@ namespace cacto
     {
 
     public:
-        const std::string &getId() const override;
-        Block &setId(const std::string &value);
+        Block &&setLeft(f32t value, bool resize = false);
+        Block &&setRight(f32t value, bool resize = false);
+        Block &&setTop(f32t value, bool resize = false);
+        Block &&setBottom(f32t value, bool resize = false);
+
+        Block &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Block &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+
+        Block &&shrink(const Thickness &thickness);
+        Block &&expand(const Thickness &thickness);
 
         Node *const getBackground() const;
-        Block &setBackground(Node *const value);
+        Block &&setBackground(Node *const value);
 
         const Thickness &getMargin() const;
-        Block &setMargin(const Thickness &value);
+        Block &&setMargin(const Thickness &value);
 
         const Thickness &getPadding() const;
-        Block &setPadding(const Thickness &value);
+        Block &&setPadding(const Thickness &value);
 
         f32t getMinWidth() const;
-        Block &setMinWidth(f32t value);
+        Block &&setMinWidth(f32t value);
 
         f32t getMaxWidth() const;
-        Block &setMaxWidth(f32t value);
+        Block &&setMaxWidth(f32t value);
 
         f32t getMinHeight() const;
-        Block &setMinHeight(f32t value);
+        Block &&setMinHeight(f32t value);
 
         f32t getMaxHeight() const;
-        Block &setMaxHeight(f32t value);
+        Block &&setMaxHeight(f32t value);
 
-        Block &setFixedWidth(f32t value);
-        Block &setFixedHeight(f32t value);
+        Block &&setFixedWidth(f32t value);
+        Block &&setFixedHeight(f32t value);
 
         Box getContainerBox() const;
         Box getContentBox() const;
 
         const sf::Transform &getVisualTransform() const;
 
-        ParentNode *const getParent() const override;
+        const std::string &getId() const override;
+        Block &&setId(const std::string &value);
+
+        Node *const getParent() const override;
 
         bool containsVisualPoint(const sf::Vector2f &point) const;
 
         void attach(ParentNode &parent) override;
         void detach() override;
+
+        Block *clone() const override;
+        Block *acquire() override;
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -73,11 +88,11 @@ namespace cacto
         Block();
         virtual ~Block();
 
-        Block(const Block &other) = delete;
-        Block &operator=(const Block &other) = delete;
+        Block(const Block &other);
+        Block &operator=(const Block &other);
 
-        Block(Block &&other) = delete;
-        Block &operator=(Block &&other) = delete;
+        Block(Block &&other);
+        Block &operator=(Block &&other);
 
     protected:
         void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
@@ -103,7 +118,7 @@ namespace cacto
     };
 
     XmlValue CACTO_UI_API toXml(const Block &block);
-    void CACTO_UI_API fromXml(Block &block, const XmlValue &xml);
+    Block CACTO_UI_API toBlock(const XmlValue &xml);
 
     namespace block
     {

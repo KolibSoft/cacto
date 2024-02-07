@@ -69,8 +69,8 @@ namespace cacto
     Label::Label()
         : Block(),
           m_span(),
-          m_hAnchor(Anchor::Start),
-          m_vAnchor(Anchor::Start)
+          m_hAnchor(BoxAnchor::Start),
+          m_vAnchor(BoxAnchor::Start)
     {
     }
 
@@ -92,8 +92,8 @@ namespace cacto
     {
         cacto::fromXml((Block &)label, xml);
         cacto::fromXml(label.asSpan(), xml);
-        Box::Anchor hAnchor{};
-        Box::Anchor vAnchor{};
+        Box::BoxAnchor hAnchor{};
+        Box::BoxAnchor vAnchor{};
         cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
         cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
     }

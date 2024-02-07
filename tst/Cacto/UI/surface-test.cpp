@@ -21,16 +21,13 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
     cacto::XmlValue xml = nullptr;
-    cacto::Surface surface{};
+    auto surface = cacto::Surface()
+                       .setGeometry(cacto::getResource<cacto::Geometry>("res/ellipse.xml"))
+                       .setPrecision(12)
+                       .setColor(sf::Color::Yellow)
+                       .setTexture(cacto::getResource<sf::Texture>("res/image.png"))
+                       .setTextureRect({{-100, -100}, {1000, 1000}});
 
-    /*
-    surface
-        .setGeometry(cacto::getGeometry("res/ellipse.xml"))
-        .setPrecision(12)
-        .setColor(sf::Color::Yellow)
-        .setTexture(cacto::getTexture("res/image.png"))
-        .setTextureRect({{-100, -100}, {1000, 1000}});
-    */
     xml.fromFile("res/surface.xml");
     surface = cacto::toSurface(xml);
 
@@ -50,14 +47,6 @@ int main()
                     xml.fromFile("res/surface.xml");
                     surface = cacto::toSurface(xml);
                 }
-                else if (event.key.code == sf::Keyboard::Left)
-                    surface.move({-1, 0});
-                else if (event.key.code == sf::Keyboard::Right)
-                    surface.move({+1, 0});
-                else if (event.key.code == sf::Keyboard::Up)
-                    surface.move({0, -1});
-                else if (event.key.code == sf::Keyboard::Down)
-                    surface.move({0, +1});
             }
         }
 

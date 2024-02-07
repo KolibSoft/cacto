@@ -15,24 +15,52 @@
 namespace cacto
 {
 
-    const sf::Transformable &Surface::asTransformable() const
+    Surface &&Surface::setLeft(f32t value, bool resize)
     {
-        return m_transformable;
+        Box::setLeft(value, resize);
+        return std::move(*this);
     }
 
-    sf::Transformable &Surface::asTransformable()
+    Surface &&Surface::setRight(f32t value, bool resize)
     {
-        return m_transformable;
+        Box::setRight(value, resize);
+        return std::move(*this);
     }
 
-    const Box &Surface::asBox() const
+    Surface &&Surface::setTop(f32t value, bool resize)
     {
-        return m_box;
+        Box::setTop(value, resize);
+        return std::move(*this);
     }
 
-    Box &Surface::asBox()
+    Surface &&Surface::setBottom(f32t value, bool resize)
     {
-        return m_box;
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    Surface &&Surface::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    Surface &&Surface::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    Surface &&Surface::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    Surface &&Surface::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
     }
 
     const Geometry *const Surface::getGeometry() const
@@ -40,11 +68,11 @@ namespace cacto
         return m_geometry;
     }
 
-    Surface &Surface::setGeometry(const Geometry *const value) &
+    Surface &&Surface::setGeometry(const Geometry *const value)
     {
         m_geometry = value;
         m_invalid = true;
-        return *this;
+        return std::move(*this);
     }
 
     szt Surface::getPrecision() const
@@ -52,13 +80,13 @@ namespace cacto
         return m_precision;
     }
 
-    Surface &Surface::setPrecision(szt value) &
+    Surface &&Surface::setPrecision(szt value)
     {
         if (value < 1)
             value = 1;
         m_precision = value;
         m_invalid = true;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::Color &Surface::getColor() const
@@ -66,11 +94,11 @@ namespace cacto
         return m_color;
     }
 
-    Surface &Surface::setColor(const sf::Color &value) &
+    Surface &&Surface::setColor(const sf::Color &value)
     {
         m_color = value;
         m_invalid = true;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::Texture *const Surface::getTexture() const
@@ -78,7 +106,7 @@ namespace cacto
         return m_texture;
     }
 
-    Surface &Surface::setTexture(const sf::Texture *const value, bool resetRect) &
+    Surface &&Surface::setTexture(const sf::Texture *const value, bool resetRect)
     {
         m_texture = value;
         m_invalid = true;
@@ -89,7 +117,7 @@ namespace cacto
             else
                 setTextureRect({{0, 0}, {0, 0}});
         }
-        return *this;
+        return std::move(*this);
     }
 
     const sf::FloatRect &Surface::getTextureRect() const
@@ -97,11 +125,11 @@ namespace cacto
         return m_textureRect;
     }
 
-    Surface &Surface::setTextureRect(const sf::FloatRect &value) &
+    Surface &&Surface::setTextureRect(const sf::FloatRect &value)
     {
         m_textureRect = value;
         m_invalid = true;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::Transform &Surface::getVisualTransform() const
@@ -114,10 +142,10 @@ namespace cacto
         return m_id;
     }
 
-    Surface &Surface::setId(const std::string &value) &
+    Surface &&Surface::setId(const std::string &value)
     {
         m_id = value;
-        return *this;
+        return std::move(*this);
     }
 
     Node *const Surface::getParent() const
@@ -159,24 +187,24 @@ namespace cacto
 
     sf::Vector2f Surface::compact()
     {
-        m_box.setWidth(0);
-        m_box.setHeight(0);
+        setWidth(0);
+        setHeight(0);
         m_invalid = true;
         return {0, 0};
     }
 
     sf::Vector2f Surface::inflate(const sf::Vector2f &containerSize)
     {
-        m_box.setWidth(containerSize.x);
-        m_box.setHeight(containerSize.y);
+        setWidth(containerSize.x);
+        setHeight(containerSize.y);
         m_invalid = true;
         return containerSize;
     }
 
     void Surface::place(const sf::Vector2f &position)
     {
-        m_box.setLeft(position.x);
-        m_box.setTop(position.y);
+        setLeft(position.x);
+        setTop(position.y);
         m_invalid = true;
     }
 
@@ -186,15 +214,14 @@ namespace cacto
         {
             auto surface = m_geometry->getBounds();
             auto _point = m_vTransform.getInverse().transformPoint(point);
-            auto result = m_geometry->containsPoint(mapPoint(_point, m_box, surface));
+            auto result = m_geometry->containsPoint(mapPoint(_point, *this, surface));
             return result;
         }
         return false;
     }
 
     Surface::Surface()
-        : m_transformable(),
-          m_box(),
+        : Box(),
           m_geometry(),
           m_precision(1),
           m_color(sf::Color::White),
@@ -221,8 +248,7 @@ namespace cacto
 
     Surface &Surface::operator=(const Surface &other)
     {
-        m_transformable = other.m_transformable;
-        m_box = other.m_box;
+        Box::operator=(other);
         m_geometry = other.m_geometry;
         m_precision = other.m_precision;
         m_color = other.m_color;
@@ -243,8 +269,7 @@ namespace cacto
 
     Surface &Surface::operator=(Surface &&other)
     {
-        m_transformable = std::move(other.m_transformable);
-        m_box = std::move(other.m_box);
+        Box::operator=(std::move(other));
         m_geometry = other.m_geometry;
         m_precision = other.m_precision;
         m_color = std::move(other.m_color);
@@ -272,13 +297,12 @@ namespace cacto
                 cacto::setColor(m_array, m_color);
                 if (m_texture)
                     cacto::setTexCoords(m_array, m_textureRect);
-                cacto::mapPositions(m_array, m_box);
+                cacto::mapPositions(m_array, *this);
                 m_invalid = false;
             }
-            if (m_box.getWidth() > 0 && m_box.getHeight() > 0)
+            if (getWidth() > 0 && getHeight() > 0)
             {
                 auto _states = states;
-                _states.transform *= m_transformable.getTransform();
                 _states.texture = m_texture;
                 target.draw(m_array, _states);
                 m_vTransform = _states.transform;
@@ -301,9 +325,6 @@ namespace cacto
         xml["color"] = getExpression(color);
         xml["texture"] = getExpression(texture);
         xml["textureRect"] = toString(textureRect);
-        auto txml = toXml(surface.asTransformable());
-        for (auto &pair : txml.asTag().attributes)
-            xml[pair.first] = pair.second;
         return std::move(xml);
     }
 
@@ -322,7 +343,6 @@ namespace cacto
             .setColor(color)
             .setTexture(texture)
             .setTextureRect(textureRect);
-        surface.asTransformable() = toTransformable(xml);
         return std::move(surface);
     }
 

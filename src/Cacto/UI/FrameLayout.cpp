@@ -5,23 +5,23 @@
 namespace cacto
 {
 
-    FrameLayout::Anchor FrameLayout::getHorizontalAnchor() const
+    FrameLayout::BoxAnchor FrameLayout::getHorizontalAnchor() const
     {
         return m_hAnchor;
     }
 
-    FrameLayout &FrameLayout::setHorizontalAnchor(Anchor value)
+    FrameLayout &FrameLayout::setHorizontalAnchor(BoxAnchor value)
     {
         m_hAnchor = value;
         return *this;
     }
 
-    FrameLayout::Anchor FrameLayout::getVerticalAnchor() const
+    FrameLayout::BoxAnchor FrameLayout::getVerticalAnchor() const
     {
         return m_vAnchor;
     }
 
-    FrameLayout &FrameLayout::setVerticalAnchor(Anchor value)
+    FrameLayout &FrameLayout::setVerticalAnchor(BoxAnchor value)
     {
         m_vAnchor = value;
         return *this;
@@ -159,8 +159,8 @@ namespace cacto
                 if (child)
                     frame.append(*child);
             }
-        Box::Anchor hAnchor{};
-        Box::Anchor vAnchor{};
+        Box::BoxAnchor hAnchor{};
+        Box::BoxAnchor vAnchor{};
         cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
         cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
     }
