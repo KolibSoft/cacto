@@ -10,6 +10,78 @@
 namespace cacto
 {
 
+    const sf::Transformable &Mesh::asTransformable() const
+    {
+        return m_transformable;
+    }
+
+    sf::Transformable &Mesh::asTransformable()
+    {
+        return m_transformable;
+    }
+
+    const sf::Vector2f &Mesh::getOrigin() const
+    {
+        return m_transformable.getOrigin();
+    }
+
+    Mesh &&Mesh::setOrigin(const sf::Vector2f &value)
+    {
+        m_transformable.setOrigin(value);
+        return std::move(*this);
+    }
+
+    const sf::Vector2f &Mesh::getPosition() const
+    {
+        return m_transformable.getPosition();
+    }
+
+    Mesh &&Mesh::setPosition(const sf::Vector2f &value)
+    {
+        m_transformable.setPosition(value);
+        return std::move(*this);
+    }
+
+    const sf::Vector2f &Mesh::getScale() const
+    {
+        return m_transformable.getScale();
+    }
+
+    Mesh &&Mesh::setScale(const sf::Vector2f &value)
+    {
+        m_transformable.setScale(value);
+        return std::move(*this);
+    }
+
+    sf::Angle Mesh::getRotation() const
+    {
+        return m_transformable.getRotation();
+    }
+
+    Mesh &&Mesh::setRotation(sf::Angle value)
+    {
+        m_transformable.setRotation(value);
+        return std::move(*this);
+    }
+
+    Mesh &&Mesh::move(const sf::Vector2f &offset)
+    {
+        m_transformable.move(offset);
+        return std::move(*this);
+    }
+
+    Mesh &&Mesh::scale(const sf::Vector2f &factors)
+    {
+        m_transformable.scale(factors);
+        return std::move(*this);
+    }
+
+    Mesh &&Mesh::rotate(const sf::Angle &angle)
+    {
+        m_transformable.rotate(angle);
+        return std::move(*this);
+    }
+
     const sf::VertexArray &Mesh::asArray() const
     {
         return m_array;
@@ -18,6 +90,38 @@ namespace cacto
     sf::VertexArray &Mesh::asArray()
     {
         return m_array;
+    }
+
+    sf::PrimitiveType Mesh::getPrimitiveType() const
+    {
+        return m_array.getPrimitiveType();
+    }
+
+    Mesh &&Mesh::setPrimitiveType(sf::PrimitiveType value)
+    {
+        m_array.setPrimitiveType(value);
+        return std::move(*this);
+    }
+
+    szt Mesh::getVertexCount() const
+    {
+        return m_array.getVertexCount();
+    }
+
+    const sf::Vertex &Mesh::operator[](szt index) const
+    {
+        return m_array[index];
+    }
+
+    sf::Vertex &Mesh::operator[](szt index)
+    {
+        return m_array[index];
+    }
+
+    Mesh &&Mesh::append(const sf::Vertex &vertex)
+    {
+        m_array.append(vertex);
+        return std::move(*this);
     }
 
     const sf::Texture *Mesh::getTexture() const
@@ -80,7 +184,8 @@ namespace cacto
     }
 
     Mesh::Mesh()
-        : m_array(),
+        : m_transformable(),
+          m_array(),
           m_texture(),
           m_id(),
           m_parent()
@@ -100,7 +205,7 @@ namespace cacto
 
     Mesh &Mesh::operator=(const Mesh &other)
     {
-        sf::Transformable::operator=(other);
+        m_transformable = other.m_transformable;
         m_array = other.m_array;
         m_texture = other.m_texture;
         m_id = other.m_id;
@@ -115,7 +220,7 @@ namespace cacto
 
     Mesh &Mesh::operator=(Mesh &&other)
     {
-        sf::Transformable::operator=(std::move(other));
+        m_transformable = std::move(other.m_transformable);
         m_array = std::move(other.m_array);
         m_texture = other.m_texture;
         m_id = std::move(other.m_id);
@@ -128,7 +233,7 @@ namespace cacto
     {
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= getTransform();
+        _states.transform *= m_transformable.getTransform();
         target.draw(m_array, _states);
     }
 
@@ -137,7 +242,7 @@ namespace cacto
         XmlValue xml{"Mesh", {}};
         xml["id"] = mesh.getId();
         xml["texture"] = getExpression(mesh.getTexture());
-        auto txml = toXml((const sf::Transformable &)mesh);
+        auto txml = toXml(mesh.asTransformable());
         auto axml = toXml(mesh.asArray());
         for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
@@ -152,7 +257,7 @@ namespace cacto
         Mesh mesh{};
         mesh.setId(xml.getAttribute("id"));
         mesh.setTexture(getTexture(xml.getAttribute("texture")));
-        (sf::Transformable &)mesh = toTransformable(xml);
+        mesh.asTransformable() = toTransformable(xml);
         mesh.asArray() = toVertexArray(xml);
         return std::move(mesh);
     }
