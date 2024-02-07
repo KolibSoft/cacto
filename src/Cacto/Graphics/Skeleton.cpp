@@ -174,11 +174,26 @@ namespace cacto
             throw std::runtime_error("The node is already attached to another parent");
         if (hasAncestor(child))
             throw std::runtime_error("The node is an ancestor");
-        holder holder{};
+        auto &holder = m_holders.emplace_back();
         holder.child = &child;
         holder.options = {};
-        m_holders.push_back(holder);
+        holder.owned = false;
         child.attach(*this);
+    }
+
+    Skeleton &&Skeleton::append(ChildNode &child, const SkeletonOptions &options)
+    {
+        append(child);
+        m_holders.back().options = options;
+        return std::move(*this);
+    }
+
+    Skeleton &&Skeleton::append(ChildNode &&child, const SkeletonOptions &options)
+    {
+        auto _child = dynamic_cast<ChildNode *>(child.acquire());
+        append(*_child, options);
+        m_holders.back().owned = true;
+        return std::move(*this);
     }
 
     void Skeleton::remove(ChildNode &child)
@@ -206,21 +221,6 @@ namespace cacto
         return skeleton;
     }
 
-    Skeleton &&Skeleton::append(ChildNode &child, const SkeletonOptions &options)
-    {
-        append(child);
-        m_holders.back().options = options;
-        return std::move(*this);
-    }
-
-    Skeleton &&Skeleton::append(ChildNode &&child, const SkeletonOptions &options)
-    {
-        auto _child = dynamic_cast<ChildNode *>(child.acquire());
-        append(*_child, options);
-        m_holders.back().owned = true;
-        return std::move(*this);
-    }
-
     Skeleton::Skeleton()
         : sf::Transformable(),
           m_id(),
@@ -243,22 +243,16 @@ namespace cacto
 
     Skeleton &Skeleton::operator=(const Skeleton &other)
     {
+        clearChildren();
         sf::Transformable::operator=(other);
         m_id = other.m_id;
-        m_holders = {};
         for (auto &holder : other.m_holders)
         {
-            auto node = holder.child->clone();
-            if (node)
+            auto child = dynamic_cast<ChildNode *>(holder.child->clone());
+            if (child)
             {
-                auto child = dynamic_cast<ChildNode *>(node);
-                if (child)
-                {
-                    append(*child, holder.options);
-                    m_holders.back().owned = true;
-                }
-                else
-                    delete node;
+                append(*child, holder.options);
+                m_holders.back().owned = true;
             }
         }
         return *this;

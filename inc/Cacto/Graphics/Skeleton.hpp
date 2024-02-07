@@ -66,13 +66,13 @@ namespace cacto
         void detach() override;
 
         void append(ChildNode &child) override;
+        Skeleton &&append(ChildNode &child, const SkeletonOptions &options);
+        Skeleton &&append(ChildNode &&child, const SkeletonOptions &options);
+
         void remove(ChildNode &child) override;
 
         Skeleton *clone() const override;
         Skeleton *acquire() override;
-
-        Skeleton &&append(ChildNode &child, const SkeletonOptions &options);
-        Skeleton &&append(ChildNode &&child, const SkeletonOptions &options);
 
         Skeleton();
         virtual ~Skeleton();
@@ -95,9 +95,9 @@ namespace cacto
 
         struct holder
         {
-            bool owned{};
             ChildNode *child{};
             SkeletonOptions options{};
+            bool owned{};
         };
     };
 
