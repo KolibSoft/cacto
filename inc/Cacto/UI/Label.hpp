@@ -11,18 +11,56 @@ namespace cacto
     {
 
     public:
-        using Anchor = Box::BoxAnchor;
+        Label &&setLeft(f32t value, bool resize = false);
+        Label &&setRight(f32t value, bool resize = false);
+        Label &&setTop(f32t value, bool resize = false);
+        Label &&setBottom(f32t value, bool resize = false);
 
-        Anchor getHorizontalAnchor() const;
-        Label &setHorizontalAnchor(Anchor value);
+        Label &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Label &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
 
-        Anchor getVerticalAnchor() const;
-        Label &setVerticalAnchor(Anchor value);
+        Label &&shrink(const Thickness &thickness);
+        Label &&expand(const Thickness &thickness);
 
-        const Span &asSpan() const;
-        Span &asSpan();
+        Label &&setBackground(Node *const value);
+        Label &&setBackground(Node &&value);
 
-        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+        Label &&setMargin(const Thickness &value);
+        Label &&setPadding(const Thickness &value);
+
+        Label &&setMinWidth(f32t value);
+        Label &&setMaxWidth(f32t value);
+        Label &&setMinHeight(f32t value);
+        Label &&setMaxHeight(f32t value);
+
+        Label &&setFixedWidth(f32t value);
+        Label &&setFixedHeight(f32t value);
+
+        operator const Span &() const;
+        operator Span &();
+
+        const sf::Font *const getFont() const;
+        Label &&setFont(const sf::Font *const value);
+
+        const sf::String &getString() const;
+        Label &&setString(const sf::String &value);
+
+        TextDirection getDirection() const;
+        Label &&setDirection(TextDirection value);
+
+        u32t getCharacterSize() const;
+        Label &&setCharacterSize(u32t value);
+
+        const sf::Color &getColor() const;
+        Label &&setColor(const sf::Color &value);
+
+        BoxAnchor getHorizontalAnchor() const;
+        Label &&setHorizontalAnchor(BoxAnchor value);
+
+        BoxAnchor getVerticalAnchor() const;
+        Label &&setVerticalAnchor(BoxAnchor value);
+
+        Label &&setId(const std::string &value);
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -31,14 +69,23 @@ namespace cacto
         Label();
         virtual ~Label();
 
+        Label(const Label &other);
+        Label &operator=(const Label &other);
+
+        Label(Label &&other);
+        Label &operator=(Label &&other);
+
+    protected:
+        void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
+
     private:
         Span m_span;
-        Anchor m_hAnchor;
-        Anchor m_vAnchor;
+        BoxAnchor m_hAnchor;
+        BoxAnchor m_vAnchor;
     };
 
     XmlValue CACTO_UI_API toXml(const Label &label);
-    void CACTO_UI_API fromXml(Label &label, const XmlValue &xml);
+    Label CACTO_UI_API toLabel(const XmlValue &xml);
 
     namespace label
     {
