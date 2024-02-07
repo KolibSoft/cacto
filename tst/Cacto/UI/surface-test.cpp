@@ -47,14 +47,6 @@ int main()
                     xml.fromFile("res/surface.xml");
                     surface = cacto::toSurface(xml);
                 }
-                else if (event.key.code == sf::Keyboard::Left)
-                    surface.move({-1, 0});
-                else if (event.key.code == sf::Keyboard::Right)
-                    surface.move({+1, 0});
-                else if (event.key.code == sf::Keyboard::Up)
-                    surface.move({0, -1});
-                else if (event.key.code == sf::Keyboard::Down)
-                    surface.move({0, +1});
             }
         }
 

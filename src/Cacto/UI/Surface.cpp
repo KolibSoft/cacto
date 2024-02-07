@@ -325,9 +325,6 @@ namespace cacto
         xml["color"] = getExpression(color);
         xml["texture"] = getExpression(texture);
         xml["textureRect"] = toString(textureRect);
-        auto txml = toXml((const sf::Transformable &)surface);
-        for (auto &pair : txml.asTag().attributes)
-            xml[pair.first] = pair.second;
         return std::move(xml);
     }
 
@@ -346,7 +343,6 @@ namespace cacto
             .setColor(color)
             .setTexture(texture)
             .setTextureRect(textureRect);
-        (sf::Transformable &)surface = toTransformable(xml);
         return std::move(surface);
     }
 
