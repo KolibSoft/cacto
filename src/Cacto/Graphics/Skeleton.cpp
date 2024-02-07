@@ -231,8 +231,8 @@ namespace cacto
 
     Skeleton::~Skeleton()
     {
-        detach();
         clearChildren();
+        detach();
     }
 
     Skeleton::Skeleton(const Skeleton &other)

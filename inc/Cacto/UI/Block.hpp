@@ -105,6 +105,8 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
+        void dropBackground();
+
         std::string m_id;
         Node *m_background;
         bool m_backgroundOwned;

@@ -2,6 +2,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <Cacto/Core/ParentNode.hpp>
+#include <Cacto/Core/XmlPack.hpp>
 #include <Cacto/Core/XmlUtils.hpp>
 #include <Cacto/Graphics/NodeUtils.hpp>
 #include <Cacto/Window/NodeUtils.hpp>
@@ -73,6 +74,7 @@ namespace cacto
                 throw std::runtime_error("The background is its own block ancestor");
             current = current->getParent();
         }
+        dropBackground();
         m_background = value;
         return std::move(*this);
     }
@@ -80,6 +82,9 @@ namespace cacto
     Block &&Block::setBackground(Node &&value)
     {
         auto background = value.acquire();
+        dropBackground();
+        setBackground(background);
+        m_backgroundOwned = true;
         return std::move(*this);
     }
 
@@ -230,6 +235,120 @@ namespace cacto
         return block;
     }
 
+    bool Block::handle(const sf::Event &event)
+    {
+        handleBlock(event);
+        auto handled = cacto::handleChildren(*this, event);
+        return handled;
+    }
+
+    bool Block::bubble(Node &target, const sf::Event &event)
+    {
+        auto handle = cacto::bubbleParent(*this, target, event);
+        return handle;
+    }
+
+    sf::Vector2f Block::compact()
+    {
+        auto size = compactBlock({0, 0});
+        return size;
+    }
+
+    sf::Vector2f Block::inflate(const sf::Vector2f &containerSize)
+    {
+        auto size = inflateBlock(containerSize);
+        return size;
+    }
+
+    void Block::place(const sf::Vector2f &position)
+    {
+        placeBlock(position);
+    }
+
+    bool Block::containsVisualPoint(const sf::Vector2f &point) const
+    {
+        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
+        return result;
+    }
+
+    Block::Block()
+        : Box(),
+          m_background(nullptr),
+          m_backgroundOwned(false),
+          m_margin(0),
+          m_padding(0),
+          m_minWidth(0),
+          m_maxWidth(std::numeric_limits<f32t>::infinity()),
+          m_minHeight(0),
+          m_maxHeight(std::numeric_limits<f32t>::infinity()),
+          m_id(),
+          m_parent(),
+          m_vTransform(sf::Transform::Identity)
+    {
+    }
+
+    Block::~Block()
+    {
+        dropBackground();
+        detach();
+    }
+
+    Block::Block(const Block &other)
+        : Block()
+    {
+        *this = other;
+    }
+
+    Block &Block::operator=(const Block &other)
+    {
+        dropBackground();
+        Box::operator=(other);
+        if (other.m_background)
+        {
+            m_background = other.m_background->clone();
+            m_backgroundOwned = true;
+        }
+        m_margin = other.m_margin;
+        m_padding = other.m_padding;
+        m_minWidth = other.m_minWidth;
+        m_maxWidth = other.m_maxWidth;
+        m_minHeight = other.m_minHeight;
+        m_maxHeight = other.m_maxHeight;
+        m_id = other.m_id;
+        m_vTransform = other.m_vTransform;
+        return *this;
+    }
+
+    Block::Block(Block &&other)
+        : Block()
+    {
+        *this = std::move(other);
+    }
+
+    Block &Block::operator=(Block &&other)
+    {
+        dropBackground();
+        Box::operator=(std::move(other));
+        m_background = other.m_background;
+        m_backgroundOwned = other.m_backgroundOwned;
+        m_margin = std::move(other.m_margin);
+        m_padding = std::move(other.m_padding);
+        m_minWidth = other.m_minWidth;
+        m_maxWidth = other.m_maxWidth;
+        m_minHeight = other.m_minHeight;
+        m_maxHeight = other.m_maxHeight;
+        m_id = std::move(other.m_id);
+        m_vTransform = std::move(other.m_vTransform);
+        other.m_background = nullptr;
+        other.m_backgroundOwned = false;
+        other.m_minWidth = 0;
+        other.m_maxWidth = 0;
+        other.m_minHeight = 0;
+        other.m_maxHeight = 0;
+        other.detach();
+        return *this;
+    }
+
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         if (m_background)
@@ -266,6 +385,14 @@ namespace cacto
         return size;
     }
 
+    void Block::placeBlock(const sf::Vector2f &position)
+    {
+        setLeft(position.x + m_margin.left);
+        setTop(position.y + m_margin.top);
+        if (m_background)
+            cacto::place(*m_background, {getLeft(), getTop()});
+    }
+
     void Block::handleBlock(const sf::Event &event)
     {
         if (m_background)
@@ -277,78 +404,7 @@ namespace cacto
         drawBlock(target, states);
     }
 
-    bool Block::handle(const sf::Event &event)
-    {
-        handleBlock(event);
-        auto handled = cacto::handleChildren(*this, event);
-        return handled;
-    }
-
-    bool Block::bubble(Node &target, const sf::Event &event)
-    {
-        auto handle = cacto::bubbleParent(*this, target, event);
-        return handle;
-    }
-
-    sf::Vector2f Block::compact()
-    {
-        auto size = compactBlock({0, 0});
-        return size;
-    }
-
-    sf::Vector2f Block::inflate(const sf::Vector2f &containerSize)
-    {
-        auto size = inflateBlock(containerSize);
-        return size;
-    }
-
-    void Block::place(const sf::Vector2f &position)
-    {
-        placeBlock(position);
-    }
-
-    void Block::placeBlock(const sf::Vector2f &position)
-    {
-        setLeft(position.x + m_margin.left);
-        setTop(position.y + m_margin.top);
-        if (m_background)
-            cacto::place(*m_background, {getLeft(), getTop()});
-    }
-
-    bool Block::containsVisualPoint(const sf::Vector2f &point) const
-    {
-        auto result = containsPoint(m_vTransform.getInverse().transformPoint(point));
-        return result;
-    }
-
-    Block::Block()
-        : Box(),
-          m_background(nullptr),
-          m_backgroundOwned(false),
-          m_margin(0),
-          m_padding(0),
-          m_minWidth(0),
-          m_maxWidth(std::numeric_limits<f32t>::infinity()),
-          m_minHeight(0),
-          m_maxHeight(std::numeric_limits<f32t>::infinity()),
-          m_id(),
-          m_parent(),
-          m_vTransform(sf::Transform::Identity)
-    {
-    }
-
-    Block::~Block()
-    {
-        detach();
-    }
-
-    Block::Block(const Block &other)
-        : Block()
-    {
-        *this = other;
-    }
-
-    Block &Block::operator=(const Block &other)
+    void Block::dropBackground()
     {
         if (m_background && m_backgroundOwned)
         {
@@ -356,78 +412,30 @@ namespace cacto
             m_background = nullptr;
             m_backgroundOwned = false;
         }
-        Box::operator=(other);
-        if (other.m_background)
-        {
-            m_background = other.m_background->clone();
-            m_backgroundOwned = true;
-        }
-        m_margin = other.m_margin;
-        m_padding = other.m_padding;
-        m_minWidth = other.m_minWidth;
-        m_maxWidth = other.m_maxWidth;
-        m_minHeight = other.m_minHeight;
-        m_maxHeight = other.m_maxHeight;
-        m_id = other.m_id;
-        m_vTransform = other.m_vTransform;
-        return *this;
-    }
-
-    Block::Block(Block &&other)
-        : Block()
-    {
-        *this = std::move(other);
-    }
-
-    Block &Block::operator=(Block &&other)
-    {
-        if (m_background && m_backgroundOwned)
-        {
-            delete m_background;
-            m_background = nullptr;
-            m_backgroundOwned = false;
-        }
-        Box::operator=(std::move(other));
-        m_background = other.m_background;
-        m_backgroundOwned = other.m_backgroundOwned;
-        m_margin = std::move(other.m_margin);
-        m_padding = std::move(other.m_padding);
-        m_minWidth = other.m_minWidth;
-        m_maxWidth = other.m_maxWidth;
-        m_minHeight = other.m_minHeight;
-        m_maxHeight = other.m_maxHeight;
-        m_id = std::move(other.m_id);
-        m_vTransform = std::move(other.m_vTransform);
-        other.m_background = nullptr;
-        other.m_backgroundOwned = false;
-        other.m_minWidth = 0;
-        other.m_maxWidth = 0;
-        other.m_minHeight = 0;
-        other.m_maxHeight = 0;
-        other.detach();
-        return *this;
     }
 
     XmlValue toXml(const Block &block)
     {
         XmlValue xml{"Block", {}};
-        auto bxml = toXml(block.getBackground());
         xml["id"] = block.getId();
-        xml["background"] = getExpression(bxml);
         xml["margin"] = toString(block.getMargin());
         xml["padding"] = toString(block.getPadding());
         xml["minWidth"] = std::to_string(block.getMinWidth());
         xml["maxWidth"] = std::to_string(block.getMaxWidth());
         xml["minHeight"] = std::to_string(block.getMinHeight());
         xml["maxHeight"] = std::to_string(block.getMaxHeight());
+        auto bxml = toXml(block.getBackground());
+        auto bid = getId(bxml);
+        if (bid != "")
+            xml["background"] = "@xml/" + bid;
+        else
+            xml.asTag().content.push_back(std::move(bxml));
         return std::move(xml);
     }
 
     Block CACTO_UI_API toBlock(const XmlValue &xml)
     {
         Block block{};
-        auto bxml = getXml(xml.getAttribute("background"));
-        block.setBackground(fromXml<Node>(xml));
         block.setId(xml.getAttribute("id"));
         block.setMargin(toTickness(xml.getAttribute("margin", "0,0,0,0")));
         block.setPadding(toTickness(xml.getAttribute("padding", "0,0,0,0")));
@@ -435,6 +443,25 @@ namespace cacto
         block.setMaxWidth(std::stof(xml.getAttribute("maxWidth", "inf")));
         block.setMinHeight(std::stof(xml.getAttribute("minHeight", "0")));
         block.setMaxHeight(std::stof(xml.getAttribute("maxHeight", "inf")));
+        auto bxml = getXml(xml.getAttribute("background"));
+        if (bxml != nullptr)
+        {
+            auto node = fromXml<Node>(bxml);
+            if (node)
+            {
+                block.setBackground(std::move(*node));
+                delete node;
+            }
+        }
+        else
+        {
+            auto node = fromXml<Node>(xml[0]);
+            if (node)
+            {
+                block.setBackground(std::move(*node));
+                delete node;
+            }
+        }
         return std::move(block);
     }
 

@@ -41,8 +41,8 @@ int main()
 
     cacto::XmlValue xml = nullptr;
 
-    // xml.fromFile("res/block.xml");
-    // root = cacto::toBlock(xml);
+    xml.fromFile("res/block.xml");
+    root = cacto::toBlock(xml);
 
     while (window.isOpen())
     {

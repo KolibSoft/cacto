@@ -13,7 +13,8 @@ namespace cacto
             auto expression = "@xml/" + id;
             return std::move(expression);
         }
-        return xml.toString();
+        auto expression = xml.toString();
+        return std::move(expression);
     }
 
     XmlValue getXml(const std::string &expression)
@@ -25,7 +26,9 @@ namespace cacto
             if (resource)
                 return *resource;
         }
-        return expression;
+        XmlValue xml = nullptr;
+        xml.fromString(expression);
+        return std::move(xml);
     }
 
 }

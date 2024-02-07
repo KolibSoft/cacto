@@ -13,7 +13,8 @@ namespace cacto
             auto expression = "@json/" + id;
             return std::move(expression);
         }
-        return json.toString();
+        auto expression = json.toString();
+        return std::move(expression);
     }
 
     JsonValue getJson(const std::string &expression)
@@ -25,7 +26,9 @@ namespace cacto
             if (resource)
                 return *resource;
         }
-        return expression;
+        JsonValue json = nullptr;
+        json.fromString(expression);
+        return std::move(json);
     }
 
 }

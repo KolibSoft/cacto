@@ -209,6 +209,7 @@ namespace cacto
     TileMap::TileMap(const TileMap &other)
         : TileMap()
     {
+        *this = other;
     }
 
     TileMap &TileMap::operator=(const TileMap &other)
