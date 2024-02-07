@@ -179,15 +179,6 @@ namespace cacto
 
     BoxAnchor Label::getHorizontalAnchor() const
     {
-    }
-
-    Label &&Label::setHorizontalAnchor(BoxAnchor value)
-    {
-        return std::move(*this);
-    }
-
-    BoxAnchor Label::getHorizontalAnchor() const
-    {
         return m_hAnchor;
     }
 
@@ -248,6 +239,36 @@ namespace cacto
 
     Label::~Label() = default;
 
+    Label::Label(const Label &other)
+        : Label()
+    {
+        *this = other;
+    }
+
+    Label &Label::operator=(const Label &other)
+    {
+        m_span = other.m_span;
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        Block::operator=(other);
+        return *this;
+    }
+
+    Label::Label(Label &&other)
+        : Label()
+    {
+        *this = std::move(other);
+    }
+
+    Label &Label::operator=(Label &&other)
+    {
+        m_span = std::move(other.m_span);
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        Block::operator=(std::move(other));
+        return *this;
+    }
+
     void Label::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
@@ -256,11 +277,14 @@ namespace cacto
 
     XmlValue toXml(const Label &label)
     {
-        auto xml = cacto::toXml((const Block &)label);
-        xml.setName("Label");
-        auto span_xml = cacto::toXml(() label);
-        for (auto &pair : span_xml.asAttributes())
+        XmlValue xml{"Label", {}};
+        auto sxml = cacto::toXml((const Span &)label);
+        for (auto &pair : sxml.asTag().attributes)
             xml[pair.first] = pair.second;
+        auto bxml = cacto::toXml((const Block &)label);
+        for (auto &pair : bxml.asTag().attributes)
+            xml[pair.first] = pair.second;
+        xml.asTag().content.push_back(bxml[0]);
         xml["horizontalAnchor"] = toString(label.getHorizontalAnchor());
         xml["verticalAnchor"] = toString(label.getVerticalAnchor());
         return std::move(xml);
@@ -269,12 +293,10 @@ namespace cacto
     Label toLabel(const XmlValue &xml)
     {
         Label label{};
-        cacto::fromXml((Block &)label, xml);
-        cacto::fromXml(label.asSpan(), xml);
-        Box::BoxAnchor hAnchor{};
-        Box::BoxAnchor vAnchor{};
-        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
-        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+        (Span &)label = toSpan(xml);
+        (Block &)label = toBlock(xml);
+        label.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
+        label.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
         return std::move(label);
     }
 
