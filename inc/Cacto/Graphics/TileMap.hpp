@@ -16,24 +16,15 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API TileMap
-        : public virtual sf::Drawable,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ChildNode
     {
 
     public:
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
-
-        const sf::Vector2f &getOrigin() const;
         TileMap &&setOrigin(const sf::Vector2f &value);
-
-        const sf::Vector2f &getPosition() const;
         TileMap &&setPosition(const sf::Vector2f &value);
-
-        const sf::Vector2f &getScale() const;
         TileMap &&setScale(const sf::Vector2f &value);
-
-        sf::Angle getRotation() const;
         TileMap &&setRotation(sf::Angle value);
 
         TileMap &&move(const sf::Vector2f &offset);
@@ -81,7 +72,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        sf::Transformable m_transformable;
         const sf::Texture *m_texture;
         sf::Vector2f m_tileSize;
         sf::IntRect m_area;

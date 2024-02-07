@@ -35,25 +35,16 @@ namespace cacto
     };
 
     class CACTO_GRAPHICS_API Skeleton
-        : public virtual sf::Drawable,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ParentNode,
           public virtual ChildNode
     {
 
     public:
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
-
-        const sf::Vector2f &getOrigin() const;
         Skeleton &&setOrigin(const sf::Vector2f &value);
-
-        const sf::Vector2f &getPosition() const;
         Skeleton &&setPosition(const sf::Vector2f &value);
-
-        const sf::Vector2f &getScale() const;
         Skeleton &&setScale(const sf::Vector2f &value);
-
-        sf::Angle getRotation() const;
         Skeleton &&setRotation(sf::Angle value);
 
         Skeleton &&move(const sf::Vector2f &offset);
@@ -98,7 +89,6 @@ namespace cacto
     private:
         struct holder;
 
-        sf::Transformable m_transformable;
         std::string m_id;
         std::vector<holder> m_holders;
         ParentNode *m_parent;

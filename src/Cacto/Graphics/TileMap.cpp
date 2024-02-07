@@ -11,75 +11,45 @@
 namespace cacto
 {
 
-    const sf::Transformable &TileMap::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &TileMap::asTransformable()
-    {
-        return m_transformable;
-    }
-
-    const sf::Vector2f &TileMap::getOrigin() const
-    {
-        return m_transformable.getOrigin();
-    }
-
     TileMap &&TileMap::setOrigin(const sf::Vector2f &value)
     {
-        m_transformable.setOrigin(value);
+        sf::Transformable::setOrigin(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &TileMap::getPosition() const
-    {
-        return m_transformable.getPosition();
     }
 
     TileMap &&TileMap::setPosition(const sf::Vector2f &value)
     {
-        m_transformable.setPosition(value);
+        sf::Transformable::setPosition(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &TileMap::getScale() const
-    {
-        return m_transformable.getScale();
     }
 
     TileMap &&TileMap::setScale(const sf::Vector2f &value)
     {
-        m_transformable.setScale(value);
+        sf::Transformable::setScale(value);
         return std::move(*this);
-    }
-
-    sf::Angle TileMap::getRotation() const
-    {
-        return m_transformable.getRotation();
     }
 
     TileMap &&TileMap::setRotation(sf::Angle value)
     {
-        m_transformable.setRotation(value);
+        sf::Transformable::setRotation(value);
         return std::move(*this);
     }
 
     TileMap &&TileMap::move(const sf::Vector2f &offset)
     {
-        m_transformable.move(offset);
+        sf::Transformable::move(offset);
         return std::move(*this);
     }
 
     TileMap &&TileMap::scale(const sf::Vector2f &factors)
     {
-        m_transformable.scale(factors);
+        sf::Transformable::scale(factors);
         return std::move(*this);
     }
 
     TileMap &&TileMap::rotate(const sf::Angle &angle)
     {
-        m_transformable.rotate(angle);
+        sf::Transformable::rotate(angle);
         return std::move(*this);
     }
 
@@ -219,7 +189,7 @@ namespace cacto
     }
 
     TileMap::TileMap()
-        : m_transformable(),
+        : sf::Transformable(),
           m_texture(nullptr),
           m_tileSize(),
           m_area(),
@@ -237,22 +207,20 @@ namespace cacto
     }
 
     TileMap::TileMap(const TileMap &other)
-        : m_transformable(other.m_transformable),
-          m_texture(other.m_texture),
-          m_tileSize(other.m_tileSize),
-          m_area(other.m_area),
-          m_tiles(other.m_tiles),
-          m_id(other.m_id),
-          m_parent(),
-          m_invalid(other.m_invalid),
-          m_array(other.m_array)
+        : TileMap()
     {
     }
 
     TileMap &TileMap::operator=(const TileMap &other)
     {
-        TileMap copy{other};
-        *this = std::move(copy);
+        sf::Transformable::operator=(other);
+        m_texture = other.m_texture;
+        m_tileSize = other.m_tileSize;
+        m_area = other.m_area;
+        m_tiles = other.m_tiles;
+        m_id = other.m_id;
+        m_invalid = other.m_invalid;
+        m_array = other.m_array;
         return *this;
     }
 
@@ -264,7 +232,7 @@ namespace cacto
 
     TileMap &TileMap::operator=(TileMap &&other)
     {
-        m_transformable = std::move(other.m_transformable);
+        sf::Transformable::operator=(std::move(other));
         m_texture = other.m_texture;
         m_tileSize = std::move(other.m_tileSize);
         m_area = std::move(other.m_area);
@@ -302,7 +270,7 @@ namespace cacto
         }
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= m_transformable.getTransform();
+        _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
 
@@ -315,7 +283,7 @@ namespace cacto
         xml["texture"] = getExpression(tileMap.getTexture());
         xml["tileSize"] = toString(tileMap.getTileSize());
         xml["area"] = toString(sf::FloatRect(tileMap.getArea()));
-        auto txml = cacto::toXml(tileMap.asTransformable());
+        auto txml = cacto::toXml((const sf::Transformable &)tileMap);
         for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
         auto &content = xml.asTag().content;
@@ -343,7 +311,7 @@ namespace cacto
         tileMap.setTileSize(toVector(xml.getAttribute("tileSize", "0,0")));
         tileMap.setArea(sf::IntRect(toRect(xml.getAttribute("area", "0,0,0,0"))));
         tileMap.fill(getRect(xml.getAttribute("fill", "0,0,0,0")));
-        tileMap.asTransformable() = toTransformable(xml);
+        (sf::Transformable &)tileMap = toTransformable(xml);
         if (xml.isTag())
         {
             auto &content = xml.asTag().content;

@@ -15,75 +15,45 @@
 namespace cacto
 {
 
-    const sf::Transformable &Surface::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &Surface::asTransformable()
-    {
-        return m_transformable;
-    }
-
-    const sf::Vector2f &Surface::getOrigin() const
-    {
-        return m_transformable.getOrigin();
-    }
-
     Surface &&Surface::setOrigin(const sf::Vector2f &value)
     {
-        m_transformable.setOrigin(value);
+        sf::Transformable::setOrigin(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &Surface::getPosition() const
-    {
-        return m_transformable.getPosition();
     }
 
     Surface &&Surface::setPosition(const sf::Vector2f &value)
     {
-        m_transformable.setPosition(value);
+        sf::Transformable::setPosition(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &Surface::getScale() const
-    {
-        return m_transformable.getScale();
     }
 
     Surface &&Surface::setScale(const sf::Vector2f &value)
     {
-        m_transformable.setScale(value);
+        sf::Transformable::setScale(value);
         return std::move(*this);
-    }
-
-    sf::Angle Surface::getRotation() const
-    {
-        return m_transformable.getRotation();
     }
 
     Surface &&Surface::setRotation(sf::Angle value)
     {
-        m_transformable.setRotation(value);
+        sf::Transformable::setRotation(value);
         return std::move(*this);
     }
 
     Surface &&Surface::move(const sf::Vector2f &offset)
     {
-        m_transformable.move(offset);
+        sf::Transformable::move(offset);
         return std::move(*this);
     }
 
     Surface &&Surface::scale(const sf::Vector2f &factors)
     {
-        m_transformable.scale(factors);
+        sf::Transformable::scale(factors);
         return std::move(*this);
     }
 
     Surface &&Surface::rotate(const sf::Angle &angle)
     {
-        m_transformable.rotate(angle);
+        sf::Transformable::rotate(angle);
         return std::move(*this);
     }
 
@@ -255,7 +225,7 @@ namespace cacto
     }
 
     Surface::Surface()
-        : m_transformable(),
+        : sf::Transformable(),
           m_box(),
           m_geometry(),
           m_precision(1),
@@ -283,7 +253,7 @@ namespace cacto
 
     Surface &Surface::operator=(const Surface &other)
     {
-        m_transformable = other.m_transformable;
+        sf::Transformable::operator=(other);
         m_box = other.m_box;
         m_geometry = other.m_geometry;
         m_precision = other.m_precision;
@@ -305,7 +275,7 @@ namespace cacto
 
     Surface &Surface::operator=(Surface &&other)
     {
-        m_transformable = std::move(other.m_transformable);
+        sf::Transformable::operator=(std::move(other));
         m_box = std::move(other.m_box);
         m_geometry = other.m_geometry;
         m_precision = other.m_precision;
@@ -340,7 +310,7 @@ namespace cacto
             if (m_box.getWidth() > 0 && m_box.getHeight() > 0)
             {
                 auto _states = states;
-                _states.transform *= m_transformable.getTransform();
+                _states.transform *= getTransform();
                 _states.texture = m_texture;
                 target.draw(m_array, _states);
                 m_vTransform = _states.transform;
@@ -363,7 +333,7 @@ namespace cacto
         xml["color"] = getExpression(color);
         xml["texture"] = getExpression(texture);
         xml["textureRect"] = toString(textureRect);
-        auto txml = toXml(surface.asTransformable());
+        auto txml = toXml((const sf::Transformable &)surface);
         for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
         return std::move(xml);
@@ -384,7 +354,7 @@ namespace cacto
             .setColor(color)
             .setTexture(texture)
             .setTextureRect(textureRect);
-        surface.asTransformable() = toTransformable(xml);
+        (sf::Transformable &)surface = toTransformable(xml);
         return std::move(surface);
     }
 

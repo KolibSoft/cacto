@@ -14,32 +14,23 @@ namespace cacto
 {
 
     class CACTO_GRAPHICS_API Mesh
-        : public virtual sf::Drawable,
+        : public sf::Transformable,
+          public virtual sf::Drawable,
           public virtual ChildNode
     {
 
     public:
-        const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable();
-
-        const sf::Vector2f &getOrigin() const;
         Mesh &&setOrigin(const sf::Vector2f &value);
-
-        const sf::Vector2f &getPosition() const;
         Mesh &&setPosition(const sf::Vector2f &value);
-
-        const sf::Vector2f &getScale() const;
         Mesh &&setScale(const sf::Vector2f &value);
-
-        sf::Angle getRotation() const;
         Mesh &&setRotation(sf::Angle value);
 
         Mesh &&move(const sf::Vector2f &offset);
         Mesh &&scale(const sf::Vector2f &factors);
         Mesh &&rotate(const sf::Angle &angle);
 
-        const sf::VertexArray &asArray() const;
-        sf::VertexArray &asArray();
+        operator const sf::VertexArray &() const;
+        operator sf::VertexArray &();
 
         sf::PrimitiveType getPrimitiveType() const;
         Mesh &&setPrimitiveType(sf::PrimitiveType value);
@@ -76,7 +67,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        sf::Transformable m_transformable;
         sf::VertexArray m_array;
         const sf::Texture *m_texture;
         std::string m_id;

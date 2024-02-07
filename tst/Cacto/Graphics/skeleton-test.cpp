@@ -54,7 +54,7 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
-                skeleton.asTransformable().setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
+                skeleton.setPosition(sf::Vector2f(event.mouseButton.x, event.mouseButton.y));
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
                 skeleton.rotate(sf::degrees(event.mouseWheelScroll.delta));

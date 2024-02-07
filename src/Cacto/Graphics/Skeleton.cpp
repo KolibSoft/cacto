@@ -59,75 +59,45 @@ namespace cacto
 
     SkeletonOptions::~SkeletonOptions() = default;
 
-    const sf::Transformable &Skeleton::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &Skeleton::asTransformable()
-    {
-        return m_transformable;
-    }
-
-    const sf::Vector2f &Skeleton::getOrigin() const
-    {
-        return m_transformable.getOrigin();
-    }
-
     Skeleton &&Skeleton::setOrigin(const sf::Vector2f &value)
     {
-        m_transformable.setOrigin(value);
+        sf::Transformable::setOrigin(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &Skeleton::getPosition() const
-    {
-        return m_transformable.getPosition();
     }
 
     Skeleton &&Skeleton::setPosition(const sf::Vector2f &value)
     {
-        m_transformable.setPosition(value);
+        sf::Transformable::setPosition(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &Skeleton::getScale() const
-    {
-        return m_transformable.getScale();
     }
 
     Skeleton &&Skeleton::setScale(const sf::Vector2f &value)
     {
-        m_transformable.setScale(value);
+        sf::Transformable::setScale(value);
         return std::move(*this);
-    }
-
-    sf::Angle Skeleton::getRotation() const
-    {
-        return m_transformable.getRotation();
     }
 
     Skeleton &&Skeleton::setRotation(sf::Angle value)
     {
-        m_transformable.setRotation(value);
+        sf::Transformable::setRotation(value);
         return std::move(*this);
     }
 
     Skeleton &&Skeleton::move(const sf::Vector2f &offset)
     {
-        m_transformable.move(offset);
+        sf::Transformable::move(offset);
         return std::move(*this);
     }
 
     Skeleton &&Skeleton::scale(const sf::Vector2f &factors)
     {
-        m_transformable.scale(factors);
+        sf::Transformable::scale(factors);
         return std::move(*this);
     }
 
     Skeleton &&Skeleton::rotate(const sf::Angle &angle)
     {
-        m_transformable.rotate(angle);
+        sf::Transformable::rotate(angle);
         return std::move(*this);
     }
 
@@ -252,7 +222,7 @@ namespace cacto
     }
 
     Skeleton::Skeleton()
-        : m_transformable(),
+        : sf::Transformable(),
           m_id(),
           m_holders(),
           m_parent()
@@ -266,11 +236,16 @@ namespace cacto
     }
 
     Skeleton::Skeleton(const Skeleton &other)
-        : m_transformable(other.m_transformable),
-          m_id(other.m_id),
-          m_holders(),
-          m_parent()
+        : Skeleton()
     {
+        *this = other;
+    }
+
+    Skeleton &Skeleton::operator=(const Skeleton &other)
+    {
+        sf::Transformable::operator=(other);
+        m_id = other.m_id;
+        m_holders = {};
         for (auto &holder : other.m_holders)
         {
             auto node = holder.child->clone();
@@ -286,12 +261,6 @@ namespace cacto
                     delete node;
             }
         }
-    }
-
-    Skeleton &Skeleton::operator=(const Skeleton &other)
-    {
-        Skeleton copy{other};
-        *this = std::move(copy);
         return *this;
     }
 
@@ -304,7 +273,7 @@ namespace cacto
     Skeleton &Skeleton::operator=(Skeleton &&other)
     {
         clearChildren();
-        m_transformable = std::move(other.m_transformable);
+        sf::Transformable::operator=(std::move(other));
         m_id = std::move(other.m_id);
         m_holders = std::move(other.m_holders);
         for (auto &holder : m_holders)
@@ -327,7 +296,7 @@ namespace cacto
                 case SkeletonRelation::Body:
                 {
                     auto _states = states;
-                    _states.transform *= m_transformable.getTransform();
+                    _states.transform *= getTransform();
                     _states.transform.translate(holder.options.getCoords());
                     cacto::draw(*holder.child, target, _states);
                 }
@@ -335,7 +304,7 @@ namespace cacto
                 case SkeletonRelation::Bone:
                 {
                     auto _states = states;
-                    _states.transform.translate(m_transformable.getTransform().transformPoint(holder.options.getCoords()));
+                    _states.transform.translate(getTransform().transformPoint(holder.options.getCoords()));
                     cacto::draw(*holder.child, target, _states);
                 }
                 break;
@@ -350,7 +319,7 @@ namespace cacto
     {
         XmlValue xml{"Skeleton", {}};
         xml["id"] = skeleton.getId();
-        auto txml = toXml(skeleton.asTransformable());
+        auto txml = toXml((const sf::Transformable &)skeleton);
         for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
         auto &content = xml.asTag().content;
@@ -373,7 +342,7 @@ namespace cacto
     {
         Skeleton skeleton{};
         skeleton.setId(xml.getAttribute("id"));
-        skeleton.asTransformable() = toTransformable(xml);
+        (sf::Transformable &)skeleton = toTransformable(xml);
         if (xml.isTag())
             for (auto &item : xml.asTag().content)
             {

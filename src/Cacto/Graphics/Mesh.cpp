@@ -10,84 +10,54 @@
 namespace cacto
 {
 
-    const sf::Transformable &Mesh::asTransformable() const
-    {
-        return m_transformable;
-    }
-
-    sf::Transformable &Mesh::asTransformable()
-    {
-        return m_transformable;
-    }
-
-    const sf::Vector2f &Mesh::getOrigin() const
-    {
-        return m_transformable.getOrigin();
-    }
-
     Mesh &&Mesh::setOrigin(const sf::Vector2f &value)
     {
-        m_transformable.setOrigin(value);
+        sf::Transformable::setOrigin(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &Mesh::getPosition() const
-    {
-        return m_transformable.getPosition();
     }
 
     Mesh &&Mesh::setPosition(const sf::Vector2f &value)
     {
-        m_transformable.setPosition(value);
+        sf::Transformable::setPosition(value);
         return std::move(*this);
-    }
-
-    const sf::Vector2f &Mesh::getScale() const
-    {
-        return m_transformable.getScale();
     }
 
     Mesh &&Mesh::setScale(const sf::Vector2f &value)
     {
-        m_transformable.setScale(value);
+        sf::Transformable::setScale(value);
         return std::move(*this);
-    }
-
-    sf::Angle Mesh::getRotation() const
-    {
-        return m_transformable.getRotation();
     }
 
     Mesh &&Mesh::setRotation(sf::Angle value)
     {
-        m_transformable.setRotation(value);
+        sf::Transformable::setRotation(value);
         return std::move(*this);
     }
 
     Mesh &&Mesh::move(const sf::Vector2f &offset)
     {
-        m_transformable.move(offset);
+        sf::Transformable::move(offset);
         return std::move(*this);
     }
 
     Mesh &&Mesh::scale(const sf::Vector2f &factors)
     {
-        m_transformable.scale(factors);
+        sf::Transformable::scale(factors);
         return std::move(*this);
     }
 
     Mesh &&Mesh::rotate(const sf::Angle &angle)
     {
-        m_transformable.rotate(angle);
+        sf::Transformable::rotate(angle);
         return std::move(*this);
     }
 
-    const sf::VertexArray &Mesh::asArray() const
+    Mesh::operator const sf::VertexArray &() const
     {
         return m_array;
     }
 
-    sf::VertexArray &Mesh::asArray()
+    Mesh::operator sf::VertexArray &()
     {
         return m_array;
     }
@@ -184,7 +154,7 @@ namespace cacto
     }
 
     Mesh::Mesh()
-        : m_transformable(),
+        : sf::Transformable(),
           m_array(),
           m_texture(),
           m_id(),
@@ -205,7 +175,7 @@ namespace cacto
 
     Mesh &Mesh::operator=(const Mesh &other)
     {
-        m_transformable = other.m_transformable;
+        sf::Transformable::operator=(other);
         m_array = other.m_array;
         m_texture = other.m_texture;
         m_id = other.m_id;
@@ -220,7 +190,7 @@ namespace cacto
 
     Mesh &Mesh::operator=(Mesh &&other)
     {
-        m_transformable = std::move(other.m_transformable);
+        sf::Transformable::operator=(std::move(other));
         m_array = std::move(other.m_array);
         m_texture = other.m_texture;
         m_id = std::move(other.m_id);
@@ -233,7 +203,7 @@ namespace cacto
     {
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= m_transformable.getTransform();
+        _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
 
@@ -242,8 +212,8 @@ namespace cacto
         XmlValue xml{"Mesh", {}};
         xml["id"] = mesh.getId();
         xml["texture"] = getExpression(mesh.getTexture());
-        auto txml = toXml(mesh.asTransformable());
-        auto axml = toXml(mesh.asArray());
+        auto txml = toXml((const sf::Transformable &)mesh);
+        auto axml = toXml((const sf::VertexArray &)mesh);
         for (auto &pair : txml.asTag().attributes)
             xml[pair.first] = pair.second;
         for (auto &pair : axml.asTag().attributes)
@@ -257,8 +227,8 @@ namespace cacto
         Mesh mesh{};
         mesh.setId(xml.getAttribute("id"));
         mesh.setTexture(getTexture(xml.getAttribute("texture")));
-        mesh.asTransformable() = toTransformable(xml);
-        mesh.asArray() = toVertexArray(xml);
+        (sf::Transformable &)mesh = toTransformable(xml);
+        (sf::VertexArray &)mesh = toVertexArray(xml);
         return std::move(mesh);
     }
 
