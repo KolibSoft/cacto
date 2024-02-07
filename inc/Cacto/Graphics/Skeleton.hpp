@@ -5,42 +5,71 @@
 #include <SFML/Graphics/Transformable.hpp>
 #include <Cacto/Core/ParentNode.hpp>
 #include <Cacto/Core/ChildNode.hpp>
-#include <Cacto/Graphics/TransformableChains.hpp>
 #include <Cacto/Graphics/Export.hpp>
 
 namespace cacto
 {
 
+    enum class SkeletonRelation
+    {
+        Body,
+        Bone
+    };
+
+    class CACTO_GRAPHICS_API SkeletonOptions
+    {
+
+    public:
+        const sf::Vector2f &getCoords() const;
+        SkeletonOptions &setCoords(const sf::Vector2f &value);
+
+        SkeletonRelation getRelation() const;
+        SkeletonOptions &setRelation(SkeletonRelation value);
+
+        SkeletonOptions(const sf::Vector2f &coords = {}, SkeletonRelation relation = SkeletonRelation::Body);
+        virtual ~SkeletonOptions();
+
+    private:
+        sf::Vector2f m_coords;
+        SkeletonRelation m_relation;
+    };
+
     class CACTO_GRAPHICS_API Skeleton
         : public virtual sf::Drawable,
-          public virtual TransformableChains,
           public virtual ParentNode,
           public virtual ChildNode
     {
 
     public:
-        enum Relation
-        {
-            Body,
-            Bone
-        };
-
-        class Options;
-
         const sf::Transformable &asTransformable() const;
-        sf::Transformable &asTransformable() override;
+        sf::Transformable &asTransformable();
+
+        const sf::Vector2f &getOrigin() const;
+        Skeleton &&setOrigin(const sf::Vector2f &value);
+
+        const sf::Vector2f &getPosition() const;
+        Skeleton &&setPosition(const sf::Vector2f &value);
+
+        const sf::Vector2f &getScale() const;
+        Skeleton &&setScale(const sf::Vector2f &value);
+
+        sf::Angle getRotation() const;
+        Skeleton &&setRotation(sf::Angle value);
+
+        Skeleton &&move(const sf::Vector2f &offset);
+        Skeleton &&scale(const sf::Vector2f &factors);
+        Skeleton &&rotate(const sf::Angle &angle);
 
         const std::string &getId() const override;
-        Skeleton &setId(const std::string &value) &;
-        inline Skeleton &&setId(const std::string &value) &&;
+        Skeleton &&setId(const std::string &value);
 
         Node *const getParent() const override;
 
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
-        const Options *const getOptions(const Node &child) const;
-        Options *const getOptions(const Node &child);
+        const SkeletonOptions *const getOptions(const Node &child) const;
+        SkeletonOptions *const getOptions(const Node &child);
 
         void attach(ParentNode &parent) override;
         void detach() override;
@@ -51,11 +80,8 @@ namespace cacto
         Skeleton *clone() const override;
         Skeleton *acquire() override;
 
-        Skeleton &append(ChildNode &child, const Options &options) &;
-        inline Skeleton &&append(ChildNode &child, const Options &options) &&;
-
-        Skeleton &append(ChildNode &&child, const Options &options) &;
-        inline Skeleton &&append(ChildNode &&child, const Options &options) &&;
+        Skeleton &&append(ChildNode &child, const SkeletonOptions &options);
+        Skeleton &&append(ChildNode &&child, const SkeletonOptions &options);
 
         Skeleton();
         virtual ~Skeleton();
@@ -65,24 +91,6 @@ namespace cacto
 
         Skeleton(Skeleton &&other);
         Skeleton &operator=(Skeleton &&other);
-
-        class Options
-        {
-
-        public:
-            const sf::Vector2f &getCoords() const;
-            Options &setCoords(const sf::Vector2f &value);
-
-            Relation getRelation() const;
-            Options &setRelation(Relation value);
-
-            Options(const sf::Vector2f &coords = {}, Relation relation = Body);
-            virtual ~Options();
-
-        private:
-            sf::Vector2f m_coords;
-            Relation m_relation;
-        };
 
     protected:
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
@@ -99,12 +107,12 @@ namespace cacto
         {
             bool owned{};
             ChildNode *child{};
-            Options options{};
+            SkeletonOptions options{};
         };
     };
 
-    std::string CACTO_GRAPHICS_API toString(Skeleton::Relation relation);
-    Skeleton::Relation CACTO_GRAPHICS_API toRelation(const std::string &string);
+    std::string CACTO_GRAPHICS_API toString(SkeletonRelation relation);
+    SkeletonRelation CACTO_GRAPHICS_API toRelation(const std::string &string);
 
     XmlValue CACTO_GRAPHICS_API toXml(const Skeleton &skeleton);
     Skeleton CACTO_GRAPHICS_API toSkeleton(const XmlValue &xml);
@@ -129,5 +137,3 @@ namespace cacto
     }
 
 }
-
-#include <Cacto/Graphics/Skeleton.inl>

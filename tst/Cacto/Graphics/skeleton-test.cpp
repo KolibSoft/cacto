@@ -8,6 +8,7 @@
 #include <SFML/Network.hpp>
 
 #include <Cacto/Graphics/Skeleton.hpp>
+#include <Cacto/Graphics/Mesh.hpp>
 #include <Cacto/Graphics/ColorPack.hpp>
 #include <Cacto/Graphics/TexturePack.hpp>
 #include <Cacto/Lang/XmlValue.hpp>
@@ -20,14 +21,28 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Skeleton skeleton{};
+    auto skeleton = cacto::Skeleton()
+                        .append(cacto::Mesh()
+                                    .setId("right")
+                                    .setPrimitiveType(sf::PrimitiveType::TriangleFan)
+                                    .append({{0, 0}, sf::Color::Red})
+                                    .append({{100, 0}, sf::Color::Red})
+                                    .append({{100, 100}, sf::Color::Red}),
+                                {{0,0}, cacto::SkeletonRelation::Body})
+                        .append(cacto::Mesh()
+                                    .setId("left")
+                                    .setPrimitiveType(sf::PrimitiveType::TriangleFan)
+                                    .append({{0, 0}, sf::Color::Blue})
+                                    .append({{100, 100}, sf::Color::Blue})
+                                    .append({{0, 100}, sf::Color::Blue}),
+                                {{0,0}, cacto::SkeletonRelation::Bone});
     cacto::XmlValue xml = nullptr;
 
     xml.fromFile("res/skeleton.xml");
     skeleton = cacto::toSkeleton(xml);
 
-    auto left = skeleton.firstDescendant<cacto::Skeleton>("left");
-    auto right = skeleton.firstDescendant<cacto::Skeleton>("right");
+    auto left = skeleton.firstDescendant<cacto::Mesh>("left");
+    auto right = skeleton.firstDescendant<cacto::Mesh>("right");
 
     auto clone = skeleton;
 

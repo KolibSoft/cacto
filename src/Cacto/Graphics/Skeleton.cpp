@@ -9,6 +9,56 @@
 namespace cacto
 {
 
+    std::string toString(SkeletonRelation relation)
+    {
+        if (relation == SkeletonRelation::Body)
+            return "Body";
+        else if (relation == SkeletonRelation::Bone)
+            return "Bone";
+        else
+            throw std::runtime_error("Unsupported relation");
+    }
+
+    SkeletonRelation toRelation(const std::string &string)
+    {
+        if (string == "Body")
+            return SkeletonRelation::Body;
+        else if (string == "Bone")
+            return SkeletonRelation::Bone;
+        else
+            throw std::runtime_error("Unsupported relation");
+    }
+
+    const sf::Vector2f &SkeletonOptions::getCoords() const
+    {
+        return m_coords;
+    }
+
+    SkeletonOptions &SkeletonOptions::setCoords(const sf::Vector2f &value)
+    {
+        m_coords = value;
+        return *this;
+    }
+
+    SkeletonRelation SkeletonOptions::getRelation() const
+    {
+        return m_relation;
+    }
+
+    SkeletonOptions &SkeletonOptions::setRelation(SkeletonRelation value)
+    {
+        m_relation = value;
+        return *this;
+    }
+
+    SkeletonOptions::SkeletonOptions(const sf::Vector2f &coords, SkeletonRelation relation)
+        : m_coords(coords),
+          m_relation(relation)
+    {
+    }
+
+    SkeletonOptions::~SkeletonOptions() = default;
+
     const sf::Transformable &Skeleton::asTransformable() const
     {
         return m_transformable;
@@ -19,15 +69,77 @@ namespace cacto
         return m_transformable;
     }
 
+    const sf::Vector2f &Skeleton::getOrigin() const
+    {
+        return m_transformable.getOrigin();
+    }
+
+    Skeleton &&Skeleton::setOrigin(const sf::Vector2f &value)
+    {
+        m_transformable.setOrigin(value);
+        return std::move(*this);
+    }
+
+    const sf::Vector2f &Skeleton::getPosition() const
+    {
+        return m_transformable.getPosition();
+    }
+
+    Skeleton &&Skeleton::setPosition(const sf::Vector2f &value)
+    {
+        m_transformable.setPosition(value);
+        return std::move(*this);
+    }
+
+    const sf::Vector2f &Skeleton::getScale() const
+    {
+        return m_transformable.getScale();
+    }
+
+    Skeleton &&Skeleton::setScale(const sf::Vector2f &value)
+    {
+        m_transformable.setScale(value);
+        return std::move(*this);
+    }
+
+    sf::Angle Skeleton::getRotation() const
+    {
+        return m_transformable.getRotation();
+    }
+
+    Skeleton &&Skeleton::setRotation(sf::Angle value)
+    {
+        m_transformable.setRotation(value);
+        return std::move(*this);
+    }
+
+    Skeleton &&Skeleton::move(const sf::Vector2f &offset)
+    {
+        m_transformable.move(offset);
+        return std::move(*this);
+    }
+
+    Skeleton &&Skeleton::scale(const sf::Vector2f &factors)
+    {
+        m_transformable.scale(factors);
+        return std::move(*this);
+    }
+
+    Skeleton &&Skeleton::rotate(const sf::Angle &angle)
+    {
+        m_transformable.rotate(angle);
+        return std::move(*this);
+    }
+
     const std::string &Skeleton::getId() const
     {
         return m_id;
     }
 
-    Skeleton &Skeleton::setId(const std::string &value) &
+    Skeleton &&Skeleton::setId(const std::string &value)
     {
         m_id = value;
-        return *this;
+        return std::move(*this);
     }
 
     Node *const Skeleton::getParent() const
@@ -48,7 +160,7 @@ namespace cacto
         return holder.child;
     }
 
-    const Skeleton::Options *const Skeleton::getOptions(const Node &child) const
+    const SkeletonOptions *const Skeleton::getOptions(const Node &child) const
     {
         for (auto &holder : m_holders)
             if (holder.child == &child)
@@ -56,7 +168,7 @@ namespace cacto
         return nullptr;
     }
 
-    Skeleton::Options *const Skeleton::getOptions(const Node &child)
+    SkeletonOptions *const Skeleton::getOptions(const Node &child)
     {
         for (auto &holder : m_holders)
             if (holder.child == &child)
@@ -124,19 +236,19 @@ namespace cacto
         return skeleton;
     }
 
-    Skeleton &Skeleton::append(ChildNode &child, const Options &options) &
+    Skeleton &&Skeleton::append(ChildNode &child, const SkeletonOptions &options)
     {
         append(child);
         m_holders.back().options = options;
-        return *this;
+        return std::move(*this);
     }
 
-    Skeleton &Skeleton::append(ChildNode &&child, const Options &options) &
+    Skeleton &&Skeleton::append(ChildNode &&child, const SkeletonOptions &options)
     {
         auto _child = dynamic_cast<ChildNode *>(child.acquire());
         append(*_child, options);
         m_holders.back().owned = true;
-        return *this;
+        return std::move(*this);
     }
 
     Skeleton::Skeleton()
@@ -212,7 +324,7 @@ namespace cacto
             {
                 switch (holder.options.getRelation())
                 {
-                case Relation::Body:
+                case SkeletonRelation::Body:
                 {
                     auto _states = states;
                     _states.transform *= m_transformable.getTransform();
@@ -220,7 +332,7 @@ namespace cacto
                     cacto::draw(*holder.child, target, _states);
                 }
                 break;
-                case Relation::Bone:
+                case SkeletonRelation::Bone:
                 {
                     auto _states = states;
                     _states.transform.translate(m_transformable.getTransform().transformPoint(holder.options.getCoords()));
@@ -232,56 +344,6 @@ namespace cacto
                 }
             }
         }
-    }
-
-    const sf::Vector2f &Skeleton::Options::getCoords() const
-    {
-        return m_coords;
-    }
-
-    Skeleton::Options &Skeleton::Options::setCoords(const sf::Vector2f &value)
-    {
-        m_coords = value;
-        return *this;
-    }
-
-    Skeleton::Relation Skeleton::Options::getRelation() const
-    {
-        return m_relation;
-    }
-
-    Skeleton::Options &Skeleton::Options::setRelation(Relation value)
-    {
-        m_relation = value;
-        return *this;
-    }
-
-    Skeleton::Options::Options(const sf::Vector2f &coords, Relation relation)
-        : m_coords(coords),
-          m_relation(relation)
-    {
-    }
-
-    Skeleton::Options::~Options() = default;
-
-    std::string toString(Skeleton::Relation relation)
-    {
-        if (relation == Skeleton::Relation::Body)
-            return "Body";
-        else if (relation == Skeleton::Relation::Bone)
-            return "Bone";
-        else
-            throw std::runtime_error("Unsupported relation");
-    }
-
-    Skeleton::Relation toRelation(const std::string &string)
-    {
-        if (string == "Body")
-            return Skeleton::Relation::Body;
-        else if (string == "Bone")
-            return Skeleton::Relation::Bone;
-        else
-            throw std::runtime_error("Unsupported relation");
     }
 
     XmlValue toXml(const Skeleton &skeleton)
@@ -322,9 +384,9 @@ namespace cacto
                     if (child)
                     {
                         sf::Vector2f coords = toVector(item.getAttribute("options:coords", "0,0"));
-                        Skeleton::Relation relation = toRelation(item.getAttribute("options:relation", "Body"));
+                        SkeletonRelation relation = toRelation(item.getAttribute("options:relation", "Body"));
                         skeleton.append(std::move(*child),
-                                        Skeleton::Options()
+                                        SkeletonOptions()
                                             .setCoords(coords)
                                             .setRelation(relation));
                     }
