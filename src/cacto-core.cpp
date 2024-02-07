@@ -15,3 +15,5 @@
 #include "Cacto/Core/AngleUtils.cpp"
 #include "Cacto/Core/VectorUtils.cpp"
 #include "Cacto/Core/StringUtils.cpp"
+#include "Cacto/Core/JsonUtils.cpp"
+#include "Cacto/Core/XmlUtils.cpp"

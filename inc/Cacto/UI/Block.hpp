@@ -38,6 +38,7 @@ namespace cacto
 
         Node *const getBackground() const;
         Block &&setBackground(Node *const value);
+        Block &&setBackground(Node &&value);
 
         const Thickness &getMargin() const;
         Block &&setMargin(const Thickness &value);
@@ -106,6 +107,7 @@ namespace cacto
     private:
         std::string m_id;
         Node *m_background;
+        bool m_backgroundOwned;
         Thickness m_margin;
         Thickness m_padding;
         f32t m_minWidth;
