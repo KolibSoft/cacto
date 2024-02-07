@@ -38,30 +38,30 @@ namespace cacto
 
     public:
         JsonType getType() const;
-        inline bool isNull() const;
+        bool isNull() const;
 
-        inline bool isNumber() const;
+        bool isNumber() const;
         JsonNumber getNumber(JsonNumber def = 0) const;
         void setNumber(JsonNumber value = 0);
-        inline explicit operator JsonNumber() const;
+        explicit operator JsonNumber() const;
 
-        inline bool isString() const;
+        bool isString() const;
         JsonString getString(const JsonString &def = "") const;
         void setString(const JsonString &value = "");
-        inline explicit operator JsonString() const;
+        explicit operator JsonString() const;
 
         const JsonString &asString() const;
         JsonString &asString();
 
-        inline bool isBoolean() const;
+        bool isBoolean() const;
         JsonBoolean getBoolean(JsonBoolean def = false) const;
         void setBoolean(JsonBoolean value = false);
-        inline explicit operator JsonBoolean() const;
+        explicit operator JsonBoolean() const;
 
-        inline bool isArray() const;
+        bool isArray() const;
         JsonArray getArray(const JsonArray &def = {}) const;
         void setArray(const JsonArray &value = {});
-        inline explicit operator JsonArray() const;
+        explicit operator JsonArray() const;
 
         void append(const JsonValue &value);
         void resize(szt count);
@@ -71,10 +71,10 @@ namespace cacto
         const JsonArray &asArray() const;
         JsonArray &asArray();
 
-        inline bool isObject() const;
+        bool isObject() const;
         JsonObject getObject(const JsonObject &def = {}) const;
         void setObject(const JsonObject &value = {});
-        inline explicit operator JsonObject() const;
+        explicit operator JsonObject() const;
 
         const JsonValue &operator[](const JsonString &key) const;
         JsonValue &operator[](const JsonString &key);
@@ -128,5 +128,3 @@ namespace cacto
     };
 
 }
-
-#include <Cacto/Lang/JsonValue.inl>

@@ -43,20 +43,20 @@ namespace cacto
 
     public:
         XmlType getType() const;
-        inline bool isEmpty() const;
+        bool isEmpty() const;
 
-        inline bool isText() const;
+        bool isText() const;
         XmlText getText(const XmlText &def = "") const;
         void setText(const XmlText &value = "");
-        inline explicit operator XmlText() const;
+        explicit operator XmlText() const;
 
         const XmlText &asText() const;
         XmlText &asText();
 
-        inline bool isTag() const;
+        bool isTag() const;
         XmlTag getTag(const XmlTag &def = {}) const;
         void setTag(const XmlTag &value = {});
-        inline explicit operator XmlTag() const;
+        explicit operator XmlTag() const;
 
         const XmlTag &asTag() const;
         XmlTag &asTag();
@@ -108,5 +108,3 @@ namespace cacto
     };
 
 }
-
-#include <Cacto/Lang/XmlValue.inl>

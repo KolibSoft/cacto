@@ -21,6 +21,16 @@ namespace cacto
         return m_type;
     }
 
+    bool XmlValue::isEmpty() const
+    {
+        return m_type == XmlType::Empty;
+    }
+
+    bool XmlValue::isText() const
+    {
+        return m_type == XmlType::Text;
+    }
+
     XmlText XmlValue::getText(const XmlText &def) const
     {
         if (m_type != XmlType::Text)
@@ -40,6 +50,11 @@ namespace cacto
         }
     }
 
+    XmlValue::operator XmlText() const
+    {
+        return getText();
+    }
+
     const XmlText &XmlValue::asText() const
     {
         if (m_type != XmlType::Text)
@@ -52,6 +67,11 @@ namespace cacto
         if (m_type != XmlType::Text)
             throw std::runtime_error("Xml is not an text value");
         return *m_text;
+    }
+
+    bool XmlValue::isTag() const
+    {
+        return m_type == XmlType::Tag;
     }
 
     XmlTag XmlValue::getTag(const XmlTag &def) const
@@ -71,6 +91,11 @@ namespace cacto
             m_type = XmlType::Tag;
             m_tag = new XmlTag(value);
         }
+    }
+
+    XmlValue::operator XmlTag() const
+    {
+        return getTag();
     }
 
     const XmlTag &XmlValue::asTag() const
