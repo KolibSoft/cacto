@@ -33,8 +33,7 @@ namespace cacto
         Surface &&scale(const sf::Vector2f &factors);
         Surface &&rotate(const sf::Angle &angle);
 
-        const Box &asBox() const;
-        Box &asBox();
+        operator const Box &() const;
 
         const Geometry *const getGeometry() const;
         Surface &&setGeometry(const Geometry *const value);

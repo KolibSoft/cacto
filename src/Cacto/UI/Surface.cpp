@@ -57,12 +57,7 @@ namespace cacto
         return std::move(*this);
     }
 
-    const Box &Surface::asBox() const
-    {
-        return m_box;
-    }
-
-    Box &Surface::asBox()
+    Surface::operator const Box &() const
     {
         return m_box;
     }
