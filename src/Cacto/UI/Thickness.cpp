@@ -75,11 +75,13 @@ namespace cacto
         return stream.str();
     }
 
-    void fromString(Thickness &thickness, const std::string &string)
+    Thickness toTickness(const std::string &string)
     {
+        Thickness thickness{};
         std::stringstream stream{string};
         char separator = ',';
         stream >> thickness.left >> separator >> thickness.top >> separator >> thickness.right >> separator >> thickness.bottom;
+        return std::move(thickness);
     }
 
 }

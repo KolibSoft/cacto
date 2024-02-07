@@ -41,7 +41,7 @@ namespace cacto
     };
 
     std::string CACTO_UI_API toString(const Thickness &thickness);
-    void CACTO_UI_API fromString(Thickness &thickness, const std::string &string);
+    Thickness CACTO_UI_API toTickness(const std::string &string);
 
 }
 
