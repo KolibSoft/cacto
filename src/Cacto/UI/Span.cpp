@@ -170,24 +170,6 @@ namespace cacto
         return span;
     }
 
-    void Span::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        if (m_font && m_characterSize)
-        {
-            if (m_invalid)
-            {
-                cacto::setGlyphs(m_array, m_string, m_direction, *m_font, m_characterSize, false, 0);
-                cacto::setColor(m_array, m_color);
-                m_invalid = false;
-            }
-            auto _states = states;
-            _states.transform.translate({m_box.getLeft(), m_box.getTop()});
-            _states.texture = &m_font->getTexture(m_characterSize);
-            target.draw(m_array, _states);
-            m_vTransform = _states.transform;
-        }
-    }
-
     sf::Vector2f Span::compact()
     {
         auto bounds = m_array.getBounds();
@@ -286,6 +268,24 @@ namespace cacto
         other.m_invalid = true;
         other.detach();
         return *this;
+    }
+
+    void Span::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        if (m_font && m_characterSize)
+        {
+            if (m_invalid)
+            {
+                cacto::setGlyphs(m_array, m_string, m_direction, *m_font, m_characterSize, false, 0);
+                cacto::setColor(m_array, m_color);
+                m_invalid = false;
+            }
+            auto _states = states;
+            _states.transform.translate({m_box.getLeft(), m_box.getTop()});
+            _states.texture = &m_font->getTexture(m_characterSize);
+            target.draw(m_array, _states);
+            m_vTransform = _states.transform;
+        }
     }
 
     XmlValue toXml(const Span &span)
