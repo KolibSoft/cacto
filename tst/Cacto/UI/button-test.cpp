@@ -25,18 +25,15 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Surface background{};
-    background
-        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
-        .setColor(sf::Color::Red);
-
     cacto::Button root{};
     root
         .setOnClickListener([&](cacto::Node &target, const sf::Event &event)
                             { std::cout << "Clicked\n"; })
         .setHorizontalAnchor(cacto::BoxAnchor::Center)
         .setVerticalAnchor(cacto::BoxAnchor::Center)
-        .setBackground(&background)
+        .setBackground(cacto::Surface()
+                           .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
+                           .setColor(sf::Color::Red))
         .setMargin(10)
         .setPadding(10)
         .setFont(cacto::getResource<sf::Font>("res/font.ttf"))
