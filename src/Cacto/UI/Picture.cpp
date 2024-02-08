@@ -1,20 +1,163 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <Cacto/Graphics/Rectangle.hpp>
 #include <Cacto/Graphics/VectorUtils.hpp>
+#include <Cacto/Graphics/RectUtils.hpp>
 #include <Cacto/UI/Picture.hpp>
 
 namespace cacto
 {
 
-    Picture::Scale Picture::getScale() const
+    Picture &&Picture::setLeft(f32t value, bool resize)
+    {
+        Box::setLeft(value, resize);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setRight(f32t value, bool resize)
+    {
+        Box::setRight(value, resize);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setTop(f32t value, bool resize)
+    {
+        Box::setTop(value, resize);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setBottom(f32t value, bool resize)
+    {
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setBackground(Node *const value)
+    {
+        Block::setBackground(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setBackground(Node &&value)
+    {
+        Block::setBackground(std::move(value));
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setMargin(const Thickness &value)
+    {
+        Block::setMargin(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setPadding(const Thickness &value)
+    {
+        Block::setPadding(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setMinWidth(f32t value)
+    {
+        Block::setMinWidth(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setMaxWidth(f32t value)
+    {
+        Block::setMaxWidth(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setMinHeight(f32t value)
+    {
+        Block::setMinHeight(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setMaxHeight(f32t value)
+    {
+        Block::setMaxHeight(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setFixedWidth(f32t value)
+    {
+        Block::setFixedWidth(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setFixedHeight(f32t value)
+    {
+        Block::setFixedHeight(value);
+        return std::move(*this);
+    }
+
+    Picture::operator const Surface &() const
+    {
+        return m_surface;
+    }
+
+    Picture::operator Surface &()
+    {
+        return m_surface;
+    }
+
+    Picture &&Picture::setGeometry(const Geometry *const value)
+    {
+        m_surface.setGeometry(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setPrecision(szt value)
+    {
+        m_surface.setPrecision(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setColor(const sf::Color &value)
+    {
+        m_surface.setColor(value);
+        return std::move(*this);
+    }
+
+    Picture &&Picture::setTexture(const sf::Texture *const value, bool resetRect)
+    {
+        m_surface.setTexture(value, resetRect);
+        return std::move(*this);
+    }
+
+    PictureScale Picture::getScale() const
     {
         return m_scale;
     }
 
-    Picture &Picture::setScale(Scale value)
+    Picture &&Picture::setScale(PictureScale value)
     {
         m_scale = value;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::FloatRect &Picture::getTextureRect() const
@@ -22,42 +165,38 @@ namespace cacto
         return m_textureRect;
     }
 
-    Picture &Picture::setTextureRect(const sf::FloatRect &value)
+    Picture &&Picture::setTextureRect(const sf::FloatRect &value)
     {
         m_textureRect = value;
-        return *this;
+        return std::move(*this);
     }
 
-    Picture::BoxAnchor Picture::getHorizontalAnchor() const
+    BoxAnchor Picture::getHorizontalAnchor() const
     {
         return m_hAnchor;
     }
 
-    Picture &Picture::setHorizontalAnchor(BoxAnchor value)
+    Picture &&Picture::setHorizontalAnchor(BoxAnchor value)
     {
         m_hAnchor = value;
-        return *this;
+        return std::move(*this);
     }
 
-    Picture::BoxAnchor Picture::getVerticalAnchor() const
+    BoxAnchor Picture::getVerticalAnchor() const
     {
         return m_vAnchor;
     }
 
-    Picture &Picture::setVerticalAnchor(BoxAnchor value)
+    Picture &&Picture::setVerticalAnchor(BoxAnchor value)
     {
         m_vAnchor = value;
-        return *this;
+        return std::move(*this);
     }
 
-    const Surface &Picture::asSurface() const
+    Picture &&Picture::setId(const std::string &id)
     {
-        return m_surface;
-    }
-
-    Surface &Picture::asSurface()
-    {
-        return m_surface;
+        Block::setId(id);
+        return std::move(*this);
     }
 
     sf::Vector2f Picture::compact()
@@ -71,14 +210,14 @@ namespace cacto
     {
         auto size = inflateBlock(containerSize);
         auto contentBox = getContentBox();
-        if (m_scale == Fit)
+        if (m_scale == PictureScale::Fit)
         {
             auto fit = fitSize({m_textureRect.width, m_textureRect.height}, {contentBox.getWidth(), contentBox.getHeight()});
             contentBox.setWidth(fit.x, m_hAnchor);
             contentBox.setHeight(fit.y, m_vAnchor);
         }
         m_surface.inflate({contentBox.getWidth(), contentBox.getHeight()});
-        if (m_scale == Crop)
+        if (m_scale == PictureScale::Crop)
         {
             auto crop = fitSize({contentBox.getWidth(), contentBox.getHeight()}, {m_textureRect.width, m_textureRect.height});
             Box box = m_textureRect;
@@ -97,7 +236,7 @@ namespace cacto
     {
         placeBlock(position);
         auto contentBox = getContentBox();
-        if (m_scale == Fit)
+        if (m_scale == PictureScale::Fit)
         {
             auto childSize = fitSize({m_textureRect.width, m_textureRect.height}, {contentBox.getWidth(), contentBox.getHeight()});
             contentBox.setWidth(childSize.x, m_hAnchor);
@@ -109,15 +248,48 @@ namespace cacto
     Picture::Picture()
         : Block(),
           m_surface(),
-          m_scale(Fill),
+          m_scale(PictureScale::Fill),
           m_textureRect(),
-          m_hAnchor(Start),
-          m_vAnchor(Start)
+          m_hAnchor(BoxAnchor::Start),
+          m_vAnchor(BoxAnchor::Start)
     {
-        m_textureRect = m_surface.getTextureRect();
     }
 
     Picture::~Picture() = default;
+
+    Picture::Picture(const Picture &other)
+        : Picture()
+    {
+        *this = other;
+    }
+
+    Picture &Picture::operator=(const Picture &other)
+    {
+        m_surface = other.m_surface;
+        m_scale = other.m_scale;
+        m_textureRect = other.m_textureRect;
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        Block::operator=(other);
+        return *this;
+    }
+
+    Picture::Picture(Picture &&other)
+        : Picture()
+    {
+        *this = std::move(other);
+    }
+
+    Picture &Picture::operator=(Picture &&other)
+    {
+        m_surface = std::move(other.m_surface);
+        m_scale = other.m_scale;
+        m_textureRect = std::move(other.m_textureRect);
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        Block::operator=(std::move(other));
+        return *this;
+    }
 
     void Picture::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
@@ -125,26 +297,52 @@ namespace cacto
         target.draw(m_surface, states);
     }
 
-    XmlValue CACTO_UI_API toXml(const Picture &picture)
+    std::string toString(PictureScale scale)
     {
-        auto xml = cacto::toXml((const Block &)picture);
-        xml.setName("Picture");
-        auto surface_xml = cacto::toXml(picture.asSurface());
-        for (auto &pair : surface_xml.asAttributes())
-            xml[pair.first] = pair.second;
+        if (scale == PictureScale::Fill)
+            return "Fill";
+        else if (scale == PictureScale::Fit)
+            return "Fit";
+        else if (scale == PictureScale::Crop)
+            return "Crop";
+        else
+            throw std::runtime_error("Invalid scale type");
+    }
+
+    PictureScale toPictureScale(const std::string &string)
+    {
+        if (string == "Fill")
+            return PictureScale::Fill;
+        else if (string == "Fit")
+            return PictureScale::Fit;
+        else if (string == "Crop")
+            return PictureScale::Crop;
+        else
+            throw std::runtime_error("Invalid scale type");
+    }
+
+    XmlValue toXml(const Picture &picture)
+    {
+        XmlValue xml{"Picture", {}};
+        xml |= toXml((const Block &)picture);
+        xml |= toXml((const Surface &)picture);
+        xml["scale"] = toString(picture.getScale());
+        xml["textureRect"] = toString(picture.getTextureRect());
         xml["horizontalAnchor"] = toString(picture.getHorizontalAnchor());
         xml["verticalAnchor"] = toString(picture.getVerticalAnchor());
         return std::move(xml);
     }
 
-    void CACTO_UI_API fromXml(Picture &picture, const XmlValue &xml)
+    Picture toPicture(const XmlValue &xml)
     {
-        cacto::fromXml((Block &)picture, xml);
-        cacto::fromXml(picture.asSurface(), xml);
-        Box::BoxAnchor hAnchor{};
-        Box::BoxAnchor vAnchor{};
-        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
-        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+        Picture picture{};
+        (Block &)picture = toBlock(xml);
+        (Surface &)picture = toSurface(xml);
+        picture.setScale(toPictureScale(xml.getAttribute("scale", "Fill")));
+        picture.setTextureRect(toRect(xml.getAttribute("textureRect", "0,0,0,0")));
+        picture.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
+        picture.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
+        return std::move(picture);
     }
 
     namespace picture
@@ -165,10 +363,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Picture")
             {
-                auto picture = std::make_shared<Picture>();
-                cacto::fromXml(*picture, xml);
-                Node::XmlStack.push(picture);
-                return picture.get();
+                auto picture = new Picture();
+                *picture = toPicture(xml);
+                return picture;
             }
             return nullptr;
         }

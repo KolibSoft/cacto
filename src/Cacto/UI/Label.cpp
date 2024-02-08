@@ -205,6 +205,18 @@ namespace cacto
         return std::move(*this);
     }
 
+    Label *Label::clone() const
+    {
+        auto label = new Label(*this);
+        return label;
+    }
+
+    Label *Label::acquire()
+    {
+        auto label = new Label(std::move(*this));
+        return label;
+    }
+
     sf::Vector2f Label::compact()
     {
         auto contentSize = m_span.compact();

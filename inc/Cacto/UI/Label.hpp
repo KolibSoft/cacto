@@ -62,6 +62,9 @@ namespace cacto
 
         Label &&setId(const std::string &value);
 
+        Label *clone() const override;
+        Label *acquire() override;
+
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
         void place(const sf::Vector2f &position = {0, 0}) override;
