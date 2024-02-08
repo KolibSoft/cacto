@@ -108,6 +108,9 @@ namespace cacto
         bool operator==(const JsonValue &other) const;
         bool operator!=(const JsonValue &other) const;
 
+        JsonValue operator|(const JsonValue &other) const;
+        JsonValue &operator|=(const JsonValue &other);
+
         static const JsonValue Null;
         static const JsonString EmptyString;
         static const JsonArray EmptyArray;

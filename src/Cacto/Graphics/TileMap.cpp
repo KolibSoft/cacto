@@ -280,13 +280,11 @@ namespace cacto
     XmlValue toXml(const TileMap &tileMap)
     {
         XmlValue xml{"TileMap", {}};
-        xml["id"] = tileMap.getId();
+        xml |= toXml((const sf::Transformable &)tileMap);
         xml["texture"] = getExpression(tileMap.getTexture());
         xml["tileSize"] = toString(tileMap.getTileSize());
         xml["area"] = toString(sf::FloatRect(tileMap.getArea()));
-        auto txml = cacto::toXml((const sf::Transformable &)tileMap);
-        for (auto &pair : txml.asTag().attributes)
-            xml[pair.first] = pair.second;
+        xml["id"] = tileMap.getId();
         auto &content = xml.asTag().content;
         XmlValue chunk{"Chunk", {}};
         auto area{tileMap.getArea()};
@@ -307,12 +305,12 @@ namespace cacto
     TileMap toTileMap(const XmlValue &xml)
     {
         TileMap tileMap{};
-        tileMap.setId(xml.getAttribute("id"));
+        (sf::Transformable &)tileMap = toTransformable(xml);
         tileMap.setTexture(getTexture(xml.getAttribute("texture")));
         tileMap.setTileSize(toVector(xml.getAttribute("tileSize", "0,0")));
         tileMap.setArea(sf::IntRect(toRect(xml.getAttribute("area", "0,0,0,0"))));
         tileMap.fill(getRect(xml.getAttribute("fill", "0,0,0,0")));
-        (sf::Transformable &)tileMap = toTransformable(xml);
+        tileMap.setId(xml.getAttribute("id"));
         if (xml.isTag())
         {
             auto &content = xml.asTag().content;

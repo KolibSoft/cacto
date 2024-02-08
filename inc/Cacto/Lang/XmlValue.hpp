@@ -92,6 +92,9 @@ namespace cacto
         bool operator==(const XmlValue &other) const;
         bool operator!=(const XmlValue &other) const;
 
+        XmlValue operator|(const XmlValue &other) const;
+        XmlValue &operator|=(const XmlValue &other);
+
         static const XmlValue Empty;
         static const XmlText EmptyText;
         static const XmlTag EmptyTag;

@@ -312,10 +312,8 @@ namespace cacto
     XmlValue toXml(const Skeleton &skeleton)
     {
         XmlValue xml{"Skeleton", {}};
+        xml |= toXml((const sf::Transformable &)skeleton);
         xml["id"] = skeleton.getId();
-        auto txml = toXml((const sf::Transformable &)skeleton);
-        for (auto &pair : txml.asTag().attributes)
-            xml[pair.first] = pair.second;
         auto &content = xml.asTag().content;
         for (szt i = 0; i < skeleton.getChildCount(); i++)
         {
@@ -335,8 +333,8 @@ namespace cacto
     Skeleton toSkeleton(const XmlValue &xml)
     {
         Skeleton skeleton{};
-        skeleton.setId(xml.getAttribute("id"));
         (sf::Transformable &)skeleton = toTransformable(xml);
+        skeleton.setId(xml.getAttribute("id"));
         if (xml.isTag())
             for (auto &item : xml.asTag().content)
             {

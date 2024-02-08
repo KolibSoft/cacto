@@ -436,6 +436,32 @@ namespace cacto
         return !(*this == other);
     }
 
+    JsonValue JsonValue::operator|(const JsonValue &other) const
+    {
+        JsonValue clone{*this};
+        clone |= other;
+        return std::move(clone);
+    }
+
+    JsonValue &JsonValue::operator|=(const JsonValue &other)
+    {
+        if (isNull())
+            *this = other;
+        else if (isArray() && other.isArray())
+        {
+            for (szt i = 0; i < m_array->size() && i < other.m_array->size(); i++)
+                m_array->at(i) |= other.m_array->at(i);
+            while (m_array->size() < other.m_array->size())
+                m_array->push_back(other.m_array->at(m_array->size()));
+        }
+        else if (isObject() && other.isObject())
+        {
+            for (auto &pair : *other.m_object)
+                m_object->insert({pair.first, pair.second});
+        }
+        return *this;
+    }
+
     const JsonValue JsonValue::Null = nullptr;
     const JsonString JsonValue::EmptyString{};
     const JsonArray JsonValue::EmptyArray{};

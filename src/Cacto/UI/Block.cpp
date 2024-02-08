@@ -417,13 +417,13 @@ namespace cacto
     XmlValue toXml(const Block &block)
     {
         XmlValue xml{"Block", {}};
-        xml["id"] = block.getId();
         xml["margin"] = toString(block.getMargin());
         xml["padding"] = toString(block.getPadding());
         xml["minWidth"] = std::to_string(block.getMinWidth());
         xml["maxWidth"] = std::to_string(block.getMaxWidth());
         xml["minHeight"] = std::to_string(block.getMinHeight());
         xml["maxHeight"] = std::to_string(block.getMaxHeight());
+        xml["id"] = block.getId();
         auto bxml = toXml(block.getBackground());
         auto bid = getId(bxml);
         if (bid != "")
@@ -436,13 +436,13 @@ namespace cacto
     Block CACTO_UI_API toBlock(const XmlValue &xml)
     {
         Block block{};
-        block.setId(xml.getAttribute("id"));
         block.setMargin(toTickness(xml.getAttribute("margin", "0,0,0,0")));
         block.setPadding(toTickness(xml.getAttribute("padding", "0,0,0,0")));
         block.setMinWidth(std::stof(xml.getAttribute("minWidth", "0")));
         block.setMaxWidth(std::stof(xml.getAttribute("maxWidth", "inf")));
         block.setMinHeight(std::stof(xml.getAttribute("minHeight", "0")));
         block.setMaxHeight(std::stof(xml.getAttribute("maxHeight", "inf")));
+        block.setId(xml.getAttribute("id"));
         auto bxml = getXml(xml.getAttribute("background"));
         if (bxml != nullptr)
         {

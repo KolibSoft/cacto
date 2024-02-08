@@ -313,6 +313,29 @@ namespace cacto
         return !(*this == other);
     }
 
+    XmlValue XmlValue::operator|(const XmlValue &other) const
+    {
+        XmlValue clone{*this};
+        clone |= other;
+        return std::move(clone);
+    }
+
+    XmlValue &XmlValue::operator|=(const XmlValue &other)
+    {
+        if (isEmpty())
+            *this = other;
+        else if (isTag() && other.isTag())
+        {
+            for (auto &pair : other.m_tag->attributes)
+                m_tag->attributes.insert({pair.first, pair.second});
+            for (szt i = 0; i < m_tag->content.size() && i < other.m_tag->content.size(); i++)
+                m_tag->content.at(i) |= other.m_tag->content.at(i);
+            while (m_tag->content.size() < other.m_tag->content.size())
+                m_tag->content.push_back(other.m_tag->content.at(m_tag->content.size()));
+        }
+        return *this;
+    }
+
     const XmlValue XmlValue::Empty = nullptr;
     const XmlText XmlValue::EmptyText{};
     const XmlTag XmlValue::EmptyTag{};

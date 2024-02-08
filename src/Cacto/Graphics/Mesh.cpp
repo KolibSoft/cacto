@@ -210,25 +210,20 @@ namespace cacto
     XmlValue toXml(const Mesh &mesh)
     {
         XmlValue xml{"Mesh", {}};
-        xml["id"] = mesh.getId();
+        xml |= toXml((const sf::Transformable &)mesh);
+        xml |= toXml((const sf::VertexArray &)mesh);
         xml["texture"] = getExpression(mesh.getTexture());
-        auto txml = toXml((const sf::Transformable &)mesh);
-        auto axml = toXml((const sf::VertexArray &)mesh);
-        for (auto &pair : txml.asTag().attributes)
-            xml[pair.first] = pair.second;
-        for (auto &pair : axml.asTag().attributes)
-            xml[pair.first] = pair.second;
-        xml.asTag().content = std::move(axml.asTag().content);
+        xml["id"] = mesh.getId();
         return std::move(xml);
     }
 
     Mesh toMesh(const XmlValue &xml)
     {
         Mesh mesh{};
-        mesh.setId(xml.getAttribute("id"));
-        mesh.setTexture(getTexture(xml.getAttribute("texture")));
         (sf::Transformable &)mesh = toTransformable(xml);
         (sf::VertexArray &)mesh = toVertexArray(xml);
+        mesh.setTexture(getTexture(xml.getAttribute("texture")));
+        mesh.setId(xml.getAttribute("id"));
         return std::move(mesh);
     }
 

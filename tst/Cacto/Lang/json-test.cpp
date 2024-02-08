@@ -48,8 +48,12 @@ int main()
     json[5]["object"] = json;
 
     json = nullptr;
-    const auto& cjson = json;
-    std::cout << cjson[0][0][0][0]["Property"]["SubProperty"].getNumber(23);
+    const auto &cjson = json;
+    std::cout << cjson[0][0][0][0]["Property"]["SubProperty"].getNumber(23) << "\n";
+
+    cacto::JsonValue jsonA = {std::pair{"A", "Value"}};
+    cacto::JsonValue jsonB = {std::pair{"A", "Ignored"}};
+    std::cout << (jsonA | jsonB) << "\n";
 
     return 0;
 }

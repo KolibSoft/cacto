@@ -278,13 +278,8 @@ namespace cacto
     XmlValue toXml(const Label &label)
     {
         XmlValue xml{"Label", {}};
-        auto sxml = cacto::toXml((const Span &)label);
-        for (auto &pair : sxml.asTag().attributes)
-            xml[pair.first] = pair.second;
-        auto bxml = cacto::toXml((const Block &)label);
-        for (auto &pair : bxml.asTag().attributes)
-            xml[pair.first] = pair.second;
-        xml.asTag().content.push_back(bxml[0]);
+        xml |= toXml((const Block &)label);
+        xml |= toXml((const Span &)label);
         xml["horizontalAnchor"] = toString(label.getHorizontalAnchor());
         xml["verticalAnchor"] = toString(label.getVerticalAnchor());
         return std::move(xml);
@@ -293,8 +288,8 @@ namespace cacto
     Label toLabel(const XmlValue &xml)
     {
         Label label{};
-        (Span &)label = toSpan(xml);
         (Block &)label = toBlock(xml);
+        (Span &)label = toSpan(xml);
         label.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
         label.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
         return std::move(label);

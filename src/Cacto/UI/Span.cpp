@@ -289,24 +289,24 @@ namespace cacto
     XmlValue toXml(const Span &span)
     {
         XmlValue xml{"Span", {}};
-        xml["id"] = span.getId();
         xml["font"] = getExpression(span.getFont());
         xml["string"] = getExpression(span.getString());
         xml["direction"] = toString(span.getDirection());
         xml["characterSize"] = std::to_string(span.getCharacterSize());
         xml["color"] = getExpression(span.getColor());
+        xml["id"] = span.getId();
         return std::move(xml);
     }
 
     Span toSpan(const XmlValue &xml)
     {
         Span span{};
-        span.setId(xml.getAttribute("id"));
         span.setFont(getFont(xml.getAttribute("font")));
         span.setString(getString(xml.getAttribute("string")));
         span.setColor(getColor(xml.getAttribute("color", "#FFFFFFFF")));
         span.setDirection(toTextDirection(xml.getAttribute("direction", "ToRight")));
         span.setCharacterSize(std::stoi(xml.getAttribute("characterSize", "0")));
+        span.setId(xml.getAttribute("id"));
         return std::move(span);
     }
 

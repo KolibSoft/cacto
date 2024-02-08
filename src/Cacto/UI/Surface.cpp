@@ -313,36 +313,24 @@ namespace cacto
     XmlValue toXml(const Surface &surface)
     {
         XmlValue xml{"Surface", {}};
-        auto &id = surface.getId();
-        auto geometry = surface.getGeometry();
-        auto precision = surface.getPrecision();
-        auto color = surface.getColor();
-        auto texture = surface.getTexture();
-        auto textureRect = surface.getTextureRect();
-        xml["id"] = id;
-        xml["geometry"] = getExpression(geometry);
-        xml["precision"] = std::to_string(precision);
-        xml["color"] = getExpression(color);
-        xml["texture"] = getExpression(texture);
-        xml["textureRect"] = toString(textureRect);
+        xml["geometry"] = getExpression(surface.getGeometry());
+        xml["precision"] = std::to_string(surface.getPrecision());
+        xml["color"] = getExpression(surface.getColor());
+        xml["texture"] = getExpression(surface.getTexture());
+        xml["textureRect"] = toString(surface.getTextureRect());
+        xml["id"] = surface.getId();
         return std::move(xml);
     }
 
     Surface toSurface(const XmlValue &xml)
     {
         Surface surface{};
+        surface.setGeometry(getGeometry(xml.getAttribute("geometry")));
+        surface.setPrecision(std::stoi(xml.getAttribute("precision", "1")));
+        surface.setColor(getColor(xml.getAttribute("color", "#FFFFFFFF")));
+        surface.setTexture(getTexture(xml.getAttribute("texture")));
+        surface.setTextureRect(toRect(xml.getAttribute("textureRect", "0,0,0,0")));
         surface.setId(xml.getAttribute("id"));
-        auto geometry = getGeometry(xml.getAttribute("geometry"));
-        szt precision = std::stoi(xml.getAttribute("precision", "1"));
-        auto color = getColor(xml.getAttribute("color", "#FFFFFFFF"));
-        auto texture = getTexture(xml.getAttribute("texture"));
-        auto textureRect = toRect(xml.getAttribute("textureRect", "0,0,0,0"));
-        surface
-            .setGeometry(geometry)
-            .setPrecision(precision)
-            .setColor(color)
-            .setTexture(texture)
-            .setTextureRect(textureRect);
         return std::move(surface);
     }
 
