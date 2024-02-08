@@ -230,16 +230,7 @@ namespace cacto
 
     Span &Span::operator=(const Span &other)
     {
-        Box::operator=(other);
-        m_font = other.m_font;
-        m_string = other.m_string;
-        m_direction = other.m_direction;
-        m_characterSize = other.m_characterSize;
-        m_color = other.m_color;
-        m_id = other.m_id;
-        m_invalid = other.m_invalid;
-        m_array = other.m_array;
-        m_vTransform = other.m_vTransform;
+        clone(other);
         return *this;
     }
 
@@ -250,6 +241,27 @@ namespace cacto
     }
 
     Span &Span::operator=(Span &&other)
+    {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Span::clone(const Span &other)
+    {
+        Box::operator=(other);
+        m_font = other.m_font;
+        m_string = other.m_string;
+        m_direction = other.m_direction;
+        m_characterSize = other.m_characterSize;
+        m_color = other.m_color;
+        m_id = other.m_id;
+        m_invalid = other.m_invalid;
+        m_array = other.m_array;
+        m_vTransform = other.m_vTransform;
+    }
+
+    void Span::acquire(Span &&other)
     {
         Box::operator=(std::move(other));
         m_font = other.m_font;
@@ -264,8 +276,6 @@ namespace cacto
         other.m_font = nullptr;
         other.m_characterSize = 0;
         other.m_invalid = true;
-        other.detach();
-        return *this;
     }
 
     void Span::draw(sf::RenderTarget &target, const sf::RenderStates &states) const

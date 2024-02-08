@@ -250,8 +250,7 @@ namespace cacto
 
     Button &Button::operator=(const Button &other)
     {
-        Label::operator=(other);
-        m_onClick = other.m_onClick;
+        clone(other);
         return *this;
     }
 
@@ -263,12 +262,24 @@ namespace cacto
 
     Button &Button::operator=(Button &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Button::clone(const Button &other)
+    {
+        Label::clone(other);
+        m_onClick = other.m_onClick;
+    }
+
+    void Button::acquire(Button &&other)
+    {
+        Label::acquire(std::move(other));
         m_onClick = other.m_onClick;
         other.m_onClick = nullptr;
         if (other.m_focused)
             focus();
-        Label::operator=(std::move(other));
-        return *this;
     }
 
     void Button::onClick(const sf::Event &event)

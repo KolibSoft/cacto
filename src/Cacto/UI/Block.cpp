@@ -301,6 +301,25 @@ namespace cacto
 
     Block &Block::operator=(const Block &other)
     {
+        clone(other);
+        return *this;
+    }
+
+    Block::Block(Block &&other)
+        : Block()
+    {
+        *this = std::move(other);
+    }
+
+    Block &Block::operator=(Block &&other)
+    {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Block::clone(const Block &other)
+    {
         dropBackground();
         Box::operator=(other);
         if (other.m_background)
@@ -316,16 +335,9 @@ namespace cacto
         m_maxHeight = other.m_maxHeight;
         m_id = other.m_id;
         m_vTransform = other.m_vTransform;
-        return *this;
     }
 
-    Block::Block(Block &&other)
-        : Block()
-    {
-        *this = std::move(other);
-    }
-
-    Block &Block::operator=(Block &&other)
+    void Block::acquire(Block &&other)
     {
         dropBackground();
         Box::operator=(std::move(other));
@@ -345,8 +357,6 @@ namespace cacto
         other.m_maxWidth = 0;
         other.m_minHeight = 0;
         other.m_maxHeight = 0;
-        other.detach();
-        return *this;
     }
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const

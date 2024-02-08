@@ -72,6 +72,9 @@ namespace cacto
         Button &operator=(Button &&other);
 
     protected:
+        void clone(const Button &other);
+        void acquire(Button &&other);
+
         virtual void onClick(const sf::Event &event);
 
     private:

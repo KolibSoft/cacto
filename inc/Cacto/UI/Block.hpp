@@ -96,6 +96,9 @@ namespace cacto
         Block &operator=(Block &&other);
 
     protected:
+        void clone(const Block &other);
+        void acquire(Block &&other);
+
         void drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const;
         void handleBlock(const sf::Event &event);
         sf::Vector2f compactBlock(const sf::Vector2f &contentSize);

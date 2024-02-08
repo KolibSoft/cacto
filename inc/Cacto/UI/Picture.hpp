@@ -81,6 +81,9 @@ namespace cacto
         Picture &operator=(Picture &&other);
 
     protected:
+        void clone(const Picture &other);
+        void acquire(Picture &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

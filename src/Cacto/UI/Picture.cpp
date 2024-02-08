@@ -277,12 +277,7 @@ namespace cacto
 
     Picture &Picture::operator=(const Picture &other)
     {
-        m_surface = other.m_surface;
-        m_scale = other.m_scale;
-        m_textureRect = other.m_textureRect;
-        m_hAnchor = other.m_hAnchor;
-        m_vAnchor = other.m_vAnchor;
-        Block::operator=(other);
+        clone(other);
         return *this;
     }
 
@@ -294,13 +289,29 @@ namespace cacto
 
     Picture &Picture::operator=(Picture &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Picture::clone(const Picture &other)
+    {
+        Block::clone(other);
+        m_surface = other.m_surface;
+        m_scale = other.m_scale;
+        m_textureRect = other.m_textureRect;
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+    }
+
+    void Picture::acquire(Picture &&other)
+    {
+        Block::acquire(std::move(other));
         m_surface = std::move(other.m_surface);
         m_scale = other.m_scale;
         m_textureRect = std::move(other.m_textureRect);
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
-        Block::operator=(std::move(other));
-        return *this;
     }
 
     void Picture::draw(sf::RenderTarget &target, const sf::RenderStates &states) const

@@ -79,6 +79,9 @@ namespace cacto
         Surface &operator=(Surface &&other);
 
     protected:
+        void clone(const Surface &other);
+        void acquire(Surface &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

@@ -259,10 +259,7 @@ namespace cacto
 
     Label &Label::operator=(const Label &other)
     {
-        m_span = other.m_span;
-        m_hAnchor = other.m_hAnchor;
-        m_vAnchor = other.m_vAnchor;
-        Block::operator=(other);
+        clone(other);
         return *this;
     }
 
@@ -274,11 +271,25 @@ namespace cacto
 
     Label &Label::operator=(Label &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Label::clone(const Label &other)
+    {
+        Block::clone(other);
+        m_span = other.m_span;
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+    }
+
+    void Label::acquire(Label &&other)
+    {
+        Block::acquire(std::move(other));
         m_span = std::move(other.m_span);
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
-        Block::operator=(std::move(other));
-        return *this;
     }
 
     void Label::draw(sf::RenderTarget &target, const sf::RenderStates &states) const

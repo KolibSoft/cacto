@@ -249,8 +249,7 @@ namespace cacto
 
     Input &Input::operator=(const Input &other)
     {
-        Label::operator=(other);
-        m_onInput = other.m_onInput;
+        clone(other);
         return *this;
     }
 
@@ -262,12 +261,24 @@ namespace cacto
 
     Input &Input::operator=(Input &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Input::clone(const Input &other)
+    {
+        Label::clone(other);
+        m_onInput = other.m_onInput;
+    }
+
+    void Input::acquire(Input &&other)
+    {
+        Label::acquire(std::move(other));
         m_onInput = other.m_onInput;
         other.m_onInput = nullptr;
         if (other.m_focused)
             focus();
-        Label::operator=(std::move(other));
-        return *this;
     }
 
     void Input::onInput(const sf::Event &event)

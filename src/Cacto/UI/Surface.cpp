@@ -248,16 +248,7 @@ namespace cacto
 
     Surface &Surface::operator=(const Surface &other)
     {
-        Box::operator=(other);
-        m_geometry = other.m_geometry;
-        m_precision = other.m_precision;
-        m_color = other.m_color;
-        m_texture = other.m_texture;
-        m_textureRect = other.m_textureRect;
-        m_id = other.m_id;
-        m_invalid = other.m_invalid;
-        m_array = other.m_array;
-        m_vTransform = other.m_vTransform;
+        clone(other);
         return *this;
     }
 
@@ -268,6 +259,27 @@ namespace cacto
     }
 
     Surface &Surface::operator=(Surface &&other)
+    {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Surface::clone(const Surface &other)
+    {
+        Box::operator=(other);
+        m_geometry = other.m_geometry;
+        m_precision = other.m_precision;
+        m_color = other.m_color;
+        m_texture = other.m_texture;
+        m_textureRect = other.m_textureRect;
+        m_id = other.m_id;
+        m_invalid = other.m_invalid;
+        m_array = other.m_array;
+        m_vTransform = other.m_vTransform;
+    }
+
+    void Surface::acquire(Surface &&other)
     {
         Box::operator=(std::move(other));
         m_geometry = other.m_geometry;
@@ -283,8 +295,6 @@ namespace cacto
         other.m_precision = 0;
         other.m_texture = nullptr;
         other.m_invalid = true;
-        other.detach();
-        return *this;
     }
 
     void Surface::draw(sf::RenderTarget &target, const sf::RenderStates &states) const

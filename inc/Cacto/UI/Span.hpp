@@ -78,6 +78,9 @@ namespace cacto
         Span &operator=(Span &&other);
 
     protected:
+        void clone(const Span &other);
+        void acquire(Span &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

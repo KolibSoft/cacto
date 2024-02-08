@@ -79,6 +79,9 @@ namespace cacto
         Label &operator=(Label &&other);
 
     protected:
+        void clone(const Label &other);
+        void acquire(Label &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

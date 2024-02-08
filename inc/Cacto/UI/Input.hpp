@@ -73,6 +73,9 @@ namespace cacto
         Input &operator=(Input &&other);
 
     protected:
+        void clone(const Input &other);
+        void acquire(Input &&other);
+
         virtual void onInput(const sf::Event &event);
 
     private:
