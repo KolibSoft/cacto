@@ -258,15 +258,15 @@ namespace cacto
     Button::Button(Button &&other)
         : Button()
     {
-        m_onClick = other.m_onClick;
-        other.m_onClick = nullptr;
-        if (other.m_focused)
-            focus();
         *this = std::move(other);
     }
 
     Button &Button::operator=(Button &&other)
     {
+        m_onClick = other.m_onClick;
+        other.m_onClick = nullptr;
+        if (other.m_focused)
+            focus();
         Label::operator=(std::move(other));
         return *this;
     }
@@ -280,10 +280,10 @@ namespace cacto
         focus();
     }
 
-    XmlValue toXml(const Button &label)
+    XmlValue toXml(const Button &button)
     {
         XmlValue xml{"Button", {}};
-        xml |= toXml((const Label &)label);
+        xml |= toXml((const Label &)button);
         return std::move(xml);
     }
 

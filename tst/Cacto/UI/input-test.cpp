@@ -29,29 +29,27 @@ int main()
 
     cacto::Surface background{};
     background
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
     cacto::Input root{};
     root
         .setOnInputListener([&](cacto::Node &target, const sf::Event &event)
-                            { std::cout << dynamic_cast<cacto::Input &>(target).asSpan().getString().toAnsiString() << '\n'; })
-        .setHorizontalAnchor(cacto::Box::Center)
-        .setVerticalAnchor(cacto::Box::Center)
+                            { std::cout << dynamic_cast<cacto::Input &>(target).getString().toAnsiString() << '\n'; })
+        .setHorizontalAnchor(cacto::BoxAnchor::Center)
+        .setVerticalAnchor(cacto::BoxAnchor::Center)
         .setBackground(&background)
         .setMargin(10)
-        .setPadding(10);
-    root.asSpan()
-        .setFont(cacto::getFont("res/font.ttf"))
+        .setPadding(10)
+        .setFont(cacto::getResource<sf::Font>("res/font.ttf"))
         .setString("My Label Text")
-        .setDirection(cacto::TextDirection::ToLeft)
+        .setDirection(cacto::TextDirection::ToRight)
         .setCharacterSize(16);
 
     cacto::XmlValue xml = nullptr;
+
     xml.fromFile("res/input.xml");
-    cacto::fromXml(root, xml);
-    xml = cacto::toXml(root);
-    xml.toFile("res/input.xml", 2);
+    root = cacto::toInput(xml);
 
     while (window.isOpen())
     {
@@ -72,6 +70,9 @@ int main()
         window.draw(root);
         window.display();
     }
+
+    xml = cacto::toXml(root);
+    xml.toFile("res/input.xml");
 
     return 0;
 }

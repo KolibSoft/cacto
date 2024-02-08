@@ -292,6 +292,7 @@ namespace cacto
         XmlValue xml{"Label", {}};
         xml |= toXml((const Block &)label);
         xml |= toXml((const Span &)label);
+        xml["direction"] = toString(label.getDirection());
         xml["horizontalAnchor"] = toString(label.getHorizontalAnchor());
         xml["verticalAnchor"] = toString(label.getVerticalAnchor());
         return std::move(xml);
@@ -302,6 +303,7 @@ namespace cacto
         Label label{};
         (Block &)label = toBlock(xml);
         (Span &)label = toSpan(xml);
+        label.setDirection(toTextDirection(xml.getAttribute("direction", "ToRight")));
         label.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
         label.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
         return std::move(label);
