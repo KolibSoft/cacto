@@ -64,6 +64,9 @@ namespace cacto
         Mesh &operator=(Mesh &&other);
 
     protected:
+        void clone(const Mesh &other);
+        void acquire(Mesh &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

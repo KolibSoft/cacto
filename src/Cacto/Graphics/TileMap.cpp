@@ -214,14 +214,7 @@ namespace cacto
 
     TileMap &TileMap::operator=(const TileMap &other)
     {
-        sf::Transformable::operator=(other);
-        m_texture = other.m_texture;
-        m_tileSize = other.m_tileSize;
-        m_area = other.m_area;
-        m_tiles = other.m_tiles;
-        m_id = other.m_id;
-        m_invalid = other.m_invalid;
-        m_array = other.m_array;
+        clone(other);
         return *this;
     }
 
@@ -233,6 +226,25 @@ namespace cacto
 
     TileMap &TileMap::operator=(TileMap &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void TileMap::clone(const TileMap &other)
+    {
+        sf::Transformable::operator=(other);
+        m_texture = other.m_texture;
+        m_tileSize = other.m_tileSize;
+        m_area = other.m_area;
+        m_tiles = other.m_tiles;
+        m_id = other.m_id;
+        m_invalid = other.m_invalid;
+        m_array = other.m_array;
+    }
+
+    void TileMap::acquire(TileMap &&other)
+    {
         sf::Transformable::operator=(std::move(other));
         m_texture = other.m_texture;
         m_tileSize = std::move(other.m_tileSize);
@@ -243,8 +255,6 @@ namespace cacto
         m_array = std::move(other.m_array);
         other.m_texture = nullptr;
         other.m_invalid = true;
-        other.detach();
-        return *this;
     }
 
     void TileMap::draw(sf::RenderTarget &target, const sf::RenderStates &states) const

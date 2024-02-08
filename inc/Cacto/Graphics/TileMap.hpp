@@ -69,6 +69,9 @@ namespace cacto
         static const sf::FloatRect NoTile;
 
     protected:
+        void clone(const TileMap &other);
+        void acquire(TileMap &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

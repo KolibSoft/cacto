@@ -84,6 +84,9 @@ namespace cacto
         Skeleton &operator=(Skeleton &&other);
 
     protected:
+        void clone(const Skeleton &other);
+        void acquire(Skeleton &&other);
+
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:

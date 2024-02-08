@@ -175,10 +175,7 @@ namespace cacto
 
     Mesh &Mesh::operator=(const Mesh &other)
     {
-        sf::Transformable::operator=(other);
-        m_array = other.m_array;
-        m_texture = other.m_texture;
-        m_id = other.m_id;
+        clone(other);
         return *this;
     }
 
@@ -190,13 +187,26 @@ namespace cacto
 
     Mesh &Mesh::operator=(Mesh &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Mesh::clone(const Mesh &other)
+    {
+        sf::Transformable::operator=(other);
+        m_array = other.m_array;
+        m_texture = other.m_texture;
+        m_id = other.m_id;
+    }
+
+    void Mesh::acquire(Mesh &&other)
+    {
         sf::Transformable::operator=(std::move(other));
         m_array = std::move(other.m_array);
         m_texture = other.m_texture;
         m_id = std::move(other.m_id);
         other.m_texture = nullptr;
-        other.detach();
-        return *this;
     }
 
     void Mesh::draw(sf::RenderTarget &target, const sf::RenderStates &states) const

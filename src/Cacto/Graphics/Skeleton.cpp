@@ -243,18 +243,7 @@ namespace cacto
 
     Skeleton &Skeleton::operator=(const Skeleton &other)
     {
-        clearChildren();
-        sf::Transformable::operator=(other);
-        m_id = other.m_id;
-        for (auto &holder : other.m_holders)
-        {
-            auto child = dynamic_cast<ChildNode *>(holder.child->clone());
-            if (child)
-            {
-                append(*child, holder.options);
-                m_holders.back().owned = true;
-            }
-        }
+        clone(other);
         return *this;
     }
 
@@ -266,6 +255,26 @@ namespace cacto
 
     Skeleton &Skeleton::operator=(Skeleton &&other)
     {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void Skeleton::clone(const Skeleton &other)
+    {
+        clearChildren();
+        sf::Transformable::operator=(other);
+        m_id = other.m_id;
+        for (auto &holder : other.m_holders)
+        {
+            auto child = dynamic_cast<ChildNode *>(holder.child->clone());
+            append(*child, holder.options);
+            m_holders.back().owned = true;
+        }
+    }
+
+    void Skeleton::acquire(Skeleton &&other)
+    {
         clearChildren();
         sf::Transformable::operator=(std::move(other));
         m_id = std::move(other.m_id);
@@ -275,8 +284,6 @@ namespace cacto
             holder.child->detach();
             holder.child->attach(*this);
         }
-        other.detach();
-        return *this;
     }
 
     void Skeleton::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
