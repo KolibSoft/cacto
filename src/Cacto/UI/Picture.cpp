@@ -199,6 +199,18 @@ namespace cacto
         return std::move(*this);
     }
 
+    Picture *Picture::clone() const
+    {
+        auto picture = new Picture(*this);
+        return picture;
+    }
+
+    Picture *Picture::acquire()
+    {
+        auto picture = new Picture(std::move(*this));
+        return picture;
+    }
+
     sf::Vector2f Picture::compact()
     {
         auto contentSize = m_surface.compact();

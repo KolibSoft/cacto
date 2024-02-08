@@ -64,6 +64,8 @@ namespace cacto
         Picture &&setVerticalAnchor(BoxAnchor value);
 
         Picture &&setId(const std::string &id);
+        Picture *clone() const override;
+        Picture *acquire() override;
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -90,7 +92,7 @@ namespace cacto
     };
 
     std::string CACTO_UI_API toString(PictureScale scale);
-    PictureScale CACTO_UI_API toPictureScale(const std::string& string);
+    PictureScale CACTO_UI_API toPictureScale(const std::string &string);
 
     XmlValue CACTO_UI_API toXml(const Picture &picture);
     Picture CACTO_UI_API toPicture(const XmlValue &xml);
