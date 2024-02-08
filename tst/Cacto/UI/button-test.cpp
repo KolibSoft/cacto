@@ -27,28 +27,26 @@ int main()
 
     cacto::Surface background{};
     background
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
     cacto::Button root{};
     root
         .setOnClickListener([&](cacto::Node &target, const sf::Event &event)
                             { std::cout << "Clicked\n"; })
-        .setHorizontalAnchor(cacto::Box::Center)
-        .setVerticalAnchor(cacto::Box::Center)
+        .setHorizontalAnchor(cacto::BoxAnchor::Center)
+        .setVerticalAnchor(cacto::BoxAnchor::Center)
         .setBackground(&background)
         .setMargin(10)
-        .setPadding(10);
-    root.asSpan()
-        .setFont(cacto::getFont("res/font.ttf"))
+        .setPadding(10)
+        .setFont(cacto::getResource<sf::Font>("res/font.ttf"))
         .setString("My Label Text")
         .setCharacterSize(16);
 
     cacto::XmlValue xml = nullptr;
+
     xml.fromFile("res/button.xml");
-    cacto::fromXml(root, xml);
-    xml = cacto::toXml(root);
-    xml.toFile("res/button.xml", 2);
+    root = cacto::toButton(xml);
 
     while (window.isOpen())
     {
@@ -74,6 +72,9 @@ int main()
         window.draw(root);
         window.display();
     }
+
+    xml = cacto::toXml(root);
+    xml.toFile("res/button.xml");
 
     return 0;
 }

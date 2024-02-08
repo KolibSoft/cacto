@@ -4,15 +4,183 @@
 namespace cacto
 {
 
+    Button &&Button::setLeft(f32t value, bool resize)
+    {
+        Box::setLeft(value, resize);
+        return std::move(*this);
+    }
+
+    Button &&Button::setRight(f32t value, bool resize)
+    {
+        Box::setRight(value, resize);
+        return std::move(*this);
+    }
+
+    Button &&Button::setTop(f32t value, bool resize)
+    {
+        Box::setTop(value, resize);
+        return std::move(*this);
+    }
+
+    Button &&Button::setBottom(f32t value, bool resize)
+    {
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    Button &&Button::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    Button &&Button::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    Button &&Button::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    Button &&Button::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
+    }
+
+    Button &&Button::setBackground(Node *const value)
+    {
+        Block::setBackground(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setBackground(Node &&value)
+    {
+        Block::setBackground(std::move(value));
+        return std::move(*this);
+    }
+
+    Button &&Button::setMargin(const Thickness &value)
+    {
+        Block::setMargin(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setPadding(const Thickness &value)
+    {
+        Block::setPadding(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setMinWidth(f32t value)
+    {
+        Block::setMinWidth(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setMaxWidth(f32t value)
+    {
+        Block::setMaxWidth(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setMinHeight(f32t value)
+    {
+        Block::setMinHeight(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setMaxHeight(f32t value)
+    {
+        Block::setMaxHeight(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setFixedWidth(f32t value)
+    {
+        Block::setFixedWidth(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setFixedHeight(f32t value)
+    {
+        Block::setFixedHeight(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setFont(const sf::Font *const value)
+    {
+        Label::setFont(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setString(const sf::String &value)
+    {
+        Label::setString(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setDirection(TextDirection value)
+    {
+        Label::setDirection(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setCharacterSize(u32t value)
+    {
+        Label::setCharacterSize(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setColor(const sf::Color &value)
+    {
+        Label::setColor(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setHorizontalAnchor(BoxAnchor value)
+    {
+        Label::setHorizontalAnchor(value);
+        return std::move(*this);
+    }
+
+    Button &&Button::setVerticalAnchor(BoxAnchor value)
+    {
+        Label::setVerticalAnchor(value);
+        return std::move(*this);
+    }
+
     const EventListener &Button::getOnClickListener() const
     {
         return m_onClick;
     }
 
-    Button &Button::setOnClickListener(const EventListener &value)
+    Button &&Button::setOnClickListener(const EventListener &value)
     {
         m_onClick = value;
-        return *this;
+        return std::move(*this);
+    }
+
+    Button &&Button::setId(const std::string &value)
+    {
+        Block::setId(value);
+        return std::move(*this);
+    }
+
+    Button *Button::clone() const
+    {
+        auto button = new Button(*this);
+        return button;
+    }
+
+    Button *Button::acquire()
+    {
+        auto button = new Button(std::move(*this));
+        return button;
     }
 
     bool Button::handle(const sf::Event &event)
@@ -69,7 +237,39 @@ namespace cacto
     {
     }
 
-    Button::~Button() {}
+    Button::~Button()
+    {
+        unfocus();
+    }
+
+    Button::Button(const Button &other)
+        : Button()
+    {
+        *this = other;
+    }
+
+    Button &Button::operator=(const Button &other)
+    {
+        Label::operator=(other);
+        m_onClick = other.m_onClick;
+        return *this;
+    }
+
+    Button::Button(Button &&other)
+        : Button()
+    {
+        m_onClick = other.m_onClick;
+        other.m_onClick = nullptr;
+        if (other.m_focused)
+            focus();
+        *this = std::move(other);
+    }
+
+    Button &Button::operator=(Button &&other)
+    {
+        Label::operator=(std::move(other));
+        return *this;
+    }
 
     void Button::onClick(const sf::Event &event)
     {
@@ -80,16 +280,18 @@ namespace cacto
         focus();
     }
 
-    XmlValue CACTO_UI_API toXml(const Button &label)
+    XmlValue toXml(const Button &label)
     {
-        auto xml = cacto::toXml((const Label &)label);
-        xml.setName("Button");
+        XmlValue xml{"Button", {}};
+        xml |= toXml((const Label &)label);
         return std::move(xml);
     }
 
-    void CACTO_UI_API fromXml(Button &button, const XmlValue &xml)
+    Button toButton(const XmlValue &xml)
     {
-        cacto::fromXml((Label &)button, xml);
+        Button button{};
+        (Label &)button = toLabel(xml);
+        return std::move(button);
     }
 
     namespace button
@@ -110,10 +312,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Button")
             {
-                auto button = std::make_shared<Button>();
-                cacto::fromXml(*button, xml);
-                Node::XmlStack.push(button);
-                return button.get();
+                auto button = new Button();
+                *button = toButton(xml);
+                return button;
             }
             return nullptr;
         }

@@ -6,7 +6,7 @@
 #include "Cacto/UI/Block.cpp"
 #include "Cacto/UI/Label.cpp"
 #include "Cacto/UI/Picture.cpp"
-// #include "Cacto/UI/Button.cpp"
+#include "Cacto/UI/Button.cpp"
 // #include "Cacto/UI/Input.cpp"
 // #include "Cacto/UI/FrameLayout.cpp"
 // #include "Cacto/UI/VirtualLayout.cpp"

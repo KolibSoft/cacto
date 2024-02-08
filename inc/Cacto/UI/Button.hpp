@@ -15,8 +15,46 @@ namespace cacto
     {
 
     public:
+        Button &&setLeft(f32t value, bool resize = false);
+        Button &&setRight(f32t value, bool resize = false);
+        Button &&setTop(f32t value, bool resize = false);
+        Button &&setBottom(f32t value, bool resize = false);
+
+        Button &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Button &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+
+        Button &&shrink(const Thickness &thickness);
+        Button &&expand(const Thickness &thickness);
+
+        Button &&setBackground(Node *const value);
+        Button &&setBackground(Node &&value);
+
+        Button &&setMargin(const Thickness &value);
+        Button &&setPadding(const Thickness &value);
+
+        Button &&setMinWidth(f32t value);
+        Button &&setMaxWidth(f32t value);
+        Button &&setMinHeight(f32t value);
+        Button &&setMaxHeight(f32t value);
+
+        Button &&setFixedWidth(f32t value);
+        Button &&setFixedHeight(f32t value);
+
+        Button &&setFont(const sf::Font *const value);
+        Button &&setString(const sf::String &value);
+        Button &&setDirection(TextDirection value);
+        Button &&setCharacterSize(u32t value);
+        Button &&setColor(const sf::Color &value);
+        Button &&setHorizontalAnchor(BoxAnchor value);
+        Button &&setVerticalAnchor(BoxAnchor value);
+
         const EventListener &getOnClickListener() const;
-        Button &setOnClickListener(const EventListener &value);
+        Button &&setOnClickListener(const EventListener &value);
+
+        Button &&setId(const std::string &value);
+
+        Button *clone() const override;
+        Button *acquire() override;
 
         bool handle(const sf::Event &event) override;
 
@@ -30,6 +68,9 @@ namespace cacto
         Button(const Button &other);
         Button &operator=(const Button &other);
 
+        Button(Button &&other);
+        Button &operator=(Button &&other);
+
     protected:
         virtual void onClick(const sf::Event &event);
 
@@ -39,7 +80,7 @@ namespace cacto
     };
 
     XmlValue CACTO_UI_API toXml(const Button &button);
-    void CACTO_UI_API fromXml(Button &button, const XmlValue &xml);
+    Button CACTO_UI_API toButton(const XmlValue &xml);
 
     namespace button
     {
