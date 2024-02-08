@@ -7,7 +7,7 @@ int main()
 
     cacto::JsonPack pack{"res/jsons"};
     auto json = cacto::getResource<cacto::JsonValue>("my_json.json");
-    std::cout << "Json content: " << (json ? *json : cacto::JsonValue::NullValue) << '\n';
+    std::cout << "Json content: " << (json ? *json : cacto::JsonValue::Null) << '\n';
 
     return 0;
 }

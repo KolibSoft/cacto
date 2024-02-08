@@ -44,7 +44,7 @@ namespace cacto
 
         std::filesystem::path m_path;
         mutable bool m_loaded;
-        mutable std::unordered_map<std::string, std::shared_ptr<sf::FloatRect>> m_map;
+        mutable std::unordered_map<std::string, sf::FloatRect *> m_map;
     };
 
 }

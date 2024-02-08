@@ -41,7 +41,7 @@ namespace cacto
         auto matrix = xml.getAttribute("matrix", "1,0,0,0,1,0,0,0,1");
         transform = toTransform(matrix);
         if (xml.isTag())
-            for (auto &item : xml.asContent())
+            for (auto &item : xml.asTag().content)
                 if (item.isTag())
                 {
                     if (item.getName() == "Scale")

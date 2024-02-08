@@ -26,27 +26,25 @@ int main()
 
     cacto::Surface background{};
     background
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
     cacto::Picture root{};
     root
-        .setHorizontalAnchor(cacto::Box::Center)
-        .setVerticalAnchor(cacto::Box::Center)
-        .setScale(cacto::Picture::Crop)
+        .setHorizontalAnchor(cacto::BoxAnchor::Center)
+        .setVerticalAnchor(cacto::BoxAnchor::Center)
+        .setScale(cacto::PictureScale::Crop)
         .setTextureRect({{0, 0}, {800, 800}})
         .setBackground(&background)
         .setMargin(10)
-        .setPadding(10);
-    root.asSurface()
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
-        .setTexture(cacto::getTexture("res/image.png"));
+        .setPadding(10)
+        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
+        .setTexture(cacto::getResource<sf::Texture>("res/image.png"));
 
     cacto::XmlValue xml = nullptr;
+
     xml.fromFile("res/picture.xml");
-    cacto::fromXml(root, xml);
-    xml = cacto::toXml(root);
-    xml.toFile("res/picture.xml", 2);
+    root = cacto::toPicture(xml);
 
     while (window.isOpen())
     {
@@ -60,7 +58,7 @@ int main()
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
                 xml.fromFile("res/picture.xml");
-                cacto::fromXml(root, xml);
+                root = cacto::toPicture(xml);
             }
         }
         root.compact();
@@ -70,6 +68,9 @@ int main()
         window.draw(root);
         window.display();
     }
+
+    xml = cacto::toXml(root);
+    xml.toFile("res/picture.xml");
 
     return 0;
 }

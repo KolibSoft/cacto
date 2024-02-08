@@ -4,6 +4,156 @@
 namespace cacto
 {
 
+    Input &&Input::setLeft(f32t value, bool resize)
+    {
+        Box::setLeft(value, resize);
+        return std::move(*this);
+    }
+
+    Input &&Input::setRight(f32t value, bool resize)
+    {
+        Box::setRight(value, resize);
+        return std::move(*this);
+    }
+
+    Input &&Input::setTop(f32t value, bool resize)
+    {
+        Box::setTop(value, resize);
+        return std::move(*this);
+    }
+
+    Input &&Input::setBottom(f32t value, bool resize)
+    {
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    Input &&Input::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    Input &&Input::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    Input &&Input::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    Input &&Input::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
+    }
+
+    Input &&Input::setBackground(Node *const value)
+    {
+        Block::setBackground(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setBackground(Node &&value)
+    {
+        Block::setBackground(std::move(value));
+        return std::move(*this);
+    }
+
+    Input &&Input::setMargin(const Thickness &value)
+    {
+        Block::setMargin(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setPadding(const Thickness &value)
+    {
+        Block::setPadding(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setMinWidth(f32t value)
+    {
+        Block::setMinWidth(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setMaxWidth(f32t value)
+    {
+        Block::setMaxWidth(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setMinHeight(f32t value)
+    {
+        Block::setMinHeight(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setMaxHeight(f32t value)
+    {
+        Block::setMaxHeight(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setFixedWidth(f32t value)
+    {
+        Block::setFixedWidth(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setFixedHeight(f32t value)
+    {
+        Block::setFixedHeight(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setFont(const sf::Font *const value)
+    {
+        Label::setFont(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setString(const sf::String &value)
+    {
+        Label::setString(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setDirection(TextDirection value)
+    {
+        Label::setDirection(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setCharacterSize(u32t value)
+    {
+        Label::setCharacterSize(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setColor(const sf::Color &value)
+    {
+        Label::setColor(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setHorizontalAnchor(BoxAnchor value)
+    {
+        Label::setHorizontalAnchor(value);
+        return std::move(*this);
+    }
+
+    Input &&Input::setVerticalAnchor(BoxAnchor value)
+    {
+        Label::setVerticalAnchor(value);
+        return std::move(*this);
+    }
+
     const EventListener &Input::getOnInputListener() const
     {
         return m_onInput;
@@ -15,6 +165,24 @@ namespace cacto
         return *this;
     }
 
+    Input &&Input::setId(const std::string &value)
+    {
+        Block::setId(value);
+        return std::move(*this);
+    }
+
+    Input *Input::clone() const
+    {
+        auto input = new Input(*this);
+        return input;
+    }
+
+    Input *Input::acquire()
+    {
+        auto input = new Input(std::move(*this));
+        return input;
+    }
+
     bool Input::handle(const sf::Event &event)
     {
         if (event.type == sf::Event::MouseMoved && containsVisualPoint({f32t(event.mouseMove.x), f32t(event.mouseMove.y)}))
@@ -22,7 +190,7 @@ namespace cacto
             bubble(*this, event);
             return true;
         }
-        else if (event.type == sf::Event::MouseButtonReleased && containsVisualPoint({float(event.mouseButton.x), float(event.mouseButton.y)}))
+        else if (event.type == sf::Event::MouseButtonReleased && containsVisualPoint({f32t(event.mouseButton.x), f32t(event.mouseButton.y)}))
         {
             focus();
             return true;
@@ -63,15 +231,48 @@ namespace cacto
 
     Input::Input()
         : Label(),
+          m_onInput(),
           m_focused()
     {
     }
 
-    Input::~Input() {}
+    Input::~Input()
+    {
+        unfocus();
+    }
+
+    Input::Input(const Input &other)
+        : Input()
+    {
+        *this = other;
+    }
+
+    Input &Input::operator=(const Input &other)
+    {
+        Label::operator=(other);
+        m_onInput = other.m_onInput;
+        return *this;
+    }
+
+    Input::Input(Input &&other)
+        : Input()
+    {
+        *this = std::move(other);
+    }
+
+    Input &Input::operator=(Input &&other)
+    {
+        m_onInput = other.m_onInput;
+        other.m_onInput = nullptr;
+        if (other.m_focused)
+            focus();
+        Label::operator=(std::move(other));
+        return *this;
+    }
 
     void Input::onInput(const sf::Event &event)
     {
-        auto string = asSpan().getString();
+        auto string = getString();
         auto character = static_cast<char32_t>(event.text.unicode);
         switch (character)
         {
@@ -83,23 +284,25 @@ namespace cacto
             string += character;
             break;
         }
-        asSpan().setString(string);
+        setString(string);
         if (m_onInput)
             m_onInput(*this, event);
         else
-            cacto::bubbleParent(*this, *this, event);
+            bubble(*this, event);
     }
 
-    XmlValue CACTO_UI_API toXml(const Input &label)
+    XmlValue toXml(const Input &input)
     {
-        auto xml = cacto::toXml((const Label &)label);
-        xml.setName("Input");
+        XmlValue xml{"Input", {}};
+        xml |= toXml((const Label &)input);
         return std::move(xml);
     }
 
-    void CACTO_UI_API fromXml(Input &input, const XmlValue &xml)
+    Input toInput(const XmlValue &xml)
     {
-        cacto::fromXml((Label &)input, xml);
+        Input button{};
+        (Label &)button = toLabel(xml);
+        return std::move(button);
     }
 
     namespace input
@@ -120,10 +323,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Input")
             {
-                auto input = std::make_shared<Input>();
-                cacto::fromXml(*input, xml);
-                Node::XmlStack.push(input);
-                return input.get();
+                auto input = new Input();
+                *input = toInput(xml);
+                return input;
             }
             return nullptr;
         }

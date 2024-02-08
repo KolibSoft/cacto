@@ -26,7 +26,7 @@ namespace cacto
         load();
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         return nullptr;
     }
 
@@ -37,7 +37,15 @@ namespace cacto
     {
     }
 
-    ColorPack::~ColorPack() = default;
+    ColorPack::~ColorPack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     ColorPack::ColorPack(ColorPack &&other)
         : m_path(std::move(other.m_path)),
@@ -67,7 +75,7 @@ namespace cacto
                 stream >> json;
                 for (auto &pair : json.asObject())
                 {
-                    auto color = std::make_shared<sf::Color>();
+                    auto color = new sf::Color();
                     *color = toColor(pair.second.getString("#00000000"));
                     m_map.insert({pair.first, color});
                 }

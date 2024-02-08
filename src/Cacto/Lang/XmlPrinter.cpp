@@ -93,15 +93,16 @@ namespace cacto
 
     void XmlPrinter::printXml(const XmlValue &xml)
     {
-        switch (xml.getKind())
+        switch (xml.getType())
         {
-        case XmlValue::None:
+        case XmlType::Empty:
             break;
-        case XmlValue::Text:
+        case XmlType::Text:
             printText(xml.asText());
             break;
-        case XmlValue::Tag:
-            printTag(xml.getName(), xml.asAttributes(), xml.asContent());
+        case XmlType::Tag:
+            auto &tag = xml.asTag();
+            printTag(tag.name, tag.attributes, tag.content);
             break;
         }
     }

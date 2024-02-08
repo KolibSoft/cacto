@@ -20,7 +20,17 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Mesh mesh{};
+    auto mesh = cacto::Mesh()
+                    .setPrimitiveType(sf::PrimitiveType::TriangleFan)
+                    .setTexture(cacto::getResource<sf::Texture>("background.png"))
+                    .append({{0, 0}, {0, 0}})
+                    .append({{100, 0}, {800, 0}})
+                    .append({{100, 100}, {800, 800}})
+                    .append({{0, 100}, {0, 800}})
+                    .setOrigin({50, 50})
+                    .setScale({2, 2})
+                    .move({100, 100})
+                    .rotate(sf::degrees(30));
     cacto::XmlValue xml = nullptr;
 
     xml.fromFile("res/mesh.xml");
@@ -35,7 +45,7 @@ int main()
                 window.close();
             else if (event.type == sf::Event::MouseButtonPressed)
             {
-                mesh.place(sf::Vector2f(sf::Mouse::getPosition(window)));
+                mesh.setPosition(sf::Vector2f(sf::Mouse::getPosition(window)));
             }
             else if (event.type == sf::Event::MouseWheelScrolled)
             {

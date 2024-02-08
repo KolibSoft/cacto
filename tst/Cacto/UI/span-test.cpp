@@ -23,21 +23,17 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Span span{};
-    /*
-    span
-        .setFont(cacto::getFont("res/font.ttf"))
-        .setString("My Span Text")
-        .setDirection(cacto::Span::Direction::ToBottom)
-        .setCharacterSize(16)
-        .setColor(sf::Color::Cyan);
-    */
+    auto span = cacto::Span()
+                    .setFont(cacto::getResource<sf::Font>("res/font.ttf"))
+                    .setString("My Span Text")
+                    .setDirection(cacto::TextDirection::ToBottom)
+                    .setCharacterSize(16)
+                    .setColor(sf::Color::Cyan);
 
     cacto::XmlValue xml = nullptr;
+
     xml.fromFile("res/span.xml");
-    cacto::fromXml(span, xml);
-    xml = cacto::toXml(span);
-    xml.toFile("res/span.xml", 2);
+    span = cacto::toSpan(xml);
 
     while (window.isOpen())
     {
@@ -51,7 +47,7 @@ int main()
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
                 xml.fromFile("res/span.xml");
-                cacto::fromXml(span, xml);
+                span = cacto::toSpan(xml);
             }
         }
         span.compact();
@@ -61,6 +57,9 @@ int main()
         window.draw(span);
         window.display();
     }
+
+    xml = cacto::toXml(span);
+    xml.toFile("res/span.xml");
 
     return 0;
 }

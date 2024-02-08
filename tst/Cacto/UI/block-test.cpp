@@ -28,7 +28,7 @@ int main()
 
     cacto::Surface background{};
     background
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
     cacto::Block root{};
@@ -40,10 +40,9 @@ int main()
         .setPadding(10);
 
     cacto::XmlValue xml = nullptr;
+
     xml.fromFile("res/block.xml");
-    cacto::fromXml(root, xml);
-    xml = cacto::toXml(root);
-    xml.toFile("res/block.xml", 2);
+    root = cacto::toBlock(xml);
 
     while (window.isOpen())
     {
@@ -57,7 +56,7 @@ int main()
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
                 xml.fromFile("res/block.xml");
-                cacto::fromXml(root, xml);
+                root = cacto::toBlock(xml);
             }
         }
         root.compact();
@@ -67,6 +66,9 @@ int main()
         window.draw(root);
         window.display();
     }
+
+    xml = cacto::toXml(root);
+    xml.toFile("res/block.xml");
 
     return 0;
 }

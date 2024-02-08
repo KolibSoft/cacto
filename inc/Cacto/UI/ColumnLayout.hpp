@@ -29,13 +29,13 @@ namespace cacto
         szt getChildCount() const override;
         Node *const getChild(szt index = 0) const override;
 
-        Anchor getHorizontalAnchor(const Node &child) const;
-        Anchor getHorizontalAnchor(Node &&child) const = delete;
+        BoxAnchor getHorizontalAnchor(const Node &child) const;
+        BoxAnchor getHorizontalAnchor(Node &&child) const = delete;
 
-        ColumnLayout &setHorizontalAnchor(Node &child, Anchor value);
+        ColumnLayout &setHorizontalAnchor(Node &child, BoxAnchor value);
 
-        Anchor getVerticalAnchor() const;
-        ColumnLayout &setVerticalAnchor(Anchor value);
+        BoxAnchor getVerticalAnchor() const;
+        ColumnLayout &setVerticalAnchor(BoxAnchor value);
 
         Direction getDirection() const;
         ColumnLayout &setDirection(Direction value);
@@ -70,7 +70,7 @@ namespace cacto
         void onPlace(const sf::Vector2f &position = {0, 0}) override;
 
     private:
-        Anchor m_vAnchor;
+        BoxAnchor m_vAnchor;
         Direction m_direction;
         f32t m_length;
         std::vector<Holder> m_holders;

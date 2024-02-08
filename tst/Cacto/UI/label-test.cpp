@@ -28,26 +28,24 @@ int main()
 
     cacto::Surface background{};
     background
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
+        .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
         .setColor(sf::Color::Red);
 
     cacto::Label root{};
     root
-        .setHorizontalAnchor(cacto::Box::Center)
-        .setVerticalAnchor(cacto::Box::Center)
+        .setHorizontalAnchor(cacto::BoxAnchor::Center)
+        .setVerticalAnchor(cacto::BoxAnchor::Center)
         .setBackground(&background)
         .setMargin(10)
-        .setPadding(10);
-    root.asSpan()
-        .setFont(cacto::getFont("res/font.ttf"))
+        .setPadding(10)
+        .setFont(cacto::getResource<sf::Font>("res/font.ttf"))
         .setString("My Label Text")
         .setCharacterSize(16);
 
     cacto::XmlValue xml = nullptr;
+
     xml.fromFile("res/label.xml");
-    cacto::fromXml(root, xml);
-    xml = cacto::toXml(root);
-    xml.toFile("res/label.xml", 2);
+    root = cacto::toLabel(xml);
 
     while (window.isOpen())
     {
@@ -61,7 +59,7 @@ int main()
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
                 xml.fromFile("res/label.xml");
-                cacto::fromXml(root, xml);
+                root = cacto::toLabel(xml);
             }
         }
         root.compact();
@@ -71,6 +69,9 @@ int main()
         window.draw(root);
         window.display();
     }
+
+    xml = cacto::toXml(root);
+    xml.toFile("res/label.xml");
 
     return 0;
 }

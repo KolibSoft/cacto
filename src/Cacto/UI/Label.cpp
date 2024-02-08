@@ -4,42 +4,217 @@
 namespace cacto
 {
 
-    Label::Anchor Label::getHorizontalAnchor() const
+    Label &&Label::setLeft(f32t value, bool resize)
+    {
+        Box::setLeft(value, resize);
+        return std::move(*this);
+    }
+
+    Label &&Label::setRight(f32t value, bool resize)
+    {
+        Box::setRight(value, resize);
+        return std::move(*this);
+    }
+
+    Label &&Label::setTop(f32t value, bool resize)
+    {
+        Box::setTop(value, resize);
+        return std::move(*this);
+    }
+
+    Label &&Label::setBottom(f32t value, bool resize)
+    {
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    Label &&Label::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    Label &&Label::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    Label &&Label::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    Label &&Label::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
+    }
+
+    Label &&Label::setBackground(Node *const value)
+    {
+        Block::setBackground(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setBackground(Node &&value)
+    {
+        Block::setBackground(std::move(value));
+        return std::move(*this);
+    }
+
+    Label &&Label::setMargin(const Thickness &value)
+    {
+        Block::setMargin(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setPadding(const Thickness &value)
+    {
+        Block::setPadding(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setMinWidth(f32t value)
+    {
+        Block::setMinWidth(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setMaxWidth(f32t value)
+    {
+        Block::setMaxWidth(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setMinHeight(f32t value)
+    {
+        Block::setMinHeight(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setMaxHeight(f32t value)
+    {
+        Block::setMaxHeight(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setFixedWidth(f32t value)
+    {
+        Block::setFixedWidth(value);
+        return std::move(*this);
+    }
+
+    Label &&Label::setFixedHeight(f32t value)
+    {
+        Block::setFixedHeight(value);
+        return std::move(*this);
+    }
+
+    Label::operator const Span &() const
+    {
+        return m_span;
+    }
+
+    Label::operator Span &()
+    {
+        return m_span;
+    }
+
+    const sf::Font *const Label::getFont() const
+    {
+        return m_span.getFont();
+    }
+
+    Label &&Label::setFont(const sf::Font *const value)
+    {
+        m_span.setFont(value);
+        return std::move(*this);
+    }
+
+    const sf::String &Label::getString() const
+    {
+        return m_span.getString();
+    }
+
+    Label &&Label::setString(const sf::String &value)
+    {
+        m_span.setString(value);
+        return std::move(*this);
+    }
+
+    TextDirection Label::getDirection() const
+    {
+        return m_span.getDirection();
+    }
+
+    Label &&Label::setDirection(TextDirection value)
+    {
+        m_span.setDirection(value);
+        return std::move(*this);
+    }
+
+    u32t Label::getCharacterSize() const
+    {
+        return m_span.getCharacterSize();
+    }
+
+    Label &&Label::setCharacterSize(u32t value)
+    {
+        m_span.setCharacterSize(value);
+        return std::move(*this);
+    }
+
+    const sf::Color &Label::getColor() const
+    {
+        return m_span.getColor();
+    }
+
+    Label &&Label::setColor(const sf::Color &value)
+    {
+        m_span.setColor(value);
+        return std::move(*this);
+    }
+
+    BoxAnchor Label::getHorizontalAnchor() const
     {
         return m_hAnchor;
     }
 
-    Label &Label::setHorizontalAnchor(Anchor value)
+    Label &&Label::setHorizontalAnchor(BoxAnchor value)
     {
         m_hAnchor = value;
-        return *this;
+        return std::move(*this);
     }
 
-    Label::Anchor Label::getVerticalAnchor() const
+    BoxAnchor Label::getVerticalAnchor() const
     {
         return m_vAnchor;
     }
 
-    Label &Label::setVerticalAnchor(Anchor value)
+    Label &&Label::setVerticalAnchor(BoxAnchor value)
     {
         m_vAnchor = value;
-        return *this;
+        return std::move(*this);
     }
 
-    const Span &Label::asSpan() const
+    Label &&Label::setId(const std::string &value)
     {
-        return m_span;
+        Block::setId(value);
+        return std::move(*this);
     }
 
-    Span &Label::asSpan()
+    Label *Label::clone() const
     {
-        return m_span;
+        auto label = new Label(*this);
+        return label;
     }
 
-    void Label::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    Label *Label::acquire()
     {
-        drawBlock(target, states);
-        target.draw(m_span, states);
+        auto label = new Label(std::move(*this));
+        return label;
     }
 
     sf::Vector2f Label::compact()
@@ -69,33 +244,69 @@ namespace cacto
     Label::Label()
         : Block(),
           m_span(),
-          m_hAnchor(Anchor::Start),
-          m_vAnchor(Anchor::Start)
+          m_hAnchor(BoxAnchor::Start),
+          m_vAnchor(BoxAnchor::Start)
     {
     }
 
     Label::~Label() = default;
 
-    XmlValue CACTO_UI_API toXml(const Label &label)
+    Label::Label(const Label &other)
+        : Label()
     {
-        auto xml = cacto::toXml((const Block &)label);
-        xml.setName("Label");
-        auto span_xml = cacto::toXml(label.asSpan());
-        for (auto &pair : span_xml.asAttributes())
-            xml[pair.first] = pair.second;
+        *this = other;
+    }
+
+    Label &Label::operator=(const Label &other)
+    {
+        m_span = other.m_span;
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        Block::operator=(other);
+        return *this;
+    }
+
+    Label::Label(Label &&other)
+        : Label()
+    {
+        *this = std::move(other);
+    }
+
+    Label &Label::operator=(Label &&other)
+    {
+        m_span = std::move(other.m_span);
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        Block::operator=(std::move(other));
+        return *this;
+    }
+
+    void Label::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        target.draw(m_span, states);
+    }
+
+    XmlValue toXml(const Label &label)
+    {
+        XmlValue xml{"Label", {}};
+        xml |= toXml((const Block &)label);
+        xml |= toXml((const Span &)label);
+        xml["direction"] = toString(label.getDirection());
         xml["horizontalAnchor"] = toString(label.getHorizontalAnchor());
         xml["verticalAnchor"] = toString(label.getVerticalAnchor());
         return std::move(xml);
     }
 
-    void CACTO_UI_API fromXml(Label &label, const XmlValue &xml)
+    Label toLabel(const XmlValue &xml)
     {
-        cacto::fromXml((Block &)label, xml);
-        cacto::fromXml(label.asSpan(), xml);
-        Box::Anchor hAnchor{};
-        Box::Anchor vAnchor{};
-        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
-        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+        Label label{};
+        (Block &)label = toBlock(xml);
+        (Span &)label = toSpan(xml);
+        label.setDirection(toTextDirection(xml.getAttribute("direction", "ToRight")));
+        label.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
+        label.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
+        return std::move(label);
     }
 
     namespace label
@@ -116,10 +327,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "Label")
             {
-                auto label = std::make_shared<Label>();
-                cacto::fromXml(*label, xml);
-                Node::XmlStack.push(label);
-                return label.get();
+                auto label = new Label();
+                *label = toLabel(xml);
+                return label;
             }
             return nullptr;
         }

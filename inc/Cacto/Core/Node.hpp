@@ -28,6 +28,7 @@ namespace cacto
         bool hasAncestor(const Node &node) const;
 
         virtual Node *clone() const = 0;
+        virtual Node *acquire() = 0;
 
         Node() = default;
         virtual ~Node() = default;

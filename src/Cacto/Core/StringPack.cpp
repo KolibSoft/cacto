@@ -25,7 +25,7 @@ namespace cacto
         load();
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         return nullptr;
     }
 
@@ -36,7 +36,15 @@ namespace cacto
     {
     }
 
-    StringPack::~StringPack() = default;
+    StringPack::~StringPack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     StringPack::StringPack(StringPack &&other)
         : m_path(std::move(other.m_path)),
@@ -67,7 +75,7 @@ namespace cacto
                 if (json.isObject())
                     for (auto &pair : json.asObject())
                     {
-                        auto string = std::make_shared<sf::String>(pair.second.getString(""));
+                        auto string = new sf::String(pair.second.getString(""));
                         m_map.insert({pair.first, string});
                     }
             }

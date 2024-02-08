@@ -6,32 +6,66 @@
 namespace cacto
 {
 
+    enum class PictureScale
+    {
+        Fill,
+        Fit,
+        Crop
+    };
+
     class CACTO_UI_API Picture
         : public Block
     {
 
     public:
-        enum Scale
-        {
-            Fill,
-            Fit,
-            Crop
-        };
+        Picture &&setLeft(f32t value, bool resize = false);
+        Picture &&setRight(f32t value, bool resize = false);
+        Picture &&setTop(f32t value, bool resize = false);
+        Picture &&setBottom(f32t value, bool resize = false);
 
-        Scale getScale() const;
-        Picture &setScale(Scale value);
+        Picture &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Picture &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+
+        Picture &&shrink(const Thickness &thickness);
+        Picture &&expand(const Thickness &thickness);
+
+        Picture &&setBackground(Node *const value);
+        Picture &&setBackground(Node &&value);
+
+        Picture &&setMargin(const Thickness &value);
+        Picture &&setPadding(const Thickness &value);
+
+        Picture &&setMinWidth(f32t value);
+        Picture &&setMaxWidth(f32t value);
+        Picture &&setMinHeight(f32t value);
+        Picture &&setMaxHeight(f32t value);
+
+        Picture &&setFixedWidth(f32t value);
+        Picture &&setFixedHeight(f32t value);
+
+        operator const Surface &() const;
+        operator Surface &();
+
+        Picture &&setGeometry(const Geometry *const value);
+        Picture &&setPrecision(szt value);
+        Picture &&setColor(const sf::Color &value);
+        Picture &&setTexture(const sf::Texture *const value, bool resetRect = true);
+
+        PictureScale getScale() const;
+        Picture &&setScale(PictureScale value);
 
         const sf::FloatRect &getTextureRect() const;
-        Picture &setTextureRect(const sf::FloatRect &value);
+        Picture &&setTextureRect(const sf::FloatRect &value);
 
-        Anchor getHorizontalAnchor() const;
-        Picture &setHorizontalAnchor(Anchor value);
+        BoxAnchor getHorizontalAnchor() const;
+        Picture &&setHorizontalAnchor(BoxAnchor value);
 
-        Anchor getVerticalAnchor() const;
-        Picture &setVerticalAnchor(Anchor value);
+        BoxAnchor getVerticalAnchor() const;
+        Picture &&setVerticalAnchor(BoxAnchor value);
 
-        const Surface &asSurface() const;
-        Surface &asSurface();
+        Picture &&setId(const std::string &id);
+        Picture *clone() const override;
+        Picture *acquire() override;
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -40,19 +74,28 @@ namespace cacto
         Picture();
         virtual ~Picture();
 
+        Picture(const Picture &other);
+        Picture &operator=(const Picture &other);
+
+        Picture(Picture &&other);
+        Picture &operator=(Picture &&other);
+
     protected:
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
         Surface m_surface;
-        Scale m_scale;
+        PictureScale m_scale;
         sf::FloatRect m_textureRect;
-        Anchor m_hAnchor;
-        Anchor m_vAnchor;
+        BoxAnchor m_hAnchor;
+        BoxAnchor m_vAnchor;
     };
 
+    std::string CACTO_UI_API toString(PictureScale scale);
+    PictureScale CACTO_UI_API toPictureScale(const std::string &string);
+
     XmlValue CACTO_UI_API toXml(const Picture &picture);
-    void CACTO_UI_API fromXml(Picture &picture, const XmlValue &xml);
+    Picture CACTO_UI_API toPicture(const XmlValue &xml);
 
     namespace picture
     {

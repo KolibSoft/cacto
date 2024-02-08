@@ -9,17 +9,17 @@ namespace cacto
 
     class Thickness;
 
+    enum class BoxAnchor
+    {
+        Start,
+        End,
+        Center
+    };
+
     class CACTO_UI_API Box
     {
 
     public:
-        enum Anchor
-        {
-            Start,
-            End,
-            Center
-        };
-
         f32t getLeft() const;
         void setLeft(f32t value, bool resize = false);
 
@@ -33,10 +33,10 @@ namespace cacto
         void setBottom(f32t value, bool resize = false);
 
         f32t getWidth() const;
-        void setWidth(f32t value, Anchor anchor = Start);
+        void setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
 
         f32t getHeight() const;
-        void setHeight(f32t value, Anchor anchor = Start);
+        void setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
 
         void shrink(const Thickness &thickness);
         void expand(const Thickness &thickness);
@@ -52,7 +52,7 @@ namespace cacto
         sf::FloatRect m_rect;
     };
 
-    std::string CACTO_UI_API toString(Box::Anchor anchor);
-    void CACTO_UI_API fromString(Box::Anchor &anchor, const std::string &string);
+    std::string CACTO_UI_API toString(BoxAnchor anchor);
+    BoxAnchor CACTO_UI_API toBoxAnchor(const std::string &string);
 
 }

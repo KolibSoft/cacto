@@ -22,15 +22,15 @@ namespace cacto
     {
         for (auto &pair : m_map)
             if (pair.first == id)
-                return pair.second.get();
+                return pair.second;
         auto path = m_path / id;
         if (std::filesystem::exists(path))
         {
-            auto xml = std::make_shared<XmlValue>();
+            auto xml = new XmlValue();
             std::ifstream stream{path};
             stream >> *xml;
             m_map.insert({id, xml});
-            return xml.get();
+            return xml;
         }
         else
         {
@@ -45,7 +45,15 @@ namespace cacto
     {
     }
 
-    XmlPack::~XmlPack() = default;
+    XmlPack::~XmlPack()
+    {
+        for (auto &pair : m_map)
+            if (pair.second)
+            {
+                delete pair.second;
+                pair.second = nullptr;
+            }
+    }
 
     XmlPack::XmlPack(XmlPack &&other)
         : m_path(std::move(other.m_path)),

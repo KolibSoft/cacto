@@ -199,7 +199,7 @@ namespace cacto
     XmlValue toXml(const sf::VertexArray &array)
     {
         XmlValue xml{"VertexArray", {}};
-        auto &content = xml.asContent();
+        auto &content = xml.asTag().content;
         xml["primitive"] = toString(array.getPrimitiveType());
         for (szt i = 0; i < array.getVertexCount(); i++)
         {
@@ -216,7 +216,7 @@ namespace cacto
         auto primitive = xml.getAttribute("primitive", "Points");
         array.setPrimitiveType(toPrimitiveType(primitive));
         if (xml.isTag())
-            for (auto &vertex_xml : xml.asContent())
+            for (auto &vertex_xml : xml.asTag().content)
             {
                 sf::Vertex vertex = toVertex(vertex_xml);
                 array.append(vertex);

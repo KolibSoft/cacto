@@ -17,7 +17,7 @@ namespace cacto
         return &holder.getNode();
     }
 
-    Box::Anchor AnchorLayout::getHorizontalAnchor(const Node &child) const
+    Box::BoxAnchor AnchorLayout::getHorizontalAnchor(const Node &child) const
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -26,7 +26,7 @@ namespace cacto
         return holder.getHorizontalAnchor();
     }
 
-    AnchorLayout &AnchorLayout::setHorizontalAnchor(Node &child, Anchor value)
+    AnchorLayout &AnchorLayout::setHorizontalAnchor(Node &child, BoxAnchor value)
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -36,7 +36,7 @@ namespace cacto
         return *this;
     }
 
-    Box::Anchor AnchorLayout::getVerticalAnchor(const Node &child) const
+    Box::BoxAnchor AnchorLayout::getVerticalAnchor(const Node &child) const
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -45,7 +45,7 @@ namespace cacto
         return holder.getVerticalAnchor();
     }
 
-    AnchorLayout &AnchorLayout::setVerticalAnchor(Node &child, Anchor value)
+    AnchorLayout &AnchorLayout::setVerticalAnchor(Node &child, BoxAnchor value)
     {
         auto index = getChildIndex(child);
         if (index < 0)
@@ -178,23 +178,23 @@ namespace cacto
     namespace anchor_layout
     {
 
-        AnchorLayout::Anchor Holder::getHorizontalAnchor() const
+        AnchorLayout::BoxAnchor Holder::getHorizontalAnchor() const
         {
             return m_hAnchor;
         }
 
-        Holder &Holder::setHorizontalAnchor(AnchorLayout::Anchor value)
+        Holder &Holder::setHorizontalAnchor(AnchorLayout::BoxAnchor value)
         {
             m_hAnchor = value;
             return *this;
         }
 
-        AnchorLayout::Anchor Holder::getVerticalAnchor() const
+        AnchorLayout::BoxAnchor Holder::getVerticalAnchor() const
         {
             return m_vAnchor;
         }
 
-        Holder &Holder::setVerticalAnchor(AnchorLayout::Anchor value)
+        Holder &Holder::setVerticalAnchor(AnchorLayout::BoxAnchor value)
         {
             m_vAnchor = value;
             return *this;

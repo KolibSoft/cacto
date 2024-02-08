@@ -1,10 +1,12 @@
 #pragma once
 
 #include <SFML/System/String.hpp>
+#include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
-#include <Cacto/Core/Node.hpp>
+#include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Graphics/TextDirection.hpp>
 #include <Cacto/UI/Inflatable.hpp>
+#include <Cacto/UI/Box.hpp>
 
 namespace sf
 {
@@ -22,32 +24,43 @@ namespace cacto
     {
 
     public:
-        using Direction = cacto::TextDirection;
+        Span &&setLeft(f32t value, bool resize = false);
+        Span &&setRight(f32t value, bool resize = false);
+        Span &&setTop(f32t value, bool resize = false);
+        Span &&setBottom(f32t value, bool resize = false);
 
-        const std::string &getId() const override;
-        Span &setId(const std::string &value);
+        Span &&setWidth(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+        Span &&setHeight(f32t value, BoxAnchor anchor = BoxAnchor::Start);
+
+        Span &&shrink(const Thickness &thickness);
+        Span &&expand(const Thickness &thickness);
 
         const sf::Font *const getFont() const;
-        Span &setFont(const sf::Font *const value);
+        Span &&setFont(const sf::Font *const value);
 
         const sf::String &getString() const;
-        Span &setString(const sf::String &value);
+        Span &&setString(const sf::String &value);
 
-        Direction getDirection() const;
-        Span &setDirection(Direction value);
+        TextDirection getDirection() const;
+        Span &&setDirection(TextDirection value);
 
         u32t getCharacterSize() const;
-        Span &setCharacterSize(u32t value);
+        Span &&setCharacterSize(u32t value);
 
         const sf::Color &getColor() const;
-        Span &setColor(const sf::Color &value);
+        Span &&setColor(const sf::Color &value);
 
         const sf::Transform &getVisualTransform() const;
 
-        ParentNode *const getParent() const override;
+        const std::string &getId() const override;
+        Span &&setId(const std::string &value);
+        Node *const getParent() const override;
 
         void attach(ParentNode &parent) override;
         void detach() override;
+
+        Span *clone() const override;
+        Span *acquire() override;
 
         sf::Vector2f compact() override;
         sf::Vector2f inflate(const sf::Vector2f &containerSize = {0, 0}) override;
@@ -58,22 +71,22 @@ namespace cacto
         Span();
         virtual ~Span();
 
-        Span(const Span &other) = delete;
-        Span &operator=(const Span &other) = delete;
+        Span(const Span &other);
+        Span &operator=(const Span &other);
 
-        Span(Span &&other) = delete;
-        Span &operator=(Span &&other) = delete;
+        Span(Span &&other);
+        Span &operator=(Span &&other);
 
     protected:
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        std::string m_id;
         const sf::Font *m_font;
         sf::String m_string;
-        Direction m_direction;
+        TextDirection m_direction;
         u32t m_characterSize;
         sf::Color m_color;
+        std::string m_id;
         ParentNode *m_parent;
 
         mutable bool m_invalid;
@@ -82,7 +95,7 @@ namespace cacto
     };
 
     XmlValue CACTO_UI_API toXml(const Span &span);
-    void CACTO_UI_API fromXml(Span &span, const XmlValue &xml);
+    Span CACTO_UI_API toSpan(const XmlValue &xml);
 
     namespace span
     {

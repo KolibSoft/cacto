@@ -15,9 +15,20 @@ namespace cacto
         f32t getVertical() const;
 
         Thickness &add(const Thickness &other);
+        inline Thickness operator+(const Thickness &other) const;
+        inline Thickness &operator+=(const Thickness &other);
+
         Thickness &subtract(const Thickness &other);
+        inline Thickness operator-(const Thickness &other) const;
+        inline Thickness &operator-=(const Thickness &other);
+
         Thickness &multiply(f32t factor);
+        inline Thickness operator*(f32t factor) const;
+        inline Thickness &operator*=(f32t factor);
+
         Thickness &divide(f32t factor);
+        inline Thickness operator/(f32t factor) const;
+        inline Thickness &operator/=(f32t factor);
 
         Thickness(f32t value = 0);
         Thickness(f32t horizontal, f32t vertical);
@@ -30,6 +41,8 @@ namespace cacto
     };
 
     std::string CACTO_UI_API toString(const Thickness &thickness);
-    void CACTO_UI_API fromString(Thickness &thickness, const std::string &string);
+    Thickness CACTO_UI_API toTickness(const std::string &string);
 
 }
+
+#include <Cacto/UI/Thickness.inl>

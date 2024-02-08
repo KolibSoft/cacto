@@ -11,25 +11,46 @@
 namespace cacto
 {
 
-    const sf::Transformable &TileMap::asTransformable() const
+    TileMap &&TileMap::setOrigin(const sf::Vector2f &value)
     {
-        return m_transformable;
+        sf::Transformable::setOrigin(value);
+        return std::move(*this);
     }
 
-    sf::Transformable &TileMap::asTransformable()
+    TileMap &&TileMap::setPosition(const sf::Vector2f &value)
     {
-        return m_transformable;
+        sf::Transformable::setPosition(value);
+        return std::move(*this);
     }
 
-    const std::string &TileMap::getId() const
+    TileMap &&TileMap::setScale(const sf::Vector2f &value)
     {
-        return m_id;
+        sf::Transformable::setScale(value);
+        return std::move(*this);
     }
 
-    TileMap &TileMap::setId(const std::string &value)
+    TileMap &&TileMap::setRotation(sf::Angle value)
     {
-        m_id = value;
-        return *this;
+        sf::Transformable::setRotation(value);
+        return std::move(*this);
+    }
+
+    TileMap &&TileMap::move(const sf::Vector2f &offset)
+    {
+        sf::Transformable::move(offset);
+        return std::move(*this);
+    }
+
+    TileMap &&TileMap::scale(const sf::Vector2f &factors)
+    {
+        sf::Transformable::scale(factors);
+        return std::move(*this);
+    }
+
+    TileMap &&TileMap::rotate(const sf::Angle &angle)
+    {
+        sf::Transformable::rotate(angle);
+        return std::move(*this);
     }
 
     const sf::Texture *const TileMap::getTexture() const
@@ -37,10 +58,10 @@ namespace cacto
         return m_texture;
     }
 
-    TileMap &TileMap::setTexture(const sf::Texture *const value)
+    TileMap &&TileMap::setTexture(const sf::Texture *const value)
     {
         m_texture = value;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::Vector2f &TileMap::getTileSize() const
@@ -48,11 +69,11 @@ namespace cacto
         return m_tileSize;
     }
 
-    TileMap &TileMap::setTileSize(const sf::Vector2f &value)
+    TileMap &&TileMap::setTileSize(const sf::Vector2f &value)
     {
         m_tileSize = value;
         m_invalid = true;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::IntRect &TileMap::getArea() const
@@ -60,13 +81,13 @@ namespace cacto
         return m_area;
     }
 
-    TileMap &TileMap::setArea(const sf::IntRect &value)
+    TileMap &&TileMap::setArea(const sf::IntRect &value)
     {
         m_area = value;
         m_tiles.resize(value.width * value.height);
         m_array.resize(value.width * value.height * 6);
         m_invalid = true;
-        return *this;
+        return std::move(*this);
     }
 
     const sf::FloatRect &TileMap::getTile(const sf::Vector2i &position) const
@@ -80,7 +101,7 @@ namespace cacto
         return NoTile;
     }
 
-    TileMap &TileMap::setTile(const sf::FloatRect &tile, const sf::Vector2i &position)
+    TileMap &&TileMap::setTile(const sf::FloatRect &tile, const sf::Vector2i &position)
     {
         if (m_area.contains(position))
         {
@@ -102,21 +123,32 @@ namespace cacto
                 m_array[base + 5].texCoords = texCoords;
             }
         }
-        return *this;
+        return std::move(*this);
     }
 
-    TileMap &TileMap::setTiles(const sf::FloatRect &tile, const sf::IntRect &area)
+    TileMap &&TileMap::setTiles(const sf::FloatRect &tile, const sf::IntRect &area)
     {
         for (i32t y = area.top; y < area.top + area.height; y++)
             for (i32t x = area.left; x < area.left + area.width; x++)
                 setTile(tile, {x, y});
-        return *this;
+        return std::move(*this);
     }
 
-    TileMap &TileMap::fill(const sf::FloatRect &tile)
+    TileMap &&TileMap::fill(const sf::FloatRect &tile)
     {
         setTiles(tile, m_area);
-        return *this;
+        return std::move(*this);
+    }
+
+    const std::string &TileMap::getId() const
+    {
+        return m_id;
+    }
+
+    TileMap &&TileMap::setId(const std::string &value)
+    {
+        m_id = value;
+        return std::move(*this);
     }
 
     Node *const TileMap::getParent() const
@@ -150,8 +182,14 @@ namespace cacto
         return tileMap;
     }
 
+    TileMap *TileMap::acquire()
+    {
+        auto tileMap = new TileMap(std::move(*this));
+        return tileMap;
+    }
+
     TileMap::TileMap()
-        : m_transformable(),
+        : sf::Transformable(),
           m_texture(nullptr),
           m_tileSize(),
           m_area(),
@@ -169,22 +207,21 @@ namespace cacto
     }
 
     TileMap::TileMap(const TileMap &other)
-        : m_transformable(other.m_transformable),
-          m_texture(other.m_texture),
-          m_tileSize(other.m_tileSize),
-          m_area(other.m_area),
-          m_tiles(other.m_tiles),
-          m_id(other.m_id),
-          m_parent(),
-          m_invalid(other.m_invalid),
-          m_array(other.m_array)
+        : TileMap()
     {
+        *this = other;
     }
 
     TileMap &TileMap::operator=(const TileMap &other)
     {
-        TileMap copy{other};
-        *this = std::move(copy);
+        sf::Transformable::operator=(other);
+        m_texture = other.m_texture;
+        m_tileSize = other.m_tileSize;
+        m_area = other.m_area;
+        m_tiles = other.m_tiles;
+        m_id = other.m_id;
+        m_invalid = other.m_invalid;
+        m_array = other.m_array;
         return *this;
     }
 
@@ -196,7 +233,7 @@ namespace cacto
 
     TileMap &TileMap::operator=(TileMap &&other)
     {
-        m_transformable = std::move(other.m_transformable);
+        sf::Transformable::operator=(std::move(other));
         m_texture = other.m_texture;
         m_tileSize = std::move(other.m_tileSize);
         m_area = std::move(other.m_area);
@@ -234,7 +271,7 @@ namespace cacto
         }
         auto _states = states;
         _states.texture = m_texture;
-        _states.transform *= m_transformable.getTransform();
+        _states.transform *= getTransform();
         target.draw(m_array, _states);
     }
 
@@ -243,18 +280,16 @@ namespace cacto
     XmlValue toXml(const TileMap &tileMap)
     {
         XmlValue xml{"TileMap", {}};
-        xml["id"] = tileMap.getId();
+        xml |= toXml((const sf::Transformable &)tileMap);
         xml["texture"] = getExpression(tileMap.getTexture());
         xml["tileSize"] = toString(tileMap.getTileSize());
         xml["area"] = toString(sf::FloatRect(tileMap.getArea()));
-        auto txml = cacto::toXml(tileMap.asTransformable());
-        for (auto &pair : txml.asAttributes())
-            xml[pair.first] = pair.second;
-        auto &content = xml.asContent();
+        xml["id"] = tileMap.getId();
+        auto &content = xml.asTag().content;
         XmlValue chunk{"Chunk", {}};
         auto area{tileMap.getArea()};
         chunk["area"] = toString(sf::FloatRect(area));
-        auto &tiles = chunk.asContent();
+        auto &tiles = chunk.asTag().content;
         for (i32t y = 0; y < area.height; y++)
             for (i32t x = 0; x < area.width; x++)
             {
@@ -270,15 +305,15 @@ namespace cacto
     TileMap toTileMap(const XmlValue &xml)
     {
         TileMap tileMap{};
-        tileMap.setId(xml.getAttribute("id"));
+        (sf::Transformable &)tileMap = toTransformable(xml);
         tileMap.setTexture(getTexture(xml.getAttribute("texture")));
         tileMap.setTileSize(toVector(xml.getAttribute("tileSize", "0,0")));
         tileMap.setArea(sf::IntRect(toRect(xml.getAttribute("area", "0,0,0,0"))));
         tileMap.fill(getRect(xml.getAttribute("fill", "0,0,0,0")));
-        tileMap.asTransformable() = toTransformable(xml);
+        tileMap.setId(xml.getAttribute("id"));
         if (xml.isTag())
         {
-            auto &content = xml.asContent();
+            auto &content = xml.asTag().content;
             for (auto &item : content)
             {
                 if (item.isTag())
@@ -286,7 +321,7 @@ namespace cacto
                     if (item.getName() == "Chunk")
                     {
                         auto area = toRect(item.getAttribute("area", "0,0,0,0"));
-                        auto &tiles = item.asContent();
+                        auto &tiles = item.asTag().content;
                         for (i32t y = 0; y < area.height; y++)
                             for (i32t x = 0; x < area.width; x++)
                             {

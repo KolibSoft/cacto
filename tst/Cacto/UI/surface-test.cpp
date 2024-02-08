@@ -19,31 +19,17 @@ int main()
     cacto::TexturePack textures{"."};
     cacto::GeometryPack geometries{"."};
 
-    std::cout << "Node Converters: " << cacto::XmlConverter<cacto::Node>::getConverterCount() << '\n';
-
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
-    cacto::Surface surface{};
-
-    /*
-    surface
-        .setGeometry(cacto::getGeometry("res/ellipse.xml"))
-        .setPrecision(12)
-        .setColor(sf::Color::Yellow)
-        .setTexture(cacto::getTexture("res/image.png"))
-        .setTextureRect({{-100, -100}, {1000, 1000}});
-    */
     cacto::XmlValue xml = nullptr;
+    auto surface = cacto::Surface()
+                       .setGeometry(cacto::getResource<cacto::Geometry>("res/ellipse.xml"))
+                       .setPrecision(12)
+                       .setColor(sf::Color::Yellow)
+                       .setTexture(cacto::getResource<sf::Texture>("res/image.png"))
+                       .setTextureRect({{-100, -100}, {1000, 1000}});
+
     xml.fromFile("res/surface.xml");
-    cacto::fromXml(surface, xml);
-    xml = cacto::toXml(surface);
-    xml.toFile("res/surface.xml", 2);
-
-    std::cout << cacto::toXml(surface).toString(2) << '\n';
-
-    sf::Transformable transformable{};
-    transformable.scale({0.25, 0.25});
-    transformable.move({200, 200});
-    transformable.rotate(sf::degrees(30));
+    surface = cacto::toSurface(xml);
 
     while (window.isOpen())
     {
@@ -54,10 +40,13 @@ int main()
                 window.close();
             else if (event.type == sf::Event::Resized)
                 window.setView(sf::View(sf::FloatRect{{0, 0}, {sf::Vector2f(event.size.width, event.size.height)}}));
-            else if (event.type == sf::Event::KeyPressed || event.key.code == sf::Keyboard::Space)
+            else if (event.type == sf::Event::KeyPressed)
             {
-                xml.fromFile("res/surface.xml");
-                cacto::fromXml(surface, xml);
+                if (event.key.code == sf::Keyboard::Space)
+                {
+                    xml.fromFile("res/surface.xml");
+                    surface = cacto::toSurface(xml);
+                }
             }
         }
 
@@ -70,9 +59,12 @@ int main()
         else
             window.clear(sf::Color::Black);
 
-        window.draw(surface, transformable.getTransform());
+        window.draw(surface);
         window.display();
     }
+
+    xml = cacto::toXml(surface);
+    xml.toFile("res/surface.xml");
 
     return 0;
 }
