@@ -67,12 +67,17 @@ namespace cacto
 
     Block &&Block::setBackground(Node *const value)
     {
-        Node *current = this;
-        while (current)
+        if (value)
         {
-            if (current == value)
-                throw std::runtime_error("The background is its own block ancestor");
-            current = current->getParent();
+            if (value->getParent())
+                throw std::runtime_error("The background can not have a parent");
+            Node *current = this;
+            while (current)
+            {
+                if (current == value)
+                    throw std::runtime_error("The background is its own block ancestor");
+                current = current->getParent();
+            }
         }
         dropBackground();
         m_background = value;
@@ -439,7 +444,10 @@ namespace cacto
         if (bid != "")
             xml["background"] = "@xml/" + bid;
         else
+        {
+            bxml["isBackground"] = "true";
             xml.asTag().content.push_back(std::move(bxml));
+        }
         return std::move(xml);
     }
 
@@ -464,14 +472,17 @@ namespace cacto
             }
         }
         else
-        {
-            auto node = fromXml<Node>(xml[0]);
-            if (node)
-            {
-                block.setBackground(std::move(*node));
-                delete node;
-            }
-        }
+            for (auto &ixml : xml.asTag().content)
+                if (ixml["isBackground"] == "true")
+                {
+                    auto node = fromXml<Node>(xml[0]);
+                    if (node)
+                    {
+                        block.setBackground(std::move(*node));
+                        delete node;
+                    }
+                    break;
+                }
         return std::move(block);
     }
 

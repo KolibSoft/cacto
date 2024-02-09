@@ -50,7 +50,7 @@ namespace cacto
         Input &&setVerticalAnchor(BoxAnchor value);
 
         const EventListener &getOnInputListener() const;
-        Input &setOnInputListener(const EventListener &value);
+        Input &&setOnInputListener(const EventListener &value);
 
         Input &&setId(const std::string &value);
 

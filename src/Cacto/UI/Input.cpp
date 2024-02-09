@@ -159,10 +159,10 @@ namespace cacto
         return m_onInput;
     }
 
-    Input &Input::setOnInputListener(const EventListener &value)
+    Input &&Input::setOnInputListener(const EventListener &value)
     {
         m_onInput = value;
-        return *this;
+        return std::move(*this);
     }
 
     Input &&Input::setId(const std::string &value)

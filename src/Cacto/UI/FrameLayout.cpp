@@ -1,35 +1,164 @@
 #include <stdexcept>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <Cacto/Graphics/NodeUtils.hpp>
+#include <Cacto/Window/NodeUtils.hpp>
+#include <Cacto/UI/NodeUtils.hpp>
 #include <Cacto/UI/FrameLayout.hpp>
 
 namespace cacto
 {
 
-    FrameLayout::BoxAnchor FrameLayout::getHorizontalAnchor() const
+    FrameLayout &&FrameLayout::setLeft(f32t value, bool resize)
+    {
+        Box::setLeft(value, resize);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setRight(f32t value, bool resize)
+    {
+        Box::setRight(value, resize);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setTop(f32t value, bool resize)
+    {
+        Box::setTop(value, resize);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setBottom(f32t value, bool resize)
+    {
+        Box::setBottom(value, resize);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setWidth(f32t value, BoxAnchor anchor)
+    {
+        Box::setWidth(value, anchor);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setHeight(f32t value, BoxAnchor anchor)
+    {
+        Box::setHeight(value, anchor);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::shrink(const Thickness &thickness)
+    {
+        Box::shrink(thickness);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::expand(const Thickness &thickness)
+    {
+        Box::expand(thickness);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setBackground(Node *const value)
+    {
+        Block::setBackground(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setBackground(Node &&value)
+    {
+        Block::setBackground(std::move(value));
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setMargin(const Thickness &value)
+    {
+        Block::setMargin(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setPadding(const Thickness &value)
+    {
+        Block::setPadding(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setMinWidth(f32t value)
+    {
+        Block::setMinWidth(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setMaxWidth(f32t value)
+    {
+        Block::setMaxWidth(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setMinHeight(f32t value)
+    {
+        Block::setMinHeight(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setMaxHeight(f32t value)
+    {
+        Block::setMaxHeight(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setFixedWidth(f32t value)
+    {
+        Block::setFixedWidth(value);
+        return std::move(*this);
+    }
+
+    FrameLayout &&FrameLayout::setFixedHeight(f32t value)
+    {
+        Block::setFixedHeight(value);
+        return std::move(*this);
+    }
+
+    BoxAnchor FrameLayout::getHorizontalAnchor() const
     {
         return m_hAnchor;
     }
 
-    FrameLayout &FrameLayout::setHorizontalAnchor(BoxAnchor value)
+    FrameLayout &&FrameLayout::setHorizontalAnchor(BoxAnchor value)
     {
         m_hAnchor = value;
-        return *this;
+        return std::move(*this);
     }
 
-    FrameLayout::BoxAnchor FrameLayout::getVerticalAnchor() const
+    BoxAnchor FrameLayout::getVerticalAnchor() const
     {
         return m_vAnchor;
     }
 
-    FrameLayout &FrameLayout::setVerticalAnchor(BoxAnchor value)
+    FrameLayout &&FrameLayout::setVerticalAnchor(BoxAnchor value)
     {
         m_vAnchor = value;
-        return *this;
+        return std::move(*this);
     }
 
-    ParentNode *const FrameLayout::getParent() const
+    FrameLayout &&FrameLayout::setId(const std::string &value)
+    {
+        Block::setId(value);
+        return std::move(*this);
+    }
+
+    Node *const FrameLayout::getParent() const
     {
         return Block::getParent();
+    }
+
+    FrameLayout *FrameLayout::clone() const
+    {
+        auto layout = new FrameLayout(*this);
+        return layout;
+    }
+
+    FrameLayout *FrameLayout::acquire()
+    {
+        auto layout = new FrameLayout(std::move(*this));
+        return layout;
     }
 
     szt FrameLayout::getChildCount() const
@@ -55,23 +184,22 @@ namespace cacto
         if (hasAncestor(child))
             throw std::runtime_error("The node is an ancestor");
         m_child = &child;
+        m_childOwned = false;
         child.attach(*this);
+    }
+
+    FrameLayout &&FrameLayout::append(ChildNode &&child)
+    {
+        auto _child = dynamic_cast<ChildNode *>(child.acquire());
+        append(*_child);
+        m_childOwned = true;
+        return std::move(*this);
     }
 
     void FrameLayout::remove(ChildNode &child)
     {
         if (m_child == &child)
-        {
-            m_child = nullptr;
-            child.detach();
-        }
-    }
-
-    void FrameLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
-    {
-        drawBlock(target, states);
-        if (m_child)
-            cacto::draw(*m_child, target, states);
+            dropChild();
     }
 
     sf::Vector2f FrameLayout::compact()
@@ -113,17 +241,69 @@ namespace cacto
 
     FrameLayout::FrameLayout()
         : Block(),
-          m_hAnchor(Start),
-          m_vAnchor(Start),
+          m_hAnchor(BoxAnchor::Start),
+          m_vAnchor(BoxAnchor::Start),
           m_childBox(),
-          m_child()
+          m_child(),
+          m_childOwned(false)
     {
     }
 
     FrameLayout::~FrameLayout()
     {
-        if (m_child)
-            remove(*m_child);
+        dropChild();
+    }
+
+    FrameLayout::FrameLayout(const FrameLayout &other)
+        : FrameLayout()
+    {
+        *this = other;
+    }
+
+    FrameLayout &FrameLayout::operator=(const FrameLayout &other)
+    {
+        clone(other);
+        return *this;
+    }
+
+    FrameLayout::FrameLayout(FrameLayout &&other)
+        : FrameLayout()
+    {
+        *this = std::move(other);
+    }
+
+    FrameLayout &FrameLayout::operator=(FrameLayout &&other)
+    {
+        acquire(std::move(other));
+        other.detach();
+        return *this;
+    }
+
+    void FrameLayout::clone(const FrameLayout &other)
+    {
+        dropChild();
+        Block::clone(other);
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        m_childBox = other.m_childBox;
+        if (other.m_child)
+        {
+            m_child = dynamic_cast<ChildNode *>(other.m_child->clone());
+            m_childOwned = true;
+        }
+    }
+
+    void FrameLayout::acquire(FrameLayout &&other)
+    {
+        dropChild();
+        Block::acquire(std::move(other));
+        m_hAnchor = other.m_hAnchor;
+        m_vAnchor = other.m_vAnchor;
+        m_childBox = std::move(other.m_childBox);
+        m_child = other.m_child;
+        m_childOwned = other.m_childOwned;
+        other.m_child = nullptr;
+        other.m_childOwned = false;
     }
 
     const Box &FrameLayout::getChildBox() const
@@ -131,38 +311,54 @@ namespace cacto
         return m_childBox;
     }
 
+    void FrameLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
+    {
+        drawBlock(target, states);
+        if (m_child)
+            cacto::draw(*m_child, target, states);
+    }
+
+    void FrameLayout::dropChild()
+    {
+        if (m_child)
+        {
+            m_child->detach();
+            if (m_childOwned)
+            {
+                delete m_child;
+                m_child = nullptr;
+                m_childOwned = false;
+            }
+        }
+    }
+
     XmlValue toXml(const FrameLayout &frame)
     {
-        auto xml = cacto::toXml((const Block &)frame);
-        xml.setName("FrameLayout");
-        auto child = frame.getChild();
-        if (child)
-        {
-            auto child_xml = toXml(child);
-            xml.asContent().push_back(std::move(child_xml));
-        }
+        XmlValue xml{"FrameLayout", {}};
+        xml |= toXml((const Block &)frame);
         xml["horizontalAnchor"] = toString(frame.getHorizontalAnchor());
         xml["verticalAnchor"] = toString(frame.getVerticalAnchor());
+        auto child = frame.getChild();
+        if (child)
+            xml.asTag().content.push_back(toXml(child));
         return std::move(xml);
     }
 
-    void fromXml(FrameLayout &frame, const XmlValue &xml)
+    FrameLayout toFrameLayout(const XmlValue &xml)
     {
-        frame.clearChildren();
-        cacto::fromXml((Block &)frame, xml);
-        if (xml.isTag())
-            for (auto &item : xml.asContent())
-            {
-                Node *node = nullptr;
-                fromXml(node, item);
-                auto child = dynamic_cast<ChildNode *>(node);
-                if (child)
-                    frame.append(*child);
-            }
-        Box::BoxAnchor hAnchor{};
-        Box::BoxAnchor vAnchor{};
-        cacto::fromString(hAnchor, xml.getAttribute("horizontalAnchor", "Start"));
-        cacto::fromString(vAnchor, xml.getAttribute("verticalAnchor", "Start"));
+        FrameLayout frame{};
+        (Block &)frame = toBlock(xml);
+        frame.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
+        frame.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
+        auto node = fromXml<Node>(xml[0]);
+        if (node)
+        {
+            auto child = dynamic_cast<ChildNode *>(node);
+            if (child)
+                frame.append(std::move(*child));
+            delete node;
+        }
+        return std::move(frame);
     }
 
     namespace frame
@@ -183,10 +379,9 @@ namespace cacto
         {
             if (xml.isTag() && xml.getName() == "FrameLayout")
             {
-                auto frame = std::make_shared<FrameLayout>();
-                cacto::fromXml(*frame, xml);
-                Node::XmlStack.push(frame);
-                return frame.get();
+                auto frame = new FrameLayout();
+                *frame = toFrameLayout(xml);
+                return frame;
             }
             return nullptr;
         }

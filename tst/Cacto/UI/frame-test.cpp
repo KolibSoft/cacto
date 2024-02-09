@@ -23,38 +23,30 @@ int main()
 
     sf::RenderWindow window(sf::VideoMode({640, 468}), "SFML Window");
 
-    cacto::Surface bgBlock{};
-    bgBlock
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
-        .setColor(sf::Color::Red);
-
-    cacto::Block block{};
-    block
-        .setBackground(&bgBlock)
-        .setMargin(10)
-        .setMinWidth(100)
-        .setMaxHeight(100)
-        .setPadding(10);
-
-    cacto::Surface bgRoot{};
-    bgRoot
-        .setGeometry(cacto::getGeometry("res/rectangle.xml"))
-        .setColor(sf::Color::Blue);
-
-    cacto::FrameLayout root{};
-    root
-        .setBackground(&bgRoot)
-        .setMargin(10)
-        .setMinWidth(100)
-        .setMaxHeight(100)
-        .setPadding(10);
-    root.append(block);
+    auto root = cacto::FrameLayout()
+                    .setBackground(
+                        cacto::Surface()
+                            .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
+                            .setColor(sf::Color::Blue))
+                    .setMargin(10)
+                    .setMinWidth(100)
+                    .setMaxHeight(100)
+                    .setPadding(10)
+                    .append(
+                        cacto::Block()
+                            .setBackground(
+                                cacto::Surface()
+                                    .setGeometry(cacto::getResource<cacto::Geometry>("res/rectangle.xml"))
+                                    .setColor(sf::Color::Red))
+                            .setMargin(10)
+                            .setMinWidth(100)
+                            .setMaxHeight(100)
+                            .setPadding(10));
 
     cacto::XmlValue xml = nullptr;
-    xml.fromFile("res/frame.xml");
-    cacto::fromXml(root, xml);
-    xml = cacto::toXml(root);
-    xml.toFile("res/frame.xml", 2);
+
+    // xml.fromFile("res/frame.xml");
+    // root = cacto::toFrameLayout(xml);
 
     while (window.isOpen())
     {
@@ -68,7 +60,7 @@ int main()
             else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
             {
                 xml.fromFile("res/frame.xml");
-                cacto::fromXml(root, xml);
+                root = cacto::toFrameLayout(xml);
             }
         }
         root.compact();
@@ -78,6 +70,9 @@ int main()
         window.draw(root);
         window.display();
     }
+
+    xml = cacto::toXml(root);
+    xml.toFile("res/frame.xml");
 
     return 0;
 }
