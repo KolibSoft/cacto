@@ -28,5 +28,7 @@ int main()
     vector.push_back(Ax());
     vector.push_back(Ax());
 
+    cacto::Reference<Ax> ax = nullptr;
+
     return 0;
 }

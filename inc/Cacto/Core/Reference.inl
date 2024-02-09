@@ -52,6 +52,14 @@ namespace cacto
     }
 
     template <typename T>
+    template <typename U>
+    inline Reference<T>::Reference(U *instance, bool owned)
+        : m_instance(instance),
+          m_isOwning(owned)
+    {
+    }
+
+    template <typename T>
     inline Reference<T>::Reference(T *instance, bool owned)
         : m_instance(instance),
           m_isOwning(owned)

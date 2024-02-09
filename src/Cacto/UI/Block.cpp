@@ -60,12 +60,12 @@ namespace cacto
         return std::move(*this);
     }
 
-    Node *const Block::getBackground() const
+    Reference<Node> Block::getBackground() const
     {
-        return m_background;
+        return m_background.getInstance();
     }
 
-    Block &&Block::setBackground(Node *const value)
+    Block &&Block::setBackground(Reference<Node> value)
     {
         if (value)
         {
@@ -74,22 +74,12 @@ namespace cacto
             Node *current = this;
             while (current)
             {
-                if (current == value)
+                if (current == value.getInstance())
                     throw std::runtime_error("The background is its own block ancestor");
                 current = current->getParent();
             }
         }
-        dropBackground();
-        m_background = value;
-        return std::move(*this);
-    }
-
-    Block &&Block::setBackground(Node &&value)
-    {
-        auto background = value.acquire();
-        dropBackground();
-        setBackground(background);
-        m_backgroundOwned = true;
+        m_background = std::move(value);
         return std::move(*this);
     }
 
@@ -279,8 +269,7 @@ namespace cacto
 
     Block::Block()
         : Box(),
-          m_background(nullptr),
-          m_backgroundOwned(false),
+          m_background(),
           m_margin(0),
           m_padding(0),
           m_minWidth(0),
@@ -295,7 +284,6 @@ namespace cacto
 
     Block::~Block()
     {
-        dropBackground();
         detach();
     }
 
@@ -326,13 +314,9 @@ namespace cacto
 
     void Block::clone(const Block &other)
     {
-        dropBackground();
         Box::operator=(other);
         if (other.m_background)
-        {
-            m_background = other.m_background->clone();
-            m_backgroundOwned = true;
-        }
+            m_background = {other.m_background->clone(), true};
         m_margin = other.m_margin;
         m_padding = other.m_padding;
         m_minWidth = other.m_minWidth;
@@ -345,10 +329,8 @@ namespace cacto
 
     void Block::acquire(Block &&other)
     {
-        dropBackground();
         Box::operator=(std::move(other));
-        m_background = other.m_background;
-        m_backgroundOwned = other.m_backgroundOwned;
+        m_background = std::move(other.m_background);
         m_margin = std::move(other.m_margin);
         m_padding = std::move(other.m_padding);
         m_minWidth = other.m_minWidth;
@@ -357,8 +339,6 @@ namespace cacto
         m_maxHeight = other.m_maxHeight;
         m_id = std::move(other.m_id);
         m_vTransform = std::move(other.m_vTransform);
-        other.m_background = nullptr;
-        other.m_backgroundOwned = false;
         other.m_minWidth = 0;
         other.m_maxWidth = 0;
         other.m_minHeight = 0;
@@ -420,16 +400,6 @@ namespace cacto
         drawBlock(target, states);
     }
 
-    void Block::dropBackground()
-    {
-        if (m_background && m_backgroundOwned)
-        {
-            delete m_background;
-            m_background = nullptr;
-            m_backgroundOwned = false;
-        }
-    }
-
     XmlValue toXml(const Block &block)
     {
         XmlValue xml{"Block", {}};
@@ -440,7 +410,7 @@ namespace cacto
         xml["minHeight"] = std::to_string(block.getMinHeight());
         xml["maxHeight"] = std::to_string(block.getMaxHeight());
         xml["id"] = block.getId();
-        auto bxml = toXml(block.getBackground());
+        auto bxml = toXml(block.getBackground().getInstance());
         auto bid = getId(bxml);
         if (bid != "")
             xml["background"] = "@xml/" + bid;
@@ -452,7 +422,7 @@ namespace cacto
         return std::move(xml);
     }
 
-    Block CACTO_UI_API toBlock(const XmlValue &xml)
+    Block toBlock(const XmlValue &xml)
     {
         Block block{};
         block.setMargin(toTickness(xml.getAttribute("margin", "0,0,0,0")));
@@ -467,10 +437,9 @@ namespace cacto
         {
             auto node = fromXml<Node>(bxml);
             if (node)
-            {
-                block.setBackground(std::move(*node));
+                block.setBackground({node, true});
+            else
                 delete node;
-            }
         }
         else
             for (auto &ixml : xml.asTag().content)
@@ -478,10 +447,9 @@ namespace cacto
                 {
                     auto node = fromXml<Node>(xml[0]);
                     if (node)
-                    {
-                        block.setBackground(std::move(*node));
+                        block.setBackground({node, true});
+                    else
                         delete node;
-                    }
                     break;
                 }
         return std::move(block);

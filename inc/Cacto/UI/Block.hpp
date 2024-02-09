@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics/Transformable.hpp>
 #include <SFML/Graphics/VertexArray.hpp>
+#include <Cacto/Core/Reference.hpp>
 #include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Window/Handler.hpp>
 #include <Cacto/UI/Thickness.hpp>
@@ -36,9 +37,8 @@ namespace cacto
         Block &&shrink(const Thickness &thickness);
         Block &&expand(const Thickness &thickness);
 
-        Node *const getBackground() const;
-        Block &&setBackground(Node *const value);
-        Block &&setBackground(Node &&value);
+        Reference<Node> getBackground() const;
+        Block &&setBackground(Reference<Node> value);
 
         const Thickness &getMargin() const;
         Block &&setMargin(const Thickness &value);
@@ -108,11 +108,8 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        void dropBackground();
-
         std::string m_id;
-        Node *m_background;
-        bool m_backgroundOwned;
+        Reference<Node> m_background;
         Thickness m_margin;
         Thickness m_padding;
         f32t m_minWidth;

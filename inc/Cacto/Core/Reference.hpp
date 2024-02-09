@@ -20,6 +20,9 @@ namespace cacto
         template <typename U>
         Reference(U &&moving);
 
+        template <typename U>
+        Reference(U *instance, bool owned = false);
+
         Reference(T *intance = nullptr, bool owned = false);
         virtual ~Reference();
 
