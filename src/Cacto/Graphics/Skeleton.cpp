@@ -127,13 +127,13 @@ namespace cacto
         if (index >= m_holders.size())
             return nullptr;
         auto &holder = m_holders.at(index);
-        return holder.child;
+        return holder.child.getInstance();
     }
 
     const SkeletonOptions *const Skeleton::getOptions(const Node &child) const
     {
         for (auto &holder : m_holders)
-            if (holder.child == &child)
+            if (holder.child.getInstance() == &child)
                 return &holder.options;
         return nullptr;
     }
@@ -141,7 +141,7 @@ namespace cacto
     SkeletonOptions *const Skeleton::getOptions(const Node &child)
     {
         for (auto &holder : m_holders)
-            if (holder.child == &child)
+            if (holder.child.getInstance() == &child)
                 return &holder.options;
         return nullptr;
     }
@@ -169,30 +169,21 @@ namespace cacto
 
     void Skeleton::append(ChildNode &child)
     {
-        if (getChildIndex(child) >= 0)
-            return;
-        if (child.getParent() != nullptr && child.getParent() != this)
+        append(child, {});
+    }
+
+    Skeleton &&Skeleton::append(Reference<ChildNode> child, const SkeletonOptions &options)
+    {
+        if (getChildIndex(*child) >= 0)
+            return std::move(*this);
+        if (child->getParent() != nullptr && child->getParent() != this)
             throw std::runtime_error("The node is already attached to another parent");
-        if (hasAncestor(child))
+        if (hasAncestor(*child))
             throw std::runtime_error("The node is an ancestor");
         auto &holder = m_holders.emplace_back();
-        holder.child = &child;
-        holder.options = {};
-        holder.owned = false;
-        child.attach(*this);
-    }
-
-    Skeleton &&Skeleton::append(ChildNode &child, const SkeletonOptions &options)
-    {
-        append(child);
-        m_holders.back().options = options;
-        return std::move(*this);
-    }
-
-    Skeleton &&Skeleton::append(ChildNode &&child, const SkeletonOptions &options)
-    {
-        append(*child.acquire(), options);
-        m_holders.back().owned = true;
+        holder.child = std::move(child);
+        holder.options = options;
+        holder.child->attach(*this);
         return std::move(*this);
     }
 
@@ -201,11 +192,9 @@ namespace cacto
         auto index = getChildIndex(child);
         if (index >= 0)
         {
-            auto holder = m_holders[index];
+            auto _child = std::move(m_holders[index].child);
             m_holders.erase(m_holders.begin() + index);
-            holder.child->detach();
-            if (holder.owned)
-                delete holder.child;
+            _child->detach();
         }
     }
 
@@ -266,10 +255,7 @@ namespace cacto
         sf::Transformable::operator=(other);
         m_id = other.m_id;
         for (auto &holder : other.m_holders)
-        {
-            append(*holder.child->clone(), holder.options);
-            m_holders.back().owned = true;
-        }
+            append({holder.child->clone(), true}, holder.options);
     }
 
     void Skeleton::acquire(Skeleton &&other)
@@ -352,12 +338,13 @@ namespace cacto
                     {
                         sf::Vector2f coords = toVector(item.getAttribute("options:coords", "0,0"));
                         SkeletonRelation relation = toRelation(item.getAttribute("options:relation", "Body"));
-                        skeleton.append(std::move(*child),
+                        skeleton.append({child, true},
                                         SkeletonOptions()
                                             .setCoords(coords)
                                             .setRelation(relation));
                     }
-                    delete node;
+                    else
+                        delete node;
                 }
             }
         return std::move(skeleton);

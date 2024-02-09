@@ -38,8 +38,8 @@ int main()
                                 {{0,0}, cacto::SkeletonRelation::Bone});
     cacto::XmlValue xml = nullptr;
 
-    xml.fromFile("res/skeleton.xml");
-    skeleton = cacto::toSkeleton(xml);
+    // xml.fromFile("res/skeleton.xml");
+    // skeleton = cacto::toSkeleton(xml);
 
     auto left = skeleton.firstDescendant<cacto::Mesh>("left");
     auto right = skeleton.firstDescendant<cacto::Mesh>("right");

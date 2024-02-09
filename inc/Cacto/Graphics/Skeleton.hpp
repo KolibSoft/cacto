@@ -3,6 +3,7 @@
 #include <vector>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Transformable.hpp>
+#include <Cacto/Core/Reference.hpp>
 #include <Cacto/Core/ParentNode.hpp>
 #include <Cacto/Core/ChildNode.hpp>
 #include <Cacto/Graphics/Export.hpp>
@@ -66,8 +67,7 @@ namespace cacto
         void detach() override;
 
         void append(ChildNode &child) override;
-        Skeleton &&append(ChildNode &child, const SkeletonOptions &options);
-        Skeleton &&append(ChildNode &&child, const SkeletonOptions &options);
+        Skeleton &&append(Reference<ChildNode> child, const SkeletonOptions &options);
 
         void remove(ChildNode &child) override;
 
@@ -98,9 +98,8 @@ namespace cacto
 
         struct holder
         {
-            ChildNode *child{};
+            Reference<ChildNode> child{};
             SkeletonOptions options{};
-            bool owned{};
         };
     };
 
