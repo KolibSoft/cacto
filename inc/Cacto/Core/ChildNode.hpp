@@ -18,6 +18,9 @@ namespace cacto
         virtual void attach(ParentNode &parent) = 0;
         virtual void detach() = 0;
 
+        ChildNode *clone() const override = 0;
+        ChildNode *acquire() override = 0;
+
         ChildNode() = default;
         virtual ~ChildNode() = default;
     };

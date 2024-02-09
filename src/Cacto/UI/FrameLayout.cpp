@@ -190,8 +190,7 @@ namespace cacto
 
     FrameLayout &&FrameLayout::append(ChildNode &&child)
     {
-        auto _child = dynamic_cast<ChildNode *>(child.acquire());
-        append(*_child);
+        append(*child.acquire());
         m_childOwned = true;
         return std::move(*this);
     }
@@ -297,8 +296,7 @@ namespace cacto
         m_childBox = other.m_childBox;
         if (other.m_child)
         {
-            m_child = dynamic_cast<ChildNode *>(other.m_child->clone());
-            append(*m_child);
+            append(*other.m_child->clone());
             m_childOwned = true;
         }
     }

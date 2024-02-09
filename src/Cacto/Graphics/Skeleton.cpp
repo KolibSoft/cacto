@@ -191,8 +191,7 @@ namespace cacto
 
     Skeleton &&Skeleton::append(ChildNode &&child, const SkeletonOptions &options)
     {
-        auto _child = dynamic_cast<ChildNode *>(child.acquire());
-        append(*_child, options);
+        append(*child.acquire(), options);
         m_holders.back().owned = true;
         return std::move(*this);
     }
@@ -268,8 +267,7 @@ namespace cacto
         m_id = other.m_id;
         for (auto &holder : other.m_holders)
         {
-            auto child = dynamic_cast<ChildNode *>(holder.child->clone());
-            append(*child, holder.options);
+            append(*holder.child->clone(), holder.options);
             m_holders.back().owned = true;
         }
     }
