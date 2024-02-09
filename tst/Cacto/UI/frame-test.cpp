@@ -45,8 +45,8 @@ int main()
 
     cacto::XmlValue xml = nullptr;
 
-    // xml.fromFile("res/frame.xml");
-    // root = cacto::toFrameLayout(xml);
+    xml.fromFile("res/frame.xml");
+    root = cacto::toFrameLayout(xml);
 
     while (window.isOpen())
     {

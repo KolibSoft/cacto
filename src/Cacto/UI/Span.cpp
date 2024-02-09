@@ -155,8 +155,9 @@ namespace cacto
     {
         if (m_parent == nullptr)
             return;
-        m_parent->remove(*this);
+        auto parent = m_parent;
         m_parent = nullptr;
+        parent->remove(*this);
     }
 
     Span *Span::clone() const

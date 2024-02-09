@@ -162,8 +162,9 @@ namespace cacto
     {
         if (m_parent == nullptr)
             return;
-        m_parent->remove(*this);
+        auto parent = m_parent;
         m_parent = nullptr;
+        parent->remove(*this);
     }
 
     void Skeleton::append(ChildNode &child)
@@ -203,7 +204,7 @@ namespace cacto
         {
             auto holder = m_holders[index];
             m_holders.erase(m_holders.begin() + index);
-            child.detach();
+            holder.child->detach();
             if (holder.owned)
                 delete holder.child;
         }

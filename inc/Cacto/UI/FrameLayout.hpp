@@ -79,8 +79,6 @@ namespace cacto
         void draw(sf::RenderTarget &target, const sf::RenderStates &states) const override;
 
     private:
-        void dropChild();
-
         BoxAnchor m_hAnchor;
         BoxAnchor m_vAnchor;
         Box m_childBox;

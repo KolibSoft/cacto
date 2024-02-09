@@ -199,7 +199,16 @@ namespace cacto
     void FrameLayout::remove(ChildNode &child)
     {
         if (m_child == &child)
-            dropChild();
+        {
+            auto _child = m_child;
+            m_child = nullptr;
+            child.detach();
+            if (m_childOwned)
+            {
+                delete _child;
+                m_childOwned = false;
+            }
+        }
     }
 
     sf::Vector2f FrameLayout::compact()
@@ -251,7 +260,7 @@ namespace cacto
 
     FrameLayout::~FrameLayout()
     {
-        dropChild();
+        clearChildren();
     }
 
     FrameLayout::FrameLayout(const FrameLayout &other)
@@ -281,7 +290,7 @@ namespace cacto
 
     void FrameLayout::clone(const FrameLayout &other)
     {
-        dropChild();
+        clearChildren();
         Block::clone(other);
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
@@ -289,13 +298,14 @@ namespace cacto
         if (other.m_child)
         {
             m_child = dynamic_cast<ChildNode *>(other.m_child->clone());
+            append(*m_child);
             m_childOwned = true;
         }
     }
 
     void FrameLayout::acquire(FrameLayout &&other)
     {
-        dropChild();
+        clearChildren();
         Block::acquire(std::move(other));
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
@@ -304,6 +314,8 @@ namespace cacto
         m_childOwned = other.m_childOwned;
         other.m_child = nullptr;
         other.m_childOwned = false;
+        m_child->detach();
+        m_child->attach(*this);
     }
 
     const Box &FrameLayout::getChildBox() const
@@ -318,20 +330,6 @@ namespace cacto
             cacto::draw(*m_child, target, states);
     }
 
-    void FrameLayout::dropChild()
-    {
-        if (m_child)
-        {
-            m_child->detach();
-            if (m_childOwned)
-            {
-                delete m_child;
-                m_child = nullptr;
-                m_childOwned = false;
-            }
-        }
-    }
-
     XmlValue toXml(const FrameLayout &frame)
     {
         XmlValue xml{"FrameLayout", {}};
@@ -340,7 +338,10 @@ namespace cacto
         xml["verticalAnchor"] = toString(frame.getVerticalAnchor());
         auto child = frame.getChild();
         if (child)
-            xml.asTag().content.push_back(toXml(child));
+        {
+            auto cxml = toXml<Node>(child);
+            xml.append(cxml);
+        }
         return std::move(xml);
     }
 
@@ -350,14 +351,19 @@ namespace cacto
         (Block &)frame = toBlock(xml);
         frame.setHorizontalAnchor(toBoxAnchor(xml.getAttribute("horizontalAnchor", "Start")));
         frame.setVerticalAnchor(toBoxAnchor(xml.getAttribute("verticalAnchor", "Start")));
-        auto node = fromXml<Node>(xml[0]);
-        if (node)
-        {
-            auto child = dynamic_cast<ChildNode *>(node);
-            if (child)
-                frame.append(std::move(*child));
-            delete node;
-        }
+        for (auto &ixml : xml.asTag().content)
+            if (ixml["isBackground"] == "")
+            {
+                auto node = fromXml<Node>(ixml);
+                if (node)
+                {
+                    auto child = dynamic_cast<ChildNode *>(node);
+                    if (child)
+                        frame.append(std::move(*child));
+                    delete node;
+                }
+                break;
+            }
         return std::move(frame);
     }
 
