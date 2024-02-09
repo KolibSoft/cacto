@@ -29,8 +29,7 @@ namespace cacto
         Picture &&shrink(const Thickness &thickness);
         Picture &&expand(const Thickness &thickness);
 
-        Picture &&setBackground(Node *const value);
-        Picture &&setBackground(Node &&value);
+        Picture &&setBackground(Reference<Node> value);
 
         Picture &&setMargin(const Thickness &value);
         Picture &&setPadding(const Thickness &value);

@@ -67,7 +67,7 @@ namespace cacto
 
     Block &&Block::setBackground(Reference<Node> value)
     {
-        if (value)
+        if (value != nullptr)
         {
             if (value->getParent())
                 throw std::runtime_error("The background can not have a parent");
@@ -315,7 +315,7 @@ namespace cacto
     void Block::clone(const Block &other)
     {
         Box::operator=(other);
-        if (other.m_background)
+        if (other.m_background != nullptr)
             m_background = {other.m_background->clone(), true};
         m_margin = other.m_margin;
         m_padding = other.m_padding;
@@ -347,7 +347,7 @@ namespace cacto
 
     void Block::drawBlock(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
-        if (m_background)
+        if (m_background != nullptr)
             cacto::draw(*m_background, target, states);
         m_vTransform = states.transform;
     }
@@ -361,7 +361,7 @@ namespace cacto
         sf::Vector2f size{
             std::max(hPadding, std::max(m_minWidth, contentSize.x + hPadding)) + hMargin,
             std::max(vPadding, std::max(m_minHeight, contentSize.y + vPadding)) + vMargin};
-        if (m_background)
+        if (m_background != nullptr)
             cacto::compact(*m_background);
         setWidth(size.x);
         setHeight(size.y);
@@ -376,7 +376,7 @@ namespace cacto
                           std::max(getHeight(), std::min(containerSize.y, m_maxHeight + vMargin))};
         setWidth(size.x - hMargin);
         setHeight(size.y - vMargin);
-        if (m_background)
+        if (m_background != nullptr)
             cacto::inflate(*m_background, {getWidth(), getHeight()});
         return size;
     }
@@ -385,13 +385,13 @@ namespace cacto
     {
         setLeft(position.x + m_margin.left);
         setTop(position.y + m_margin.top);
-        if (m_background)
+        if (m_background != nullptr)
             cacto::place(*m_background, {getLeft(), getTop()});
     }
 
     void Block::handleBlock(const sf::Event &event)
     {
-        if (m_background)
+        if (m_background != nullptr)
             cacto::handle(*m_background, event);
     }
 
@@ -410,14 +410,18 @@ namespace cacto
         xml["minHeight"] = std::to_string(block.getMinHeight());
         xml["maxHeight"] = std::to_string(block.getMaxHeight());
         xml["id"] = block.getId();
-        auto bxml = toXml(block.getBackground().getInstance());
-        auto bid = getId(bxml);
-        if (bid != "")
-            xml["background"] = "@xml/" + bid;
-        else
+        auto background = block.getBackground().getInstance();
+        if (background)
         {
-            bxml["isBackground"] = "true";
-            xml.asTag().content.push_back(std::move(bxml));
+            auto bxml = toXml(background);
+            auto bid = getId(bxml);
+            if (bid != "")
+                xml["background"] = "@xml/" + bid;
+            else
+            {
+                bxml["isBackground"] = "true";
+                xml.asTag().content.push_back(std::move(bxml));
+            }
         }
         return std::move(xml);
     }

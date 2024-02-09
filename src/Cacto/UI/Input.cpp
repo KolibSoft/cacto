@@ -52,13 +52,7 @@ namespace cacto
         return std::move(*this);
     }
 
-    Input &&Input::setBackground(Node *const value)
-    {
-        Block::setBackground(value);
-        return std::move(*this);
-    }
-
-    Input &&Input::setBackground(Node &&value)
+    Input &&Input::setBackground(Reference<Node> value)
     {
         Block::setBackground(std::move(value));
         return std::move(*this);

@@ -13,6 +13,7 @@ namespace cacto
 
         Reference(T &borrowing);
         Reference(T &&moving);
+        Reference(T *intance, bool owned = false);
 
         template <typename U>
         Reference(U &borrowing);
@@ -23,7 +24,7 @@ namespace cacto
         template <typename U>
         Reference(U *instance, bool owned = false);
 
-        Reference(T *intance = nullptr, bool owned = false);
+        Reference(std::nullptr_t = 0);
         virtual ~Reference();
 
         Reference(const Reference<T> &other) = delete;
@@ -32,8 +33,8 @@ namespace cacto
         Reference(Reference<T> &&other);
         Reference<T> &operator=(Reference<T> &&other);
 
-        operator bool() const;
         bool operator==(const Reference<T> &other) const;
+        bool operator!=(const Reference<T> &other) const;
 
         T &operator*() const;
         T *operator->() const;

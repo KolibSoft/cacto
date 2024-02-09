@@ -23,8 +23,7 @@ namespace cacto
         FrameLayout &&shrink(const Thickness &thickness);
         FrameLayout &&expand(const Thickness &thickness);
 
-        FrameLayout &&setBackground(Node *const value);
-        FrameLayout &&setBackground(Node &&value);
+        FrameLayout &&setBackground(Reference<Node> value);
 
         FrameLayout &&setMargin(const Thickness &value);
         FrameLayout &&setPadding(const Thickness &value);
@@ -53,7 +52,7 @@ namespace cacto
         ChildNode *const getChild(szt index = 0) const override;
 
         void append(ChildNode &child) override;
-        FrameLayout &&append(ChildNode &&child);
+        FrameLayout &&append(Reference<ChildNode> child);
 
         void remove(ChildNode &child) override;
 
@@ -82,8 +81,7 @@ namespace cacto
         BoxAnchor m_hAnchor;
         BoxAnchor m_vAnchor;
         Box m_childBox;
-        ChildNode *m_child;
-        bool m_childOwned;
+        Reference<ChildNode> m_child;
     };
 
     XmlValue CACTO_UI_API toXml(const FrameLayout &frame);

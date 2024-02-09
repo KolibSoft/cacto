@@ -56,13 +56,7 @@ namespace cacto
         return std::move(*this);
     }
 
-    FrameLayout &&FrameLayout::setBackground(Node *const value)
-    {
-        Block::setBackground(value);
-        return std::move(*this);
-    }
-
-    FrameLayout &&FrameLayout::setBackground(Node &&value)
+    FrameLayout &&FrameLayout::setBackground(Reference<Node> value)
     {
         Block::setBackground(std::move(value));
         return std::move(*this);
@@ -170,28 +164,26 @@ namespace cacto
     {
         if (index >= 1)
             return nullptr;
-        return m_child;
+        return m_child.getInstance();
     }
 
     void FrameLayout::append(ChildNode &child)
     {
-        if (m_child == &child)
-            return;
-        if (m_child != nullptr)
-            throw std::runtime_error("This node has already another child");
-        if (child.getParent() != nullptr && child.getParent() != this)
-            throw std::runtime_error("The node is already attached to another parent");
-        if (hasAncestor(child))
-            throw std::runtime_error("The node is an ancestor");
-        m_child = &child;
-        m_childOwned = false;
-        child.attach(*this);
+        append(Reference(child));
     }
 
-    FrameLayout &&FrameLayout::append(ChildNode &&child)
+    FrameLayout &&FrameLayout::append(Reference<ChildNode> child)
     {
-        append(*child.acquire());
-        m_childOwned = true;
+        if (m_child == child)
+            return std::move(*this);
+        if (m_child != nullptr)
+            throw std::runtime_error("This node has already another child");
+        if (child->getParent() != nullptr && child->getParent() != this)
+            throw std::runtime_error("The node is already attached to another parent");
+        if (hasAncestor(*child))
+            throw std::runtime_error("The node is an ancestor");
+        m_child = std::move(child);
+        m_child->attach(*this);
         return std::move(*this);
     }
 
@@ -199,20 +191,14 @@ namespace cacto
     {
         if (m_child == &child)
         {
-            auto _child = m_child;
-            m_child = nullptr;
-            child.detach();
-            if (m_childOwned)
-            {
-                delete _child;
-                m_childOwned = false;
-            }
+            auto _child = std::move(m_child);
+            _child->detach();
         }
     }
 
     sf::Vector2f FrameLayout::compact()
     {
-        auto childSize = m_child ? cacto::compact(*m_child) : sf::Vector2f{0, 0};
+        auto childSize = m_child != nullptr ? cacto::compact(*m_child) : sf::Vector2f{0, 0};
         m_childBox.setWidth(childSize.x);
         m_childBox.setHeight(childSize.y);
         auto size = compactBlock(childSize);
@@ -222,7 +208,7 @@ namespace cacto
     sf::Vector2f FrameLayout::inflate(const sf::Vector2f &containerSize)
     {
         auto size = inflateBlock(containerSize);
-        if (m_child)
+        if (m_child != nullptr)
         {
             auto contentBox = getContentBox();
             auto childSize = cacto::inflate(*m_child, {contentBox.getWidth(), contentBox.getHeight()});
@@ -235,7 +221,7 @@ namespace cacto
     void FrameLayout::place(const sf::Vector2f &position)
     {
         placeBlock(position);
-        if (m_child)
+        if (m_child != nullptr)
         {
             auto contentBox = getContentBox();
             contentBox.setWidth(m_childBox.getWidth(), m_hAnchor);
@@ -252,15 +238,11 @@ namespace cacto
           m_hAnchor(BoxAnchor::Start),
           m_vAnchor(BoxAnchor::Start),
           m_childBox(),
-          m_child(),
-          m_childOwned(false)
+          m_child()
     {
     }
 
-    FrameLayout::~FrameLayout()
-    {
-        clearChildren();
-    }
+    FrameLayout::~FrameLayout() = default;
 
     FrameLayout::FrameLayout(const FrameLayout &other)
         : FrameLayout()
@@ -294,11 +276,8 @@ namespace cacto
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
         m_childBox = other.m_childBox;
-        if (other.m_child)
-        {
-            append(*other.m_child->clone());
-            m_childOwned = true;
-        }
+        if (other.m_child != nullptr)
+            append({other.m_child->clone(), true});
     }
 
     void FrameLayout::acquire(FrameLayout &&other)
@@ -308,10 +287,8 @@ namespace cacto
         m_hAnchor = other.m_hAnchor;
         m_vAnchor = other.m_vAnchor;
         m_childBox = std::move(other.m_childBox);
-        m_child = other.m_child;
-        m_childOwned = other.m_childOwned;
+        m_child = std::move(other.m_child);
         other.m_child = nullptr;
-        other.m_childOwned = false;
         m_child->detach();
         m_child->attach(*this);
     }
@@ -324,7 +301,7 @@ namespace cacto
     void FrameLayout::draw(sf::RenderTarget &target, const sf::RenderStates &states) const
     {
         drawBlock(target, states);
-        if (m_child)
+        if (m_child != nullptr)
             cacto::draw(*m_child, target, states);
     }
 
@@ -357,9 +334,11 @@ namespace cacto
                 {
                     auto child = dynamic_cast<ChildNode *>(node);
                     if (child)
-                        frame.append(std::move(*child));
-                    delete node;
+                        frame.append({child, true});
+                    else
+                        delete node;
                 }
+
                 break;
             }
         return std::move(frame);

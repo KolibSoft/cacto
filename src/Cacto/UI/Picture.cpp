@@ -55,13 +55,7 @@ namespace cacto
         return std::move(*this);
     }
 
-    Picture &&Picture::setBackground(Node *const value)
-    {
-        Block::setBackground(value);
-        return std::move(*this);
-    }
-
-    Picture &&Picture::setBackground(Node &&value)
+    Picture &&Picture::setBackground(Reference<Node> value)
     {
         Block::setBackground(std::move(value));
         return std::move(*this);

@@ -27,8 +27,7 @@ namespace cacto
         Input &&shrink(const Thickness &thickness);
         Input &&expand(const Thickness &thickness);
 
-        Input &&setBackground(Node *const value);
-        Input &&setBackground(Node &&value);
+        Input &&setBackground(Reference<Node> value);
 
         Input &&setMargin(const Thickness &value);
         Input &&setPadding(const Thickness &value);

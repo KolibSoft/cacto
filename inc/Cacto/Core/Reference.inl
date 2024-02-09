@@ -34,6 +34,13 @@ namespace cacto
     }
 
     template <typename T>
+    inline Reference<T>::Reference(T *instance, bool owned)
+        : m_instance(instance),
+          m_isOwning(owned)
+    {
+    }
+
+    template <typename T>
     template <typename U>
     inline Reference<T>::Reference(U &borrowing)
         : Reference(nullptr, false)
@@ -60,9 +67,9 @@ namespace cacto
     }
 
     template <typename T>
-    inline Reference<T>::Reference(T *instance, bool owned)
-        : m_instance(instance),
-          m_isOwning(owned)
+    inline Reference<T>::Reference(std::nullptr_t)
+        : m_instance(nullptr),
+          m_isOwning(false)
     {
     }
 
@@ -91,15 +98,15 @@ namespace cacto
     }
 
     template <typename T>
-    inline Reference<T>::operator bool() const
-    {
-        return m_instance != nullptr;
-    }
-
-    template <typename T>
     inline bool Reference<T>::operator==(const Reference<T> &other) const
     {
         return m_instance == other.m_instance;
+    }
+
+    template <typename T>
+    inline bool Reference<T>::operator!=(const Reference<T> &other) const
+    {
+        return m_instance != other.m_instance;
     }
 
     template <typename T>

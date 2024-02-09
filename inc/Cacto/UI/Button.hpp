@@ -26,8 +26,7 @@ namespace cacto
         Button &&shrink(const Thickness &thickness);
         Button &&expand(const Thickness &thickness);
 
-        Button &&setBackground(Node *const value);
-        Button &&setBackground(Node &&value);
+        Button &&setBackground(Reference<Node> value);
 
         Button &&setMargin(const Thickness &value);
         Button &&setPadding(const Thickness &value);

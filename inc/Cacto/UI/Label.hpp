@@ -22,8 +22,7 @@ namespace cacto
         Label &&shrink(const Thickness &thickness);
         Label &&expand(const Thickness &thickness);
 
-        Label &&setBackground(Node *const value);
-        Label &&setBackground(Node &&value);
+        Label &&setBackground(Reference<Node> value);
 
         Label &&setMargin(const Thickness &value);
         Label &&setPadding(const Thickness &value);
